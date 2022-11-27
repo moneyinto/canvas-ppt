@@ -1,0 +1,73 @@
+<template>
+    <div class="footer-container">
+        <div class="ppt-zoom-control">
+            <a-popover>
+                <a-button class="ppt-zoom-btn" type="text"><Minus :strokeWidth="2" /></a-button>
+                <template #content>
+                    <div class="control-tooltip">
+                        <div>缩小</div>
+                        <div class="shortcut-view">{{ SHORTCUT.DECREASE }}</div>
+                    </div>
+                </template>
+            </a-popover>
+            <div class="ppt-zoom-view">
+                {{ zoom * 100 }}%
+            </div>
+            <a-popover>
+                <a-button class="ppt-zoom-btn" type="text"><Plus :strokeWidth="2" /></a-button>
+                <template #content>
+                    <div class="control-tooltip">
+                        <div>放大</div>
+                        <div class="shortcut-view">{{ SHORTCUT.INCREASE }}</div>
+                    </div>
+                </template>
+            </a-popover>
+        </div>
+    </div>
+</template>
+
+<script lang="ts" setup>
+import { computed } from "vue";
+import { Plus, Minus } from "@icon-park/vue-next";
+import { SHORTCUT } from "@/plugins/config/shortcut";
+
+const props = defineProps({
+    zoom: {
+        type: Number,
+        default: 1
+    }
+});
+
+const zoom = computed(() => props.zoom);
+</script>
+
+<style lang="scss" scoped>
+.footer-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.ppt-zoom-control {
+    padding: 0 10px 0 30px;
+    display: flex;
+    align-items: center;
+}
+
+.ppt-zoom-btn {
+    font-size: 18px;
+    color: #000;
+}
+
+.control-tooltip {
+    text-align: center;
+}
+
+.shortcut-view {
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.ppt-zoom-view {
+    font-size: 13px;
+}
+</style>

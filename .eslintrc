@@ -1,0 +1,41 @@
+{
+    "plugins": ["vue", "@typescript-eslint"],
+    "parserOptions": {
+        "ecmaVersion": 13,
+        "parser": "@typescript-eslint/parser",
+        "sourceType": "module"
+    },
+    "extends": [
+        "plugin:vue/vue3-essential",
+        "@vue/standard",
+        "@vue/typescript/recommended"
+    ],
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "node": true
+    },
+    "rules": {
+        "no-console": "off",
+        "no-debugger": "off",
+        "indent": ["error", 4],
+        "semi": ["error", "always"],
+        "quotes": [2, "double"],
+        "space-before-function-paren": [
+            "error",
+            {
+                "named": "never",
+                "anonymous": "never",
+                "asyncArrow": "always"
+            }
+        ],
+        "dot-notation": [0, { "allowKeywords": false, "allowPattern": "" }],
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "no-unmodified-loop-condition": "off",
+        "standard/no-callback-literal": "off",
+        "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/no-explicit-any": ["off"],
+        "vue/multi-word-component-names": "off"
+    },
+    "ignorePatterns": ["node_modules", "dist", "index.html"]
+}
