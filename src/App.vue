@@ -24,9 +24,9 @@ nextTick(() => {
     if (pptRef.value) {
         instance.value = new Editor(pptRef.value);
         console.log("初始化实例", instance.value.command.getZoom());
-        zoom.value = Number(instance.value.command.getZoom().toFixed(2));
+        zoom.value = instance.value.command.getZoom();
         instance.value.listener.onZoomChange = (newZoom) => {
-            zoom.value = Number(newZoom.toFixed(2));
+            zoom.value = newZoom;
             console.log("缩放比例", newZoom);
         };
     }

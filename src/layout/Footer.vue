@@ -11,7 +11,7 @@
                 </template>
             </a-popover>
             <div class="ppt-zoom-view">
-                {{ zoom * 100 }}%
+                {{ zoom }}%
             </div>
             <a-popover>
                 <a-button class="ppt-zoom-btn" type="text"><Plus :strokeWidth="2" /></a-button>
@@ -38,7 +38,7 @@ const props = defineProps({
     }
 });
 
-const zoom = computed(() => props.zoom);
+const zoom = computed(() => Math.floor(props.zoom * 100));
 </script>
 
 <style lang="scss" scoped>
