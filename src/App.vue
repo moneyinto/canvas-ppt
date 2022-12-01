@@ -6,7 +6,7 @@
             <div class="ppt-content" ref="pptRef"></div>
         </div>
         <div class="ppt-footer">
-            <Footer :zoom="zoom" />
+            <Footer :zoom="zoom" :instance="instance" />
         </div>
     </div>
 </template>
@@ -23,11 +23,9 @@ const instance = ref<Editor>();
 nextTick(() => {
     if (pptRef.value) {
         instance.value = new Editor(pptRef.value);
-        console.log("初始化实例", instance.value.command.getZoom());
         zoom.value = instance.value.command.getZoom();
         instance.value.listener.onZoomChange = (newZoom) => {
             zoom.value = newZoom;
-            console.log("缩放比例", newZoom);
         };
     }
 });

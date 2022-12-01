@@ -1,5 +1,6 @@
 import Command from "../command";
 import Listener from "../listener";
+import Shortcut from "../shortCut";
 import StageConfig from "../stage/config";
 import ControlStage from "../stage/control";
 import ViewStage from "../stage/view";
@@ -15,7 +16,7 @@ export default class Editor {
         this.listener = new Listener();
 
         // 画板配置
-        this._stageConfig = new StageConfig(container);
+        this._stageConfig = new StageConfig(container, this.listener);
         this._stageConfig.resetDraw = () => {
             this._resetDraw();
         };
@@ -29,7 +30,8 @@ export default class Editor {
         // 创建操作画板
         const controlStage = new ControlStage(container, this.listener, this._stageConfig);
 
-        console.log("======xxxxx");
+        // 快捷键
+        const shortcut = new Shortcut(container, this.command);
     }
 
     private _resetDraw() {

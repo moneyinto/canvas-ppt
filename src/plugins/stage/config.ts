@@ -1,4 +1,5 @@
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
+import Listener from "../listener";
 
 export default class StageConfig {
     public scrollX: number;
@@ -8,12 +9,14 @@ export default class StageConfig {
     public resetDraw: (() => void) | null;
 
     private _container: HTMLDivElement;
+    private _listener: Listener;
 
-    constructor(container: HTMLDivElement) {
+    constructor(container: HTMLDivElement, listener: Listener) {
         this._container = container;
+        this._listener = listener;
         this.scrollX = 0;
         this.scrollY = 0;
-        this.zoom = this._getZoom();
+        this.zoom = this.getZoom();
 
         this.resetDraw = null;
     }
@@ -29,6 +32,8 @@ export default class StageConfig {
         this.zoom = zoom;
 
         this.resetDraw && this.resetDraw();
+
+        this._listener.onZoomChange && this._listener.onZoomChange(this.zoom);
     }
 
     public getWidth() {
@@ -39,7 +44,7 @@ export default class StageConfig {
         return this._container.clientHeight;
     }
 
-    private _getZoom() {
+    public getZoom() {
         const width = this.getWidth();
         const height = this.getHeight();
 
@@ -58,12 +63,14 @@ export default class StageConfig {
     }
 
     public resetBaseZoom() {
-        this.zoom = this._getZoom();
+        this.zoom = this.getZoom();
 
         this.scrollX = 0;
         this.scrollY = 0;
 
         this.resetDraw && this.resetDraw();
+
+        this._listener.onZoomChange && this._listener.onZoomChange(this.zoom);
     }
 
     public getStageArea() {

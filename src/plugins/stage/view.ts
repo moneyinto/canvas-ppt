@@ -11,7 +11,6 @@ export default class ViewStage extends Stage {
 
     private _drawPage() {
         const { x, y, stageWidth, stageHeight } = this.stageConfig.getStageArea();
-        console.log(x, y, stageHeight);
         // 设置阴影
         this.ctx.shadowColor = "#eee";
         this.ctx.shadowBlur = 12;

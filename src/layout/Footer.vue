@@ -2,7 +2,7 @@
     <div class="footer-container">
         <div class="ppt-zoom-control">
             <a-popover>
-                <a-button class="ppt-zoom-btn" type="text"><Minus :strokeWidth="2" /></a-button>
+                <a-button class="ppt-zoom-btn" type="text" @click="decrease()"><Minus :strokeWidth="2" /></a-button>
                 <template #content>
                     <div class="control-tooltip">
                         <div>缩小</div>
@@ -14,7 +14,7 @@
                 {{ zoom }}%
             </div>
             <a-popover>
-                <a-button class="ppt-zoom-btn" type="text"><Plus :strokeWidth="2" /></a-button>
+                <a-button class="ppt-zoom-btn" type="text" @click="increase()"><Plus :strokeWidth="2" /></a-button>
                 <template #content>
                     <div class="control-tooltip">
                         <div>放大</div>
@@ -30,15 +30,27 @@
 import { computed } from "vue";
 import { Plus, Minus } from "@icon-park/vue-next";
 import { SHORTCUT } from "@/plugins/config/shortcut";
+import Editor from "@/plugins/editor";
 
 const props = defineProps({
     zoom: {
         type: Number,
         default: 1
+    },
+    instance: {
+        type: Editor
     }
 });
 
 const zoom = computed(() => Math.floor(props.zoom * 100));
+
+const decrease = () => {
+    props.instance && props.instance.command.executeDecrease();
+};
+
+const increase = () => {
+    props.instance && props.instance.command.executeIncrease();
+};
 </script>
 
 <style lang="scss" scoped>
