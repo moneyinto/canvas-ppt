@@ -20,7 +20,7 @@
         "no-debugger": "off",
         "indent": ["error", 4],
         "semi": ["error", "always"],
-        "quotes": [2, "double"],
+        "quotes": "off",
         "space-before-function-paren": [
             "error",
             {

@@ -1,6 +1,9 @@
 <template>
     <div class="ppt-container">
-        <div class="ppt-toolbar"></div>
+        <div class="ppt-toolbar">
+            <NavMenu />
+            <Tools />
+        </div>
         <div class="ppt-body">
             <div class="ppt-thumbnail"></div>
             <div class="ppt-content" ref="pptRef"></div>
@@ -13,6 +16,8 @@
 
 <script lang="ts" setup>
 import { nextTick, ref } from "vue";
+import NavMenu from "./layout/NavMenu/index.vue";
+import Tools from "./layout/Tools.vue";
 import Footer from "./layout/Footer.vue";
 import Editor from "./plugins/editor";
 
@@ -43,7 +48,6 @@ nextTick(() => {
 
 .ppt-toolbar {
     height: 62px;
-    border-bottom: 1px solid rgba(65, 70, 75, 0.1);
     background-color: #f7f7f7;
 }
 
