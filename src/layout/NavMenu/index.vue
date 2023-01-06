@@ -17,7 +17,7 @@ import Edit from "./Edit.vue";
     user-select: none;
     display: flex;
     align-items: center;
-    padding: 0 20px;
+    padding: 0 10px;
     .ppt-menu-item {
         padding: 1px 15px 0;
         height: 25px;

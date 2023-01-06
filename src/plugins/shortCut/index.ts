@@ -25,7 +25,6 @@ export default class Shortcut {
     private _agentKeydown(evt: KeyboardEvent) {
         if (evt.key === KeyMap.SPACE) {
             this._stageConfig.setCanMove(true);
-            if (this._listener.onCanMoveChange) this._listener.onCanMoveChange(true);
             return;
         }
         this._execute(evt, this._shortcutKeys);
@@ -34,7 +33,6 @@ export default class Shortcut {
     private _agentKeyup(evt: KeyboardEvent) {
         if (evt.key === KeyMap.SPACE) {
             this._stageConfig.setCanMove(false);
-            if (this._listener.onCanMoveChange) this._listener.onCanMoveChange(false);
         }
     }
 

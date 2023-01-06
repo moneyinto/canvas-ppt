@@ -6,25 +6,26 @@
         </div>
         <div class="ppt-body">
             <div class="ppt-thumbnail"></div>
-            <div class="ppt-content" :class="{ move }" ref="pptRef"></div>
+            <div class="ppt-content" ref="pptRef"></div>
         </div>
         <div class="ppt-footer">
-            <Footer :zoom="zoom" :instance="instance" />
+            <Footer :zoom="zoom" />
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { nextTick, ref } from "vue";
+import { nextTick, provide, ref } from "vue";
 import NavMenu from "./layout/NavMenu/index.vue";
-import Tools from "./layout/Tools.vue";
+import Tools from "./layout/Tools/index.vue";
 import Footer from "./layout/Footer.vue";
 import Editor from "./plugins/editor";
 
 const pptRef = ref();
 const zoom = ref(1);
-const move = ref(false);
 const instance = ref<Editor>();
+
+provide("instance", instance);
 
 nextTick(() => {
     if (pptRef.value) {
@@ -33,10 +34,6 @@ nextTick(() => {
 
         instance.value.listener.onZoomChange = (newZoom) => {
             zoom.value = newZoom;
-        };
-
-        instance.value.listener.onCanMoveChange = (canMove) => {
-            move.value = canMove;
         };
     }
 });
@@ -73,9 +70,6 @@ nextTick(() => {
         flex: 1;
         min-width: 0;
         position: relative;
-        &.move {
-            cursor: grabbing;
-        }
     }
 }
 

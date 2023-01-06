@@ -1,11 +1,13 @@
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import Listener from "../listener";
+import { ICreatingElement } from "../types/slide";
 
 export default class StageConfig {
     public scrollX: number;
     public scrollY: number;
     public zoom: number;
     public canMove: boolean;
+    public insertElement: ICreatingElement | null; // 需要绘制插入的元素
 
     public resetDraw: (() => void) | null;
 
@@ -19,6 +21,7 @@ export default class StageConfig {
         this.scrollY = 0;
         this.zoom = this.getZoom();
         this.canMove = false;
+        this.insertElement = null;
 
         this.resetDraw = null;
     }
@@ -89,5 +92,19 @@ export default class StageConfig {
 
     public setCanMove(canMove: boolean) {
         this.canMove = canMove;
+        if (canMove) {
+            this._container.style.cursor = "grabbing";
+        } else {
+            this._container.style.cursor = "default";
+        }
+    }
+
+    public setInsertElement(element: ICreatingElement | null) {
+        if (element) {
+            this._container.style.cursor = "crosshair";
+        } else {
+            this._container.style.cursor = "default";
+        }
+        this.insertElement = element;
     }
 }

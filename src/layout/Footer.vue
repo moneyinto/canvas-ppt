@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, inject, Ref } from "vue";
 import { SHORTCUT } from "@/plugins/config/shortcut";
 import Editor from "@/plugins/editor";
 
@@ -26,24 +26,23 @@ const props = defineProps({
     zoom: {
         type: Number,
         default: 1
-    },
-    instance: {
-        type: Editor
     }
 });
+
+const instance = inject<Ref<Editor>>("instance");
 
 const zoom = computed(() => Math.floor(props.zoom * 100));
 
 const fitZoom = () => {
-    props.instance && props.instance.command.excuteFitZoom();
+    instance?.value.command.excuteFitZoom();
 };
 
 const decrease = () => {
-    props.instance && props.instance.command.executeDecrease();
+    instance?.value.command.executeDecrease();
 };
 
 const increase = () => {
-    props.instance && props.instance.command.executeIncrease();
+    instance?.value.command.executeIncrease();
 };
 </script>
 
