@@ -4,6 +4,7 @@ import Shortcut from "../shortCut";
 import StageConfig from "../stage/config";
 import ControlStage from "../stage/control";
 import ViewStage from "../stage/view";
+import { ISlide } from "../types/slide";
 
 export default class Editor {
     public listener: Listener;
@@ -11,7 +12,7 @@ export default class Editor {
     public stageConfig: StageConfig;
 
     private _viewStage: ViewStage;
-    constructor(container: HTMLDivElement) {
+    constructor(container: HTMLDivElement, slides: ISlide[]) {
         // 监听
         this.listener = new Listener();
 
@@ -20,6 +21,8 @@ export default class Editor {
         this.stageConfig.resetDraw = () => {
             this._resetDraw();
         };
+        this.stageConfig.setSildes(slides);
+        if (slides.length > 0) this.stageConfig.setSlideId(slides[0].id);
 
         // 命令
         this.command = new Command(this.stageConfig);

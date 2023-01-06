@@ -1,6 +1,6 @@
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import Listener from "../listener";
-import { ICreatingElement } from "../types/slide";
+import { ICreatingElement, ISlide } from "../types/slide";
 
 export default class StageConfig {
     public scrollX: number;
@@ -9,17 +9,22 @@ export default class StageConfig {
     public canMove: boolean;
     public insertElement: ICreatingElement | null; // 需要绘制插入的元素
 
+    public slides: ISlide[] = [];
+    public slideId = "";
+
     public resetDraw: (() => void) | null;
 
     private _container: HTMLDivElement;
     private _listener: Listener;
 
+    // 边距
+    private _margin = 40;
     constructor(container: HTMLDivElement, listener: Listener) {
         this._container = container;
         this._listener = listener;
         this.scrollX = 0;
         this.scrollY = 0;
-        this.zoom = this.getZoom();
+        this.zoom = this.getFitZoom();
         this.canMove = false;
         this.insertElement = null;
 
@@ -49,26 +54,25 @@ export default class StageConfig {
         return this._container.clientHeight;
     }
 
-    public getZoom() {
+    public getFitZoom() {
         const width = this.getWidth();
         const height = this.getHeight();
-
-        const margin = 40;
 
         let stageWidth = 0;
         let stageHeight = 0;
         if (height / width > VIEWRATIO) {
             // 以宽度为限制值
-            stageWidth = width - margin * 2;
+            stageWidth = width - this._margin * 2;
         } else {
-            stageHeight = height - margin * 2;
+            stageHeight = height - this._margin * 2;
             stageWidth = stageHeight / VIEWRATIO;
         }
+
         return stageWidth / VIEWPORT_SIZE;
     }
 
     public resetBaseZoom() {
-        this.zoom = this.getZoom();
+        this.zoom = this.getFitZoom();
 
         this.scrollX = 0;
         this.scrollY = 0;
@@ -106,5 +110,17 @@ export default class StageConfig {
             this._container.style.cursor = "default";
         }
         this.insertElement = element;
+    }
+
+    public setSildes(slides: ISlide[]) {
+        this.slides = slides;
+    }
+
+    public setSlideId(slideId: string) {
+        this.slideId = slideId;
+    }
+
+    public getCurrentSlide() {
+        return this.slides.find(slide => this.slideId === slide.id);
     }
 }

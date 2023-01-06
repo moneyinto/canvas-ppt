@@ -1,6 +1,7 @@
 import Listener from "../listener";
 import StageConfig from "./config";
 import { throttle } from "lodash";
+import { IPPTShapeElement } from "../types/slide";
 
 export default class Stage {
     public canvas: HTMLCanvasElement;
@@ -51,5 +52,28 @@ export default class Stage {
         ctx.scale(dpr, dpr);
 
         return { ctx, canvas };
+    }
+
+    public drawShape(element: IPPTShapeElement) {
+        const scaleX = element.width / element.viewBox;
+        const scaleY = element.height / element.viewBox;
+        const zoom = this.stageConfig.zoom;
+        const { x, y } = this.stageConfig.getStageArea();
+
+        this.ctx.save();
+
+        this.ctx.translate(x, y);
+        this.ctx.scale(scaleX * zoom, scaleY * zoom);
+
+        this.ctx.fillStyle = element.fill;
+        const path = new Path2D(element.path);
+        this.ctx.fill(path);
+
+        if (element.outline) {
+            // this.ctx.setLineDash([8, 8]);
+            this.ctx.stroke(path);
+        }
+
+        this.ctx.restore();
     }
 }

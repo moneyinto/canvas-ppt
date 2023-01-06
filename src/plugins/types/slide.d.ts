@@ -183,7 +183,7 @@ export interface ISlideBackground {
  *
  * background?: 页面背景
  */
-export interface Slide {
+export interface ISlide {
     id: string;
     viewportRatio?: number;
     elements: IPPTElement[];

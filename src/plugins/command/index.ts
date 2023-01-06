@@ -17,7 +17,7 @@ export default class Command {
 
     // 缩小
     public executeDecrease() {
-        const minZoom = this._stageConfig.getZoom();
+        const minZoom = this._stageConfig.getFitZoom();
         const zoom = this.getZoom();
 
         if (zoom - 0.05 >= minZoom) {

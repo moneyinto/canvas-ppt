@@ -20,6 +20,7 @@ import NavMenu from "./layout/NavMenu/index.vue";
 import Tools from "./layout/Tools/index.vue";
 import Footer from "./layout/Footer.vue";
 import Editor from "./plugins/editor";
+import { slides } from "./mock";
 
 const pptRef = ref();
 const zoom = ref(1);
@@ -29,7 +30,7 @@ provide("instance", instance);
 
 nextTick(() => {
     if (pptRef.value) {
-        instance.value = new Editor(pptRef.value);
+        instance.value = new Editor(pptRef.value, slides);
         zoom.value = instance.value.command.getZoom();
 
         instance.value.listener.onZoomChange = (newZoom) => {

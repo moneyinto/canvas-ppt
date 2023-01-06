@@ -56,7 +56,7 @@
                                             stroke-miterlimit="8"
                                             fill="transparent"
                                             stroke="#999"
-                                            stroke-width="1"
+                                            stroke-width="1px"
                                             :d="shape.path"
                                         ></path>
                                     </g>
