@@ -1,10 +1,11 @@
 import Listener from "../listener";
 import StageConfig from "./config";
+import { throttle } from "lodash";
 
 export default class Stage {
+    public canvas: HTMLCanvasElement;
     public ctx: CanvasRenderingContext2D;
     public stageConfig: StageConfig;
-
     public container: HTMLDivElement;
     public listener: Listener;
     constructor(container: HTMLDivElement, listener: Listener, stageConfig: StageConfig) {
@@ -12,7 +13,25 @@ export default class Stage {
         this.listener = listener;
         this.stageConfig = stageConfig;
 
-        this.ctx = this._createStage();
+        const { canvas, ctx } = this._createStage();
+
+        this.ctx = ctx;
+        this.canvas = canvas;
+        window.addEventListener("resize", throttle(this._resetStage.bind(this), 50));
+    }
+
+    private _resetStage() {
+        const width = this.stageConfig.getWidth();
+        const height = this.stageConfig.getHeight();
+        this.canvas.style.width = `${width}px`;
+        this.canvas.style.height = `${height}px`;
+
+        const dpr = window.devicePixelRatio;
+        this.canvas.width = width * dpr;
+        this.canvas.height = height * dpr;
+        this.ctx.scale(dpr, dpr);
+
+        this.stageConfig.resetBaseZoom();
     }
 
     private _createStage() {
@@ -31,6 +50,6 @@ export default class Stage {
         const ctx = canvas.getContext("2d")!;
         ctx.scale(dpr, dpr);
 
-        return ctx;
+        return { ctx, canvas };
     }
 }
