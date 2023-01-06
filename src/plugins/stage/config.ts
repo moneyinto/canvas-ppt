@@ -5,6 +5,7 @@ export default class StageConfig {
     public scrollX: number;
     public scrollY: number;
     public zoom: number;
+    public canMove: boolean;
 
     public resetDraw: (() => void) | null;
 
@@ -17,6 +18,7 @@ export default class StageConfig {
         this.scrollX = 0;
         this.scrollY = 0;
         this.zoom = this.getZoom();
+        this.canMove = false;
 
         this.resetDraw = null;
     }
@@ -83,5 +85,9 @@ export default class StageConfig {
         const y = (height - stageHeight) / 2 - this.scrollY;
 
         return { x, y, stageWidth, stageHeight };
+    }
+
+    public setCanMove(canMove: boolean) {
+        this.canMove = canMove;
     }
 }

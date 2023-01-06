@@ -6,7 +6,7 @@
         </div>
         <div class="ppt-body">
             <div class="ppt-thumbnail"></div>
-            <div class="ppt-content" ref="pptRef"></div>
+            <div class="ppt-content" :class="{ move }" ref="pptRef"></div>
         </div>
         <div class="ppt-footer">
             <Footer :zoom="zoom" :instance="instance" />
@@ -23,14 +23,20 @@ import Editor from "./plugins/editor";
 
 const pptRef = ref();
 const zoom = ref(1);
+const move = ref(false);
 const instance = ref<Editor>();
 
 nextTick(() => {
     if (pptRef.value) {
         instance.value = new Editor(pptRef.value);
         zoom.value = instance.value.command.getZoom();
+
         instance.value.listener.onZoomChange = (newZoom) => {
             zoom.value = newZoom;
+        };
+
+        instance.value.listener.onCanMoveChange = (canMove) => {
+            move.value = canMove;
         };
     }
 });
@@ -67,6 +73,9 @@ nextTick(() => {
         flex: 1;
         min-width: 0;
         position: relative;
+        &.move {
+            cursor: grabbing;
+        }
     }
 }
 
