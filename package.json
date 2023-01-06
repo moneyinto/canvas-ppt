@@ -18,7 +18,8 @@
     },
     "homepage": "https://github.com/moneyinto/canvas-ppt#readme",
     "devDependencies": {
-        "@types/node": "^18.11.9",
+        "@types/lodash": "^4.14.191",
+        "@types/node": "^18.11.18",
         "@vitejs/plugin-vue": "^3.2.0",
         "@vue/eslint-config-standard": "^8.0.1",
         "@vue/eslint-config-typescript": "^11.0.2",
@@ -34,6 +35,7 @@
     "dependencies": {
         "@icon-park/vue-next": "^1.4.2",
         "ant-design-vue": "^3.2.15",
+        "lodash": "^4.17.21",
         "vue": "^3.2.45"
     }
 }

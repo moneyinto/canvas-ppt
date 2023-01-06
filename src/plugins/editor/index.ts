@@ -28,7 +28,7 @@ export default class Editor {
         this._viewStage = new ViewStage(container, this.listener, this._stageConfig);
 
         // 创建操作画板
-        const controlStage = new ControlStage(container, this.listener, this._stageConfig);
+        const controlStage = new ControlStage(container, this.listener, this._stageConfig, this.command);
 
         // 快捷键
         const shortcut = new Shortcut(container, this.command);
