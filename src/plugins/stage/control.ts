@@ -14,10 +14,12 @@ export default class ControlStage extends Stage {
     }
 
     private _mousewheel(evt: WheelEvent) {
-        if (evt.deltaY > 0) {
-            this._command.executeDecrease();
-        } else {
-            this._command.executeIncrease();
+        if (evt.ctrlKey || evt.metaKey) {
+            if (evt.deltaY > 0) {
+                this._command.executeDecrease();
+            } else {
+                this._command.executeIncrease();
+            }
         }
     }
 }
