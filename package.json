@@ -33,7 +33,6 @@
     },
     "type": "module",
     "dependencies": {
-        "@icon-park/vue-next": "^1.4.2",
         "ant-design-vue": "^3.2.15",
         "lodash": "^4.17.21",
         "vue": "^3.2.45"

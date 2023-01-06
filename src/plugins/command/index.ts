@@ -10,6 +10,12 @@ export default class Command {
         return this._stageConfig.zoom;
     }
 
+    // 适配
+    public excuteFitZoom() {
+        const minZoom = this._stageConfig.getZoom();
+        this._stageConfig.setZoom(minZoom);
+    }
+
     // 缩小
     public executeDecrease() {
         const minZoom = this._stageConfig.getZoom();

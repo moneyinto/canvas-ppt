@@ -1,34 +1,24 @@
 <template>
     <div class="footer-container">
         <div class="ppt-zoom-control">
-            <a-popover>
-                <a-button class="ppt-zoom-btn" type="text" @click="decrease()"><Minus :strokeWidth="2" /></a-button>
-                <template #content>
-                    <div class="control-tooltip">
-                        <div>缩小</div>
-                        <div class="shortcut-view">{{ SHORTCUT.DECREASE }}</div>
-                    </div>
-                </template>
-            </a-popover>
+            <a-tooltip title="适合页面">
+                <a-button class="ppt-zoom-btn" type="text" @click="fitZoom()"><PPTIcon icon="fit" :size="20" /></a-button>
+            </a-tooltip>
+            <a-tooltip :title="'缩小  ' + SHORTCUT.DECREASE">
+                <a-button class="ppt-zoom-btn" type="text" @click="decrease()"><PPTIcon icon="minus" :size="20" /></a-button>
+            </a-tooltip>
             <div class="ppt-zoom-view">
                 {{ zoom }}%
             </div>
-            <a-popover>
-                <a-button class="ppt-zoom-btn" type="text" @click="increase()"><Plus :strokeWidth="2" /></a-button>
-                <template #content>
-                    <div class="control-tooltip">
-                        <div>放大</div>
-                        <div class="shortcut-view">{{ SHORTCUT.INCREASE }}</div>
-                    </div>
-                </template>
-            </a-popover>
+            <a-tooltip placement="topRight" :title="'放大  ' + SHORTCUT.INCREASE">
+                <a-button class="ppt-zoom-btn" type="text" @click="increase()"><PPTIcon icon="plus" :size="20" /></a-button>
+            </a-tooltip>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
 import { computed } from "vue";
-import { Plus, Minus } from "@icon-park/vue-next";
 import { SHORTCUT } from "@/plugins/config/shortcut";
 import Editor from "@/plugins/editor";
 
@@ -43,6 +33,10 @@ const props = defineProps({
 });
 
 const zoom = computed(() => Math.floor(props.zoom * 100));
+
+const fitZoom = () => {
+    props.instance && props.instance.command.excuteFitZoom();
+};
 
 const decrease = () => {
     props.instance && props.instance.command.executeDecrease();
@@ -66,20 +60,13 @@ const increase = () => {
 }
 
 .ppt-zoom-btn {
-    font-size: 18px;
-    color: #000;
-}
-
-.control-tooltip {
-    text-align: center;
-}
-
-.shortcut-view {
-    font-size: 12px;
-    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    padding: 4px 5px;
 }
 
 .ppt-zoom-view {
     font-size: 13px;
+    margin: 0 8px;
 }
 </style>

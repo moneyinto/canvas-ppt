@@ -25,7 +25,10 @@ const icons: { [key: string]: string } = {
     cut: new URL("@/assets/icons/cut.svg", import.meta.url).href,
     copy: new URL("@/assets/icons/copy.svg", import.meta.url).href,
     paste: new URL("@/assets/icons/paste.svg", import.meta.url).href,
-    all: new URL("@/assets/icons/all.svg", import.meta.url).href
+    all: new URL("@/assets/icons/all.svg", import.meta.url).href,
+    plus: new URL("@/assets/icons/plus.svg", import.meta.url).href,
+    minus: new URL("@/assets/icons/minus.svg", import.meta.url).href,
+    fit: new URL("@/assets/icons/fit.svg", import.meta.url).href
 };
 
 const iconUrl = computed(() => icons[icon.value]);
@@ -34,5 +37,6 @@ const iconUrl = computed(() => icons[icon.value]);
 <style scoped>
 .ppt-icon {
     /* display: block; */
+    vertical-align: top;
 }
 </style>
