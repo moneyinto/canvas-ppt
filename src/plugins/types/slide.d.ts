@@ -101,9 +101,7 @@ export interface IShapeText {
  *
  * type: 元素类型（shape）
  *
- * viewBox: SVG的viewBox属性，默认为正方形，例如 1000 表示 '0 0 1000 1000'
- *
- * path: 形状路径，SVG path 的 d 属性
+ * shape: 形状类型
  *
  * fixedRatio: 固定形状宽高比例
  *
@@ -127,8 +125,7 @@ export interface IShapeText {
  */
 export interface IPPTShapeElement extends IPPTBaseElement {
     type: "shape";
-    viewBox: number;
-    path: string;
+    shape: "rect";
     fixedRatio: boolean;
     fill: string;
     rotate: number;

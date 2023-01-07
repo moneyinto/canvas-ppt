@@ -7,16 +7,20 @@ export const slides: ISlide[] = [
             {
                 id: "elementid",
                 type: "shape",
-                viewBox: 200,
-                path: "M 0 0 L 200 0 L 200 200 L 0 200 Z",
+                shape: "rect",
                 fixedRatio: false,
                 fill: "#f60000",
-                rotate: 0,
+                rotate: 20,
                 name: "矩形",
-                left: 0,
-                top: 0,
+                left: 10,
+                top: 20,
                 width: 200,
-                height: 100
+                height: 100,
+                outline: {
+                    style: "dashed",
+                    width: 2,
+                    color: "blue"
+                }
             }
         ]
     }

@@ -19,6 +19,10 @@ export default class ViewStage extends Stage {
         this.ctx.fillStyle = "white";
         this.ctx.fillRect(x, y, stageWidth, stageHeight);
 
+        // 移除阴影设置
+        this.ctx.shadowColor = "";
+        this.ctx.shadowBlur = 0;
+
         const currentSlide = this.stageConfig.getCurrentSlide();
         const elements = currentSlide?.elements || [];
         this.drawElements(elements);
@@ -34,13 +38,7 @@ export default class ViewStage extends Stage {
 
     public drawElements(elements: IPPTElement[]) {
         elements.forEach(element => {
-            console.log(element);
-            switch (element.type) {
-            case "shape": {
-                this.drawShape(element);
-                break;
-            }
-            }
+            this.drawElement(element);
         });
     }
 }

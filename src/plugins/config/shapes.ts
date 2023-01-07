@@ -5,8 +5,9 @@ export const SHAPE_LIST: IShapePoolItem[] = [
         type: "矩形",
         children: [
             {
-                viewBox: 200,
-                path: "M 0 0 L 200 0 L 200 150 L 0 150 Z"
+                viewBox: 18,
+                path: "M.5 2.5h15v11H.5z",
+                type: "rect"
             }
         ]
     }

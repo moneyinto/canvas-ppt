@@ -1,7 +1,7 @@
 import Listener from "../listener";
 import StageConfig from "./config";
 import { throttle } from "lodash";
-import { IPPTShapeElement } from "../types/slide";
+import { IPPTElement, IPPTShapeElement } from "../types/slide";
 
 export default class Stage {
     public canvas: HTMLCanvasElement;
@@ -54,26 +54,57 @@ export default class Stage {
         return { ctx, canvas };
     }
 
-    public drawShape(element: IPPTShapeElement) {
-        const scaleX = element.width / element.viewBox;
-        const scaleY = element.height / element.viewBox;
+    public drawElement(element: IPPTElement) {
         const zoom = this.stageConfig.zoom;
-        const { x, y } = this.stageConfig.getStageArea();
+        const { x, y } = this.stageConfig.getStageOrigin();
 
         this.ctx.save();
 
-        this.ctx.translate(x, y);
-        this.ctx.scale(scaleX * zoom, scaleY * zoom);
+        // 缩放画布
+        this.ctx.scale(zoom, zoom);
 
-        this.ctx.fillStyle = element.fill;
-        const path = new Path2D(element.path);
-        this.ctx.fill(path);
+        const ox = x + element.left + element.width / 2;
+        const oy = y + element.top + element.height / 2;
 
-        if (element.outline) {
-            // this.ctx.setLineDash([8, 8]);
-            this.ctx.stroke(path);
+        // 平移坐标原点
+        this.ctx.translate(ox, oy);
+        // 旋转画布
+        this.ctx.rotate(element.rotate / 360 * Math.PI);
+
+        switch (element.type) {
+        case "shape": {
+            this.drawShape(element);
+            break;
+        }
         }
 
         this.ctx.restore();
+    }
+
+    public drawShape(element: IPPTShapeElement) {
+        switch (element.shape) {
+        case "rect": {
+            this.drawRectShape(element);
+            break;
+        }
+        }
+    }
+
+    public drawRectShape(element: IPPTShapeElement) {
+        const offsetX = -element.width / 2;
+        const offsetY = -element.height / 2;
+
+        this.ctx.fillStyle = element.fill;
+        this.ctx.fillRect(offsetX, offsetY, element.width, element.height);
+
+        if (element.outline) {
+            const lineWidth = element.outline.width || 2;
+            this.ctx.lineWidth = lineWidth;
+            this.ctx.strokeStyle = element.outline.color || "#000";
+            if (element.outline.style === "dashed") {
+                this.ctx.setLineDash([8 * lineWidth / 2, 4 * lineWidth / 2]);
+            }
+            this.ctx.strokeRect(offsetX, offsetY, element.width, element.height);
+        }
     }
 }

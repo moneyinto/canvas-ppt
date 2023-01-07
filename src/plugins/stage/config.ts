@@ -94,6 +94,11 @@ export default class StageConfig {
         return { x, y, stageWidth, stageHeight };
     }
 
+    public getStageOrigin() {
+        const { x, y } = this.getStageArea();
+        return { x: x / this.zoom, y: y / this.zoom };
+    }
+
     public setCanMove(canMove: boolean) {
         this.canMove = canMove;
         if (canMove) {
