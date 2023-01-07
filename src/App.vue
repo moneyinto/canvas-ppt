@@ -31,11 +31,6 @@ provide("instance", instance);
 nextTick(() => {
     if (pptRef.value) {
         instance.value = new Editor(pptRef.value, slides);
-        zoom.value = instance.value.command.getZoom();
-
-        instance.value.listener.onZoomChange = (newZoom) => {
-            zoom.value = newZoom;
-        };
     }
 });
 </script>

@@ -5,11 +5,13 @@ import StageConfig from "../stage/config";
 import ControlStage from "../stage/control";
 import ViewStage from "../stage/view";
 import { ISlide } from "../types/slide";
+import { History } from "./history";
 
 export default class Editor {
     public listener: Listener;
     public command: Command;
     public stageConfig: StageConfig;
+    public history: History;
 
     private _viewStage: ViewStage;
     constructor(container: HTMLDivElement, slides: ISlide[]) {
@@ -24,6 +26,10 @@ export default class Editor {
         this.stageConfig.setSildes(slides);
         if (slides.length > 0) this.stageConfig.setSlideId(slides[0].id);
 
+        // 历史数据
+        this.history = new History(this.stageConfig, this.listener);
+        this.history.add(JSON.stringify(slides));
+
         // 命令
         this.command = new Command(this.stageConfig);
 
@@ -31,7 +37,7 @@ export default class Editor {
         this._viewStage = new ViewStage(container, this.listener, this.stageConfig);
 
         // 创建操作画板
-        const controlStage = new ControlStage(container, this.listener, this.stageConfig, this.command);
+        const controlStage = new ControlStage(container, this.listener, this.stageConfig, this.command, this.history);
 
         // 快捷键
         const shortcut = new Shortcut(container, this.listener, this.stageConfig, this.command);

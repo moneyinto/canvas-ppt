@@ -5,14 +5,18 @@ import { throttle } from "lodash";
 import Command from "../command";
 import { createShapeElement } from "./create";
 import { IElementPosition, IPPTElement } from "../types/element";
+import { History } from "../editor/history";
 
 export default class ControlStage extends Stage {
     private _command: Command;
     private _canMove: boolean;
     private _canCreate: boolean;
     private _startPoint: [number, number];
-    constructor(container: HTMLDivElement, listener: Listener, stageConfig: StageConfig, command: Command) {
+    private _history: History;
+    constructor(container: HTMLDivElement, listener: Listener, stageConfig: StageConfig, command: Command, history: History) {
         super(container, listener, stageConfig);
+
+        this._history = history;
 
         this._canMove = false;
         this._canCreate = false;
@@ -44,7 +48,11 @@ export default class ControlStage extends Stage {
     private _mouseup(evt: MouseEvent) {
         if (this.stageConfig.insertElement && this._canCreate) {
             const newElement = this._createElement(evt);
-            if (newElement) this.stageConfig.addElement(newElement);
+            if (newElement) {
+                this.stageConfig.addElement(newElement);
+
+                this._history.add(JSON.stringify(this.stageConfig.slides));
+            }
             this.stageConfig.setInsertElement(null);
         }
         this._canMove = false;

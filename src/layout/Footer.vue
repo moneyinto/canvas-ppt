@@ -18,20 +18,23 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, Ref } from "vue";
+import { ref, inject, Ref, watch } from "vue";
 import { SHORTCUT } from "@/plugins/config/shortcut";
 import Editor from "@/plugins/editor";
 
-const props = defineProps({
-    zoom: {
-        type: Number,
-        default: 1
-    }
-});
-
 const instance = inject<Ref<Editor>>("instance");
 
-const zoom = computed(() => Math.floor(props.zoom * 100));
+const zoom = ref(100);
+
+watch(instance!, () => {
+    if (instance?.value) {
+        zoom.value = Math.floor(instance.value.command.getZoom() * 100);
+
+        instance.value.listener.onZoomChange = (newZoom) => {
+            zoom.value = Math.floor(newZoom * 100);
+        };
+    }
+});
 
 const fitZoom = () => {
     instance?.value.command.excuteFitZoom();
