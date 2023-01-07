@@ -1,6 +1,6 @@
 import Stage from ".";
 import Listener from "../listener";
-import { IPPTElement } from "../types/slide";
+import { IPPTElement } from "../types/element";
 import StageConfig from "./config";
 
 export default class ViewStage extends Stage {

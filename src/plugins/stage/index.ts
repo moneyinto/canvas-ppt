@@ -1,7 +1,7 @@
 import Listener from "../listener";
 import StageConfig from "./config";
 import { throttle } from "lodash";
-import { IPPTElement, IPPTShapeElement } from "../types/slide";
+import { IPPTElement, IPPTShapeElement } from "../types/element";
 
 export default class Stage {
     public canvas: HTMLCanvasElement;
@@ -52,6 +52,12 @@ export default class Stage {
         ctx.scale(dpr, dpr);
 
         return { ctx, canvas };
+    }
+
+    public clear() {
+        const canvasWidth = this.stageConfig.getWidth();
+        const canvasHeight = this.stageConfig.getHeight();
+        this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     }
 
     public drawElement(element: IPPTElement) {

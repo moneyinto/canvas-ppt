@@ -1,6 +1,7 @@
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import Listener from "../listener";
-import { ICreatingElement, ISlide } from "../types/slide";
+import { ICreatingElement, IPPTElement } from "../types/element";
+import { ISlide } from "../types/slide";
 
 export default class StageConfig {
     public scrollX: number;
@@ -94,6 +95,11 @@ export default class StageConfig {
         return { x, y, stageWidth, stageHeight };
     }
 
+    // 获取画布偏移量
+    public getCanvasOffset() {
+        return { offsetX: this._container.offsetLeft, offsetY: this._container.offsetTop };
+    }
+
     public getStageOrigin() {
         const { x, y } = this.getStageArea();
         return { x: x / this.zoom, y: y / this.zoom };
@@ -115,6 +121,13 @@ export default class StageConfig {
             this._container.style.cursor = "default";
         }
         this.insertElement = element;
+    }
+
+    public addElement(element: IPPTElement) {
+        const slide = this.getCurrentSlide();
+        slide?.elements.push(element);
+
+        this.resetDraw && this.resetDraw();
     }
 
     public setSildes(slides: ISlide[]) {

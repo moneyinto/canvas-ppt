@@ -1,7 +1,9 @@
+export type IShape = "rect";
+
 export interface IShapeItem {
     viewBox: number;
     path: string;
-    type: "rect";
+    type: IShape;
 }
 
 export interface IShapePoolItem {
