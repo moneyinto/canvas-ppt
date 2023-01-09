@@ -47,7 +47,7 @@ export class History {
     private _setSlides() {
         const slides: ISlide[] = JSON.parse(this.storage[this.cursor]);
         this._stageConfig.setSildes(slides);
-        this._stageConfig.resetDraw && this._stageConfig.resetDraw();
+        this._stageConfig.resetDrawView();
         this._listener.onEditChange && this._listener.onEditChange(this.cursor, this.length);
     }
 }

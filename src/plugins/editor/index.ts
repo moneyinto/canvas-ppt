@@ -14,6 +14,7 @@ export default class Editor {
     public history: History;
 
     private _viewStage: ViewStage;
+    private _controlStage: ControlStage;
     constructor(container: HTMLDivElement, slides: ISlide[]) {
         // 监听
         this.listener = new Listener();
@@ -37,7 +38,7 @@ export default class Editor {
         this._viewStage = new ViewStage(container, this.listener, this.stageConfig);
 
         // 创建操作画板
-        const controlStage = new ControlStage(container, this.listener, this.stageConfig, this.command, this.history);
+        this._controlStage = new ControlStage(container, this.listener, this.stageConfig, this.command, this.history);
 
         // 快捷键
         const shortcut = new Shortcut(container, this.listener, this.stageConfig, this.command);
@@ -45,5 +46,6 @@ export default class Editor {
 
     private _resetDraw() {
         this._viewStage.resetDrawPage();
+        this._controlStage.resetDrawOprate();
     }
 }
