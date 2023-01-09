@@ -1,6 +1,6 @@
 import Listener from "../listener";
 import StageConfig from "./config";
-import { throttle } from "lodash";
+import { throttleRAF } from "@/utils";
 import { IPPTElement, IPPTShapeElement } from "../types/element";
 
 export default class Stage {
@@ -18,7 +18,7 @@ export default class Stage {
 
         this.ctx = ctx;
         this.canvas = canvas;
-        window.addEventListener("resize", throttle(this._resetStage.bind(this), 50));
+        window.addEventListener("resize", throttleRAF(this._resetStage.bind(this)));
     }
 
     private _resetStage() {

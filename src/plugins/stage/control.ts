@@ -1,7 +1,7 @@
 import Stage from ".";
 import Listener from "../listener";
 import StageConfig from "./config";
-import { throttle } from "lodash";
+import { throttleRAF } from "@/utils";
 import Command from "../command";
 import { createShapeElement } from "./create";
 import { IPPTElement } from "../types/element";
@@ -33,7 +33,7 @@ export default class ControlStage extends Stage {
         this._command = command;
         this.container.addEventListener(
             "mousewheel",
-            throttle(this._mousewheel.bind(this) as (evt: Event) => void, 50),
+            throttleRAF(this._mousewheel.bind(this) as (evt: Event) => void),
             false
         );
         this.container.addEventListener(
@@ -43,7 +43,7 @@ export default class ControlStage extends Stage {
         );
         this.container.addEventListener(
             "mousemove",
-            throttle(this._mousemove.bind(this), 50),
+            throttleRAF(this._mousemove.bind(this)),
             false
         );
         this.container.addEventListener(

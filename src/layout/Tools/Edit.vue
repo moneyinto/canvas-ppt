@@ -20,8 +20,8 @@
 
 <script lang="ts" setup>
 import Editor from "@/plugins/editor";
-import { throttle } from "lodash";
 import { computed, inject, ref, Ref, watch } from "vue";
+import { throttleRAF } from "@/utils";
 
 const instance = inject<Ref<Editor>>("instance");
 
@@ -39,11 +39,11 @@ watch(instance!, () => {
     }
 });
 
-const undo = throttle(() => {
+const undo = throttleRAF(() => {
     if (canUndo.value) instance?.value.history.undo();
-}, 100);
+});
 
-const redo = throttle(() => {
+const redo = throttleRAF(() => {
     if (canRedo.value) instance?.value.history.redo();
-}, 100);
+});
 </script>
