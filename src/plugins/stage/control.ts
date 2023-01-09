@@ -6,8 +6,8 @@ import Command from "../command";
 import { createShapeElement } from "./create";
 import { IPPTElement } from "../types/element";
 import { History } from "../editor/history";
-import { THEME_COLOR } from "../config/stage";
-import { IRectParameter, IRects } from "../types";
+import { ELEMENT_RESIZE, THEME_COLOR } from "../config/stage";
+import { IElementOptions, IRectParameter, IRects } from "../types";
 
 export default class ControlStage extends Stage {
     private _command: Command;
@@ -101,8 +101,10 @@ export default class ControlStage extends Stage {
             if (newElement) this.drawElement(newElement);
         } else if (this._canMoveCanvas && this.stageConfig.canMove) {
             // 移动画布
-            const scrollX = -(evt.pageX - this._startPoint[0]) + this.stageConfig.scrollX;
-            const scrollY = -(evt.pageY - this._startPoint[1]) + this.stageConfig.scrollY;
+            const scrollX =
+                -(evt.pageX - this._startPoint[0]) + this.stageConfig.scrollX;
+            const scrollY =
+                -(evt.pageY - this._startPoint[1]) + this.stageConfig.scrollY;
             this._startPoint = [evt.pageX, evt.pageY];
             this.stageConfig.setScroll(scrollX, scrollY);
         } else if (this._canMoveElement && this.stageConfig.operateElement) {
@@ -119,16 +121,57 @@ export default class ControlStage extends Stage {
             this.stageConfig.resetCheckDrawOprate();
         } else if (
             !this.stageConfig.insertElement &&
-            !this.stageConfig.canMove
+            !this.stageConfig.canMove &&
+            !this._canMoveElement
         ) {
             // 悬浮到元素
             const { left, top } = this._getMousePosition(evt);
             const hoverElement = this.stageConfig.getMouseInElement(left, top);
 
             if (hoverElement) {
-                if (this.container.style.cursor !== "move") this.container.style.cursor = "move";
+                if (this.container.style.cursor !== "move") {
+                    this.container.style.cursor = "move";
+                }
             } else {
-                if (this.container.style.cursor !== "default") this.container.style.cursor = "default";
+                if (this.container.style.cursor !== "default") {
+                    this.container.style.cursor = "default";
+                }
+
+                if (this.stageConfig.operateElement) {
+                    // 鼠标悬浮到操作区域展示形式
+                    const element = this.stageConfig.operateElement;
+                    const zoom = this.stageConfig.zoom;
+                    const margin = 1;
+                    const offsetX = -element.width / 2 - margin;
+                    const offsetY = -element.height / 2 - margin;
+
+                    const dashedLinePadding = 0 + margin / zoom;
+                    const dashWidth = 8 / zoom;
+
+                    const rects: IRects = this._getElementResizePoints(
+                        offsetX,
+                        offsetY,
+                        element.width + margin * 2,
+                        element.height + margin * 2,
+                        dashedLinePadding,
+                        dashWidth
+                    );
+
+                    const cx = element.left + element.width / 2;
+                    const cy = element.top + element.height / 2;
+
+                    this.stageConfig.setOperateType("");
+                    for (const key in rects) {
+                        const rect: IRectParameter = [rects[key][0] + cx, rects[key][1] + cy, rects[key][2], rects[key][3]];
+                        if (this.stageConfig.checkPointInRect(left, top, rect, cx, cy, element.rotate / 360 * Math.PI)) {
+                            this.stageConfig.setOperateType(key);
+                            break;
+                        }
+                    }
+
+                    // 考虑结合旋转角度来改变优化cursor ？？？？？？？？？？？？？？？？？？？？
+                    this.container.style.cursor = (ELEMENT_RESIZE as IElementOptions)[this.stageConfig.opreateType] || "default";
+                }
             }
         }
     }
@@ -148,7 +191,7 @@ export default class ControlStage extends Stage {
             // 更改silde中对应的元素数据
             const slide = this.stageConfig.getCurrentSlide();
             if (slide) {
-                const i = slide.elements.findIndex(element => element.id === this.stageConfig.operateElement!.id);
+                const i = slide.elements.findIndex((element) => element.id === this.stageConfig.operateElement?.id);
                 slide.elements[i] = deepClone(this.stageConfig.operateElement);
                 this._history.add();
             }
@@ -226,7 +269,7 @@ export default class ControlStage extends Stage {
     }
 
     /**
-     *
+     * 考虑要不要做个map的换成 ？？？？？？？？？？？？？？？？？？？？？
      * @param param0 获取选中区域的九点区域坐标
      * @returns
      */
@@ -346,7 +389,14 @@ export default class ControlStage extends Stage {
         const dashedLinePadding = 0 + margin / zoom;
         const dashWidth = 8 / zoom;
 
-        const rects: IRects = this._getElementResizePoints(offsetX, offsetY, element.width + margin * 2, element.height + margin * 2, dashedLinePadding, dashWidth);
+        const rects: IRects = this._getElementResizePoints(
+            offsetX,
+            offsetY,
+            element.width + margin * 2,
+            element.height + margin * 2,
+            dashedLinePadding,
+            dashWidth
+        );
         this.ctx.fillStyle = "#ffffff";
         for (const key in rects) {
             this.ctx.fillRect(...rects[key]);

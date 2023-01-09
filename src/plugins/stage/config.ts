@@ -1,10 +1,8 @@
 import { deepClone } from "@/utils";
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import Listener from "../listener";
-import {
-    ICreatingElement,
-    IPPTElement
-} from "../types/element";
+import { IRectParameter } from "../types";
+import { ICreatingElement, IPPTElement } from "../types/element";
 import { ISlide } from "../types/slide";
 
 export default class StageConfig {
@@ -14,6 +12,7 @@ export default class StageConfig {
     public canMove: boolean;
     public insertElement: ICreatingElement | null; // 需要绘制插入的元素
     public operateElement: IPPTElement | null; // 选中操作元素
+    public opreateType: string; // 元素操作形式 拉伸方向 旋转
 
     public slides: ISlide[] = [];
     public slideId = "";
@@ -35,6 +34,7 @@ export default class StageConfig {
         this.canMove = false;
         this.insertElement = null;
         this.operateElement = null;
+        this.opreateType = "";
 
         this.resetDrawView = null;
         this.resetDrawOprate = null;
@@ -149,6 +149,10 @@ export default class StageConfig {
         this.operateElement = deepClone(element);
     }
 
+    public setOperateType(opreateType: string) {
+        this.opreateType = opreateType;
+    }
+
     public addElement(element: IPPTElement) {
         const slide = this.getCurrentSlide();
         slide?.elements.push(element);
@@ -199,20 +203,37 @@ export default class StageConfig {
         const currentSlide = this.getCurrentSlide();
         const elements = this.getSortElements(currentSlide?.elements || [], -1);
         return elements.find((element) => {
-            let translatePoint = [left, top];
-            if (element.rotate !== 0) {
-                // 存在旋转角度需要进行转换
-                const cx = (element.left + element.width) / 2;
-                const cy = (element.top + element.height) / 2;
-                translatePoint = this.rotate(left, top, cx, cy, -element.rotate / 360 * Math.PI);
-            }
-
-            return (
-                element.top < translatePoint[1] &&
-                element.left < translatePoint[0] &&
-                element.top + element.height > translatePoint[1] &&
-                element.left + element.width > translatePoint[0]
-            );
+            const cx = (element.left + element.width) / 2;
+            const cy = (element.top + element.height) / 2;
+            const rect: IRectParameter = [element.left, element.top, element.width, element.height];
+            return this.checkPointInRect(left, top, rect, cx, cy, element.rotate / 360 * Math.PI);
         });
+    }
+
+    public checkPointInRect(
+        x: number,
+        y: number,
+        rect: IRectParameter,
+        cx: number,
+        cy: number,
+        angle: number
+    ) {
+        const translatePoint = this.rotate(
+            x,
+            y,
+            cx,
+            cy,
+            -angle
+        );
+        const minX = rect[0];
+        const maxX = rect[0] + rect[2];
+        const minY = rect[1];
+        const maxY = rect[1] + rect[3];
+        return (
+            translatePoint[0] > minX &&
+            translatePoint[0] < maxX &&
+            translatePoint[1] > minY &&
+            translatePoint[1] < maxY
+        );
     }
 }
