@@ -21,9 +21,13 @@ export default class Editor {
 
         // 画板配置
         this.stageConfig = new StageConfig(container, this.listener);
-        this.stageConfig.resetDraw = () => {
-            this._resetDraw();
+        this.stageConfig.resetDrawView = () => {
+            this._viewStage.resetDrawPage();
         };
+        this.stageConfig.resetDrawOprate = () => {
+            this._controlStage.resetDrawOprate();
+        };
+
         this.stageConfig.setSildes(slides);
         if (slides.length > 0) this.stageConfig.setSlideId(slides[0].id);
 
@@ -42,10 +46,5 @@ export default class Editor {
 
         // 快捷键
         const shortcut = new Shortcut(container, this.listener, this.stageConfig, this.command);
-    }
-
-    private _resetDraw() {
-        this._viewStage.resetDrawPage();
-        this._controlStage.resetDrawOprate();
     }
 }

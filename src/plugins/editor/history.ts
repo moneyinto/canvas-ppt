@@ -47,7 +47,15 @@ export class History {
     private _setSlides() {
         const slides: ISlide[] = JSON.parse(this.storage[this.cursor]);
         this._stageConfig.setSildes(slides);
-        this._stageConfig.resetDrawView();
+        this._stageConfig.resetCheckDrawView();
+        // oprateElement存在时，这里需要验证一下oprateElement是否还在slides中
+        if (this._stageConfig.opreateElement) {
+            const currentSlide = this._stageConfig.getCurrentSlide();
+            if (!currentSlide?.elements.find(element => element.id === this._stageConfig.opreateElement!.id)) {
+                this._stageConfig.setOpreateElement(null);
+            }
+            this._stageConfig.resetCheckDrawOprate();
+        }
         this._listener.onEditChange && this._listener.onEditChange(this.cursor, this.length);
     }
 }

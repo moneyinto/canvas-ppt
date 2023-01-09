@@ -75,7 +75,7 @@ export default class ControlStage extends Stage {
                 top
             );
             this.stageConfig.setOpreateElement(opreateElement || null);
-            this.stageConfig.resetDrawView();
+            this.stageConfig.resetCheckDrawView();
             if (opreateElement) {
                 this.resetDrawOprate();
             } else {

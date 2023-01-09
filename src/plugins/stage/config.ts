@@ -17,7 +17,8 @@ export default class StageConfig {
     public slides: ISlide[] = [];
     public slideId = "";
 
-    public resetDraw: (() => void) | null;
+    public resetDrawView: (() => void) | null;
+    public resetDrawOprate: (() => void) | null;
 
     private _container: HTMLDivElement;
     private _listener: Listener;
@@ -34,24 +35,31 @@ export default class StageConfig {
         this.insertElement = null;
         this.opreateElement = null;
 
-        this.resetDraw = null;
+        this.resetDrawView = null;
+        this.resetDrawOprate = null;
     }
 
-    public resetDrawView() {
-        this.resetDraw && this.resetDraw();
+    public resetCheckDrawView() {
+        this.resetDrawView && this.resetDrawView();
+    }
+
+    public resetCheckDrawOprate() {
+        this.resetDrawOprate && this.resetDrawOprate();
     }
 
     public setScroll(x: number, y: number) {
         this.scrollX = x;
         this.scrollY = y;
 
-        this.resetDraw && this.resetDraw();
+        this.resetCheckDrawView();
+        this.resetCheckDrawOprate();
     }
 
     public setZoom(zoom: number) {
         this.zoom = zoom;
 
-        this.resetDraw && this.resetDraw();
+        this.resetCheckDrawView();
+        this.resetCheckDrawOprate();
 
         this._listener.onZoomChange && this._listener.onZoomChange(this.zoom);
     }
@@ -87,7 +95,8 @@ export default class StageConfig {
         this.scrollX = 0;
         this.scrollY = 0;
 
-        this.resetDraw && this.resetDraw();
+        this.resetCheckDrawView();
+        this.resetCheckDrawOprate();
 
         this._listener.onZoomChange && this._listener.onZoomChange(this.zoom);
     }
@@ -143,7 +152,7 @@ export default class StageConfig {
         const slide = this.getCurrentSlide();
         slide?.elements.push(element);
 
-        this.resetDraw && this.resetDraw();
+        this.resetCheckDrawView();
     }
 
     public setSildes(slides: ISlide[]) {
