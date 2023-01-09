@@ -1,3 +1,4 @@
+import { deepClone } from "@/utils";
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import Listener from "../listener";
 import {
@@ -12,7 +13,7 @@ export default class StageConfig {
     public zoom: number;
     public canMove: boolean;
     public insertElement: ICreatingElement | null; // 需要绘制插入的元素
-    public opreateElement: IPPTElement | null; // 选中操作元素
+    public operateElement: IPPTElement | null; // 选中操作元素
 
     public slides: ISlide[] = [];
     public slideId = "";
@@ -33,7 +34,7 @@ export default class StageConfig {
         this.zoom = this.getFitZoom();
         this.canMove = false;
         this.insertElement = null;
-        this.opreateElement = null;
+        this.operateElement = null;
 
         this.resetDrawView = null;
         this.resetDrawOprate = null;
@@ -144,8 +145,8 @@ export default class StageConfig {
         this.insertElement = element;
     }
 
-    public setOpreateElement(element: IPPTElement | null) {
-        this.opreateElement = element;
+    public setOperateElement(element: IPPTElement | null) {
+        this.operateElement = deepClone(element);
     }
 
     public addElement(element: IPPTElement) {

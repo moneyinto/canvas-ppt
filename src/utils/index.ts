@@ -40,3 +40,7 @@ export const throttleRAF = <T extends unknown[]>(fn: (...args: T) => void) => {
     };
     return ret;
 };
+
+export const deepClone = (obj: any) => {
+    return JSON.parse(JSON.stringify(obj));
+};

@@ -12,7 +12,8 @@ export class History {
         this._listener = listener;
     }
 
-    public add(data: string) {
+    public add() {
+        const data = JSON.stringify(this._stageConfig.slides);
         if (this.cursor > -1 && this.cursor < this.length - 1) {
             // 移除指针后面的数据
             this.storage = this.storage.slice(0, this.cursor + 1);
@@ -49,11 +50,10 @@ export class History {
         this._stageConfig.setSildes(slides);
         this._stageConfig.resetCheckDrawView();
         // oprateElement存在时，这里需要验证一下oprateElement是否还在slides中
-        if (this._stageConfig.opreateElement) {
+        if (this._stageConfig.operateElement) {
             const currentSlide = this._stageConfig.getCurrentSlide();
-            if (!currentSlide?.elements.find(element => element.id === this._stageConfig.opreateElement!.id)) {
-                this._stageConfig.setOpreateElement(null);
-            }
+            const operateElement = currentSlide?.elements.find(element => element.id === this._stageConfig.operateElement!.id);
+            this._stageConfig.setOperateElement(operateElement || null);
             this._stageConfig.resetCheckDrawOprate();
         }
         this._listener.onEditChange && this._listener.onEditChange(this.cursor, this.length);

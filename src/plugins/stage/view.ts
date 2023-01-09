@@ -38,7 +38,7 @@ export default class ViewStage extends Stage {
 
     public drawElements(elements: IPPTElement[]) {
         elements.forEach(element => {
-            if (!this.stageConfig.opreateElement || this.stageConfig.opreateElement.id !== element.id) {
+            if (!this.stageConfig.operateElement || this.stageConfig.operateElement.id !== element.id) {
                 this.drawElement(element);
             }
         });

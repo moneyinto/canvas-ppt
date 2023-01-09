@@ -1,7 +1,7 @@
 import Stage from ".";
 import Listener from "../listener";
 import StageConfig from "./config";
-import { throttleRAF } from "@/utils";
+import { throttleRAF, deepClone } from "@/utils";
 import Command from "../command";
 import { createShapeElement } from "./create";
 import { IPPTElement } from "../types/element";
@@ -11,8 +11,9 @@ import { IRectParameter, IRects } from "../types";
 
 export default class ControlStage extends Stage {
     private _command: Command;
-    private _canMove: boolean;
+    private _canMoveCanvas: boolean;
     private _canCreate: boolean;
+    private _canMoveElement: boolean;
     private _startPoint: [number, number];
     private _history: History;
     constructor(
@@ -26,11 +27,13 @@ export default class ControlStage extends Stage {
 
         this._history = history;
 
-        this._canMove = false;
+        this._canMoveCanvas = false;
         this._canCreate = false;
+        this._canMoveElement = false;
         this._startPoint = [0, 0];
 
         this._command = command;
+        // 后面考虑要不要改成window ？？？？？？？？？？？？？？？？？？？？？？
         this.container.addEventListener(
             "mousewheel",
             throttleRAF(this._mousewheel.bind(this) as (evt: Event) => void),
@@ -51,6 +54,11 @@ export default class ControlStage extends Stage {
             this._mouseup.bind(this),
             false
         );
+        this.container.addEventListener(
+            "mouseleave",
+            this._mouseup.bind(this),
+            false
+        );
     }
 
     private _mousewheel(evt: WheelEvent) {
@@ -64,21 +72,23 @@ export default class ControlStage extends Stage {
     }
 
     private _mousedown(evt: MouseEvent) {
-        this._canMove = !this.stageConfig.insertElement;
+        this._canMoveCanvas = !this.stageConfig.insertElement;
         this._canCreate = !!this.stageConfig.insertElement;
         this._startPoint = [evt.pageX, evt.pageY];
 
         if (!this.stageConfig.insertElement && !this.stageConfig.canMove) {
             const { left, top } = this._getMousePosition(evt);
-            const opreateElement = this.stageConfig.getMouseInElement(
+            const operateElement = this.stageConfig.getMouseInElement(
                 left,
                 top
             );
-            this.stageConfig.setOpreateElement(opreateElement || null);
+            this.stageConfig.setOperateElement(operateElement || null);
             this.stageConfig.resetCheckDrawView();
-            if (opreateElement) {
+            if (operateElement) {
                 this.resetDrawOprate();
+                this._canMoveElement = true;
             } else {
+                this._canMoveElement = false;
                 this.clear();
             }
         }
@@ -89,14 +99,24 @@ export default class ControlStage extends Stage {
             // 创建元素
             const newElement = this._createElement(evt);
             if (newElement) this.drawElement(newElement);
-        } else if (this._canMove && this.stageConfig.canMove) {
+        } else if (this._canMoveCanvas && this.stageConfig.canMove) {
             // 移动画布
-            const scrollX =
-                -(evt.pageX - this._startPoint[0]) + this.stageConfig.scrollX;
-            const scrollY =
-                -(evt.pageY - this._startPoint[1]) + this.stageConfig.scrollY;
+            const scrollX = -(evt.pageX - this._startPoint[0]) + this.stageConfig.scrollX;
+            const scrollY = -(evt.pageY - this._startPoint[1]) + this.stageConfig.scrollY;
             this._startPoint = [evt.pageX, evt.pageY];
             this.stageConfig.setScroll(scrollX, scrollY);
+        } else if (this._canMoveElement && this.stageConfig.operateElement) {
+            // 移动元素
+            const zoom = this.stageConfig.zoom;
+            const moveX = (evt.pageX - this._startPoint[0]) / zoom;
+            const moveY = (evt.pageY - this._startPoint[1]) / zoom;
+            this.stageConfig.setOperateElement({
+                ...this.stageConfig.operateElement,
+                left: this.stageConfig.operateElement.left + moveX,
+                top: this.stageConfig.operateElement.top + moveY
+            });
+            this._startPoint = [evt.pageX, evt.pageY];
+            this.stageConfig.resetCheckDrawOprate();
         } else if (
             !this.stageConfig.insertElement &&
             !this.stageConfig.canMove
@@ -119,11 +139,22 @@ export default class ControlStage extends Stage {
             if (newElement) {
                 this.stageConfig.addElement(newElement);
 
-                this._history.add(JSON.stringify(this.stageConfig.slides));
+                this._history.add();
             }
             this.stageConfig.setInsertElement(null);
         }
-        this._canMove = false;
+
+        if (this.stageConfig.operateElement && this._canMoveElement) {
+            // 更改silde中对应的元素数据
+            const slide = this.stageConfig.getCurrentSlide();
+            if (slide) {
+                const i = slide.elements.findIndex(element => element.id === this.stageConfig.operateElement!.id);
+                slide.elements[i] = deepClone(this.stageConfig.operateElement);
+                this._history.add();
+            }
+        }
+        this._canMoveCanvas = false;
+        this._canMoveElement = false;
         this._canCreate = false;
     }
 
@@ -327,7 +358,7 @@ export default class ControlStage extends Stage {
 
     public resetDrawOprate() {
         this.clear();
-        const element = this.stageConfig.opreateElement;
+        const element = this.stageConfig.operateElement;
         if (!element) return;
         this.drawElement(element);
         this._drawOprate(element);
