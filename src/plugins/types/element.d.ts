@@ -23,6 +23,8 @@ export interface IElementPosition {
  * width: 元素宽度
  *
  * height: 元素高度
+ *
+ * zIndex: 元素层级
  */
 interface IPPTBaseElement {
     id: string;
@@ -32,6 +34,7 @@ interface IPPTBaseElement {
     groupId?: string;
     width: number;
     height: number;
+    zIndex?: number;
 }
 
 /**

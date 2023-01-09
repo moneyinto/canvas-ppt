@@ -4,7 +4,7 @@ import StageConfig from "./config";
 import { throttle } from "lodash";
 import Command from "../command";
 import { createShapeElement } from "./create";
-import { IElementPosition, IPPTElement } from "../types/element";
+import { IPPTElement } from "../types/element";
 import { History } from "../editor/history";
 
 export default class ControlStage extends Stage {
@@ -59,18 +59,39 @@ export default class ControlStage extends Stage {
         this._canCreate = false;
     }
 
-    private _getElementPosition(evt: MouseEvent): IElementPosition {
+    // 处理获取矩形区域的左上坐标点和左下坐标点
+    private _getAreaPoint(startPoint: [number, number], endPoint: [number, number]) {
+        const minPoint = [Math.min(startPoint[0], endPoint[0]), Math.min(startPoint[1], endPoint[1])];
+        const maxPoint = [Math.max(startPoint[0], endPoint[0]), Math.max(startPoint[1], endPoint[1])];
+        return { minPoint, maxPoint };
+    }
+
+    private _getElementPosition(evt: MouseEvent) {
         const zoom = this.stageConfig.zoom;
 
         const { x, y } = this.stageConfig.getStageArea();
         const { offsetX, offsetY } = this.stageConfig.getCanvasOffset();
 
-        const left = (this._startPoint[0] - x - offsetX) / zoom;
-        const top = (this._startPoint[1] - y - offsetY) / zoom;
-        const width = (evt.pageX - this._startPoint[0]) / zoom;
-        const height = (evt.pageY - this._startPoint[1]) / zoom;
+        const { minPoint, maxPoint } = this._getAreaPoint(this._startPoint, [evt.pageX, evt.pageY]);
+
+        const left = (minPoint[0] - x - offsetX) / zoom;
+        const top = (minPoint[1] - y - offsetY) / zoom;
+        const width = (maxPoint[0] - minPoint[0]) / zoom;
+        const height = (maxPoint[1] - minPoint[1]) / zoom;
 
         return { left, top, width, height };
+    }
+
+    private _getMousePosition(evt: MouseEvent) {
+        const zoom = this.stageConfig.zoom;
+
+        const { x, y } = this.stageConfig.getStageArea();
+        const { offsetX, offsetY } = this.stageConfig.getCanvasOffset();
+
+        const left = (evt.pageX - x - offsetX) / zoom;
+        const top = (evt.pageY - y - offsetY) / zoom;
+
+        return { left, top };
     }
 
     private _createElement(evt: MouseEvent) {
@@ -92,13 +113,25 @@ export default class ControlStage extends Stage {
 
     private _mousemove(evt: MouseEvent) {
         if (this.stageConfig.insertElement && this._canCreate) {
+            // 创建元素
             const newElement = this._createElement(evt);
             if (newElement) this.drawElement(newElement);
         } else if (this._canMove && this.stageConfig.canMove) {
+            // 移动画布
             const scrollX = -(evt.pageX - this._startPoint[0]) + this.stageConfig.scrollX;
             const scrollY = -(evt.pageY - this._startPoint[1]) + this.stageConfig.scrollY;
             this._startPoint = [evt.pageX, evt.pageY];
             this.stageConfig.setScroll(scrollX, scrollY);
+        } else if (!this.stageConfig.insertElement && !this.stageConfig.canMove) {
+            // 悬浮到元素
+            const { left, top } = this._getMousePosition(evt);
+            const hoverElement = this.stageConfig.getMouseInElement(left, top);
+
+            if (hoverElement) {
+                if (this.container.style.cursor !== "move") this.container.style.cursor = "move";
+            } else {
+                if (this.container.style.cursor !== "default") this.container.style.cursor = "default";
+            }
         }
     }
 }

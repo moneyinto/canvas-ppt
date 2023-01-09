@@ -1,6 +1,10 @@
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import Listener from "../listener";
-import { ICreatingElement, IPPTElement } from "../types/element";
+import {
+    ICreatingElement,
+    IElementPosition,
+    IPPTElement
+} from "../types/element";
 import { ISlide } from "../types/slide";
 
 export default class StageConfig {
@@ -97,7 +101,10 @@ export default class StageConfig {
 
     // 获取画布偏移量
     public getCanvasOffset() {
-        return { offsetX: this._container.offsetLeft, offsetY: this._container.offsetTop };
+        return {
+            offsetX: this._container.offsetLeft,
+            offsetY: this._container.offsetTop
+        };
     }
 
     public getStageOrigin() {
@@ -139,6 +146,54 @@ export default class StageConfig {
     }
 
     public getCurrentSlide() {
-        return this.slides.find(slide => this.slideId === slide.id);
+        return this.slides.find((slide) => this.slideId === slide.id);
+    }
+
+    // 获取当前页元素排序后的元素列表 1 正序 -1 倒序
+    public getSortElements(elements: IPPTElement[], sort: 1 | -1) {
+        return elements.sort((a, b) => {
+            return ((a.zIndex || 0) - (b.zIndex || 0)) * sort;
+        });
+    }
+
+    /**
+     * 旋转坐标点
+     */
+    public rotate(
+        x1: number,
+        y1: number,
+        x2: number,
+        y2: number,
+        angle: number
+    ) {
+        // 𝑎′𝑥=(𝑎𝑥−𝑐𝑥)cos𝜃−(𝑎𝑦−𝑐𝑦)sin𝜃+𝑐𝑥
+        // 𝑎′𝑦=(𝑎𝑥−𝑐𝑥)sin𝜃+(𝑎𝑦−𝑐𝑦)cos𝜃+𝑐𝑦.
+        // https://math.stackexchange.com/questions/2204520/how-do-i-rotate-a-line-segment-in-a-specific-point-on-the-line
+        return [
+            (x1 - x2) * Math.cos(angle) - (y1 - y2) * Math.sin(angle) + x2,
+            (x1 - x2) * Math.sin(angle) + (y1 - y2) * Math.cos(angle) + y2
+        ];
+    }
+
+    // 获取鼠标位置的元素
+    public getMouseInElement(left: number, top: number) {
+        const currentSlide = this.getCurrentSlide();
+        const elements = this.getSortElements(currentSlide?.elements || [], -1);
+        return elements.find((element) => {
+            let translatePoint = [left, top];
+            if (element.rotate !== 0) {
+                // 存在旋转角度需要进行转换
+                const cx = (element.left + element.width) / 2;
+                const cy = (element.top + element.height) / 2;
+                translatePoint = this.rotate(left, top, cx, cy, -element.rotate / 360 * Math.PI);
+            }
+
+            return (
+                element.top < translatePoint[1] &&
+                element.left < translatePoint[0] &&
+                element.top + element.height > translatePoint[1] &&
+                element.left + element.width > translatePoint[0]
+            );
+        });
     }
 }
