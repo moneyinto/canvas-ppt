@@ -83,7 +83,7 @@ export default class ControlStage extends Stage {
         this._startPoint = [evt.pageX, evt.pageY];
 
         if (!this.stageConfig.insertElement && !this.stageConfig.canMove) {
-            if (this.stageConfig.opreateType && this.stageConfig.operateElement) {
+            if (this.stageConfig.opreateType && this.stageConfig.operateElement && !this._canResizeElement) {
                 // resize rotate操作
                 this._canResizeElement = true;
                 if (this.stageConfig.opreateType === "ANGLE") {
