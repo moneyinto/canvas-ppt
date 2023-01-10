@@ -203,8 +203,8 @@ export default class StageConfig {
         const currentSlide = this.getCurrentSlide();
         const elements = this.getSortElements(currentSlide?.elements || [], -1);
         return elements.find((element) => {
-            const cx = (element.left + element.width) / 2;
-            const cy = (element.top + element.height) / 2;
+            const cx = element.left + element.width / 2;
+            const cy = element.top + element.height / 2;
             const rect: IRectParameter = [element.left, element.top, element.width, element.height];
             return this.checkPointInRect(left, top, rect, cx, cy, element.rotate / 180 * Math.PI);
         });

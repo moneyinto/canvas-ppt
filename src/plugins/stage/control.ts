@@ -229,7 +229,7 @@ export default class ControlStage extends Stage {
             this.stageConfig.setInsertElement(null);
         }
 
-        if (this.stageConfig.operateElement && this._canMoveElement) {
+        if (this.stageConfig.operateElement && (this._canMoveElement || this._canResizeElement)) {
             // 更改silde中对应的元素数据
             const slide = this.stageConfig.getCurrentSlide();
             if (slide) {

@@ -14,6 +14,9 @@ export class History {
 
     public add() {
         const data = JSON.stringify(this._stageConfig.slides);
+        const storage = this.storage[this.cursor];
+        // 存储值与当前操作变化值相等，则没变化，阻断操作
+        if (data === storage) return;
         if (this.cursor > -1 && this.cursor < this.length - 1) {
             // 移除指针后面的数据
             this.storage = this.storage.slice(0, this.cursor + 1);
