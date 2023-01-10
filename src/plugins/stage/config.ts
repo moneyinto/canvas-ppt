@@ -206,7 +206,7 @@ export default class StageConfig {
             const cx = (element.left + element.width) / 2;
             const cy = (element.top + element.height) / 2;
             const rect: IRectParameter = [element.left, element.top, element.width, element.height];
-            return this.checkPointInRect(left, top, rect, cx, cy, element.rotate / 360 * Math.PI);
+            return this.checkPointInRect(left, top, rect, cx, cy, element.rotate / 180 * Math.PI);
         });
     }
 

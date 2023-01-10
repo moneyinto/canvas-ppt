@@ -1,7 +1,7 @@
 import Stage from ".";
 import Listener from "../listener";
 import StageConfig from "./config";
-import { throttleRAF, deepClone } from "@/utils";
+import { throttleRAF, deepClone, normalizeAngle } from "@/utils";
 import Command from "../command";
 import { createShapeElement } from "./create";
 import { IPPTElement } from "../types/element";
@@ -14,7 +14,10 @@ export default class ControlStage extends Stage {
     private _canMoveCanvas: boolean;
     private _canCreate: boolean;
     private _canMoveElement: boolean;
+    private _canResizeElement: boolean;
     private _startPoint: [number, number];
+    private _startAngle: number;
+    private _storeAngle: number;
     private _history: History;
     constructor(
         container: HTMLDivElement,
@@ -30,7 +33,10 @@ export default class ControlStage extends Stage {
         this._canMoveCanvas = false;
         this._canCreate = false;
         this._canMoveElement = false;
+        this._canResizeElement = false;
         this._startPoint = [0, 0];
+        this._startAngle = 0;
+        this._storeAngle = 0;
 
         this._command = command;
         // 后面考虑要不要改成window ？？？？？？？？？？？？？？？？？？？？？？
@@ -77,19 +83,37 @@ export default class ControlStage extends Stage {
         this._startPoint = [evt.pageX, evt.pageY];
 
         if (!this.stageConfig.insertElement && !this.stageConfig.canMove) {
-            const { left, top } = this._getMousePosition(evt);
-            const operateElement = this.stageConfig.getMouseInElement(
-                left,
-                top
-            );
-            this.stageConfig.setOperateElement(operateElement || null);
-            this.stageConfig.resetCheckDrawView();
-            if (operateElement) {
-                this.resetDrawOprate();
-                this._canMoveElement = true;
+            if (this.stageConfig.opreateType && this.stageConfig.operateElement) {
+                // resize rotate操作
+                this._canResizeElement = true;
+                if (this.stageConfig.opreateType === "ANGLE") {
+                    // 旋转
+                    const element = this.stageConfig.operateElement;
+                    const cx = element.left + element.width / 2;
+                    const cy = element.top + element.height / 2;
+
+                    const { left, top } = this._getMousePosition(evt);
+                    this._startAngle = Math.atan2(
+                        top - cy,
+                        left - cx
+                    );
+                    this._storeAngle = element.rotate / 180 * Math.PI;
+                }
             } else {
-                this._canMoveElement = false;
-                this.clear();
+                const { left, top } = this._getMousePosition(evt);
+                const operateElement = this.stageConfig.getMouseInElement(
+                    left,
+                    top
+                );
+                this.stageConfig.setOperateElement(operateElement || null);
+                this.stageConfig.resetCheckDrawView();
+                if (operateElement) {
+                    this.resetDrawOprate();
+                    this._canMoveElement = true;
+                } else {
+                    this._canMoveElement = false;
+                    this.clear();
+                }
             }
         }
     }
@@ -101,10 +125,8 @@ export default class ControlStage extends Stage {
             if (newElement) this.drawElement(newElement);
         } else if (this._canMoveCanvas && this.stageConfig.canMove) {
             // 移动画布
-            const scrollX =
-                -(evt.pageX - this._startPoint[0]) + this.stageConfig.scrollX;
-            const scrollY =
-                -(evt.pageY - this._startPoint[1]) + this.stageConfig.scrollY;
+            const scrollX = -(evt.pageX - this._startPoint[0]) + this.stageConfig.scrollX;
+            const scrollY = -(evt.pageY - this._startPoint[1]) + this.stageConfig.scrollY;
             this._startPoint = [evt.pageX, evt.pageY];
             this.stageConfig.setScroll(scrollX, scrollY);
         } else if (this._canMoveElement && this.stageConfig.operateElement) {
@@ -118,7 +140,27 @@ export default class ControlStage extends Stage {
                 top: this.stageConfig.operateElement.top + moveY
             });
             this._startPoint = [evt.pageX, evt.pageY];
-            this.stageConfig.resetCheckDrawOprate();
+            this.resetDrawOprate();
+        } else if (this._canResizeElement && this.stageConfig.operateElement) {
+            // 旋转缩放元素
+            if (this.stageConfig.opreateType === "ANGLE") {
+                // 旋转
+                const element = this.stageConfig.operateElement;
+                const cx = element.left + element.width / 2;
+                const cy = element.top + element.height / 2;
+
+                const { left, top } = this._getMousePosition(evt);
+                const currentAngle = Math.atan2(top - cy, left - cx);
+                const changeAngle = currentAngle - this._startAngle;
+                const angle = normalizeAngle(changeAngle + this._storeAngle);
+                this.stageConfig.setOperateElement({
+                    ...this.stageConfig.operateElement,
+                    rotate: angle
+                });
+                this.resetDrawOprate();
+            } else {
+                // 缩放
+            }
         } else if (
             !this.stageConfig.insertElement &&
             !this.stageConfig.canMove &&
@@ -163,7 +205,7 @@ export default class ControlStage extends Stage {
                     this.stageConfig.setOperateType("");
                     for (const key in rects) {
                         const rect: IRectParameter = [rects[key][0] + cx, rects[key][1] + cy, rects[key][2], rects[key][3]];
-                        if (this.stageConfig.checkPointInRect(left, top, rect, cx, cy, element.rotate / 360 * Math.PI)) {
+                        if (this.stageConfig.checkPointInRect(left, top, rect, cx, cy, element.rotate / 180 * Math.PI)) {
                             this.stageConfig.setOperateType(key);
                             break;
                         }
@@ -199,6 +241,7 @@ export default class ControlStage extends Stage {
         this._canMoveCanvas = false;
         this._canMoveElement = false;
         this._canCreate = false;
+        this._canResizeElement = false;
     }
 
     // 处理获取矩形区域的左上坐标点和左下坐标点
@@ -371,7 +414,7 @@ export default class ControlStage extends Stage {
         // 平移坐标原点
         this.ctx.translate(ox, oy);
         // 旋转画布
-        this.ctx.rotate((element.rotate / 360) * Math.PI);
+        this.ctx.rotate((element.rotate / 180) * Math.PI);
 
         this.ctx.strokeStyle = THEME_COLOR;
         this.ctx.lineWidth = 1 / zoom;
@@ -398,6 +441,8 @@ export default class ControlStage extends Stage {
             dashWidth
         );
         this.ctx.fillStyle = "#ffffff";
+        this.ctx.strokeStyle = THEME_COLOR;
+        this.ctx.lineWidth = 1 / zoom;
         for (const key in rects) {
             this.ctx.fillRect(...rects[key]);
             this.ctx.strokeRect(...rects[key]);

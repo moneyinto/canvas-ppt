@@ -44,3 +44,19 @@ export const throttleRAF = <T extends unknown[]>(fn: (...args: T) => void) => {
 export const deepClone = (obj: any) => {
     return JSON.parse(JSON.stringify(obj));
 };
+
+/**
+ * 角度计算（将角度转换成0-360）
+ * @param angle
+ * @returns
+ */
+export const normalizeAngle = (angle: number): number => {
+    let newAngle = angle;
+    if (angle >= 2 * Math.PI) {
+        newAngle = angle - 2 * Math.PI;
+    }
+    if (angle < 0) {
+        newAngle = angle + 2 * Math.PI;
+    }
+    return newAngle / Math.PI * 180;
+};
