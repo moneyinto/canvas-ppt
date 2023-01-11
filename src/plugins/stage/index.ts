@@ -136,6 +136,11 @@ export default class Stage {
                 path = `M${rect.maxX} ${rect.minY + len}V${rect.maxY}H${rect.minX}V${rect.minY}H${rect.maxX - len}L${rect.maxX} ${rect.minY + len}Z`;
                 break;
             }
+            case SHAPE_TYPE.RECT_MINUS_SAME_SIDE_ANGLE: {
+                const len = Math.min(element.width, element.height) * 0.2;
+                path = `M${rect.maxX} ${rect.minY + len}V${rect.maxY}H${rect.minX}V${rect.minY + len}L${rect.minX + len} ${rect.minY}H${rect.maxX - len}L${rect.maxX} ${rect.minY + len}Z`;
+                break;
+            }
         }
 
         const path2D = new Path2D(path);
