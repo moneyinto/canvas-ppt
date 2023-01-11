@@ -132,9 +132,8 @@ export default class Stage {
                 break;
             }
             case SHAPE_TYPE.RECT_MINUS_SINGLE_ANGLE: {
-                const len = element.height * 0.4;
+                const len = Math.min(element.width, element.height) * 0.4;
                 path = `M${rect.maxX} ${rect.minY + len}V${rect.maxY}H${rect.minX}V${rect.minY}H${rect.maxX - len}L${rect.maxX} ${rect.minY + len}Z`;
-                // path = `M${rect.minX} ${rect.minY}h${element.width}v${element.height}H${rect.minX}z`;
                 break;
             }
         }
