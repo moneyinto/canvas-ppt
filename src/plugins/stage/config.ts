@@ -156,8 +156,6 @@ export default class StageConfig {
     public addElement(element: IPPTElement) {
         const slide = this.getCurrentSlide();
         slide?.elements.push(element);
-
-        this.resetCheckDrawView();
     }
 
     public setSildes(slides: ISlide[]) {

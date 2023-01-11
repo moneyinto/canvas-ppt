@@ -127,6 +127,11 @@ export default class ControlStage extends Stage {
     private _mousemove(evt: MouseEvent) {
         if (this.stageConfig.insertElement && this._canCreate) {
             // 创建元素
+            if (this.stageConfig.operateElement) {
+                // 当存在选中的元素的时候，移除
+                this.stageConfig.setOperateElement(null);
+                this.stageConfig.resetCheckDrawView();
+            }
             const newElement = this._createElement(evt);
             if (newElement) this.drawElement(newElement);
         } else if (this._canMoveCanvas && this.stageConfig.canMove) {
@@ -334,11 +339,13 @@ export default class ControlStage extends Stage {
                 this.stageConfig.addElement(newElement);
 
                 this._history.add();
+
+                // 创建完元素默认选中元素
+                this.stageConfig.setOperateElement(newElement);
+                this.stageConfig.resetCheckDrawOprate();
             }
             this.stageConfig.setInsertElement(null);
-        }
-
-        if (
+        } else if (
             this.stageConfig.operateElement &&
             (this._canMoveElement || this._canResizeElement)
         ) {
