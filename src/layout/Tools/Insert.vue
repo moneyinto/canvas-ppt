@@ -37,30 +37,33 @@
                                 :key="index"
                                 @click="selectShape(shape)"
                             >
-                                <SvgWrapper
-                                    overflow="visible"
-                                    width="18"
-                                    height="18"
-                                >
-                                    <g
-                                        :transform="`scale(${
-                                            18 / shape.viewBox
-                                        }, ${
-                                            18 / shape.viewBox
-                                        }) translate(0,0) matrix(1,0,0,1,0,0)`"
+                                <a-tooltip :title="shape.name">
+                                    <SvgWrapper
+                                        style="outline: 0;"
+                                        overflow="visible"
+                                        width="18"
+                                        height="18"
                                     >
-                                        <path
-                                            class="shape-path"
-                                            vector-effect="non-scaling-stroke"
-                                            stroke-linecap="butt"
-                                            stroke-miterlimit="8"
-                                            fill="transparent"
-                                            stroke="#999"
-                                            stroke-width="1px"
-                                            :d="shape.path"
-                                        ></path>
-                                    </g>
-                                </SvgWrapper>
+                                        <g
+                                            :transform="`scale(${
+                                                18 / shape.viewBox
+                                            }, ${
+                                                18 / shape.viewBox
+                                            }) translate(0,0) matrix(1,0,0,1,0,0)`"
+                                        >
+                                            <path
+                                                class="shape-path"
+                                                vector-effect="non-scaling-stroke"
+                                                stroke-linecap="butt"
+                                                stroke-miterlimit="8"
+                                                fill="transparent"
+                                                stroke="#999"
+                                                stroke-width="1px"
+                                                :d="shape.path"
+                                            ></path>
+                                        </g>
+                                    </SvgWrapper>
+                                </a-tooltip>
                             </div>
                         </div>
                     </div>

@@ -2,6 +2,7 @@ import Listener from "../listener";
 import StageConfig from "./config";
 import { throttleRAF } from "@/utils";
 import { IPPTElement, IPPTShapeElement } from "../types/element";
+import { SHAPE_TYPE } from "../config/shapes";
 
 export default class Stage {
     public canvas: HTMLCanvasElement;
@@ -109,11 +110,11 @@ export default class Stage {
         let path = "";
 
         switch (element.shape) {
-            case "rect": {
+            case SHAPE_TYPE.RECT: {
                 path = `M${rect.minX} ${rect.minY}h${element.width}v${element.height}H${rect.minX}z`;
                 break;
             }
-            case "rectRadius": {
+            case SHAPE_TYPE.RECT_RADIUS: {
                 const radius = Math.min(element.width, element.height) * 0.1;
                 path = `M ${rect.minX + radius} ${rect.minY} L ${
                     rect.maxX - radius
@@ -128,6 +129,12 @@ export default class Stage {
                 } L ${rect.minX} ${rect.minY + radius} Q ${rect.minX} ${
                     rect.minY
                 } ${rect.minX + radius} ${rect.minY} Z`;
+                break;
+            }
+            case SHAPE_TYPE.RECT_MINUS_SINGLE_ANGLE: {
+                const len = element.height * 0.4;
+                path = `M${rect.maxX} ${rect.minY + len}V${rect.maxY}H${rect.minX}V${rect.minY}H${rect.maxX - len}L${rect.maxX} ${rect.minY + len}Z`;
+                // path = `M${rect.minX} ${rect.minY}h${element.width}v${element.height}H${rect.minX}z`;
                 break;
             }
         }
