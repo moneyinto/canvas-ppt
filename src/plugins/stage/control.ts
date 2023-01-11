@@ -247,15 +247,18 @@ export default class ControlStage extends Stage {
                         -angle
                     );
 
-                    this.stageConfig.setOperateElement({
-                        ...originElement,
-                        width: storeData.width,
-                        height: storeData.height,
-                        left: ox,
-                        top: oy
-                    });
+                    // 限制缩放的最小值
+                    if (storeData.width > 0 && storeData.height > 0) {
+                        this.stageConfig.setOperateElement({
+                            ...originElement,
+                            width: storeData.width,
+                            height: storeData.height,
+                            left: ox,
+                            top: oy
+                        });
 
-                    this.resetDrawOprate();
+                        this.resetDrawOprate();
+                    }
                 }
             }
         } else if (
