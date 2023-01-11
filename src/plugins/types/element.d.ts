@@ -1,4 +1,4 @@
-import { IShapeItem } from "./shape";
+import { IShape, IShapeItem } from "./shape";
 
 export interface IElementPosition {
     top: number;
@@ -135,7 +135,7 @@ export interface IShapeText {
  */
 export interface IPPTShapeElement extends IPPTBaseElement {
     type: "shape";
-    shape: "rect";
+    shape: IShape;
     fixedRatio: boolean;
     fill: string;
     rotate: number;

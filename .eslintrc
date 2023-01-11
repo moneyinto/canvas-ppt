@@ -18,7 +18,7 @@
     "rules": {
         "no-console": "off",
         "no-debugger": "off",
-        "indent": ["error", 4],
+        "indent": "off",
         "semi": ["error", "always"],
         "quotes": "off",
         "space-before-function-paren": [

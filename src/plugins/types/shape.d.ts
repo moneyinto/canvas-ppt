@@ -1,4 +1,6 @@
-export type IShape = "rect";
+import { SHAPE_TYPE } from "../config/shapes";
+
+export type IShape = SHAPE_TYPE;
 
 export interface IShapeItem {
     viewBox: number;

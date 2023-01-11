@@ -9,7 +9,11 @@ export default class Stage {
     public stageConfig: StageConfig;
     public container: HTMLDivElement;
     public listener: Listener;
-    constructor(container: HTMLDivElement, listener: Listener, stageConfig: StageConfig) {
+    constructor(
+        container: HTMLDivElement,
+        listener: Listener,
+        stageConfig: StageConfig
+    ) {
         this.container = container;
         this.listener = listener;
         this.stageConfig = stageConfig;
@@ -18,7 +22,10 @@ export default class Stage {
 
         this.ctx = ctx;
         this.canvas = canvas;
-        window.addEventListener("resize", throttleRAF(this._resetStage.bind(this)));
+        window.addEventListener(
+            "resize",
+            throttleRAF(this._resetStage.bind(this))
+        );
     }
 
     private _resetStage() {
@@ -75,42 +82,70 @@ export default class Stage {
         // 平移坐标原点
         this.ctx.translate(ox, oy);
         // 旋转画布
-        this.ctx.rotate(element.rotate / 180 * Math.PI);
+        this.ctx.rotate((element.rotate / 180) * Math.PI);
 
         switch (element.type) {
-        case "shape": {
-            this.drawShape(element);
-            break;
-        }
+            case "shape": {
+                this.drawShape(element);
+                break;
+            }
         }
 
         this.ctx.restore();
     }
 
     public drawShape(element: IPPTShapeElement) {
-        switch (element.shape) {
-        case "rect": {
-            this.drawRectShape(element);
-            break;
-        }
-        }
-    }
-
-    public drawRectShape(element: IPPTShapeElement) {
         const offsetX = -element.width / 2;
         const offsetY = -element.height / 2;
 
+        const rect = {
+            minX: offsetX,
+            minY: offsetY,
+            maxX: element.width / 2,
+            maxY: element.height / 2
+        };
+
         this.ctx.fillStyle = element.fill;
-        this.ctx.fillRect(offsetX, offsetY, element.width, element.height);
+        let path = "";
+
+        switch (element.shape) {
+            case "rect": {
+                path = `M${rect.minX} ${rect.minY}h${element.width}v${element.height}H${rect.minX}z`;
+                break;
+            }
+            case "rectRadius": {
+                const radius = Math.min(element.width, element.height) * 0.1;
+                path = `M ${rect.minX + radius} ${rect.minY} L ${
+                    rect.maxX - radius
+                } ${rect.minY} Q ${rect.maxX} ${rect.minY} ${rect.maxX} ${
+                    rect.minY + radius
+                } L ${rect.maxX} ${rect.maxY - radius} Q ${rect.maxX} ${
+                    rect.maxY
+                } ${rect.maxX - radius} ${rect.maxY} L ${rect.minX + radius} ${
+                    rect.maxY
+                } Q ${rect.minX} ${rect.maxY} ${rect.minX} ${
+                    rect.maxY - radius
+                } L ${rect.minX} ${rect.minY + radius} Q ${rect.minX} ${
+                    rect.minY
+                } ${rect.minX + radius} ${rect.minY} Z`;
+                break;
+            }
+        }
+
+        const path2D = new Path2D(path);
+        this.ctx.fill(path2D);
 
         if (element.outline) {
             const lineWidth = element.outline.width || 2;
             this.ctx.lineWidth = lineWidth;
             this.ctx.strokeStyle = element.outline.color || "#000";
             if (element.outline.style === "dashed") {
-                this.ctx.setLineDash([8 * lineWidth / 2, 4 * lineWidth / 2]);
+                this.ctx.setLineDash([
+                    (8 * lineWidth) / 2,
+                    (4 * lineWidth) / 2
+                ]);
             }
-            this.ctx.strokeRect(offsetX, offsetY, element.width, element.height);
+            this.ctx.stroke(path2D);
         }
     }
 }

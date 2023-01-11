@@ -1,3 +1,4 @@
+import { SHAPE_TYPE } from "@/plugins/config/shapes";
 import { ISlide } from "@/plugins/types/slide";
 
 export const slides: ISlide[] = [
@@ -7,7 +8,7 @@ export const slides: ISlide[] = [
             {
                 id: "elementid",
                 type: "shape",
-                shape: "rect",
+                shape: SHAPE_TYPE.RECT,
                 fixedRatio: false,
                 fill: "#f60000",
                 rotate: 20,
@@ -29,8 +30,8 @@ export const slides: ISlide[] = [
                 id: "7Yw8SR",
                 left: 314.54248366013064,
                 name: "形状",
-                rotate: 63.96187791150659,
-                shape: "rect",
+                rotate: 0,
+                shape: SHAPE_TYPE.RECT_RADIUS,
                 top: 120.71078431372548,
                 type: "shape",
                 width: 370.91503267973854
