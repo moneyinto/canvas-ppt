@@ -268,68 +268,71 @@ export default class ControlStage extends Stage {
         ) {
             // 悬浮到元素
             const { left, top } = this._getMousePosition(evt);
-            const hoverElement = this.stageConfig.getMouseInElement(left, top);
 
-            if (hoverElement) {
-                if (this.container.style.cursor !== "move") {
-                    this.container.style.cursor = "move";
-                }
-            } else {
-                if (this.container.style.cursor !== "default") {
-                    this.container.style.cursor = "default";
-                }
+            if (this.stageConfig.operateElement) {
+                // 鼠标悬浮到操作区域展示形式
+                const element = this.stageConfig.operateElement;
+                const zoom = this.stageConfig.zoom;
+                const margin = 1;
+                const offsetX = -element.width / 2 - margin;
+                const offsetY = -element.height / 2 - margin;
 
-                if (this.stageConfig.operateElement) {
-                    // 鼠标悬浮到操作区域展示形式
-                    const element = this.stageConfig.operateElement;
-                    const zoom = this.stageConfig.zoom;
-                    const margin = 1;
-                    const offsetX = -element.width / 2 - margin;
-                    const offsetY = -element.height / 2 - margin;
+                const dashedLinePadding = 0 + margin / zoom;
+                const dashWidth = 8 / zoom;
 
-                    const dashedLinePadding = 0 + margin / zoom;
-                    const dashWidth = 8 / zoom;
+                const rects: IRects = this._getElementResizePoints(
+                    offsetX,
+                    offsetY,
+                    element.width + margin * 2,
+                    element.height + margin * 2,
+                    dashedLinePadding,
+                    dashWidth
+                );
 
-                    const rects: IRects = this._getElementResizePoints(
-                        offsetX,
-                        offsetY,
-                        element.width + margin * 2,
-                        element.height + margin * 2,
-                        dashedLinePadding,
-                        dashWidth
-                    );
+                const cx = element.left + element.width / 2;
+                const cy = element.top + element.height / 2;
 
-                    const cx = element.left + element.width / 2;
-                    const cy = element.top + element.height / 2;
-
-                    this.stageConfig.setOperateType("");
-                    for (const key in rects) {
-                        const rect: IRectParameter = [
-                            rects[key][0] + cx,
-                            rects[key][1] + cy,
-                            rects[key][2],
-                            rects[key][3]
-                        ];
-                        if (
-                            this.stageConfig.checkPointInRect(
-                                left,
-                                top,
-                                rect,
-                                cx,
-                                cy,
-                                (element.rotate / 180) * Math.PI
-                            )
-                        ) {
-                            this.stageConfig.setOperateType(key);
-                            break;
-                        }
+                this.stageConfig.setOperateType("");
+                for (const key in rects) {
+                    const rect: IRectParameter = [
+                        rects[key][0] + cx,
+                        rects[key][1] + cy,
+                        rects[key][2],
+                        rects[key][3]
+                    ];
+                    if (
+                        this.stageConfig.checkPointInRect(
+                            left,
+                            top,
+                            rect,
+                            cx,
+                            cy,
+                            (element.rotate / 180) * Math.PI
+                        )
+                    ) {
+                        this.stageConfig.setOperateType(key);
+                        break;
                     }
+                }
 
-                    // 考虑结合旋转角度来改变优化cursor ？？？？？？？？？？？？？？？？？？？？
-                    this.container.style.cursor =
-                        (ELEMENT_RESIZE as IElementOptions)[
-                            this.stageConfig.opreateType
-                        ] || "default";
+                // 考虑结合旋转角度来改变优化cursor ？？？？？？？？？？？？？？？？？？？？
+                this.container.style.cursor =
+                    (ELEMENT_RESIZE as IElementOptions)[
+                        this.stageConfig.opreateType
+                    ] || "default";
+            }
+
+            if (!this.stageConfig.opreateType) {
+                const hoverElement = this.stageConfig.getMouseInElement(left, top);
+
+                if (hoverElement) {
+                    if (this.container.style.cursor !== "move") {
+                        this.container.style.cursor = "move";
+                    }
+                } else {
+                    if (this.container.style.cursor !== "default") {
+                        this.container.style.cursor = "default";
+                    }
                 }
             }
         }
