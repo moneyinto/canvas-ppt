@@ -15,4 +15,6 @@ export enum ELEMENT_RESIZE {
     RIGHT_BOTTOM = "nwse-resize",
     ANGLE = "grabbing",
     MOVE = "move",
+    START = "grabbing",
+    END = "grabbing"
 }

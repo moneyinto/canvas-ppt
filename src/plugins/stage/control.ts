@@ -167,7 +167,9 @@ export default class ControlStage extends Stage {
                     const { left, top } = this._getMousePosition(evt);
                     const currentAngle = Math.atan2(top - cy, left - cx);
                     const changeAngle = currentAngle - this._startAngle;
-                    const angle = normalizeAngle(changeAngle + this._storeAngle);
+                    const angle = normalizeAngle(
+                        changeAngle + this._storeAngle
+                    );
                     this.stageConfig.setOperateElement({
                         ...this.stageConfig.operateElement,
                         rotate: angle
@@ -179,12 +181,25 @@ export default class ControlStage extends Stage {
                     const originElement = this._opreateCacheElement;
                     if (originElement && originElement.type !== "line") {
                         const { left, top } = this._getMousePosition(evt);
-                        const storeData = { ofx: 0, ofy: 0, width: originElement.width, height: originElement.height };
+                        const storeData = {
+                            ofx: 0,
+                            ofy: 0,
+                            width: originElement.width,
+                            height: originElement.height
+                        };
 
-                        const resizeBottom = /BOTTOM/.test(this.stageConfig.opreateType);
-                        const resizeTop = /TOP/.test(this.stageConfig.opreateType);
-                        const resizeLeft = /LEFT/.test(this.stageConfig.opreateType);
-                        const resizeRight = /RIGHT/.test(this.stageConfig.opreateType);
+                        const resizeBottom = /BOTTOM/.test(
+                            this.stageConfig.opreateType
+                        );
+                        const resizeTop = /TOP/.test(
+                            this.stageConfig.opreateType
+                        );
+                        const resizeLeft = /LEFT/.test(
+                            this.stageConfig.opreateType
+                        );
+                        const resizeRight = /RIGHT/.test(
+                            this.stageConfig.opreateType
+                        );
 
                         const cx = originElement.left + originElement.width / 2;
                         const cy = originElement.top + originElement.height / 2;
@@ -273,12 +288,42 @@ export default class ControlStage extends Stage {
             const { left, top } = this._getMousePosition(evt);
 
             if (this.stageConfig.operateElement) {
+                const zoom = this.stageConfig.zoom;
                 if (this.stageConfig.operateElement.type === "line") {
-                    console.log("===== line");
-                } else {
-                    // 鼠标悬浮到操作区域展示形式
                     const element = this.stageConfig.operateElement;
-                    const zoom = this.stageConfig.zoom;
+                    const dashWidth = 8 / zoom;
+
+                    const rects: IRects = this._getElementLinePoints(
+                        element.left,
+                        element.top,
+                        element.end,
+                        dashWidth
+                    );
+
+                    this.stageConfig.setOperateType("");
+                    for (const key in rects) {
+                        if (
+                            this.stageConfig.checkPointInRect(
+                                left,
+                                top,
+                                rects[key],
+                                left,
+                                top,
+                                0
+                            )
+                        ) {
+                            this.stageConfig.setOperateType(key);
+                            break;
+                        }
+                    }
+
+                    this.container.style.cursor =
+                        (ELEMENT_RESIZE as IElementOptions)[
+                            this.stageConfig.opreateType
+                        ] || "default";
+                } else {
+                    const element = this.stageConfig.operateElement;
+                    // 鼠标悬浮到操作区域展示形式
                     const margin = 1;
                     const offsetX = -element.width / 2 - margin;
                     const offsetY = -element.height / 2 - margin;
@@ -330,7 +375,10 @@ export default class ControlStage extends Stage {
             }
 
             if (!this.stageConfig.opreateType) {
-                const hoverElement = this.stageConfig.getMouseInElement(left, top);
+                const hoverElement = this.stageConfig.getMouseInElement(
+                    left,
+                    top
+                );
 
                 if (hoverElement) {
                     if (this.container.style.cursor !== "move") {
@@ -435,12 +483,12 @@ export default class ControlStage extends Stage {
             const position = this._getElementPosition(evt);
 
             switch (this.stageConfig.insertElement.type) {
-            case "shape":
-                newElement = createShapeElement(
-                    position,
-                    this.stageConfig.insertElement.data.type
-                );
-                break;
+                case "shape":
+                    newElement = createShapeElement(
+                        position,
+                        this.stageConfig.insertElement.data.type
+                    );
+                    break;
             }
         }
         return newElement;
@@ -570,13 +618,15 @@ export default class ControlStage extends Stage {
         this.ctx.scale(zoom, zoom);
 
         if (element.type === "line") {
+            this.ctx.translate(x, y);
+
             this.ctx.fillStyle = "#ffffff";
             this.ctx.strokeStyle = THEME_COLOR;
             this.ctx.lineWidth = 1 / zoom;
             const dashWidth = 8 / zoom;
             const rects: IRects = this._getElementLinePoints(
-                x + element.left,
-                y + element.top,
+                element.left,
+                element.top,
                 element.end,
                 dashWidth
             );
@@ -644,13 +694,7 @@ export default class ControlStage extends Stage {
         const angle = (originElement.rotate / 180) * Math.PI;
         // 在sx,sy以x轴平行的线段上取任意一点 绕sx，sy旋转angle
         const nPoint = [sx - 10, sy];
-        const tn = this.stageConfig.rotate(
-            nPoint[0],
-            nPoint[1],
-            sx,
-            sy,
-            angle
-        );
+        const tn = this.stageConfig.rotate(nPoint[0], nPoint[1], sx, sy, angle);
         // 求 鼠标点 与 起始点的向量 在 tn点 与 起始点向量上投影的距离值 即为移动的距离
         // 向量a在向量b上的投影：设a、b向量的模分别为A、B，两向量夹角为θ，则a在b上的投影大小为Acosθ，而两向量的点积a·b=ABcosθ，所以cosθ=a·b/(AB)。则a在b上的投影为Acosθ=Aa·b/(AB)=a·b/B
         const a = { x: mx - sx, y: my - sy };
@@ -683,13 +727,7 @@ export default class ControlStage extends Stage {
 
         // 在sx,sy以y轴平行的线段上取任意一点 绕sx，sy旋转angle
         const nPoint = [sx, sy - 10];
-        const tn = this.stageConfig.rotate(
-            nPoint[0],
-            nPoint[1],
-            sx,
-            sy,
-            angle
-        );
+        const tn = this.stageConfig.rotate(nPoint[0], nPoint[1], sx, sy, angle);
         // 求 鼠标点 与 起始点的向量 在 tn点 与 起始点向量上投影的距离值 即为移动的距离
         // 向量a在向量b上的投影：设a、b向量的模分别为A、B，两向量夹角为θ，则a在b上的投影大小为Acosθ，而两向量的点积a·b=ABcosθ，所以cosθ=a·b/(AB)。则a在b上的投影为Acosθ=Aa·b/(AB)=a·b/B
         const a = { x: mx - sx, y: my - sy };
