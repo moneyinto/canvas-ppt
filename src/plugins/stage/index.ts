@@ -96,6 +96,25 @@ export default class Stage {
     }
 
     public drawShape(element: IPPTShapeElement) {
+        this.ctx.fillStyle = element.fill;
+        const path = this.getShapePath(element);
+        this.ctx.fill(path);
+
+        if (element.outline) {
+            const lineWidth = element.outline.width || 2;
+            this.ctx.lineWidth = lineWidth;
+            this.ctx.strokeStyle = element.outline.color || "#000";
+            if (element.outline.style === "dashed") {
+                this.ctx.setLineDash([
+                    (8 * lineWidth) / 2,
+                    (4 * lineWidth) / 2
+                ]);
+            }
+            this.ctx.stroke(path);
+        }
+    }
+
+    public getShapePath(element: IPPTShapeElement) {
         const offsetX = -element.width / 2;
         const offsetY = -element.height / 2;
 
@@ -106,7 +125,6 @@ export default class Stage {
             maxY: element.height / 2
         };
 
-        this.ctx.fillStyle = element.fill;
         let path = "";
 
         switch (element.shape) {
@@ -143,20 +161,6 @@ export default class Stage {
             }
         }
 
-        const path2D = new Path2D(path);
-        this.ctx.fill(path2D);
-
-        if (element.outline) {
-            const lineWidth = element.outline.width || 2;
-            this.ctx.lineWidth = lineWidth;
-            this.ctx.strokeStyle = element.outline.color || "#000";
-            if (element.outline.style === "dashed") {
-                this.ctx.setLineDash([
-                    (8 * lineWidth) / 2,
-                    (4 * lineWidth) / 2
-                ]);
-            }
-            this.ctx.stroke(path2D);
-        }
+        return new Path2D(path);
     }
 }
