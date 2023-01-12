@@ -4,7 +4,8 @@ export enum SHAPE_TYPE {
     RECT = "rect",
     RECT_RADIUS = "rectRadius",
     RECT_MINUS_SINGLE_ANGLE = "rectMinusSingleAngle",
-    RECT_MINUS_SAME_SIDE_ANGLE = "rectMinusSameSideAngle"
+    RECT_MINUS_SAME_SIDE_ANGLE = "rectMinusSameSideAngle",
+    RECT_MINUS_OPPOSITE_ANGLE = "rectMinusOppositeAngle"
 }
 
 export const SHAPE_LIST: IShapePoolItem[] = [
@@ -37,6 +38,13 @@ export const SHAPE_LIST: IShapePoolItem[] = [
                 name: "减去同侧角的矩形",
                 path: "M15.5 6.207V13.5H.5V6.207L4.207 2.5h7.586L15.5 6.207Z",
                 type: SHAPE_TYPE.RECT_MINUS_SAME_SIDE_ANGLE
+            },
+
+            {
+                viewBox: 18,
+                name: "减去对角的矩形",
+                path: "M11.793 2.5 15.5 6.207V13.5H4.207L.5 9.793V2.5h11.293Z",
+                type: SHAPE_TYPE.RECT_MINUS_OPPOSITE_ANGLE
             }
         ]
     }
