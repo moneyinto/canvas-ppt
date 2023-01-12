@@ -99,7 +99,7 @@ const selectShape = (shape: IShapeItem) => {
 }
 
 .shape-pool {
-    width: 320px;
+    width: 280px;
     .category {
         .category-name {
             font-size: 12px;

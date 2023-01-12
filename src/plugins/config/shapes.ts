@@ -7,7 +7,8 @@ export enum SHAPE_TYPE {
     RECT_MINUS_SAME_SIDE_ANGLE = "rectMinusSameSideAngle",
     RECT_MINUS_OPPOSITE_ANGLE = "rectMinusOppositeAngle",
     RECT_SINGLE_RADIUS_MINUS_SINGLE_ANGLE = "rectSingleRadiusMinusSingleAngle",
-    RECT_SINGLE_RADIUS = "rectSingleRadius"
+    RECT_SINGLE_RADIUS = "rectSingleRadius",
+    RECT_SAME_SIDE_RADIUS = "rectSameSideRadius"
 }
 
 export const SHAPE_LIST: IShapePoolItem[] = [
@@ -61,6 +62,13 @@ export const SHAPE_LIST: IShapePoolItem[] = [
                 name: "单圆角矩形",
                 path: "M.5 2.5H13A2.5 2.5 0 0 1 15.5 5v8.5H.5v-11Z",
                 type: SHAPE_TYPE.RECT_SINGLE_RADIUS
+            },
+
+            {
+                viewBox: 18,
+                name: "同侧圆角矩形",
+                path: "M.5 5A2.5 2.5 0 0 1 3 2.5h10A2.5 2.5 0 0 1 15.5 5v8.5H.5V5Z",
+                type: SHAPE_TYPE.RECT_SAME_SIDE_RADIUS
             }
         ]
     }
