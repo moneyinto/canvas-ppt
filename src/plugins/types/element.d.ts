@@ -1,4 +1,4 @@
-import { IShape, IShapeItem } from "./shape";
+import { ILineItem, IShape, IShapeItem } from "./shape";
 
 export interface IElementPosition {
     top: number;
@@ -190,4 +190,11 @@ export interface ICreatingShapeElement {
     data: IShapeItem;
 }
 
-export type ICreatingElement = ICreatingTextElement | ICreatingShapeElement;
+export interface ICreatingLineElement {
+    type: "line";
+    data: ILineItem;
+}
+
+export type ICreatingType = "text" | "shape" | "line";
+
+export type ICreatingElement = ICreatingTextElement | ICreatingShapeElement | ICreatingLineElement;

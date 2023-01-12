@@ -29,13 +29,13 @@
                         v-for="item in SHAPE_LIST"
                         :key="item.type"
                     >
-                        <div class="category-name">{{ item.type }}</div>
+                        <div class="category-name">{{ item.name }}</div>
                         <div class="shape-list">
                             <div
                                 class="shape-item"
                                 v-for="(shape, index) in item.children"
                                 :key="index"
-                                @click="selectShape(shape)"
+                                @click="selectShape(item.type, shape)"
                             >
                                 <a-tooltip :title="shape.name">
                                     <SvgWrapper
@@ -77,16 +77,21 @@
 import SvgWrapper from "@/components/SvgWrapper.vue";
 import { SHAPE_LIST } from "@/plugins/config/shapes";
 import Editor from "@/plugins/editor";
-import { IShapeItem } from "@/plugins/types/shape";
+import { ILineItem, IShapeItem } from "@/plugins/types/shape";
 import { inject, ref, Ref } from "vue";
+import { ICreatingType } from "@/plugins/types/element";
 
 const showShapePool = ref(false);
 
 const instance = inject<Ref<Editor>>("instance");
 
-const selectShape = (shape: IShapeItem) => {
+const selectShape = (type: ICreatingType, shape: IShapeItem | ILineItem) => {
     showShapePool.value = false;
-    instance?.value.stageConfig.setInsertElement({ type: "shape", data: shape });
+    if (type === "line") {
+        instance?.value.stageConfig.setInsertElement({ type, data: shape as ILineItem });
+    } else if (type === "shape") {
+        instance?.value.stageConfig.setInsertElement({ type, data: shape as IShapeItem });
+    }
 };
 </script>
 

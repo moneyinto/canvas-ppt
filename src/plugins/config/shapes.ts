@@ -12,9 +12,26 @@ export enum SHAPE_TYPE {
     RECT_OPPOSITE_RADIUS = "rectOppositeRadius"
 }
 
+export enum LINE_TYPE {
+    BEELINE = "beeline"
+}
+
 export const SHAPE_LIST: IShapePoolItem[] = [
     {
-        type: "矩形",
+        name: "线条",
+        type: "line",
+        children: [
+            {
+                viewBox: 18,
+                name: "直线",
+                path: "m1 1 14 14",
+                type: LINE_TYPE.BEELINE
+            }
+        ]
+    },
+    {
+        name: "矩形",
+        type: "shape",
         children: [
             {
                 viewBox: 18,

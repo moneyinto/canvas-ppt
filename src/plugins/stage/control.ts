@@ -3,7 +3,7 @@ import Listener from "../listener";
 import StageConfig from "./config";
 import { throttleRAF, deepClone, normalizeAngle } from "@/utils";
 import Command from "../command";
-import { createShapeElement } from "./create";
+import { createLineElement, createShapeElement } from "./create";
 import { IPPTElement, IPPTLineElement } from "../types/element";
 import { History } from "../editor/history";
 import { ELEMENT_RESIZE, THEME_COLOR } from "../config/stage";
@@ -97,7 +97,10 @@ export default class ControlStage extends Stage {
                 // resize rotate操作
                 this._canResizeElement = true;
                 const element = this.stageConfig.operateElement;
-                if (element.type !== "line" && this.stageConfig.opreateType === "ANGLE") {
+                if (
+                    element.type !== "line" &&
+                    this.stageConfig.opreateType === "ANGLE"
+                ) {
                     // 旋转
                     const cx = element.left + element.width / 2;
                     const cy = element.top + element.height / 2;
@@ -286,7 +289,10 @@ export default class ControlStage extends Stage {
                         ...element,
                         left,
                         top,
-                        end: [element.left - left + element.end[0], element.top - top + element.end[1]]
+                        end: [
+                            element.left - left + element.end[0],
+                            element.top - top + element.end[1]
+                        ]
                     });
                 } else if (this.stageConfig.opreateType === "END") {
                     this.stageConfig.setOperateElement({
@@ -500,12 +506,24 @@ export default class ControlStage extends Stage {
             const position = this._getElementPosition(evt);
 
             switch (this.stageConfig.insertElement.type) {
-                case "shape":
+                case "shape": {
                     newElement = createShapeElement(
                         position,
                         this.stageConfig.insertElement.data.type
                     );
                     break;
+                }
+                case "line": {
+                    const { left, top } = this._getMousePosition(evt);
+                    newElement = createLineElement(
+                        this._startOriginPoint[0],
+                        this._startOriginPoint[1],
+                        [left - this._startOriginPoint[0], top - this._startOriginPoint[1]],
+                        "",
+                        ""
+                    );
+                    break;
+                }
             }
         }
         return newElement;
