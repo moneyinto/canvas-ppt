@@ -117,6 +117,33 @@ export default class Stage {
         this.ctx.lineTo(...element.end);
 
         this.ctx.stroke();
+
+        if (element.endStyle === "arrow") {
+            const { point1, point2, point3 } = this.getLineArrow(element);
+            this.ctx.beginPath();
+            this.ctx.moveTo(...element.end);
+            this.ctx.lineTo(point1[0], point1[1]);
+            this.ctx.lineTo(point3[0], point3[1]);
+            this.ctx.lineTo(point2[0], point2[1]);
+            this.ctx.closePath();
+            this.ctx.fillStyle = element.color;
+            this.ctx.stroke();
+            this.ctx.fill();
+        }
+    }
+
+    public getLineArrow(element: IPPTLineElement) {
+        const r = 4;
+        const 𝜃 = 30 / 180 * Math.PI;
+        const cx = element.end[0];
+        const cy = element.end[1];
+        const lineLen = Math.hypot(cx, cy);
+        const scale = (lineLen + r) / lineLen;
+        const rx = cx * scale;
+        const ry = cy * scale;
+        const point1 = this.stageConfig.rotate(cx, cy, rx, ry, 𝜃);
+        const point2 = this.stageConfig.rotate(cx, cy, rx, ry, -𝜃);
+        return { point1, point2, point3: [rx, ry] };
     }
 
     public drawShape(element: IPPTShapeElement) {
