@@ -212,6 +212,19 @@ export default class Stage {
                 } ${rect.minY} Z`;
                 break;
             }
+            case SHAPE_TYPE.RECT_OPPOSITE_RADIUS: {
+                const radius = Math.min(element.width, element.height) * 0.2;
+                path = `M ${rect.minX + radius} ${rect.minY} L ${
+                    rect.maxX - radius
+                } ${rect.minY} Q ${rect.maxX} ${rect.minY} ${rect.maxX} ${
+                    rect.minY + radius
+                } L ${rect.maxX} ${rect.maxY} L ${rect.minX + radius} ${
+                    rect.maxY
+                } Q ${rect.minX} ${rect.maxY} ${rect.minX} ${
+                    rect.maxY - radius
+                } L ${rect.minX} ${rect.minY} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);
