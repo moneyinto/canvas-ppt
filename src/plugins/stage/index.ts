@@ -151,23 +151,52 @@ export default class Stage {
             }
             case SHAPE_TYPE.RECT_MINUS_SINGLE_ANGLE: {
                 const len = Math.min(element.width, element.height) * 0.4;
-                path = `M${rect.maxX} ${rect.minY + len}V${rect.maxY}H${rect.minX}V${rect.minY}H${rect.maxX - len}L${rect.maxX} ${rect.minY + len}Z`;
+                path = `M${rect.maxX} ${rect.minY + len}V${rect.maxY}H${
+                    rect.minX
+                }V${rect.minY}H${rect.maxX - len}L${rect.maxX} ${
+                    rect.minY + len
+                }Z`;
                 break;
             }
             case SHAPE_TYPE.RECT_MINUS_SAME_SIDE_ANGLE: {
                 const len = Math.min(element.width, element.height) * 0.2;
-                path = `M${rect.maxX} ${rect.minY + len}V${rect.maxY}H${rect.minX}V${rect.minY + len}L${rect.minX + len} ${rect.minY}H${rect.maxX - len}L${rect.maxX} ${rect.minY + len}Z`;
+                path = `M${rect.maxX} ${rect.minY + len}V${rect.maxY}H${
+                    rect.minX
+                }V${rect.minY + len}L${rect.minX + len} ${rect.minY}H${
+                    rect.maxX - len
+                }L${rect.maxX} ${rect.minY + len}Z`;
                 break;
             }
             case SHAPE_TYPE.RECT_MINUS_OPPOSITE_ANGLE: {
                 const len = Math.min(element.width, element.height) * 0.2;
-                path = `M${rect.maxX} ${rect.minY + len}V${rect.maxY}H${rect.minX + len}L${rect.minX} ${rect.maxY - len}V${rect.minY}H${rect.maxX - len}L${rect.maxX} ${rect.minY + len}Z`;
+                path = `M${rect.maxX} ${rect.minY + len}V${rect.maxY}H${
+                    rect.minX + len
+                }L${rect.minX} ${rect.maxY - len}V${rect.minY}H${
+                    rect.maxX - len
+                }L${rect.maxX} ${rect.minY + len}Z`;
                 break;
             }
             case SHAPE_TYPE.RECT_SINGLE_RADIUS_MINUS_SINGLE_ANGLE: {
                 const len = Math.min(element.width, element.height) * 0.2;
                 const radius = Math.min(element.width, element.height) * 0.2;
-                path = `M${rect.maxX} ${rect.minY + len}V${rect.maxY}H${rect.minX}V${rect.minY + radius}Q${rect.minX} ${rect.minY} ${rect.minX + radius} ${rect.minY}H${rect.maxX - len}L${rect.maxX} ${rect.minY + len}Z`;
+                path = `M${rect.maxX} ${rect.minY + len}V${rect.maxY}H${
+                    rect.minX
+                }V${rect.minY + radius}Q${rect.minX} ${rect.minY} ${
+                    rect.minX + radius
+                } ${rect.minY}H${rect.maxX - len}L${rect.maxX} ${
+                    rect.minY + len
+                }Z`;
+                break;
+            }
+            case SHAPE_TYPE.RECT_SINGLE_RADIUS: {
+                const radius = Math.min(element.width, element.height) * 0.2;
+                path = `M ${rect.minX} ${rect.minY} L ${rect.maxX - radius} ${
+                    rect.minY
+                } Q ${rect.maxX} ${rect.minY} ${rect.maxX} ${
+                    rect.minY + radius
+                } L ${rect.maxX} ${rect.maxY} L ${rect.minX} ${rect.maxY} L ${
+                    rect.minX
+                } ${rect.minY} Z`;
                 break;
             }
         }
