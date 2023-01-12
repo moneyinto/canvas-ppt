@@ -85,6 +85,8 @@ export default class Stage {
             this.ctx.translate(ox, oy);
             // 旋转画布
             this.ctx.rotate((element.rotate / 180) * Math.PI);
+        } else {
+            this.ctx.translate(x + element.left, y + element.top);
         }
 
         switch (element.type) {
@@ -104,13 +106,13 @@ export default class Stage {
     public drawLine(element: IPPTLineElement) {
         this.ctx.strokeStyle = element.color;
         this.ctx.lineWidth = element.borderWidth;
-        this.ctx.translate(element.left, element.top);
         if (element.style === "dashedPoint") {
             // 点线间隔
         } else if (element.style === "dashed") {
             this.ctx.setLineDash([8, 4]);
         }
 
+        this.ctx.beginPath();
         this.ctx.moveTo(...element.start);
         this.ctx.lineTo(...element.end);
 

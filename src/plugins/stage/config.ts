@@ -202,12 +202,40 @@ export default class StageConfig {
         if (this.operateElement) {
             const element = this.operateElement;
             if (element.type === "line") {
-                //
+                if (this.checkPointNearLine(
+                    [left, top],
+                    [
+                        element.left + element.start[0],
+                        element.top + element.start[1]
+                    ],
+                    [
+                        element.left + element.end[0],
+                        element.top + element.end[1]
+                    ]
+                )) {
+                    return element;
+                }
             } else {
                 const cx = element.left + element.width / 2;
                 const cy = element.top + element.height / 2;
-                const rect: IRectParameter = [element.left, element.top, element.width, element.height];
-                if (this.checkPointInRect(left, top, rect, cx, cy, element.rotate / 180 * Math.PI)) return element;
+                const rect: IRectParameter = [
+                    element.left,
+                    element.top,
+                    element.width,
+                    element.height
+                ];
+                if (
+                    this.checkPointInRect(
+                        left,
+                        top,
+                        rect,
+                        cx,
+                        cy,
+                        (element.rotate / 180) * Math.PI
+                    )
+                ) {
+                    return element;
+                }
             }
         }
 
@@ -215,14 +243,55 @@ export default class StageConfig {
         const elements = this.getSortElements(currentSlide?.elements || [], -1);
         return elements.find((element) => {
             if (element.type === "line") {
-                return false;
+                return this.checkPointNearLine(
+                    [left, top],
+                    [
+                        element.left + element.start[0],
+                        element.top + element.start[1]
+                    ],
+                    [
+                        element.left + element.end[0],
+                        element.top + element.end[1]
+                    ]
+                );
             } else {
                 const cx = element.left + element.width / 2;
                 const cy = element.top + element.height / 2;
-                const rect: IRectParameter = [element.left, element.top, element.width, element.height];
-                return this.checkPointInRect(left, top, rect, cx, cy, element.rotate / 180 * Math.PI);
+                const rect: IRectParameter = [
+                    element.left,
+                    element.top,
+                    element.width,
+                    element.height
+                ];
+                return this.checkPointInRect(
+                    left,
+                    top,
+                    rect,
+                    cx,
+                    cy,
+                    (element.rotate / 180) * Math.PI
+                );
             }
         });
+    }
+
+    public checkPointNearLine(
+        point: [number, number],
+        start: [number, number],
+        end: [number, number]
+    ) {
+        const distance = 0.2;
+        const A = start;
+        const B = end;
+        // 与A点的距离
+        const rA = Math.hypot(A[0] - point[0], A[1] - point[1]);
+        // 与B点的距离
+        const rB = Math.hypot(B[0] - point[0], B[1] - point[1]);
+        // AB点距离
+        const rAB = Math.hypot(A[0] - B[0], A[1] - B[1]);
+        // 判断条件 -- 与A点距离 与B点距离 两者之和 与 AB点距离 的差 小于 distance
+        // 三个条件满足一个即为符合要求的元素
+        return rA + rB - rAB < distance;
     }
 
     public checkPointInRect(
@@ -233,13 +302,7 @@ export default class StageConfig {
         cy: number,
         angle: number
     ) {
-        const translatePoint = this.rotate(
-            x,
-            y,
-            cx,
-            cy,
-            -angle
-        );
+        const translatePoint = this.rotate(x, y, cx, cy, -angle);
         const minX = rect[0];
         const maxX = rect[0] + rect[2];
         const minY = rect[1];
