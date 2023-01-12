@@ -148,7 +148,38 @@ export interface IPPTShapeElement extends IPPTBaseElement {
     text?: IShapeText;
 }
 
-export type IPPTElement = IPPTShapeElement;
+/**
+ * 线条元素
+ *
+ * type: 元素类型 (line)
+ *
+ * start: 起点位置 ([x, y])
+ *
+ * end: 终点位置 ([x, y])
+ *
+ * style: 线条样式（实线、虚线、点线间隔）
+ *
+ * color: 线条颜色
+ *
+ * startStyle: 起点样式（无、箭头、圆点）
+ *
+ * endStyle: 终点样式（无、箭头、圆点）
+ *
+ * borderWidth: 线粗
+ */
+
+export interface IPPTLineElement extends Omit<IPPTBaseElement, "height" | "width"> {
+    type: "line";
+    start: [number, number];
+    end: [number, number];
+    style: "solid" | "dashed" | "dashedPoint";
+    color: string;
+    startStyle: "" | "arrow" | "dot";
+    endStyle: "" | "arrow" | "dot";
+    borderWidth: number;
+}
+
+export type IPPTElement = IPPTShapeElement | IPPTLineElement;
 
 export interface ICreatingTextElement {
     type: "text";

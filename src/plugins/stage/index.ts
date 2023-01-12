@@ -1,7 +1,7 @@
 import Listener from "../listener";
 import StageConfig from "./config";
 import { throttleRAF } from "@/utils";
-import { IPPTElement, IPPTShapeElement } from "../types/element";
+import { IPPTElement, IPPTLineElement, IPPTShapeElement } from "../types/element";
 import { SHAPE_TYPE } from "../config/shapes";
 
 export default class Stage {
@@ -77,22 +77,44 @@ export default class Stage {
         // 缩放画布
         this.ctx.scale(zoom, zoom);
 
-        const ox = x + element.left + element.width / 2;
-        const oy = y + element.top + element.height / 2;
+        if (element.type !== "line") {
+            const ox = x + element.left + element.width / 2;
+            const oy = y + element.top + element.height / 2;
 
-        // 平移坐标原点
-        this.ctx.translate(ox, oy);
-        // 旋转画布
-        this.ctx.rotate((element.rotate / 180) * Math.PI);
+            // 平移坐标原点
+            this.ctx.translate(ox, oy);
+            // 旋转画布
+            this.ctx.rotate((element.rotate / 180) * Math.PI);
+        }
 
         switch (element.type) {
             case "shape": {
                 this.drawShape(element);
                 break;
             }
+            case "line": {
+                this.drawLine(element);
+                break;
+            }
         }
 
         this.ctx.restore();
+    }
+
+    public drawLine(element: IPPTLineElement) {
+        this.ctx.strokeStyle = element.color;
+        this.ctx.lineWidth = element.borderWidth;
+        this.ctx.translate(element.left, element.top);
+        if (element.style === "dashedPoint") {
+            // 点线间隔
+        } else if (element.style === "dashed") {
+            this.ctx.setLineDash([8, 4]);
+        }
+
+        this.ctx.moveTo(...element.start);
+        this.ctx.lineTo(...element.end);
+
+        this.ctx.stroke();
     }
 
     public drawShape(element: IPPTShapeElement) {

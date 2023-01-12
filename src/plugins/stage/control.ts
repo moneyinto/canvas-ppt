@@ -4,7 +4,7 @@ import StageConfig from "./config";
 import { throttleRAF, deepClone, normalizeAngle } from "@/utils";
 import Command from "../command";
 import { createShapeElement } from "./create";
-import { IPPTElement } from "../types/element";
+import { IPPTElement, IPPTLineElement } from "../types/element";
 import { History } from "../editor/history";
 import { ELEMENT_RESIZE, THEME_COLOR } from "../config/stage";
 import { IElementOptions, IRectParameter, IRects } from "../types";
@@ -92,6 +92,7 @@ export default class ControlStage extends Stage {
             if (
                 this.stageConfig.opreateType &&
                 this.stageConfig.operateElement &&
+                this.stageConfig.operateElement.type !== "line" &&
                 !this._canResizeElement
             ) {
                 // resize rotate操作
@@ -155,109 +156,111 @@ export default class ControlStage extends Stage {
             this._startPoint = [evt.pageX, evt.pageY];
             this.resetDrawOprate();
         } else if (this._canResizeElement && this.stageConfig.operateElement) {
-            // 旋转缩放元素
-            if (this.stageConfig.opreateType === "ANGLE") {
-                // 旋转
-                const element = this.stageConfig.operateElement;
-                const cx = element.left + element.width / 2;
-                const cy = element.top + element.height / 2;
+            if (this.stageConfig.operateElement.type !== "line") {
+                // 旋转缩放元素
+                if (this.stageConfig.opreateType === "ANGLE") {
+                    // 旋转
+                    const element = this.stageConfig.operateElement;
+                    const cx = element.left + element.width / 2;
+                    const cy = element.top + element.height / 2;
 
-                const { left, top } = this._getMousePosition(evt);
-                const currentAngle = Math.atan2(top - cy, left - cx);
-                const changeAngle = currentAngle - this._startAngle;
-                const angle = normalizeAngle(changeAngle + this._storeAngle);
-                this.stageConfig.setOperateElement({
-                    ...this.stageConfig.operateElement,
-                    rotate: angle
-                });
-                this.resetDrawOprate();
-            } else {
-                // 缩放
-                // const element = this.stageConfig.operateElement;
-                const originElement = this._opreateCacheElement;
-                if (originElement) {
                     const { left, top } = this._getMousePosition(evt);
-                    const storeData = { ofx: 0, ofy: 0, width: originElement.width, height: originElement.height };
+                    const currentAngle = Math.atan2(top - cy, left - cx);
+                    const changeAngle = currentAngle - this._startAngle;
+                    const angle = normalizeAngle(changeAngle + this._storeAngle);
+                    this.stageConfig.setOperateElement({
+                        ...this.stageConfig.operateElement,
+                        rotate: angle
+                    });
+                    this.resetDrawOprate();
+                } else {
+                    // 缩放
+                    // const element = this.stageConfig.operateElement;
+                    const originElement = this._opreateCacheElement;
+                    if (originElement && originElement.type !== "line") {
+                        const { left, top } = this._getMousePosition(evt);
+                        const storeData = { ofx: 0, ofy: 0, width: originElement.width, height: originElement.height };
 
-                    const resizeBottom = /BOTTOM/.test(this.stageConfig.opreateType);
-                    const resizeTop = /TOP/.test(this.stageConfig.opreateType);
-                    const resizeLeft = /LEFT/.test(this.stageConfig.opreateType);
-                    const resizeRight = /RIGHT/.test(this.stageConfig.opreateType);
+                        const resizeBottom = /BOTTOM/.test(this.stageConfig.opreateType);
+                        const resizeTop = /TOP/.test(this.stageConfig.opreateType);
+                        const resizeLeft = /LEFT/.test(this.stageConfig.opreateType);
+                        const resizeRight = /RIGHT/.test(this.stageConfig.opreateType);
 
-                    const cx = originElement.left + originElement.width / 2;
-                    const cy = originElement.top + originElement.height / 2;
-                    const angle = (originElement.rotate / 180) * Math.PI;
-                    let [rx, ry] = this.stageConfig.rotate(
-                        originElement.left,
-                        originElement.top,
-                        cx,
-                        cy,
-                        angle
-                    );
-
-                    if (resizeLeft || resizeRight) {
-                        const { ofx, ofy, width } = this._horizontalZoom(
-                            left,
-                            top,
-                            this._startOriginPoint[0],
-                            this._startOriginPoint[1],
-                            resizeLeft ? -1 : 1,
-                            originElement
+                        const cx = originElement.left + originElement.width / 2;
+                        const cy = originElement.top + originElement.height / 2;
+                        const angle = (originElement.rotate / 180) * Math.PI;
+                        let [rx, ry] = this.stageConfig.rotate(
+                            originElement.left,
+                            originElement.top,
+                            cx,
+                            cy,
+                            angle
                         );
 
-                        storeData.width = width;
-                        storeData.ofx = storeData.ofx + ofx;
-                        storeData.ofy = storeData.ofy + ofy;
+                        if (resizeLeft || resizeRight) {
+                            const { ofx, ofy, width } = this._horizontalZoom(
+                                left,
+                                top,
+                                this._startOriginPoint[0],
+                                this._startOriginPoint[1],
+                                resizeLeft ? -1 : 1,
+                                originElement
+                            );
 
-                        if (resizeLeft) {
-                            rx = rx + ofx;
-                            ry = ry + ofy;
+                            storeData.width = width;
+                            storeData.ofx = storeData.ofx + ofx;
+                            storeData.ofy = storeData.ofy + ofy;
+
+                            if (resizeLeft) {
+                                rx = rx + ofx;
+                                ry = ry + ofy;
+                            }
                         }
-                    }
 
-                    if (resizeTop || resizeBottom) {
-                        const { ofx, ofy, height } = this._verticalZoom(
-                            left,
-                            top,
-                            this._startOriginPoint[0],
-                            this._startOriginPoint[1],
-                            resizeTop ? -1 : 1,
-                            originElement
+                        if (resizeTop || resizeBottom) {
+                            const { ofx, ofy, height } = this._verticalZoom(
+                                left,
+                                top,
+                                this._startOriginPoint[0],
+                                this._startOriginPoint[1],
+                                resizeTop ? -1 : 1,
+                                originElement
+                            );
+
+                            storeData.height = height;
+                            storeData.ofx = storeData.ofx + ofx;
+                            storeData.ofy = storeData.ofy + ofy;
+
+                            if (resizeTop) {
+                                rx = rx + ofx;
+                                ry = ry + ofy;
+                            }
+                        }
+
+                        // 变化后的中心点
+                        const changeCX = cx + storeData.ofx / 2;
+                        const changeCY = cy + storeData.ofy / 2;
+
+                        const [ox, oy] = this.stageConfig.rotate(
+                            rx,
+                            ry,
+                            changeCX,
+                            changeCY,
+                            -angle
                         );
 
-                        storeData.height = height;
-                        storeData.ofx = storeData.ofx + ofx;
-                        storeData.ofy = storeData.ofy + ofy;
+                        // 限制缩放的最小值
+                        if (storeData.width > 0 && storeData.height > 0) {
+                            this.stageConfig.setOperateElement({
+                                ...originElement,
+                                width: storeData.width,
+                                height: storeData.height,
+                                left: ox,
+                                top: oy
+                            });
 
-                        if (resizeTop) {
-                            rx = rx + ofx;
-                            ry = ry + ofy;
+                            this.resetDrawOprate();
                         }
-                    }
-
-                    // 变化后的中心点
-                    const changeCX = cx + storeData.ofx / 2;
-                    const changeCY = cy + storeData.ofy / 2;
-
-                    const [ox, oy] = this.stageConfig.rotate(
-                        rx,
-                        ry,
-                        changeCX,
-                        changeCY,
-                        -angle
-                    );
-
-                    // 限制缩放的最小值
-                    if (storeData.width > 0 && storeData.height > 0) {
-                        this.stageConfig.setOperateElement({
-                            ...originElement,
-                            width: storeData.width,
-                            height: storeData.height,
-                            left: ox,
-                            top: oy
-                        });
-
-                        this.resetDrawOprate();
                     }
                 }
             }
@@ -269,7 +272,7 @@ export default class ControlStage extends Stage {
             // 悬浮到元素
             const { left, top } = this._getMousePosition(evt);
 
-            if (this.stageConfig.operateElement) {
+            if (this.stageConfig.operateElement && this.stageConfig.operateElement.type !== "line") {
                 // 鼠标悬浮到操作区域展示形式
                 const element = this.stageConfig.operateElement;
                 const zoom = this.stageConfig.zoom;
@@ -536,44 +539,46 @@ export default class ControlStage extends Stage {
         // 缩放画布
         this.ctx.scale(zoom, zoom);
 
-        const ox = x + element.left + element.width / 2;
-        const oy = y + element.top + element.height / 2;
+        if (element.type !== "line") {
+            const ox = x + element.left + element.width / 2;
+            const oy = y + element.top + element.height / 2;
 
-        // 平移坐标原点
-        this.ctx.translate(ox, oy);
-        // 旋转画布
-        this.ctx.rotate((element.rotate / 180) * Math.PI);
+            // 平移坐标原点
+            this.ctx.translate(ox, oy);
+            // 旋转画布
+            this.ctx.rotate((element.rotate / 180) * Math.PI);
 
-        this.ctx.strokeStyle = THEME_COLOR;
-        this.ctx.lineWidth = 1 / zoom;
-        // 增加选中框与元素的间隙距离
-        const margin = 1;
-        const offsetX = -element.width / 2 - margin;
-        const offsetY = -element.height / 2 - margin;
-        this.ctx.strokeRect(
-            offsetX,
-            offsetY,
-            element.width + margin * 2,
-            element.height + margin * 2
-        );
+            this.ctx.strokeStyle = THEME_COLOR;
+            this.ctx.lineWidth = 1 / zoom;
+            // 增加选中框与元素的间隙距离
+            const margin = 1;
+            const offsetX = -element.width / 2 - margin;
+            const offsetY = -element.height / 2 - margin;
+            this.ctx.strokeRect(
+                offsetX,
+                offsetY,
+                element.width + margin * 2,
+                element.height + margin * 2
+            );
 
-        const dashedLinePadding = 0 + margin / zoom;
-        const dashWidth = 8 / zoom;
+            const dashedLinePadding = 0 + margin / zoom;
+            const dashWidth = 8 / zoom;
 
-        const rects: IRects = this._getElementResizePoints(
-            offsetX,
-            offsetY,
-            element.width + margin * 2,
-            element.height + margin * 2,
-            dashedLinePadding,
-            dashWidth
-        );
-        this.ctx.fillStyle = "#ffffff";
-        this.ctx.strokeStyle = THEME_COLOR;
-        this.ctx.lineWidth = 1 / zoom;
-        for (const key in rects) {
-            this.ctx.fillRect(...rects[key]);
-            this.ctx.strokeRect(...rects[key]);
+            const rects: IRects = this._getElementResizePoints(
+                offsetX,
+                offsetY,
+                element.width + margin * 2,
+                element.height + margin * 2,
+                dashedLinePadding,
+                dashWidth
+            );
+            this.ctx.fillStyle = "#ffffff";
+            this.ctx.strokeStyle = THEME_COLOR;
+            this.ctx.lineWidth = 1 / zoom;
+            for (const key in rects) {
+                this.ctx.fillRect(...rects[key]);
+                this.ctx.strokeRect(...rects[key]);
+            }
         }
 
         this.ctx.restore();
@@ -585,7 +590,7 @@ export default class ControlStage extends Stage {
         sx: number,
         sy: number,
         direction: number,
-        originElement: IPPTElement
+        originElement: Exclude<IPPTElement, IPPTLineElement>
     ) {
         const oldWidth = originElement.width;
         const angle = (originElement.rotate / 180) * Math.PI;
@@ -623,7 +628,7 @@ export default class ControlStage extends Stage {
         sx: number,
         sy: number,
         direction: number,
-        originElement: IPPTElement
+        originElement: Exclude<IPPTElement, IPPTLineElement>
     ) {
         const oldHeight = originElement.height;
         const angle = (originElement.rotate / 180) * Math.PI;

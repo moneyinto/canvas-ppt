@@ -201,19 +201,27 @@ export default class StageConfig {
         // 当存在操作选中元素是时，因为选中元素处于层级最高，优先判断选中元素
         if (this.operateElement) {
             const element = this.operateElement;
-            const cx = element.left + element.width / 2;
-            const cy = element.top + element.height / 2;
-            const rect: IRectParameter = [element.left, element.top, element.width, element.height];
-            if (this.checkPointInRect(left, top, rect, cx, cy, element.rotate / 180 * Math.PI)) return element;
+            if (element.type === "line") {
+                //
+            } else {
+                const cx = element.left + element.width / 2;
+                const cy = element.top + element.height / 2;
+                const rect: IRectParameter = [element.left, element.top, element.width, element.height];
+                if (this.checkPointInRect(left, top, rect, cx, cy, element.rotate / 180 * Math.PI)) return element;
+            }
         }
 
         const currentSlide = this.getCurrentSlide();
         const elements = this.getSortElements(currentSlide?.elements || [], -1);
         return elements.find((element) => {
-            const cx = element.left + element.width / 2;
-            const cy = element.top + element.height / 2;
-            const rect: IRectParameter = [element.left, element.top, element.width, element.height];
-            return this.checkPointInRect(left, top, rect, cx, cy, element.rotate / 180 * Math.PI);
+            if (element.type === "line") {
+                return false;
+            } else {
+                const cx = element.left + element.width / 2;
+                const cy = element.top + element.height / 2;
+                const rect: IRectParameter = [element.left, element.top, element.width, element.height];
+                return this.checkPointInRect(left, top, rect, cx, cy, element.rotate / 180 * Math.PI);
+            }
         });
     }
 

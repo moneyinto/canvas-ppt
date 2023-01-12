@@ -35,6 +35,20 @@ export const slides: ISlide[] = [
                 top: 120.71078431372548,
                 type: "shape",
                 width: 370.91503267973854
+            },
+            {
+                color: "#5b9bd5",
+                id: "7Yw88R",
+                left: 300,
+                top: 600,
+                start: [0, 0],
+                end: [100, 80],
+                style: "dashed",
+                startStyle: "",
+                endStyle: "",
+                name: "线条",
+                type: "line",
+                borderWidth: 2
             }
         ]
     }
