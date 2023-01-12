@@ -446,6 +446,32 @@ export default class ControlStage extends Stage {
         return newElement;
     }
 
+    private _getElementLinePoints(
+        x: number,
+        y: number,
+        end: [number, number],
+        rectWidth: number
+    ) {
+        const START: IRectParameter = [
+            x - rectWidth,
+            y - rectWidth,
+            rectWidth,
+            rectWidth
+        ];
+
+        const END: IRectParameter = [
+            x + end[0],
+            y + end[1],
+            rectWidth,
+            rectWidth
+        ];
+
+        return {
+            START,
+            END
+        };
+    }
+
     /**
      * 考虑要不要做个map的换成 ？？？？？？？？？？？？？？？？？？？？？
      * @param param0 获取选中区域的九点区域坐标
@@ -543,7 +569,25 @@ export default class ControlStage extends Stage {
         // 缩放画布
         this.ctx.scale(zoom, zoom);
 
-        if (element.type !== "line") {
+        if (element.type === "line") {
+            this.ctx.fillStyle = "#ffffff";
+            this.ctx.strokeStyle = THEME_COLOR;
+            this.ctx.lineWidth = 1 / zoom;
+            const dashWidth = 8 / zoom;
+            const rects: IRects = this._getElementLinePoints(
+                x + element.left,
+                y + element.top,
+                element.end,
+                dashWidth
+            );
+            this.ctx.fillStyle = "#ffffff";
+            this.ctx.strokeStyle = THEME_COLOR;
+            this.ctx.lineWidth = 1 / zoom;
+            for (const key in rects) {
+                this.ctx.fillRect(...rects[key]);
+                this.ctx.strokeRect(...rects[key]);
+            }
+        } else {
             const ox = x + element.left + element.width / 2;
             const oy = y + element.top + element.height / 2;
 
