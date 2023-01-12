@@ -92,13 +92,12 @@ export default class ControlStage extends Stage {
             if (
                 this.stageConfig.opreateType &&
                 this.stageConfig.operateElement &&
-                this.stageConfig.operateElement.type !== "line" &&
                 !this._canResizeElement
             ) {
                 // resize rotate操作
                 this._canResizeElement = true;
                 const element = this.stageConfig.operateElement;
-                if (this.stageConfig.opreateType === "ANGLE") {
+                if (element.type !== "line" && this.stageConfig.opreateType === "ANGLE") {
                     // 旋转
                     const cx = element.left + element.width / 2;
                     const cy = element.top + element.height / 2;
@@ -278,6 +277,24 @@ export default class ControlStage extends Stage {
                         }
                     }
                 }
+            } else {
+                const { left, top } = this._getMousePosition(evt);
+                const element = this.stageConfig.operateElement;
+                // 线条控制
+                if (this.stageConfig.opreateType === "START") {
+                    this.stageConfig.setOperateElement({
+                        ...element,
+                        left,
+                        top,
+                        end: [element.left - left + element.end[0], element.top - top + element.end[1]]
+                    });
+                } else if (this.stageConfig.opreateType === "END") {
+                    this.stageConfig.setOperateElement({
+                        ...element,
+                        end: [left - element.left, top - element.top]
+                    });
+                }
+                this.resetDrawOprate();
             }
         } else if (
             !this.stageConfig.insertElement &&
@@ -502,14 +519,14 @@ export default class ControlStage extends Stage {
     ) {
         const START: IRectParameter = [
             x - rectWidth,
-            y - rectWidth,
+            y - rectWidth / 2,
             rectWidth,
             rectWidth
         ];
 
         const END: IRectParameter = [
             x + end[0],
-            y + end[1],
+            y + end[1] - rectWidth / 2,
             rectWidth,
             rectWidth
         ];
