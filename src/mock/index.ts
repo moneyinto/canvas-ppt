@@ -42,13 +42,13 @@ export const slides: ISlide[] = [
                 left: 300,
                 top: 400,
                 start: [0, 0],
-                end: [100, 80],
+                end: [-100, 80],
                 style: "solid",
-                startStyle: "",
+                startStyle: "arrow",
                 endStyle: "arrow",
                 name: "线条",
                 type: "line",
-                borderWidth: 2
+                borderWidth: 12
             }
         ]
     }

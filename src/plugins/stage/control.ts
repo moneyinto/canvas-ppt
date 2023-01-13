@@ -516,12 +516,25 @@ export default class ControlStage extends Stage {
                 }
                 case "line": {
                     const { left, top } = this._getMousePosition(evt);
-                    const endStyle = this.stageConfig.insertElement.data.type === LINE_TYPE.ARROW ? "arrow" : "";
+                    const style = {
+                        [LINE_TYPE.BEELINE]: "",
+                        [LINE_TYPE.ARROW]: "arrow",
+                        [LINE_TYPE.DOUBLE_ARROW]: "arrow",
+                        [LINE_TYPE.DOT]: "dot",
+                        [LINE_TYPE.DOUBLE_DOT]: "dot"
+                    };
+
+                    const startStyle = style[this.stageConfig.insertElement.data.type] as "" | "arrow" | "dot";
+                    const endStyle = style[this.stageConfig.insertElement.data.type] as "" | "arrow" | "dot";
+
                     newElement = createLineElement(
                         this._startOriginPoint[0],
                         this._startOriginPoint[1],
-                        [left - this._startOriginPoint[0], top - this._startOriginPoint[1]],
-                        "",
+                        [
+                            left - this._startOriginPoint[0],
+                            top - this._startOriginPoint[1]
+                        ],
+                        startStyle,
                         endStyle
                     );
                     break;

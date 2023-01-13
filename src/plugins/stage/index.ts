@@ -119,7 +119,7 @@ export default class Stage {
         this.ctx.stroke();
 
         if (element.endStyle === "arrow") {
-            const { point1, point2, point3 } = this.getLineArrow(element);
+            const { point1, point2, point3 } = this.getLineEndArrow(element);
             this.ctx.beginPath();
             this.ctx.moveTo(...element.end);
             this.ctx.lineTo(point1[0], point1[1]);
@@ -130,20 +130,47 @@ export default class Stage {
             this.ctx.stroke();
             this.ctx.fill();
         }
+
+        if (element.startStyle === "arrow") {
+            const { point1, point2, point3 } = this.getLineStartArrow(element);
+            this.ctx.beginPath();
+            this.ctx.moveTo(...element.start);
+            this.ctx.lineTo(point1[0], point1[1]);
+            this.ctx.lineTo(point3[0], point3[1]);
+            this.ctx.lineTo(point2[0], point2[1]);
+            this.ctx.closePath();
+            this.ctx.fillStyle = element.color;
+            this.ctx.stroke();
+            this.ctx.fill();
+        }
     }
 
-    public getLineArrow(element: IPPTLineElement) {
+    public getLineStartArrow(element: IPPTLineElement) {
         const r = 4;
         const 𝜃 = 30 / 180 * Math.PI;
-        const cx = element.end[0];
-        const cy = element.end[1];
-        const lineLen = Math.hypot(cx, cy);
+        const rx = element.start[0];
+        const ry = element.start[1];
+        const lineLen = Math.hypot(element.end[0], element.end[1]);
+        const scale = r / lineLen;
+        const cx = -element.end[0] * scale;
+        const cy = -element.end[1] * scale;
+        const point1 = this.stageConfig.rotate(rx, ry, cx, cy, 𝜃);
+        const point2 = this.stageConfig.rotate(rx, ry, cx, cy, -𝜃);
+        return { point1, point2, point3: [cx, cy] };
+    }
+
+    public getLineEndArrow(element: IPPTLineElement) {
+        const r = 4;
+        const 𝜃 = 30 / 180 * Math.PI;
+        const rx = element.end[0];
+        const ry = element.end[1];
+        const lineLen = Math.hypot(rx, ry);
         const scale = (lineLen + r) / lineLen;
-        const rx = cx * scale;
-        const ry = cy * scale;
-        const point1 = this.stageConfig.rotate(cx, cy, rx, ry, 𝜃);
-        const point2 = this.stageConfig.rotate(cx, cy, rx, ry, -𝜃);
-        return { point1, point2, point3: [rx, ry] };
+        const cx = rx * scale;
+        const cy = ry * scale;
+        const point1 = this.stageConfig.rotate(rx, ry, cx, cy, 𝜃);
+        const point2 = this.stageConfig.rotate(rx, ry, cx, cy, -𝜃);
+        return { point1, point2, point3: [cx, cy] };
     }
 
     public drawShape(element: IPPTShapeElement) {
