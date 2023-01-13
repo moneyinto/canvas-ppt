@@ -10,6 +10,7 @@ export interface IShapeItem {
     name: string;
     path: string;
     type: IShape;
+    fill?: boolean;
 }
 
 export interface ILineItem {
@@ -17,6 +18,7 @@ export interface ILineItem {
     name: string;
     path: string;
     type: ILine;
+    fill?: boolean;
 }
 
 export interface IShapePoolItem {

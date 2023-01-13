@@ -8,6 +8,7 @@ import { IPPTElement, IPPTLineElement } from "../types/element";
 import { History } from "../editor/history";
 import { ELEMENT_RESIZE, THEME_COLOR } from "../config/stage";
 import { IElementOptions, IRectParameter, IRects } from "../types";
+import { LINE_TYPE } from "../config/shapes";
 
 export default class ControlStage extends Stage {
     private _command: Command;
@@ -515,12 +516,13 @@ export default class ControlStage extends Stage {
                 }
                 case "line": {
                     const { left, top } = this._getMousePosition(evt);
+                    const endStyle = this.stageConfig.insertElement.data.type === LINE_TYPE.ARROW ? "arrow" : "";
                     newElement = createLineElement(
                         this._startOriginPoint[0],
                         this._startOriginPoint[1],
                         [left - this._startOriginPoint[0], top - this._startOriginPoint[1]],
                         "",
-                        ""
+                        endStyle
                     );
                     break;
                 }

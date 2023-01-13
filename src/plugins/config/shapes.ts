@@ -13,7 +13,8 @@ export enum SHAPE_TYPE {
 }
 
 export enum LINE_TYPE {
-    BEELINE = "beeline"
+    BEELINE = "beeline",
+    ARROW = "arrow"
 }
 
 export const SHAPE_LIST: IShapePoolItem[] = [
@@ -26,6 +27,13 @@ export const SHAPE_LIST: IShapePoolItem[] = [
                 name: "直线",
                 path: "m1 1 14 14",
                 type: LINE_TYPE.BEELINE
+            },
+            {
+                viewBox: 18,
+                name: "箭头",
+                path: "m1 1 12 12 M14 14 L10 14 L14 10Z",
+                type: LINE_TYPE.ARROW,
+                fill: true
             }
         ]
     },

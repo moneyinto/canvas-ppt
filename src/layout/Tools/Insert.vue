@@ -56,7 +56,7 @@
                                                 vector-effect="non-scaling-stroke"
                                                 stroke-linecap="butt"
                                                 stroke-miterlimit="8"
-                                                fill="transparent"
+                                                :fill="!!shape.fill ? '#999' : 'transparent'"
                                                 stroke="#999"
                                                 stroke-width="1px"
                                                 :d="shape.path"
