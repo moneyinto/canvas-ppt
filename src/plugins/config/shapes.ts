@@ -44,6 +44,20 @@ export const SHAPE_LIST: IShapePoolItem[] = [
                 path: "m3 3 10 10 M14 14 L10 12 L12 10Z M1 1 L5 3 L3 5Z",
                 type: LINE_TYPE.DOUBLE_ARROW,
                 fill: true
+            },
+            {
+                viewBox: 18,
+                name: "圆头",
+                path: "m1 1 12 12 M 10 12 a 2 2 0 1 0 4 0 M 14 12 a 2 2 0 1 0 -4 0 Z",
+                type: LINE_TYPE.DOT,
+                fill: true
+            },
+            {
+                viewBox: 18,
+                name: "双圆头",
+                path: "m3 3 10 10 M 1 3 a 2 2 0 1 0 4 0 M 5 3 a 2 2 0 1 0 -4 0 Z M 10 12 a 2 2 0 1 0 4 0 M 14 12 a 2 2 0 1 0 -4 0 Z",
+                type: LINE_TYPE.DOUBLE_DOT,
+                fill: true
             }
         ]
     },

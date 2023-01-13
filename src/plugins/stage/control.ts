@@ -524,8 +524,20 @@ export default class ControlStage extends Stage {
                         [LINE_TYPE.DOUBLE_DOT]: "dot"
                     };
 
-                    const startStyle = style[this.stageConfig.insertElement.data.type] as "" | "arrow" | "dot";
-                    const endStyle = style[this.stageConfig.insertElement.data.type] as "" | "arrow" | "dot";
+                    let startStyle: "" | "arrow" | "dot" = "";
+                    if (
+                        this.stageConfig.insertElement.data.type ===
+                            LINE_TYPE.DOUBLE_ARROW ||
+                        this.stageConfig.insertElement.data.type ===
+                            LINE_TYPE.DOUBLE_DOT
+                    ) {
+                        startStyle = style[
+                            this.stageConfig.insertElement.data.type
+                        ] as "" | "arrow" | "dot";
+                    }
+                    const endStyle = style[
+                        this.stageConfig.insertElement.data.type
+                    ] as "" | "arrow" | "dot";
 
                     newElement = createLineElement(
                         this._startOriginPoint[0],

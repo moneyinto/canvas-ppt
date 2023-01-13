@@ -45,7 +45,7 @@ export const slides: ISlide[] = [
                 end: [-100, 80],
                 style: "solid",
                 startStyle: "arrow",
-                endStyle: "arrow",
+                endStyle: "dot",
                 name: "线条",
                 type: "line",
                 borderWidth: 12

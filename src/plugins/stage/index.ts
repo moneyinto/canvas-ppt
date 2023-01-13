@@ -131,6 +131,14 @@ export default class Stage {
             this.ctx.fill();
         }
 
+        if (element.endStyle === "dot") {
+            this.ctx.fillStyle = element.color;
+            this.ctx.beginPath();
+            this.ctx.arc(element.end[0], element.end[1], element.borderWidth, 0, 2 * Math.PI);
+            this.ctx.closePath();
+            this.ctx.fill();
+        }
+
         if (element.startStyle === "arrow") {
             const { point1, point2, point3 } = this.getLineStartArrow(element);
             this.ctx.beginPath();
@@ -141,6 +149,14 @@ export default class Stage {
             this.ctx.closePath();
             this.ctx.fillStyle = element.color;
             this.ctx.stroke();
+            this.ctx.fill();
+        }
+
+        if (element.startStyle === "dot") {
+            this.ctx.fillStyle = element.color;
+            this.ctx.beginPath();
+            this.ctx.arc(element.start[0], element.start[1], element.borderWidth, 0, 2 * Math.PI);
+            this.ctx.closePath();
             this.ctx.fill();
         }
     }
