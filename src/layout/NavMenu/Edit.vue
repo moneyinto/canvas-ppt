@@ -5,37 +5,61 @@
             <a-menu>
                 <a-menu-item>
                     <div class="ppt-menu-option">
-                        <PPTIcon icon="undo" /> &nbsp;&nbsp;撤销
+                        <PPTIcon icon="undo" />
+                        &nbsp;&nbsp;撤销
                     </div>
                 </a-menu-item>
                 <a-menu-item>
                     <div class="ppt-menu-option">
-                        <PPTIcon icon="redo" /> &nbsp;&nbsp;重做
-                    </div>
-                </a-menu-item>
-                <a-menu-divider />
-                <a-menu-item>
-                    <div class="ppt-menu-option">
-                        <PPTIcon icon="cut" /> &nbsp;&nbsp;剪切
-                    </div>
-                </a-menu-item>
-                <a-menu-item>
-                    <div class="ppt-menu-option">
-                        <PPTIcon icon="copy" /> &nbsp;&nbsp;复制
-                    </div>
-                </a-menu-item>
-                <a-menu-item>
-                    <div class="ppt-menu-option">
-                        <PPTIcon icon="paste" /> &nbsp;&nbsp;粘贴
+                        <PPTIcon icon="redo" />
+                        &nbsp;&nbsp;重做
                     </div>
                 </a-menu-item>
                 <a-menu-divider />
                 <a-menu-item>
                     <div class="ppt-menu-option">
-                        <PPTIcon icon="all" /> &nbsp;&nbsp;全选
+                        <PPTIcon icon="cut" />
+                        &nbsp;&nbsp;剪切
+                    </div>
+                </a-menu-item>
+                <a-menu-item>
+                    <div class="ppt-menu-option">
+                        <PPTIcon icon="copy" />
+                        &nbsp;&nbsp;复制
+                    </div>
+                </a-menu-item>
+                <a-menu-item>
+                    <div class="ppt-menu-option">
+                        <PPTIcon icon="paste" />
+                        &nbsp;&nbsp;粘贴
+                    </div>
+                </a-menu-item>
+                <a-menu-divider />
+                <a-menu-item>
+                    <div class="ppt-menu-option">
+                        <PPTIcon icon="all" />
+                        &nbsp;&nbsp;全选
+                    </div>
+                </a-menu-item>
+                <a-menu-divider />
+                <a-menu-item>
+                    <div class="ppt-menu-option" @click="onSave">
+                        <PPTIcon style="margin: 0 5px" icon="save" :size="14" />
+                        &nbsp;&nbsp;保存
                     </div>
                 </a-menu-item>
             </a-menu>
         </template>
     </a-dropdown>
 </template>
+
+<script lang="ts" setup>
+import Editor from "@/plugins/editor";
+import { inject, Ref } from "vue";
+
+const instance = inject<Ref<Editor>>("instance");
+
+const onSave = () => {
+    console.log(instance?.value.stageConfig.slides);
+};
+</script>

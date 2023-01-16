@@ -32,7 +32,8 @@ const icons: { [key: string]: string } = {
     add: new URL("@/assets/icons/add.svg", import.meta.url).href,
     down: new URL("@/assets/icons/down.svg", import.meta.url).href,
     image: new URL("@/assets/icons/image.svg", import.meta.url).href,
-    shape: new URL("@/assets/icons/shape.svg", import.meta.url).href
+    shape: new URL("@/assets/icons/shape.svg", import.meta.url).href,
+    save: new URL("@/assets/icons/save.svg", import.meta.url).href
 };
 
 const iconUrl = computed(() => icons[icon.value]);
