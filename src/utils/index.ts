@@ -61,3 +61,7 @@ export const normalizeAngle = (angle: number): number => {
     }
     return newAngle / Math.PI * 180;
 };
+
+export const checkIsMac = () => {
+    return /macintosh|mac os x/i.test(navigator.userAgent);
+};

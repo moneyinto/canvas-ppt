@@ -1,7 +1,7 @@
 import Stage from ".";
 import Listener from "../listener";
 import StageConfig from "./config";
-import { throttleRAF, deepClone, normalizeAngle } from "@/utils";
+import { throttleRAF, deepClone, normalizeAngle, checkIsMac } from "@/utils";
 import Command from "../command";
 import { createLineElement, createShapeElement } from "./create";
 import { IPPTElement, IPPTLineElement } from "../types/element";
@@ -9,6 +9,9 @@ import { History } from "../editor/history";
 import { ELEMENT_RESIZE, THEME_COLOR } from "../config/stage";
 import { IElementOptions, IRectParameter, IRects } from "../types";
 import { LINE_TYPE } from "../config/shapes";
+import ContextmenuComponent from "@/components/Contextmenu/index.vue";
+import { createVNode, render } from "vue";
+import { IContextmenuItem } from "../types/contextmenu";
 
 export default class ControlStage extends Stage {
     private _command: Command;
@@ -22,6 +25,7 @@ export default class ControlStage extends Stage {
     private _startAngle: number;
     private _storeAngle: number;
     private _history: History;
+    private _menuDom: HTMLDivElement | null;
     constructor(
         container: HTMLDivElement,
         listener: Listener,
@@ -42,6 +46,8 @@ export default class ControlStage extends Stage {
         this._startAngle = 0;
         this._storeAngle = 0;
         this._opreateCacheElement = null;
+
+        this._menuDom = null;
 
         this._command = command;
         // 后面考虑要不要改成window ？？？？？？？？？？？？？？？？？？？？？？
@@ -70,6 +76,71 @@ export default class ControlStage extends Stage {
             this._mouseup.bind(this),
             false
         );
+        this.container.addEventListener(
+            "contextmenu",
+            this._contextmenu.bind(this),
+            false
+        );
+    }
+
+    private _removeContextmenu() {
+        if (this._menuDom) {
+            document.body.removeChild(this._menuDom);
+            this._menuDom = null;
+        }
+    }
+
+    private _contextmenu(evt: MouseEvent) {
+        evt.preventDefault();
+        const isMac = checkIsMac();
+        const contextmenus: IContextmenuItem[] = [
+            {
+                text: "剪切",
+                icon: "cut",
+                subText: `${isMac ? "⌘" : "Ctrl"} + X`,
+                handler: () => {
+                    console.log("===== 剪切");
+                }
+            },
+            {
+                text: "复制",
+                icon: "copy",
+                subText: `${isMac ? "⌘" : "Ctrl"} + C`,
+                handler: () => {
+                    console.log("===== 复制");
+                }
+            },
+            {
+                text: "粘贴",
+                icon: "paste",
+                subText: `${isMac ? "⌘" : "Ctrl"} + V`,
+                handler: () => {
+                    console.log("===== 粘贴");
+                }
+            },
+            { divider: true },
+            {
+                text: "删除",
+                subText: "Delete",
+                handler: () => {
+                    this._command.excuteDelete();
+                }
+            }
+        ];
+        if (this.stageConfig.operateElement) {
+            // 创建自定义菜单
+            const options = {
+                axis: { x: evt.pageX, y: evt.pageY },
+                menus: contextmenus,
+                removeContextmenu: () => {
+                    this._removeContextmenu();
+                }
+            };
+            this._menuDom = document.createElement("div");
+            const vm = createVNode(ContextmenuComponent, options, null);
+            render(vm, this._menuDom);
+            document.body.appendChild(this._menuDom);
+        }
     }
 
     private _mousewheel(evt: WheelEvent) {
