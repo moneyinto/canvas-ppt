@@ -34,4 +34,19 @@ export default class Command {
         // 考虑是否要加上限
         this._stageConfig.setZoom(zoom + 0.05);
     }
+
+    // 删除元素
+    public excuteDelete() {
+        const operateElement = this._stageConfig.operateElement;
+        if (operateElement) {
+            const slide = this._stageConfig.getCurrentSlide();
+            const index = slide?.elements.findIndex(element => element.id === operateElement.id);
+            if (typeof index !== "undefined" && index > -1) {
+                slide?.elements.splice(index, 1);
+                this._stageConfig.setOperateElement(null);
+                this._stageConfig.resetCheckDrawOprate();
+                this._stageConfig.resetCheckDrawView();
+            }
+        }
+    }
 }

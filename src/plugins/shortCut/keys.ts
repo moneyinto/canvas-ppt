@@ -17,5 +17,19 @@ export const ShortcutKeys: IRegisterShortcut[] = [
         callback: (command: Command) => {
             command.executeIncrease();
         }
+    },
+
+    {
+        key: KeyMap.Backspace,
+        callback: (command: Command) => {
+            command.excuteDelete();
+        }
+    },
+
+    {
+        key: KeyMap.Delete,
+        callback: (command: Command) => {
+            command.excuteDelete();
+        }
     }
 ];
