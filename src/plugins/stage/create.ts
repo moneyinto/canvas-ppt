@@ -1,7 +1,8 @@
-import { THEME_COLOR } from "../config/stage";
+import { THEME_COLOR, VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import { IShape } from "../types/shape";
 import {
     IElementPosition,
+    IPPTImageElement,
     IPPTLineElement,
     IPPTShapeElement
 } from "../types/element";
@@ -68,6 +69,37 @@ export const createLineElement = (
         color: THEME_COLOR,
         startStyle,
         endStyle
+    };
+
+    return newElement;
+};
+
+export const createImageElement = (width: number, height: number, src: string) => {
+    const VIEW_HEIGHT = VIEWPORT_SIZE * VIEWRATIO;
+    let resultWidth = width;
+    let resultHeight = height;
+    if (resultWidth > VIEWPORT_SIZE) {
+        resultHeight = resultHeight / resultWidth * VIEWPORT_SIZE;
+        resultWidth = VIEWPORT_SIZE;
+    }
+    if (resultHeight > VIEW_HEIGHT) {
+        resultWidth = resultWidth / resultHeight * VIEW_HEIGHT;
+        resultHeight = VIEW_HEIGHT;
+    }
+    const id = createRandomCode();
+    const name = "图片";
+    const newElement: IPPTImageElement = {
+        name,
+        type: "image",
+        id,
+        fixedRatio: false,
+        left: 0,
+        top: 0,
+        rotate: 0,
+        streach: 0,
+        width: resultWidth,
+        height: resultHeight,
+        src
     };
 
     return newElement;

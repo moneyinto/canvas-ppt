@@ -179,7 +179,79 @@ export interface IPPTLineElement extends Omit<IPPTBaseElement, "height" | "width
     borderWidth: number;
 }
 
-export type IPPTElement = IPPTShapeElement | IPPTLineElement;
+/**
+ * 图片滤镜
+ *
+ * blur?: 模糊，默认0（px）
+ *
+ * brightness?: 亮度，默认100（%）
+ *
+ * contrast?: 对比度，默认100（%）
+ *
+ * grayscale?: 灰度，默认0（%）
+ *
+ * saturate?: 饱和度，默认100（%）
+ *
+ * hue-rotate?: 色相旋转，默认0（deg）
+ *
+ * opacity?: 不透明度，默认100（%）
+ */
+export interface ImageElementFilters {
+    blur?: string;
+    brightness?: string;
+    contrast?: string;
+    grayscale?: string;
+    saturate?: string;
+    "hue-rotate"?: string;
+    opacity?: string;
+}
+
+/**
+ * 图片裁剪
+ *
+ * range: 裁剪范围，例如：[[10, 10], [90, 90]] 表示裁取原图从左上角 10%, 10% 到 90%, 90% 的范围
+ *
+ * shape: 裁剪形状
+ */
+export interface ImageElementClip {
+    range: [[number, number], [number, number]];
+    shape: string;
+}
+
+/**
+ * 图片元素
+ *
+ * type: 元素类型 (image)
+ *
+ * fixedRatio: 固定图片宽高比例
+ *
+ * rotate: 旋转角度
+ *
+ * streach: 图片显示形式 0 缩放 1 拉伸
+ *
+ * src: 图片内容
+ *
+ * filters?: 图片滤镜
+ *
+ * clip?: 裁剪信息
+ *
+ * flipH?: 水平翻转
+ *
+ * flipV?: 垂直翻转
+ */
+export interface IPPTImageElement extends IPPTBaseElement {
+    type: "image";
+    fixedRatio: boolean;
+    rotate: number;
+    streach: 0 | 1;
+    src: string;
+    filters?: ImageElementFilters;
+    clip?: ImageElementClip;
+    flipH?: boolean;
+    flipV?: boolean;
+}
+
+export type IPPTElement = IPPTShapeElement | IPPTLineElement | IPPTImageElement;
 
 export interface ICreatingTextElement {
     type: "text";

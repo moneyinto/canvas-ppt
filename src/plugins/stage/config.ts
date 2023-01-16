@@ -1,7 +1,7 @@
 import { deepClone } from "@/utils";
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import Listener from "../listener";
-import { IRectParameter } from "../types";
+import { ICacheImage, IRectParameter } from "../types";
 import { ICreatingElement, IPPTElement } from "../types/element";
 import { ISlide } from "../types/slide";
 
@@ -13,6 +13,7 @@ export default class StageConfig {
     public insertElement: ICreatingElement | null; // 需要绘制插入的元素
     public operateElement: IPPTElement | null; // 选中操作元素
     public opreateType: string; // 元素操作形式 拉伸方向 旋转
+    public cacheImage: ICacheImage[];
 
     public slides: ISlide[] = [];
     public slideId = "";
@@ -35,6 +36,7 @@ export default class StageConfig {
         this.insertElement = null;
         this.operateElement = null;
         this.opreateType = "";
+        this.cacheImage = [];
 
         this.resetDrawView = null;
         this.resetDrawOprate = null;
@@ -168,6 +170,10 @@ export default class StageConfig {
 
     public getCurrentSlide() {
         return this.slides.find((slide) => this.slideId === slide.id);
+    }
+
+    public addCacheImage(cacheImage: ICacheImage) {
+        this.cacheImage.push(cacheImage);
     }
 
     // 获取当前页元素排序后的元素列表 1 正序 -1 倒序

@@ -1,8 +1,9 @@
 import Listener from "../listener";
 import StageConfig from "./config";
 import { throttleRAF } from "@/utils";
-import { IPPTElement, IPPTLineElement, IPPTShapeElement } from "../types/element";
+import { IPPTElement, IPPTImageElement, IPPTLineElement, IPPTShapeElement } from "../types/element";
 import { SHAPE_TYPE } from "../config/shapes";
+import { ICacheImage } from "../types";
 
 export default class Stage {
     public canvas: HTMLCanvasElement;
@@ -69,26 +70,6 @@ export default class Stage {
     }
 
     public drawElement(element: IPPTElement) {
-        const zoom = this.stageConfig.zoom;
-        const { x, y } = this.stageConfig.getStageOrigin();
-
-        this.ctx.save();
-
-        // 缩放画布
-        this.ctx.scale(zoom, zoom);
-
-        if (element.type !== "line") {
-            const ox = x + element.left + element.width / 2;
-            const oy = y + element.top + element.height / 2;
-
-            // 平移坐标原点
-            this.ctx.translate(ox, oy);
-            // 旋转画布
-            this.ctx.rotate((element.rotate / 180) * Math.PI);
-        } else {
-            this.ctx.translate(x + element.left, y + element.top);
-        }
-
         switch (element.type) {
             case "shape": {
                 this.drawShape(element);
@@ -98,12 +79,24 @@ export default class Stage {
                 this.drawLine(element);
                 break;
             }
+            case "image": {
+                this.drawImage(element);
+                break;
+            }
         }
-
-        this.ctx.restore();
     }
 
     public drawLine(element: IPPTLineElement) {
+        const zoom = this.stageConfig.zoom;
+        const { x, y } = this.stageConfig.getStageOrigin();
+
+        this.ctx.save();
+
+        // 缩放画布
+        this.ctx.scale(zoom, zoom);
+
+        this.ctx.translate(x + element.left, y + element.top);
+
         this.ctx.strokeStyle = element.color;
         this.ctx.lineWidth = element.borderWidth;
         if (element.style === "dashedPoint") {
@@ -159,6 +152,8 @@ export default class Stage {
             this.ctx.closePath();
             this.ctx.fill();
         }
+
+        this.ctx.restore();
     }
 
     public getLineStartArrow(element: IPPTLineElement) {
@@ -190,6 +185,22 @@ export default class Stage {
     }
 
     public drawShape(element: IPPTShapeElement) {
+        const zoom = this.stageConfig.zoom;
+        const { x, y } = this.stageConfig.getStageOrigin();
+
+        this.ctx.save();
+
+        // 缩放画布
+        this.ctx.scale(zoom, zoom);
+
+        const ox = x + element.left + element.width / 2;
+        const oy = y + element.top + element.height / 2;
+
+        // 平移坐标原点
+        this.ctx.translate(ox, oy);
+        // 旋转画布
+        this.ctx.rotate((element.rotate / 180) * Math.PI);
+
         this.ctx.fillStyle = element.fill;
         const path = this.getShapePath(element);
         this.ctx.fill(path);
@@ -206,6 +217,8 @@ export default class Stage {
             }
             this.ctx.stroke(path);
         }
+
+        this.ctx.restore();
     }
 
     public getShapePath(element: IPPTShapeElement) {
@@ -322,5 +335,48 @@ export default class Stage {
         }
 
         return new Path2D(path);
+    }
+
+    public getCacheImage(element: IPPTImageElement): Promise<ICacheImage> {
+        return new Promise(resolve => {
+            const cacheImage = this.stageConfig.cacheImage.find(image => image.id === element.id);
+            if (cacheImage) {
+                resolve(cacheImage);
+            } else {
+                const image = new Image();
+                image.onload = () => {
+                    const cacheImage = {
+                        id: element.id,
+                        image
+                    };
+                    this.stageConfig.addCacheImage(cacheImage);
+                    resolve(cacheImage);
+                };
+                image.src = element.src;
+            }
+        });
+    }
+
+    public async drawImage(element: IPPTImageElement) {
+        const cacheImage = await this.getCacheImage(element);
+        if (cacheImage) {
+            const zoom = this.stageConfig.zoom;
+            const { x, y } = this.stageConfig.getStageOrigin();
+
+            this.ctx.save();
+
+            // 缩放画布
+            this.ctx.scale(zoom, zoom);
+
+            const ox = x + element.left + element.width / 2;
+            const oy = y + element.top + element.height / 2;
+
+            // 平移坐标原点
+            this.ctx.translate(ox, oy);
+            // 旋转画布
+            this.ctx.rotate((element.rotate / 180) * Math.PI);
+            this.ctx.drawImage(cacheImage.image, -element.width / 2, -element.height / 2, element.width, element.height);
+            this.ctx.restore();
+        }
     }
 }

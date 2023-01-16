@@ -115,6 +115,13 @@ export default class ControlStage extends Stage {
                     left,
                     top
                 );
+
+                // 存在已选中，重复选中不执行下面操作
+                if (operateElement && this.stageConfig.operateElement && operateElement.id === this.stageConfig.operateElement.id) {
+                    this._canMoveElement = true;
+                    return;
+                }
+
                 this.stageConfig.setOperateElement(operateElement || null);
                 this.stageConfig.resetCheckDrawView();
                 if (operateElement) {
@@ -140,10 +147,8 @@ export default class ControlStage extends Stage {
             if (newElement) this.drawElement(newElement);
         } else if (this._canMoveCanvas && this.stageConfig.canMove) {
             // 移动画布
-            const scrollX =
-                -(evt.pageX - this._startPoint[0]) + this.stageConfig.scrollX;
-            const scrollY =
-                -(evt.pageY - this._startPoint[1]) + this.stageConfig.scrollY;
+            const scrollX = -(evt.pageX - this._startPoint[0]) + this.stageConfig.scrollX;
+            const scrollY = -(evt.pageY - this._startPoint[1]) + this.stageConfig.scrollY;
             this._startPoint = [evt.pageX, evt.pageY];
             this.stageConfig.setScroll(scrollX, scrollY);
         } else if (this._canMoveElement && this.stageConfig.operateElement) {

@@ -1,9 +1,9 @@
 <template>
     <div class="ppt-edit-tools">
         <a-tooltip title="插入图片">
-            <div class="ppt-tool-btn">
+            <FileInput class="ppt-tool-btn" @change="insertImage">
                 <PPTIcon icon="image" :size="28" />
-            </div>
+            </FileInput>
         </a-tooltip>
 
         <a-popover trigger="click" v-model:visible="showShapePool">
@@ -75,11 +75,13 @@
 
 <script lang="ts" setup>
 import SvgWrapper from "@/components/SvgWrapper.vue";
-import { SHAPE_LIST } from "@/plugins/config/shapes";
 import Editor from "@/plugins/editor";
+import FileInput from "@/components/FileInput.vue";
+import { SHAPE_LIST } from "@/plugins/config/shapes";
 import { ILineItem, IShapeItem } from "@/plugins/types/shape";
 import { inject, ref, Ref } from "vue";
 import { ICreatingType } from "@/plugins/types/element";
+import { createImageElement } from "@/plugins/stage/create";
 
 const showShapePool = ref(false);
 
@@ -92,6 +94,24 @@ const selectShape = (type: ICreatingType, shape: IShapeItem | ILineItem) => {
     } else if (type === "shape") {
         instance?.value.stageConfig.setInsertElement({ type, data: shape as IShapeItem });
     }
+};
+
+const insertImage = (files: File[]) => {
+    const imageFile = files[0];
+    if (!imageFile) return;
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+        const image = new Image();
+        image.onload = () => {
+            const element = createImageElement(image.width, image.height, reader.result as string);
+            instance?.value.stageConfig.addElement(element);
+            instance?.value.history.add();
+            instance?.value.stageConfig.setOperateElement(element);
+            instance?.value.stageConfig.resetCheckDrawOprate();
+        };
+        image.src = reader.result as string;
+    }, false);
+    reader.readAsDataURL(imageFile);
 };
 </script>
 
