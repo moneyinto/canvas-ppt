@@ -360,6 +360,7 @@ export default class Stage {
     public async drawImage(element: IPPTImageElement) {
         const cacheImage = await this.getCacheImage(element);
         if (cacheImage) {
+            const image = cacheImage.image;
             const zoom = this.stageConfig.zoom;
             const { x, y } = this.stageConfig.getStageOrigin();
 
@@ -375,7 +376,20 @@ export default class Stage {
             this.ctx.translate(ox, oy);
             // 旋转画布
             this.ctx.rotate((element.rotate / 180) * Math.PI);
-            this.ctx.drawImage(cacheImage.image, -element.width / 2, -element.height / 2, element.width, element.height);
+
+            if (element.streach === 1) {
+                // 拉伸
+                this.ctx.drawImage(image, -element.width / 2, -element.height / 2, element.width, element.height);
+            } else {
+                // 缩放
+                let viewWidth = element.width;
+                let viewHeight = image.height / image.width * viewWidth;
+                if (viewHeight > element.height) {
+                    viewHeight = element.height;
+                    viewWidth = image.width / image.height * viewHeight;
+                }
+                this.ctx.drawImage(image, -viewWidth / 2, -viewHeight / 2, viewWidth, viewHeight);
+            }
             this.ctx.restore();
         }
     }
