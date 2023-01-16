@@ -172,7 +172,7 @@ export default class StageConfig {
 
     // 获取当前页元素排序后的元素列表 1 正序 -1 倒序
     public getSortElements(elements: IPPTElement[], sort: 1 | -1) {
-        return elements.sort((a, b) => {
+        return elements.reverse().sort((a, b) => {
             return ((a.zIndex || 0) - (b.zIndex || 0)) * sort;
         });
     }
