@@ -128,7 +128,7 @@ const insertImage = (files: File[]) => {
     .category {
         .category-name {
             font-size: 12px;
-            // margin-bottom: 5px;
+            margin-top: 5px;
         }
     }
     .shape-list {

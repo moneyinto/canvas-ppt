@@ -128,5 +128,17 @@ export const SHAPE_LIST: IShapePoolItem[] = [
                 type: SHAPE_TYPE.RECT_OPPOSITE_RADIUS
             }
         ]
+    },
+    {
+        name: "基础形状",
+        type: "shape",
+        children: [
+            {
+                viewBox: 18,
+                name: "矩形",
+                path: "M.5 2.5h15v11H.5z",
+                type: SHAPE_TYPE.RECT
+            }
+        ]
     }
 ];
