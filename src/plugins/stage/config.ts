@@ -157,7 +157,7 @@ export default class StageConfig {
 
     public addElement(element: IPPTElement) {
         const slide = this.getCurrentSlide();
-        slide?.elements.unshift(element);
+        slide?.elements.push(element);
     }
 
     public setSildes(slides: ISlide[]) {
@@ -174,13 +174,6 @@ export default class StageConfig {
 
     public addCacheImage(cacheImage: ICacheImage) {
         this.cacheImage.push(cacheImage);
-    }
-
-    // 获取当前页元素排序后的元素列表 1 正序 -1 倒序
-    public getSortElements(elements: IPPTElement[], sort: 1 | -1) {
-        return elements.sort((a, b) => {
-            return ((a.zIndex || 0) - (b.zIndex || 0)) * sort;
-        });
     }
 
     /**
@@ -246,7 +239,7 @@ export default class StageConfig {
         }
 
         const currentSlide = this.getCurrentSlide();
-        const elements = this.getSortElements(currentSlide?.elements || [], -1);
+        const elements = currentSlide?.elements || [];
         return elements.find((element) => {
             if (element.type === "line") {
                 return this.checkPointNearLine(

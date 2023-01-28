@@ -35,6 +35,86 @@ export default class Command {
         this._stageConfig.setZoom(zoom + 0.05);
     }
 
+    // 上移一层
+    public executeMoveUp() {
+        const operateElement = this._stageConfig.operateElement;
+        if (operateElement) {
+            const slide = this._stageConfig.getCurrentSlide();
+            const zIndex = slide?.elements.findIndex(element => element.id === operateElement.id);
+            if (slide && slide.elements && typeof zIndex !== "undefined" && zIndex > -1) {
+                // 已经处在顶层，无法继续移动
+                if (zIndex === slide.elements.length - 1) return;
+
+                // 移动
+                const movedElement = slide.elements.splice(zIndex, 1)[0];
+                slide.elements.splice(zIndex + 1, 0, movedElement);
+
+                this._stageConfig.resetCheckDrawOprate();
+                this._stageConfig.resetCheckDrawView();
+            }
+        }
+    }
+
+    // 下移一层
+    public executeMoveDown() {
+        const operateElement = this._stageConfig.operateElement;
+        if (operateElement) {
+            const slide = this._stageConfig.getCurrentSlide();
+            const zIndex = slide?.elements.findIndex(element => element.id === operateElement.id);
+            if (slide && slide.elements && typeof zIndex !== "undefined" && zIndex > -1) {
+                // 已经处在底，无法继续移动
+                if (zIndex === 0) return;
+
+                // 移动
+                const movedElement = slide.elements.splice(zIndex, 1)[0];
+                slide.elements.splice(zIndex - 1, 0, movedElement);
+
+                this._stageConfig.resetCheckDrawOprate();
+                this._stageConfig.resetCheckDrawView();
+            }
+        }
+    }
+
+    // 置于顶层
+    public executeMoveTop() {
+        const operateElement = this._stageConfig.operateElement;
+        if (operateElement) {
+            const slide = this._stageConfig.getCurrentSlide();
+            const zIndex = slide?.elements.findIndex(element => element.id === operateElement.id);
+            if (slide && slide.elements && typeof zIndex !== "undefined" && zIndex > -1) {
+                // 已经处在顶层，无法继续移动
+                if (zIndex === slide.elements.length - 1) return;
+
+                // 移动
+                const movedElement = slide.elements.splice(zIndex, 1)[0];
+                slide.elements.push(movedElement);
+
+                this._stageConfig.resetCheckDrawOprate();
+                this._stageConfig.resetCheckDrawView();
+            }
+        }
+    }
+
+    // 置于底层
+    public executeMoveBottom() {
+        const operateElement = this._stageConfig.operateElement;
+        if (operateElement) {
+            const slide = this._stageConfig.getCurrentSlide();
+            const zIndex = slide?.elements.findIndex(element => element.id === operateElement.id);
+            if (slide && slide.elements && typeof zIndex !== "undefined" && zIndex > -1) {
+                // 已经处在底，无法继续移动
+                if (zIndex === 0) return;
+
+                // 移动
+                const movedElement = slide.elements.splice(zIndex, 1)[0];
+                slide.elements.unshift(movedElement);
+
+                this._stageConfig.resetCheckDrawOprate();
+                this._stageConfig.resetCheckDrawView();
+            }
+        }
+    }
+
     // 删除元素
     public excuteDelete() {
         const operateElement = this._stageConfig.operateElement;

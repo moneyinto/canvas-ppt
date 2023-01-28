@@ -60,7 +60,6 @@ toRefs(props);
 <style lang="scss" scoped>
 $menuWidth: 170px;
 $menuHeight: 32px;
-$subMenuWidth: 120px;
 
 .menu-content {
     width: $menuWidth;
@@ -131,11 +130,11 @@ $subMenuWidth: 120px;
     &.has-children::before {
         content: "";
         display: inline-block;
-        width: 8px;
-        height: 8px;
-        border-width: 1px;
+        width: 6px;
+        height: 6px;
+        border-width: 3px;
         border-style: solid;
-        border-color: #666 #666 transparent transparent;
+        border-color: #333 #333 transparent transparent;
         position: absolute;
         right: 0;
         top: 50%;
@@ -158,7 +157,7 @@ $subMenuWidth: 120px;
         opacity: 0.6;
     }
     .sub-menu {
-        width: $subMenuWidth;
+        width: $menuWidth;
         position: absolute;
         display: none;
         left: 112%;

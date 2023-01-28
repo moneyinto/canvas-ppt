@@ -123,6 +123,41 @@ export default class ControlStage extends Stage {
             },
             { divider: true, hide: !selectedElement },
             {
+                text: "层级排序",
+                hide: !selectedElement,
+                children: [
+                    {
+                        text: "置于顶层",
+                        icon: "top",
+                        handler: () => {
+                            this._command.executeMoveTop();
+                        }
+                    },
+                    {
+                        text: "置于底层",
+                        icon: "bottom",
+                        handler: () => {
+                            this._command.executeMoveDown();
+                        }
+                    },
+                    {
+                        text: "上移一层",
+                        icon: "moveUp",
+                        handler: () => {
+                            this._command.executeMoveUp();
+                        }
+                    },
+                    {
+                        text: "下移一层",
+                        icon: "moveDown",
+                        handler: () => {
+                            this._command.executeMoveDown();
+                        }
+                    }
+                ]
+            },
+            { divider: true, hide: !selectedElement },
+            {
                 text: "删除",
                 subText: "Delete",
                 hide: !selectedElement,

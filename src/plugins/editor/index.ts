@@ -16,9 +16,11 @@ export default class Editor {
     private _viewStage: ViewStage;
     private _controlStage: ControlStage;
     constructor(container: HTMLDivElement, slides: ISlide[]) {
+        // 禁止右击系统菜单
         document.oncontextmenu = (event: Event) => {
             event.preventDefault();
         };
+
         // 监听
         this.listener = new Listener();
 
