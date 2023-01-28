@@ -332,6 +332,16 @@ export default class Stage {
                 } L ${rect.minX} ${rect.minY} Z`;
                 break;
             }
+            case SHAPE_TYPE.OVAL: {
+                const rx = element.width / 2;
+                const ry = element.height / 2;
+                const sx = (rect.minX + rect.maxX) / 2;
+                const sy = rect.minY;
+                const ex = (rect.minX + rect.maxX) / 2;
+                const ey = rect.maxY;
+                path = `M ${sx} ${sy} A ${rx} ${ry} 0 1 1 ${ex} ${ey} A ${rx} ${ry} 0 1 1 ${sx} ${sy} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);

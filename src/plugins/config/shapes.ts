@@ -9,7 +9,8 @@ export enum SHAPE_TYPE {
     RECT_SINGLE_RADIUS_MINUS_SINGLE_ANGLE = "rectSingleRadiusMinusSingleAngle",
     RECT_SINGLE_RADIUS = "rectSingleRadius",
     RECT_SAME_SIDE_RADIUS = "rectSameSideRadius",
-    RECT_OPPOSITE_RADIUS = "rectOppositeRadius"
+    RECT_OPPOSITE_RADIUS = "rectOppositeRadius",
+    OVAL = "oval"
 }
 
 export enum LINE_TYPE {
@@ -138,6 +139,12 @@ export const SHAPE_LIST: IShapePoolItem[] = [
                 name: "矩形",
                 path: "M.5 2.5h15v11H.5z",
                 type: SHAPE_TYPE.RECT
+            },
+            {
+                viewBox: 18,
+                name: "椭圆",
+                path: "M14.5 8c0 2.968-2.835 5.5-6.5 5.5S1.5 10.968 1.5 8 4.335 2.5 8 2.5s6.5 2.532 6.5 5.5Z",
+                type: SHAPE_TYPE.OVAL
             }
         ]
     }
