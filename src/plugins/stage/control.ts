@@ -91,13 +91,15 @@ export default class ControlStage extends Stage {
     }
 
     private _contextmenu(evt: MouseEvent) {
-        evt.preventDefault();
+        this._mousedown(evt);
         const isMac = checkIsMac();
+        const selectedElement = !!this.stageConfig.operateElement;
         const contextmenus: IContextmenuItem[] = [
             {
                 text: "剪切",
                 icon: "cut",
                 subText: `${isMac ? "⌘" : "Ctrl"} + X`,
+                hide: !selectedElement,
                 handler: () => {
                     console.log("===== 剪切");
                 }
@@ -106,6 +108,7 @@ export default class ControlStage extends Stage {
                 text: "复制",
                 icon: "copy",
                 subText: `${isMac ? "⌘" : "Ctrl"} + C`,
+                hide: !selectedElement,
                 handler: () => {
                     console.log("===== 复制");
                 }
@@ -118,29 +121,29 @@ export default class ControlStage extends Stage {
                     console.log("===== 粘贴");
                 }
             },
-            { divider: true },
+            { divider: true, hide: !selectedElement },
             {
                 text: "删除",
                 subText: "Delete",
+                hide: !selectedElement,
                 handler: () => {
                     this._command.excuteDelete();
                 }
             }
         ];
-        if (this.stageConfig.operateElement) {
-            // 创建自定义菜单
-            const options = {
-                axis: { x: evt.pageX, y: evt.pageY },
-                menus: contextmenus,
-                removeContextmenu: () => {
-                    this._removeContextmenu();
-                }
-            };
-            this._menuDom = document.createElement("div");
-            const vm = createVNode(ContextmenuComponent, options, null);
-            render(vm, this._menuDom);
-            document.body.appendChild(this._menuDom);
-        }
+
+        // 创建自定义菜单
+        const options = {
+            axis: { x: evt.pageX, y: evt.pageY },
+            menus: contextmenus,
+            removeContextmenu: () => {
+                this._removeContextmenu();
+            }
+        };
+        this._menuDom = document.createElement("div");
+        const vm = createVNode(ContextmenuComponent, options, null);
+        render(vm, this._menuDom);
+        document.body.appendChild(this._menuDom);
     }
 
     private _mousewheel(evt: WheelEvent) {
