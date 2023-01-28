@@ -239,8 +239,8 @@ export default class StageConfig {
         }
 
         const currentSlide = this.getCurrentSlide();
-        const elements = currentSlide?.elements || [];
-        return elements.find((element) => {
+        const elements: IPPTElement[] = deepClone(currentSlide?.elements || []);
+        return elements.reverse().find((element) => {
             if (element.type === "line") {
                 return this.checkPointNearLine(
                     [left, top],
