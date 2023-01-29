@@ -138,7 +138,6 @@ export default class Command {
     // 粘贴
     public async excutePaste() {
         const content = await readClipboard();
-        console.log(content);
         // 粘贴的内容为元素数据
         if (typeof content === "object") {
             const element = content as IPPTElement;

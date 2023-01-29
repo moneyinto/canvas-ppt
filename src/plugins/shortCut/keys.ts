@@ -31,5 +31,29 @@ export const ShortcutKeys: IRegisterShortcut[] = [
         callback: (command: Command) => {
             command.excuteDelete();
         }
+    },
+
+    {
+        key: KeyMap.C,
+        ctrl: true,
+        callback: (command: Command) => {
+            command.excuteCopy();
+        }
+    },
+
+    {
+        key: KeyMap.X,
+        ctrl: true,
+        callback: (command: Command) => {
+            command.excuteCut();
+        }
+    },
+
+    {
+        key: KeyMap.V,
+        ctrl: true,
+        callback: (command: Command) => {
+            command.excutePaste();
+        }
     }
 ];
