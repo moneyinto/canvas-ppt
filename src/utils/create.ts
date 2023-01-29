@@ -1,11 +1,11 @@
-import { THEME_COLOR, VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
-import { IShape } from "../types/shape";
+import { THEME_COLOR, VIEWPORT_SIZE, VIEWRATIO } from "../plugins/config/stage";
+import { IShape } from "../plugins/types/shape";
 import {
     IElementPosition,
     IPPTImageElement,
     IPPTLineElement,
     IPPTShapeElement
-} from "../types/element";
+} from "../plugins/types/element";
 
 /**
  * 生成随机码

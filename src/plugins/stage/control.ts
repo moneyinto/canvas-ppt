@@ -3,7 +3,7 @@ import Listener from "../listener";
 import StageConfig from "./config";
 import { throttleRAF, deepClone, normalizeAngle, checkIsMac } from "@/utils";
 import Command from "../command";
-import { createLineElement, createShapeElement } from "./create";
+import { createLineElement, createShapeElement } from "@/utils/create";
 import { IPPTElement, IPPTLineElement } from "../types/element";
 import { History } from "../editor/history";
 import { ELEMENT_RESIZE, THEME_COLOR } from "../config/stage";
@@ -101,7 +101,7 @@ export default class ControlStage extends Stage {
                 subText: `${isMac ? "⌘" : "Ctrl"} + X`,
                 hide: !selectedElement,
                 handler: () => {
-                    console.log("===== 剪切");
+                    this._command.excuteCut();
                 }
             },
             {
@@ -110,7 +110,7 @@ export default class ControlStage extends Stage {
                 subText: `${isMac ? "⌘" : "Ctrl"} + C`,
                 hide: !selectedElement,
                 handler: () => {
-                    console.log("===== 复制");
+                    this._command.excuteCopy();
                 }
             },
             {
@@ -118,7 +118,7 @@ export default class ControlStage extends Stage {
                 icon: "paste",
                 subText: `${isMac ? "⌘" : "Ctrl"} + V`,
                 handler: () => {
-                    console.log("===== 粘贴");
+                    this._command.excutePaste();
                 }
             },
             { divider: true, hide: !selectedElement },

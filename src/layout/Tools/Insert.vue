@@ -81,7 +81,7 @@ import { SHAPE_LIST } from "@/plugins/config/shapes";
 import { ILineItem, IShapeItem } from "@/plugins/types/shape";
 import { inject, ref, Ref } from "vue";
 import { ICreatingType } from "@/plugins/types/element";
-import { createImageElement } from "@/plugins/stage/create";
+import { createImageElement } from "@/utils/create";
 
 const showShapePool = ref(false);
 

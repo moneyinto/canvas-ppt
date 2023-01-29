@@ -1,4 +1,8 @@
+import { copyText, readClipboard } from "@/utils/clipboard";
+import { createRandomCode } from "@/utils/create";
+import { encrypt } from "@/utils/crypto";
 import StageConfig from "../stage/config";
+import { IPPTElement } from "../types/element";
 
 export default class Command {
     private _stageConfig: StageConfig;
@@ -112,6 +116,44 @@ export default class Command {
                 this._stageConfig.resetCheckDrawOprate();
                 this._stageConfig.resetCheckDrawView();
             }
+        }
+    }
+
+    // 复制
+    public async excuteCopy() {
+        const operateElement = this._stageConfig.operateElement;
+        // 选中元素时
+        if (operateElement) {
+            // 将元素json数据加密存入剪切板
+            await copyText(encrypt(JSON.stringify(operateElement)));
+        }
+    }
+
+    // 剪切
+    public async excuteCut() {
+        await this.excuteCopy();
+        await this.excuteDelete();
+    }
+
+    // 粘贴
+    public async excutePaste() {
+        const content = await readClipboard();
+        console.log(content);
+        // 粘贴的内容为元素数据
+        if (typeof content === "object") {
+            const element = content as IPPTElement;
+            element.id = createRandomCode();
+            // 新元素较旧元素偏移一段距离
+            element.left += 10;
+            element.top += 10;
+            this._stageConfig.addElement(element);
+            this._stageConfig.setOperateElement(element);
+
+            this._stageConfig.resetCheckDrawView();
+            this._stageConfig.resetCheckDrawOprate();
+
+            // 再次写入剪切板，为了下一次粘贴能够在上一次的基础上进行偏移
+            await copyText(encrypt(JSON.stringify(element)));
         }
     }
 
