@@ -272,6 +272,7 @@ export default class ControlStage extends Stage {
             });
             this._startPoint = [evt.pageX, evt.pageY];
             this.resetDrawOprate();
+            this.stageConfig.resetCheckDrawView();
         } else if (this._canResizeElement && this.stageConfig.operateElement) {
             if (this.stageConfig.operateElement.type !== "line") {
                 // 旋转缩放元素
@@ -287,11 +288,14 @@ export default class ControlStage extends Stage {
                     const angle = normalizeAngle(
                         changeAngle + this._storeAngle
                     );
+
                     this.stageConfig.setOperateElement({
                         ...this.stageConfig.operateElement,
                         rotate: angle
                     });
+
                     this.resetDrawOprate();
+                    this.stageConfig.resetCheckDrawView();
                 } else {
                     // 缩放
                     // const element = this.stageConfig.operateElement;
@@ -392,6 +396,7 @@ export default class ControlStage extends Stage {
                             });
 
                             this.resetDrawOprate();
+                            this.stageConfig.resetCheckDrawView();
                         }
                     }
                 }
@@ -415,7 +420,9 @@ export default class ControlStage extends Stage {
                         end: [left - element.left, top - element.top]
                     });
                 }
+
                 this.resetDrawOprate();
+                this.stageConfig.resetCheckDrawView();
             }
         } else if (
             !this.stageConfig.insertElement &&
@@ -927,7 +934,7 @@ export default class ControlStage extends Stage {
         this.clear();
         const element = this.stageConfig.operateElement;
         if (!element) return;
-        this.drawElement(element);
+        // this.drawElement(element);
         this._drawOprate(element);
     }
 }

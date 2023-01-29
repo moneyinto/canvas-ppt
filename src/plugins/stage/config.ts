@@ -147,8 +147,18 @@ export default class StageConfig {
         this.insertElement = element;
     }
 
+    public updateElement(element: IPPTElement) {
+        const slide = this.getCurrentSlide();
+        const index = slide?.elements.findIndex(e => e.id === element.id);
+        if (slide && slide.elements && typeof index !== "undefined" && index > -1) {
+            slide.elements[index] = element;
+        }
+    }
+
     public setOperateElement(element: IPPTElement | null) {
-        this.operateElement = deepClone(element);
+        const operateElement = deepClone(element);
+        this.operateElement = operateElement;
+        if (element) this.updateElement(operateElement);
     }
 
     public setOperateType(opreateType: string) {
