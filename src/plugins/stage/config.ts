@@ -208,45 +208,45 @@ export default class StageConfig {
     // 获取鼠标位置的元素
     public getMouseInElement(left: number, top: number) {
         // 当存在操作选中元素是时，因为选中元素处于层级最高，优先判断选中元素
-        if (this.operateElement) {
-            const element = this.operateElement;
-            if (element.type === "line") {
-                if (this.checkPointNearLine(
-                    [left, top],
-                    [
-                        element.left + element.start[0],
-                        element.top + element.start[1]
-                    ],
-                    [
-                        element.left + element.end[0],
-                        element.top + element.end[1]
-                    ]
-                )) {
-                    return element;
-                }
-            } else {
-                const cx = element.left + element.width / 2;
-                const cy = element.top + element.height / 2;
-                const rect: IRectParameter = [
-                    element.left,
-                    element.top,
-                    element.width,
-                    element.height
-                ];
-                if (
-                    this.checkPointInRect(
-                        left,
-                        top,
-                        rect,
-                        cx,
-                        cy,
-                        (element.rotate / 180) * Math.PI
-                    )
-                ) {
-                    return element;
-                }
-            }
-        }
+        // if (this.operateElement) {
+        //     const element = this.operateElement;
+        //     if (element.type === "line") {
+        //         if (this.checkPointNearLine(
+        //             [left, top],
+        //             [
+        //                 element.left + element.start[0],
+        //                 element.top + element.start[1]
+        //             ],
+        //             [
+        //                 element.left + element.end[0],
+        //                 element.top + element.end[1]
+        //             ]
+        //         )) {
+        //             return element;
+        //         }
+        //     } else {
+        //         const cx = element.left + element.width / 2;
+        //         const cy = element.top + element.height / 2;
+        //         const rect: IRectParameter = [
+        //             element.left,
+        //             element.top,
+        //             element.width,
+        //             element.height
+        //         ];
+        //         if (
+        //             this.checkPointInRect(
+        //                 left,
+        //                 top,
+        //                 rect,
+        //                 cx,
+        //                 cy,
+        //                 (element.rotate / 180) * Math.PI
+        //             )
+        //         ) {
+        //             return element;
+        //         }
+        //     }
+        // }
 
         const currentSlide = this.getCurrentSlide();
         const elements: IPPTElement[] = deepClone(currentSlide?.elements || []);
