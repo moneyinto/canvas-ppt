@@ -5,13 +5,37 @@
         <Edit />
         <a-divider class="ppt-tool-divider" type="vertical" />
         <Insert />
+        <a-divider class="ppt-tool-divider" type="vertical" />
+        <FillColor v-if="showFillColor" :element="currentElement" />
     </div>
 </template>
 
 <script lang="ts" setup>
+import { inject, Ref, ref, watch } from "vue";
 import AddPPT from "./AddPPT.vue";
 import Edit from "./Edit.vue";
 import Insert from "./Insert.vue";
+import FillColor from "./FillColor.vue";
+import Editor from "@/plugins/editor";
+import { IPPTElement } from "@/plugins/types/element";
+
+const instance = inject<Ref<Editor>>("instance");
+const currentElement = ref<IPPTElement | null>(null);
+
+watch(instance!, () => {
+    if (instance?.value) {
+        instance.value.listener.onSelectedChange = (element: IPPTElement | null) => {
+            currentElement.value = element;
+            if (element) {
+                showFillColor.value = element.type === "shape";
+            } else {
+                showFillColor.value = false;
+            }
+        };
+    }
+});
+
+const showFillColor = ref(false);
 </script>
 
 <style lang="scss" scoped>
@@ -57,6 +81,47 @@ import Insert from "./Insert.vue";
         opacity: .3;
         border-color: transparent;
         cursor: not-allowed;
+    }
+}
+
+.ppt-tool-multifunction {
+    display: flex;
+    align-items: center;
+    border: 1px solid transparent;
+    font-size: 12px;
+    height: 28px;
+    cursor: pointer;
+    .ppt-tool-block {
+        padding-left: 5px;
+        display: flex;
+        align-items: center;
+        height: 26px;
+        &:hover {
+            background-color: #ececec;
+        }
+    }
+    &:hover {
+        border-color: #ccc;
+        .ppt-tool-dropdown {
+            border-color: #ccc;
+        }
+    }
+    .ppt-tool-text {
+        margin-top: 1px;
+        margin-left: 2px;
+        margin-right: 5px;
+    }
+    .ppt-tool-dropdown {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-left: 1px solid transparent;
+        background-color: rgb(247, 247, 247);
+        width: 16px;
+        height: 26px;
+        &:hover {
+            background-color: #ececec;
+        }
     }
 }
 </style>

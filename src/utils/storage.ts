@@ -1,0 +1,1 @@
+export const STORAGE_FILL_COLOR = "PPT_FILL_COLOR";

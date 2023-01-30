@@ -1,13 +1,16 @@
 import { copyText, readClipboard } from "@/utils/clipboard";
 import { createRandomCode } from "@/utils/create";
 import { encrypt } from "@/utils/crypto";
+import { History } from "../editor/history";
 import StageConfig from "../stage/config";
 import { IPPTElement } from "../types/element";
 
 export default class Command {
     private _stageConfig: StageConfig;
-    constructor(stageConfig: StageConfig) {
+    private _history: History;
+    constructor(stageConfig: StageConfig, history: History) {
         this._stageConfig = stageConfig;
+        this._history = history;
     }
 
     public getZoom() {
@@ -147,6 +150,8 @@ export default class Command {
             element.top += 10;
             this._stageConfig.addElement(element);
             this._stageConfig.setOperateElement(element);
+            this._stageConfig.updateElement(element);
+            this._history.add();
 
             this._stageConfig.resetCheckDrawView();
             this._stageConfig.resetCheckDrawOprate();
@@ -164,6 +169,7 @@ export default class Command {
             const index = slide?.elements.findIndex(element => element.id === operateElement.id);
             if (typeof index !== "undefined" && index > -1) {
                 slide?.elements.splice(index, 1);
+                this._history.add();
                 this._stageConfig.setOperateElement(null);
                 this._stageConfig.resetCheckDrawOprate();
                 this._stageConfig.resetCheckDrawView();

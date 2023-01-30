@@ -265,11 +265,13 @@ export default class ControlStage extends Stage {
             const zoom = this.stageConfig.zoom;
             const moveX = (evt.pageX - this._startPoint[0]) / zoom;
             const moveY = (evt.pageY - this._startPoint[1]) / zoom;
-            this.stageConfig.setOperateElement({
+            const newElement = {
                 ...this.stageConfig.operateElement,
                 left: this.stageConfig.operateElement.left + moveX,
                 top: this.stageConfig.operateElement.top + moveY
-            });
+            };
+            this.stageConfig.setOperateElement(newElement);
+            this.stageConfig.updateElement(newElement);
             this._startPoint = [evt.pageX, evt.pageY];
             this.resetDrawOprate();
             this.stageConfig.resetCheckDrawView();
@@ -289,10 +291,13 @@ export default class ControlStage extends Stage {
                         changeAngle + this._storeAngle
                     );
 
-                    this.stageConfig.setOperateElement({
+                    const newElement = {
                         ...this.stageConfig.operateElement,
                         rotate: angle
-                    });
+                    };
+
+                    this.stageConfig.setOperateElement(newElement);
+                    this.stageConfig.updateElement(newElement);
 
                     this.resetDrawOprate();
                     this.stageConfig.resetCheckDrawView();
@@ -387,13 +392,16 @@ export default class ControlStage extends Stage {
 
                         // 限制缩放的最小值
                         if (storeData.width > 0 && storeData.height > 0) {
-                            this.stageConfig.setOperateElement({
+                            const newElement = {
                                 ...originElement,
                                 width: storeData.width,
                                 height: storeData.height,
                                 left: ox,
                                 top: oy
-                            });
+                            };
+
+                            this.stageConfig.setOperateElement(newElement);
+                            this.stageConfig.updateElement(newElement);
 
                             this.resetDrawOprate();
                             this.stageConfig.resetCheckDrawView();
@@ -405,7 +413,7 @@ export default class ControlStage extends Stage {
                 const element = this.stageConfig.operateElement;
                 // 线条控制
                 if (this.stageConfig.opreateType === "START") {
-                    this.stageConfig.setOperateElement({
+                    const newElement: IPPTElement = {
                         ...element,
                         left,
                         top,
@@ -413,12 +421,18 @@ export default class ControlStage extends Stage {
                             element.left - left + element.end[0],
                             element.top - top + element.end[1]
                         ]
-                    });
+                    };
+
+                    this.stageConfig.setOperateElement(newElement);
+                    this.stageConfig.updateElement(newElement);
                 } else if (this.stageConfig.opreateType === "END") {
-                    this.stageConfig.setOperateElement({
+                    const newElement: IPPTElement = {
                         ...element,
                         end: [left - element.left, top - element.top]
-                    });
+                    };
+
+                    this.stageConfig.setOperateElement(newElement);
+                    this.stageConfig.updateElement(newElement);
                 }
 
                 this.resetDrawOprate();

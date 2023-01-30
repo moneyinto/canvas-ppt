@@ -7,20 +7,21 @@
         </a-tooltip>
 
         <a-popover trigger="click" v-model:visible="showShapePool">
-            <a-tooltip title="插入形状" v-if="!showShapePool">
-                <div class="ppt-tool-btn">
+            <a-tooltip
+                title="插入形状"
+                :visible="!showShapePool && hoverShapePool"
+            >
+                <div
+                    class="ppt-tool-btn"
+                    @mouseover="hoverShapePool = true"
+                    @mouseleave="hoverShapePool = false"
+                >
                     <PPTIcon icon="shape" :size="28" />
                     &nbsp;
                     <PPTIcon icon="down" :size="6" />
                     &nbsp;
                 </div>
             </a-tooltip>
-            <div class="ppt-tool-btn active" v-else>
-                <PPTIcon icon="shape" :size="28" />
-                &nbsp;
-                <PPTIcon icon="down" :size="6" />
-                &nbsp;
-            </div>
 
             <template #content>
                 <div class="shape-pool">
@@ -39,7 +40,7 @@
                             >
                                 <a-tooltip :title="shape.name">
                                     <SvgWrapper
-                                        style="outline: 0;"
+                                        style="outline: 0"
                                         overflow="visible"
                                         width="18"
                                         height="18"
@@ -56,7 +57,11 @@
                                                 vector-effect="non-scaling-stroke"
                                                 stroke-linecap="butt"
                                                 stroke-miterlimit="8"
-                                                :fill="!!shape.fill ? '#999' : 'transparent'"
+                                                :fill="
+                                                    !!shape.fill
+                                                        ? '#999'
+                                                        : 'transparent'
+                                                "
                                                 stroke="#999"
                                                 stroke-width="1px"
                                                 :d="shape.path"
@@ -84,15 +89,22 @@ import { ICreatingType } from "@/plugins/types/element";
 import { createImageElement } from "@/utils/create";
 
 const showShapePool = ref(false);
+const hoverShapePool = ref(false);
 
 const instance = inject<Ref<Editor>>("instance");
 
 const selectShape = (type: ICreatingType, shape: IShapeItem | ILineItem) => {
     showShapePool.value = false;
     if (type === "line") {
-        instance?.value.stageConfig.setInsertElement({ type, data: shape as ILineItem });
+        instance?.value.stageConfig.setInsertElement({
+            type,
+            data: shape as ILineItem
+        });
     } else if (type === "shape") {
-        instance?.value.stageConfig.setInsertElement({ type, data: shape as IShapeItem });
+        instance?.value.stageConfig.setInsertElement({
+            type,
+            data: shape as IShapeItem
+        });
     }
 };
 
@@ -100,17 +112,25 @@ const insertImage = (files: File[]) => {
     const imageFile = files[0];
     if (!imageFile) return;
     const reader = new FileReader();
-    reader.addEventListener("load", () => {
-        const image = new Image();
-        image.onload = () => {
-            const element = createImageElement(image.width, image.height, reader.result as string);
-            instance?.value.stageConfig.addElement(element);
-            instance?.value.history.add();
-            instance?.value.stageConfig.setOperateElement(element);
-            instance?.value.stageConfig.resetCheckDrawOprate();
-        };
-        image.src = reader.result as string;
-    }, false);
+    reader.addEventListener(
+        "load",
+        () => {
+            const image = new Image();
+            image.onload = () => {
+                const element = createImageElement(
+                    image.width,
+                    image.height,
+                    reader.result as string
+                );
+                instance?.value.stageConfig.addElement(element);
+                instance?.value.history.add();
+                instance?.value.stageConfig.setOperateElement(element);
+                instance?.value.stageConfig.resetCheckDrawOprate();
+            };
+            image.src = reader.result as string;
+        },
+        false
+    );
     reader.readAsDataURL(imageFile);
 };
 </script>

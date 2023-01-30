@@ -158,7 +158,7 @@ export default class StageConfig {
     public setOperateElement(element: IPPTElement | null) {
         const operateElement = deepClone(element);
         this.operateElement = operateElement;
-        if (element) this.updateElement(operateElement);
+        if (this._listener.onSelectedChange) this._listener.onSelectedChange(operateElement);
     }
 
     public setOperateType(opreateType: string) {

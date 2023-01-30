@@ -41,7 +41,7 @@ export default class Editor {
         this.history.add();
 
         // 命令
-        this.command = new Command(this.stageConfig);
+        this.command = new Command(this.stageConfig, this.history);
 
         // 创建展示画板
         this._viewStage = new ViewStage(container, this.listener, this.stageConfig);

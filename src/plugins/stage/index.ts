@@ -201,7 +201,7 @@ export default class Stage {
         // 旋转画布
         this.ctx.rotate((element.rotate / 180) * Math.PI);
 
-        this.ctx.fillStyle = element.fill;
+        this.ctx.fillStyle = element.fill || "transparent";
         const path = this.getShapePath(element);
         this.ctx.fill(path);
 
