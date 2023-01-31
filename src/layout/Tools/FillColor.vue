@@ -111,7 +111,7 @@ init();
 
 watch(() => props.element, init);
 
-const setFillColor = (color?: string) => {
+const setFillColor = (color?: string, noClose?: boolean) => {
     if (props.element) {
         const element = props.element as IPPTShapeElement;
         const newElement = {
@@ -123,11 +123,12 @@ const setFillColor = (color?: string) => {
         instance?.value.history.add();
         instance?.value.stageConfig.resetCheckDrawView();
     }
-    showFillColor.value = false;
+    if (!noClose) showFillColor.value = false;
 };
 
-const onChangeColor = (color: string | undefined) => {
-    setFillColor(color);
+const onChangeColor = (args: Parameters<(color: string, noClose?: boolean) => void>) => {
+    const [color, noClose] = args;
+    setFillColor(color, noClose);
     // 缓存操作颜色
     if (color) {
         localStorage.setItem(STORAGE_FILL_COLOR, color);
@@ -158,8 +159,8 @@ const onOpacityChange = (value: number) => {
         .fill-color-line {
             position: absolute;
             width: 12px;
-            height: 2.5px;
-            bottom: 5px;
+            height: 3.5px;
+            bottom: 4px;
             left: 9px;
         }
     }

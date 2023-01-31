@@ -27,6 +27,7 @@
                 type="text"
                 class="ppt-color-input"
                 v-model:value="currentInputColor"
+                @blur="onBlurChange"
             ></a-input>
             <span class="no-fill-text" v-else>无填充</span>
         </div>
@@ -58,7 +59,12 @@ watch(() => props.color, () => {
 });
 
 const setColor = (color: string) => {
-    emit("change", color);
+    emit("change", [color, true]);
+};
+
+const onBlurChange = () => {
+    currentInputColor.value = tinycolor(currentInputColor.value).toHex();
+    emit("change", [`#${currentInputColor.value}`]);
 };
 
 const colorList = ref([
