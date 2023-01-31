@@ -364,6 +364,12 @@ export default class Stage {
                 path = `M ${rect.minX + offsetX} ${rect.minY} L ${rect.maxX - offsetX} ${rect.minY} L ${rect.maxX} ${rect.maxY} L ${rect.minX} ${rect.maxY} Z`;
                 break;
             }
+            case SHAPE_TYPE.DIAMOND: {
+                const sx = (rect.minX + rect.maxX) / 2;
+                const sy = (rect.minY + rect.maxY) / 2;
+                path = `M ${sx} ${rect.minY} L ${rect.maxX} ${sy} L ${sx} ${rect.maxY} L ${rect.minX} ${sy} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);
