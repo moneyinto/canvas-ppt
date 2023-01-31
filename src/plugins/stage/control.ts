@@ -563,6 +563,7 @@ export default class ControlStage extends Stage {
                 // 创建完元素默认选中元素
                 this.stageConfig.setOperateElement(newElement);
                 this.stageConfig.resetCheckDrawOprate();
+                this.stageConfig.resetCheckDrawView();
             }
             this.stageConfig.setInsertElement(null);
         } else if (
