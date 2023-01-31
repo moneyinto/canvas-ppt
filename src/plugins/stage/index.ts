@@ -202,10 +202,12 @@ export default class Stage {
         this.ctx.rotate((element.rotate / 180) * Math.PI);
 
         this.ctx.fillStyle = element.fill || "transparent";
+        this.ctx.globalAlpha = (100 - (element.opacity || 0)) / 100;
         const path = this.getShapePath(element);
         this.ctx.fill(path);
 
         if (element.outline) {
+            this.ctx.globalAlpha = (100 - (element.outline.opacity || 0)) / 100;
             const lineWidth = element.outline.width || 2;
             this.ctx.lineWidth = lineWidth;
             this.ctx.strokeStyle = element.outline.color || "#000";

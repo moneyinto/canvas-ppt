@@ -65,6 +65,7 @@ export interface IPPTElementOutline {
     style?: "dashed" | "solid";
     width?: number;
     color?: string;
+    opacity?: number;
 }
 
 /**

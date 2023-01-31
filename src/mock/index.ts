@@ -17,6 +17,7 @@ export const slides: ISlide[] = [
                 top: 20,
                 width: 200,
                 height: 100,
+                opacity: 70,
                 outline: {
                     style: "dashed",
                     width: 2,
