@@ -377,6 +377,12 @@ export default class Stage {
                 path = `M ${sx} ${rect.minY} L ${rect.maxX} ${rect.minY + offsetY} L ${rect.maxX - offsetX} ${rect.maxY} L ${rect.minX + offsetX} ${rect.maxY} L ${rect.minX} ${rect.minY + offsetY} Z`;
                 break;
             }
+            case SHAPE_TYPE.HEXAGON: {
+                const offsetX = element.width * 0.2;
+                const sy = (rect.minY + rect.maxY) / 2;
+                path = `M ${rect.minX + offsetX} ${rect.minY} L ${rect.maxX - offsetX} ${rect.minY} L ${rect.maxX} ${sy} L ${rect.maxX - offsetX} ${rect.maxY} L ${rect.minX + offsetX} ${rect.maxY} L ${rect.minX} ${sy} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);
