@@ -359,6 +359,11 @@ export default class Stage {
                 path = `M ${rect.minX + offsetX} ${rect.minY} L ${rect.maxX} ${rect.minY} L ${rect.maxX - offsetX} ${rect.maxY} L ${rect.minX} ${rect.maxY} Z`;
                 break;
             }
+            case SHAPE_TYPE.TRAPEZOIDAL: {
+                const offsetX = element.width / 2 * 0.3;
+                path = `M ${rect.minX + offsetX} ${rect.minY} L ${rect.maxX - offsetX} ${rect.minY} L ${rect.maxX} ${rect.maxY} L ${rect.minX} ${rect.maxY} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);

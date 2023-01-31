@@ -13,7 +13,8 @@ export enum SHAPE_TYPE {
     OVAL = "oval",
     TRIANGLE = "triangle",
     RIGHT_TRIANGLE = "rightTriangle",
-    PARALLELOGRAM = "parallelogram"
+    PARALLELOGRAM = "parallelogram",
+    TRAPEZOIDAL = "trapezoidal"
 }
 
 export enum LINE_TYPE {
@@ -166,6 +167,12 @@ export const SHAPE_LIST: IShapePoolItem[] = [
                 name: "平行四边形",
                 path: "m.75 13.5 4.583-11h9.917l-4.583 11H.75Z",
                 type: SHAPE_TYPE.PARALLELOGRAM
+            },
+            {
+                viewBox: 18,
+                name: "梯形",
+                path: "m.677 13.5 3.692-12h7.262l3.692 12H.677Z",
+                type: SHAPE_TYPE.TRAPEZOIDAL
             }
         ]
     }
