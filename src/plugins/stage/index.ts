@@ -370,6 +370,13 @@ export default class Stage {
                 path = `M ${sx} ${rect.minY} L ${rect.maxX} ${sy} L ${sx} ${rect.maxY} L ${rect.minX} ${sy} Z`;
                 break;
             }
+            case SHAPE_TYPE.PENTAGON: {
+                const offsetX = element.width * 0.19;
+                const offsetY = element.height * 0.38;
+                const sx = (rect.minX + rect.maxX) / 2;
+                path = `M ${sx} ${rect.minY} L ${rect.maxX} ${rect.minY + offsetY} L ${rect.maxX - offsetX} ${rect.maxY} L ${rect.minX + offsetX} ${rect.maxY} L ${rect.minX} ${rect.minY + offsetY} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);

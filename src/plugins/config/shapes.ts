@@ -15,7 +15,8 @@ export enum SHAPE_TYPE {
     RIGHT_TRIANGLE = "rightTriangle",
     PARALLELOGRAM = "parallelogram",
     TRAPEZOIDAL = "trapezoidal",
-    DIAMOND = "diamond"
+    DIAMOND = "diamond",
+    PENTAGON = "pentagon"
 }
 
 export enum LINE_TYPE {
@@ -180,6 +181,12 @@ export const SHAPE_LIST: IShapePoolItem[] = [
                 name: "菱形",
                 path: "M.707 7.778 7.778.708l7.071 7.07-7.071 7.071z",
                 type: SHAPE_TYPE.DIAMOND
+            },
+            {
+                viewBox: 18,
+                name: "五边形",
+                path: "M.98 5.719 8 .618l7.02 5.1-2.681 8.254H3.661L.979 5.72Z",
+                type: SHAPE_TYPE.PENTAGON
             }
         ]
     }
