@@ -345,9 +345,14 @@ export default class Stage {
                 break;
             }
             case SHAPE_TYPE.TRIANGLE: {
-                const cx = (rect.minX + rect.maxX) / 2;
-                const cy = rect.minY;
-                path = `M ${cx} ${cy} L ${rect.minX} ${rect.maxY} L ${rect.maxX} ${rect.maxY} Z`;
+                const sx = (rect.minX + rect.maxX) / 2;
+                const sy = rect.minY;
+                path = `M ${sx} ${sy} L ${rect.minX} ${rect.maxY} L ${rect.maxX} ${rect.maxY} Z`;
+                break;
+            }
+
+            case SHAPE_TYPE.RIGHT_TRIANGLE: {
+                path = `M ${rect.minX} ${rect.minY} L ${rect.minX} ${rect.maxY} L ${rect.maxX} ${rect.maxY} Z`;
                 break;
             }
         }
