@@ -350,9 +350,13 @@ export default class Stage {
                 path = `M ${sx} ${sy} L ${rect.minX} ${rect.maxY} L ${rect.maxX} ${rect.maxY} Z`;
                 break;
             }
-
             case SHAPE_TYPE.RIGHT_TRIANGLE: {
                 path = `M ${rect.minX} ${rect.minY} L ${rect.minX} ${rect.maxY} L ${rect.maxX} ${rect.maxY} Z`;
+                break;
+            }
+            case SHAPE_TYPE.PARALLELOGRAM: {
+                const offsetX = element.width / 2 * 0.3;
+                path = `M ${rect.minX + offsetX} ${rect.minY} L ${rect.maxX} ${rect.minY} L ${rect.maxX - offsetX} ${rect.maxY} L ${rect.minX} ${rect.maxY} Z`;
                 break;
             }
         }
