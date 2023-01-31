@@ -10,7 +10,8 @@ export enum SHAPE_TYPE {
     RECT_SINGLE_RADIUS = "rectSingleRadius",
     RECT_SAME_SIDE_RADIUS = "rectSameSideRadius",
     RECT_OPPOSITE_RADIUS = "rectOppositeRadius",
-    OVAL = "oval"
+    OVAL = "oval",
+    TRIANGLE = "triangle"
 }
 
 export enum LINE_TYPE {
@@ -145,6 +146,12 @@ export const SHAPE_LIST: IShapePoolItem[] = [
                 name: "椭圆",
                 path: "M14.5 8c0 2.968-2.835 5.5-6.5 5.5S1.5 10.968 1.5 8 4.335 2.5 8 2.5s6.5 2.532 6.5 5.5Z",
                 type: SHAPE_TYPE.OVAL
+            },
+            {
+                viewBox: 18,
+                name: "三角形",
+                path: "M2.097 13.25 9 1.959l6.902 11.291H2.098Z",
+                type: SHAPE_TYPE.TRIANGLE
             }
         ]
     }

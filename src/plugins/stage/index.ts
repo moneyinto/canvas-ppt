@@ -344,6 +344,12 @@ export default class Stage {
                 path = `M ${sx} ${sy} A ${rx} ${ry} 0 1 1 ${ex} ${ey} A ${rx} ${ry} 0 1 1 ${sx} ${sy} Z`;
                 break;
             }
+            case SHAPE_TYPE.TRIANGLE: {
+                const cx = (rect.minX + rect.maxX) / 2;
+                const cy = rect.minY;
+                path = `M ${cx} ${cy} L ${rect.minX} ${rect.maxY} L ${rect.maxX} ${rect.maxY} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);
