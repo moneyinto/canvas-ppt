@@ -18,6 +18,8 @@ export const slides: ISlide[] = [
                 width: 200,
                 height: 100,
                 opacity: 70,
+                flipV: -1,
+                flipH: 1,
                 outline: {
                     style: "dashed",
                     width: 2,

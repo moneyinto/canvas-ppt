@@ -140,8 +140,8 @@ export interface IPPTShapeElement extends IPPTBaseElement {
     gradient?: IShapeGradient;
     outline?: IPPTElementOutline;
     opacity?: number;
-    flipH?: boolean;
-    flipV?: boolean;
+    flipH?: 1 | -1;
+    flipV?: 1 | -1;
     shadow?: IPPTElementShadow;
     text?: IShapeText;
 }
@@ -245,8 +245,8 @@ export interface IPPTImageElement extends IPPTBaseElement {
     src: string;
     filters?: ImageElementFilters;
     clip?: ImageElementClip;
-    flipH?: boolean;
-    flipV?: boolean;
+    flipH?: 1 | -1;
+    flipV?: 1 | -1;
 }
 
 export type IPPTElement = IPPTShapeElement | IPPTLineElement | IPPTImageElement;
