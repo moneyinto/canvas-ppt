@@ -3,7 +3,7 @@ import { createRandomCode } from "@/utils/create";
 import { encrypt } from "@/utils/crypto";
 import { History } from "../editor/history";
 import StageConfig from "../stage/config";
-import { IPPTElement } from "../types/element";
+import { IPPTElement, IPPTImageElement, IPPTLineElement, IPPTShapeElement } from "../types/element";
 
 export default class Command {
     private _stageConfig: StageConfig;
@@ -56,6 +56,8 @@ export default class Command {
                 const movedElement = slide.elements.splice(zIndex, 1)[0];
                 slide.elements.splice(zIndex + 1, 0, movedElement);
 
+                this._history.add();
+
                 this._stageConfig.resetCheckDrawOprate();
                 this._stageConfig.resetCheckDrawView();
             }
@@ -75,6 +77,8 @@ export default class Command {
                 // 移动
                 const movedElement = slide.elements.splice(zIndex, 1)[0];
                 slide.elements.splice(zIndex - 1, 0, movedElement);
+
+                this._history.add();
 
                 this._stageConfig.resetCheckDrawOprate();
                 this._stageConfig.resetCheckDrawView();
@@ -96,6 +100,8 @@ export default class Command {
                 const movedElement = slide.elements.splice(zIndex, 1)[0];
                 slide.elements.push(movedElement);
 
+                this._history.add();
+
                 this._stageConfig.resetCheckDrawOprate();
                 this._stageConfig.resetCheckDrawView();
             }
@@ -116,9 +122,49 @@ export default class Command {
                 const movedElement = slide.elements.splice(zIndex, 1)[0];
                 slide.elements.unshift(movedElement);
 
+                this._history.add();
+
                 this._stageConfig.resetCheckDrawOprate();
                 this._stageConfig.resetCheckDrawView();
             }
+        }
+    }
+
+    // 水平翻转
+    public executeFlipH() {
+        const operateElement = this._stageConfig.operateElement as IPPTImageElement | IPPTShapeElement;
+        if (operateElement) {
+            const newElement: IPPTElement = {
+                ...operateElement,
+                flipH: operateElement.flipH === -1 ? 1 : -1
+            };
+
+            this._stageConfig.setOperateElement(newElement);
+            this._stageConfig.updateElement(newElement);
+
+            this._history.add();
+
+            this._stageConfig.resetCheckDrawOprate();
+            this._stageConfig.resetCheckDrawView();
+        }
+    }
+
+    // 垂直翻转
+    public executeFlipV() {
+        const operateElement = this._stageConfig.operateElement as IPPTImageElement | IPPTShapeElement;
+        if (operateElement) {
+            const newElement: IPPTElement = {
+                ...operateElement,
+                flipV: operateElement.flipV === -1 ? 1 : -1
+            };
+
+            this._stageConfig.setOperateElement(newElement);
+            this._stageConfig.updateElement(newElement);
+
+            this._history.add();
+
+            this._stageConfig.resetCheckDrawOprate();
+            this._stageConfig.resetCheckDrawView();
         }
     }
 

@@ -1,11 +1,17 @@
 <template>
     <div class="ppt-tools">
         <AddPPT />
+
         <a-divider class="ppt-tool-divider" type="vertical" />
         <Edit />
+
         <a-divider class="ppt-tool-divider" type="vertical" />
         <Insert />
-        <a-divider class="ppt-tool-divider" type="vertical" />
+
+        <a-divider class="ppt-tool-divider" v-if="showEvert" type="vertical" />
+        <Evert v-if="showEvert" :element="currentElement" />
+
+        <a-divider class="ppt-tool-divider" v-if="showFillColor" type="vertical" />
         <FillColor v-if="showFillColor" :element="currentElement" />
     </div>
 </template>
@@ -18,6 +24,7 @@ import Insert from "./Insert.vue";
 import FillColor from "./FillColor.vue";
 import Editor from "@/plugins/editor";
 import { IPPTElement } from "@/plugins/types/element";
+import Evert from "./Evert.vue";
 
 const instance = inject<Ref<Editor>>("instance");
 const currentElement = ref<IPPTElement | null>(null);
@@ -28,6 +35,7 @@ watch(instance!, () => {
             currentElement.value = element;
             if (element) {
                 showFillColor.value = element.type === "shape";
+                showEvert.value = element.type === "shape";
             } else {
                 showFillColor.value = false;
             }
@@ -36,6 +44,7 @@ watch(instance!, () => {
 });
 
 const showFillColor = ref(false);
+const showEvert = ref(false);
 </script>
 
 <style lang="scss" scoped>

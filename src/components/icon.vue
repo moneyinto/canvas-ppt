@@ -38,7 +38,9 @@ const icons: { [key: string]: string } = {
     bottom: new URL("@/assets/icons/bottom.svg", import.meta.url).href,
     moveUp: new URL("@/assets/icons/moveUp.svg", import.meta.url).href,
     moveDown: new URL("@/assets/icons/moveDown.svg", import.meta.url).href,
-    fillColor: new URL("@/assets/icons/fillColor.svg", import.meta.url).href
+    fillColor: new URL("@/assets/icons/fillColor.svg", import.meta.url).href,
+    flipV: new URL("@/assets/icons/flipV.svg", import.meta.url).href,
+    flipH: new URL("@/assets/icons/flipH.svg", import.meta.url).href
 };
 
 const iconUrl = computed(() => icons[icon.value]);
