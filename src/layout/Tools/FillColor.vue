@@ -112,21 +112,13 @@ init();
 watch(() => props.element, init);
 
 const setFillColor = (color?: string, noClose?: boolean) => {
-    if (props.element) {
-        const element = props.element as IPPTShapeElement;
-        const newElement = {
-            ...element,
-            fill: color || ""
-        };
-        instance?.value.stageConfig.setOperateElement(newElement);
-        instance?.value.stageConfig.updateElement(newElement);
-        instance?.value.history.add();
-        instance?.value.stageConfig.resetCheckDrawView();
-    }
+    instance?.value.command.executeFillColor(color || "");
     if (!noClose) showFillColor.value = false;
 };
 
-const onChangeColor = (args: Parameters<(color: string, noClose?: boolean) => void>) => {
+const onChangeColor = (
+    args: Parameters<(color: string, noClose?: boolean) => void>
+) => {
     const [color, noClose] = args;
     setFillColor(color, noClose);
     // 缓存操作颜色
@@ -137,17 +129,7 @@ const onChangeColor = (args: Parameters<(color: string, noClose?: boolean) => vo
 };
 
 const onOpacityChange = (value: number) => {
-    if (props.element) {
-        const element = props.element as IPPTShapeElement;
-        const newElement = {
-            ...element,
-            opacity: value
-        };
-        instance?.value.stageConfig.setOperateElement(newElement);
-        instance?.value.stageConfig.updateElement(newElement);
-        instance?.value.history.add();
-        instance?.value.stageConfig.resetCheckDrawView();
-    }
+    instance?.value.command.executeOpacity(value);
 };
 </script>
 

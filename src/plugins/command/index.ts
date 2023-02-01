@@ -3,7 +3,7 @@ import { createRandomCode } from "@/utils/create";
 import { encrypt } from "@/utils/crypto";
 import { History } from "../editor/history";
 import StageConfig from "../stage/config";
-import { IPPTElement, IPPTImageElement, IPPTLineElement, IPPTShapeElement } from "../types/element";
+import { IPPTElement, IPPTImageElement, IPPTShapeElement } from "../types/element";
 
 export default class Command {
     private _stageConfig: StageConfig;
@@ -18,7 +18,7 @@ export default class Command {
     }
 
     // 适配
-    public excuteFitZoom() {
+    public executeFitZoom() {
         this._stageConfig.resetBaseZoom();
     }
 
@@ -56,10 +56,7 @@ export default class Command {
                 const movedElement = slide.elements.splice(zIndex, 1)[0];
                 slide.elements.splice(zIndex + 1, 0, movedElement);
 
-                this._history.add();
-
-                this._stageConfig.resetCheckDrawOprate();
-                this._stageConfig.resetCheckDrawView();
+                this.executeLogRender();
             }
         }
     }
@@ -78,10 +75,7 @@ export default class Command {
                 const movedElement = slide.elements.splice(zIndex, 1)[0];
                 slide.elements.splice(zIndex - 1, 0, movedElement);
 
-                this._history.add();
-
-                this._stageConfig.resetCheckDrawOprate();
-                this._stageConfig.resetCheckDrawView();
+                this.executeLogRender();
             }
         }
     }
@@ -100,10 +94,7 @@ export default class Command {
                 const movedElement = slide.elements.splice(zIndex, 1)[0];
                 slide.elements.push(movedElement);
 
-                this._history.add();
-
-                this._stageConfig.resetCheckDrawOprate();
-                this._stageConfig.resetCheckDrawView();
+                this.executeLogRender();
             }
         }
     }
@@ -122,10 +113,7 @@ export default class Command {
                 const movedElement = slide.elements.splice(zIndex, 1)[0];
                 slide.elements.unshift(movedElement);
 
-                this._history.add();
-
-                this._stageConfig.resetCheckDrawOprate();
-                this._stageConfig.resetCheckDrawView();
+                this.executeLogRender();
             }
         }
     }
@@ -139,13 +127,7 @@ export default class Command {
                 flipH: operateElement.flipH === -1 ? 1 : -1
             };
 
-            this._stageConfig.setOperateElement(newElement);
-            this._stageConfig.updateElement(newElement);
-
-            this._history.add();
-
-            this._stageConfig.resetCheckDrawOprate();
-            this._stageConfig.resetCheckDrawView();
+            this.executeUpdateRender(newElement);
         }
     }
 
@@ -158,18 +140,38 @@ export default class Command {
                 flipV: operateElement.flipV === -1 ? 1 : -1
             };
 
-            this._stageConfig.setOperateElement(newElement);
-            this._stageConfig.updateElement(newElement);
+            this.executeUpdateRender(newElement);
+        }
+    }
 
-            this._history.add();
+    // 设置填充色
+    public executeFillColor(color: string) {
+        const operateElement = this._stageConfig.operateElement as IPPTShapeElement;
+        if (operateElement) {
+            const newElement = {
+                ...operateElement,
+                fill: color
+            };
 
-            this._stageConfig.resetCheckDrawOprate();
-            this._stageConfig.resetCheckDrawView();
+            this.executeUpdateRender(newElement);
+        }
+    }
+
+    // 填充透明度设置
+    public executeOpacity(value: number) {
+        const operateElement = this._stageConfig.operateElement as IPPTShapeElement | IPPTImageElement;
+        if (operateElement) {
+            const newElement = {
+                ...operateElement,
+                opacity: value
+            };
+
+            this.executeUpdateRender(newElement);
         }
     }
 
     // 复制
-    public async excuteCopy() {
+    public async executeCopy() {
         const operateElement = this._stageConfig.operateElement;
         // 选中元素时
         if (operateElement) {
@@ -179,13 +181,13 @@ export default class Command {
     }
 
     // 剪切
-    public async excuteCut() {
-        await this.excuteCopy();
-        await this.excuteDelete();
+    public async executeCut() {
+        await this.executeCopy();
+        await this.executeDelete();
     }
 
     // 粘贴
-    public async excutePaste() {
+    public async executePaste() {
         const content = await readClipboard();
         // 粘贴的内容为元素数据
         if (typeof content === "object") {
@@ -194,13 +196,8 @@ export default class Command {
             // 新元素较旧元素偏移一段距离
             element.left += 10;
             element.top += 10;
-            this._stageConfig.addElement(element);
-            this._stageConfig.setOperateElement(element);
-            this._stageConfig.updateElement(element);
-            this._history.add();
 
-            this._stageConfig.resetCheckDrawView();
-            this._stageConfig.resetCheckDrawOprate();
+            this.executeAddRender(element);
 
             // 再次写入剪切板，为了下一次粘贴能够在上一次的基础上进行偏移
             await copyText(encrypt(JSON.stringify(element)));
@@ -208,18 +205,51 @@ export default class Command {
     }
 
     // 删除元素
-    public excuteDelete() {
+    public executeDelete() {
         const operateElement = this._stageConfig.operateElement;
         if (operateElement) {
-            const slide = this._stageConfig.getCurrentSlide();
-            const index = slide?.elements.findIndex(element => element.id === operateElement.id);
-            if (typeof index !== "undefined" && index > -1) {
-                slide?.elements.splice(index, 1);
-                this._history.add();
-                this._stageConfig.setOperateElement(null);
-                this._stageConfig.resetCheckDrawOprate();
-                this._stageConfig.resetCheckDrawView();
-            }
+            this.executeDeleteRender(operateElement);
+        }
+    }
+
+    // 渲染
+    public executeRender() {
+        this._stageConfig.resetCheckDrawOprate();
+        this._stageConfig.resetCheckDrawView();
+    }
+
+    // 元素历史记录并渲染
+    public executeLogRender() {
+        this._history.add();
+
+        this.executeRender();
+    }
+
+    // 元素更新及渲染
+    public executeUpdateRender(element: IPPTElement) {
+        this._stageConfig.setOperateElement(element);
+        this._stageConfig.updateElement(element);
+
+        this.executeLogRender();
+    }
+
+    // 元素新增及渲染
+    public executeAddRender(element: IPPTElement) {
+        this._stageConfig.addElement(element);
+        this._stageConfig.setOperateElement(element);
+
+        this.executeLogRender();
+    }
+
+    // 元素删除及渲染
+    public executeDeleteRender(element: IPPTElement) {
+        const slide = this._stageConfig.getCurrentSlide();
+        const index = slide?.elements.findIndex(ele => ele.id === element.id);
+        if (typeof index !== "undefined" && index > -1) {
+            slide?.elements.splice(index, 1);
+            this._stageConfig.setOperateElement(null);
+
+            this.executeLogRender();
         }
     }
 }

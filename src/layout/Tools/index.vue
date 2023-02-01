@@ -9,7 +9,7 @@
         <Insert />
 
         <a-divider class="ppt-tool-divider" v-if="showEvert" type="vertical" />
-        <Evert v-if="showEvert" :element="currentElement" />
+        <Evert v-if="showEvert" />
 
         <a-divider class="ppt-tool-divider" v-if="showFillColor" type="vertical" />
         <FillColor v-if="showFillColor" :element="currentElement" />
@@ -38,6 +38,7 @@ watch(instance!, () => {
                 showEvert.value = element.type === "shape";
             } else {
                 showFillColor.value = false;
+                showEvert.value = false;
             }
         };
     }

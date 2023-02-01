@@ -101,7 +101,7 @@ export default class ControlStage extends Stage {
                 subText: `${isMac ? "⌘" : "Ctrl"} + X`,
                 hide: !selectedElement,
                 handler: () => {
-                    this._command.excuteCut();
+                    this._command.executeCut();
                 }
             },
             {
@@ -110,7 +110,7 @@ export default class ControlStage extends Stage {
                 subText: `${isMac ? "⌘" : "Ctrl"} + C`,
                 hide: !selectedElement,
                 handler: () => {
-                    this._command.excuteCopy();
+                    this._command.executeCopy();
                 }
             },
             {
@@ -118,7 +118,7 @@ export default class ControlStage extends Stage {
                 icon: "paste",
                 subText: `${isMac ? "⌘" : "Ctrl"} + V`,
                 handler: () => {
-                    this._command.excutePaste();
+                    this._command.executePaste();
                 }
             },
             { divider: true, hide: !selectedElement },
@@ -162,7 +162,7 @@ export default class ControlStage extends Stage {
                 subText: "Delete",
                 hide: !selectedElement,
                 handler: () => {
-                    this._command.excuteDelete();
+                    this._command.executeDelete();
                 }
             }
         ];
@@ -265,16 +265,16 @@ export default class ControlStage extends Stage {
             const zoom = this.stageConfig.zoom;
             const moveX = (evt.pageX - this._startPoint[0]) / zoom;
             const moveY = (evt.pageY - this._startPoint[1]) / zoom;
+
             const newElement = {
                 ...this.stageConfig.operateElement,
                 left: this.stageConfig.operateElement.left + moveX,
                 top: this.stageConfig.operateElement.top + moveY
             };
-            this.stageConfig.setOperateElement(newElement);
-            this.stageConfig.updateElement(newElement);
+
+            this._command.executeUpdateRender(newElement);
+
             this._startPoint = [evt.pageX, evt.pageY];
-            this.resetDrawOprate();
-            this.stageConfig.resetCheckDrawView();
         } else if (this._canResizeElement && this.stageConfig.operateElement) {
             if (this.stageConfig.operateElement.type !== "line") {
                 // 旋转缩放元素
@@ -297,11 +297,7 @@ export default class ControlStage extends Stage {
                         rotate: angle
                     };
 
-                    this.stageConfig.setOperateElement(newElement);
-                    this.stageConfig.updateElement(newElement);
-
-                    this.resetDrawOprate();
-                    this.stageConfig.resetCheckDrawView();
+                    this._command.executeUpdateRender(newElement);
                 } else {
                     // 缩放
                     // const element = this.stageConfig.operateElement;
@@ -424,11 +420,7 @@ export default class ControlStage extends Stage {
                                 top: oy
                             };
 
-                            this.stageConfig.setOperateElement(newElement);
-                            this.stageConfig.updateElement(newElement);
-
-                            this.resetDrawOprate();
-                            this.stageConfig.resetCheckDrawView();
+                            this._command.executeUpdateRender(newElement);
                         }
                     }
                 }
@@ -447,20 +439,15 @@ export default class ControlStage extends Stage {
                         ]
                     };
 
-                    this.stageConfig.setOperateElement(newElement);
-                    this.stageConfig.updateElement(newElement);
+                    this._command.executeUpdateRender(newElement);
                 } else if (this.stageConfig.opreateType === "END") {
                     const newElement: IPPTElement = {
                         ...element,
                         end: [left - element.left, top - element.top]
                     };
 
-                    this.stageConfig.setOperateElement(newElement);
-                    this.stageConfig.updateElement(newElement);
+                    this._command.executeUpdateRender(newElement);
                 }
-
-                this.resetDrawOprate();
-                this.stageConfig.resetCheckDrawView();
             }
         } else if (
             !this.stageConfig.insertElement &&
@@ -584,14 +571,7 @@ export default class ControlStage extends Stage {
         if (this.stageConfig.insertElement && this._canCreate) {
             const newElement = this._createElement(evt);
             if (newElement) {
-                this.stageConfig.addElement(newElement);
-
-                this._history.add();
-
-                // 创建完元素默认选中元素
-                this.stageConfig.setOperateElement(newElement);
-                this.stageConfig.resetCheckDrawOprate();
-                this.stageConfig.resetCheckDrawView();
+                this._command.executeAddRender(newElement);
             }
             this.stageConfig.setInsertElement(null);
         } else if (

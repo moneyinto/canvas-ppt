@@ -37,7 +37,7 @@ watch(instance!, () => {
 });
 
 const fitZoom = () => {
-    instance?.value.command.excuteFitZoom();
+    instance?.value.command.executeFitZoom();
 };
 
 const decrease = () => {

@@ -22,14 +22,14 @@ export const ShortcutKeys: IRegisterShortcut[] = [
     {
         key: KeyMap.Backspace,
         callback: (command: Command) => {
-            command.excuteDelete();
+            command.executeDelete();
         }
     },
 
     {
         key: KeyMap.Delete,
         callback: (command: Command) => {
-            command.excuteDelete();
+            command.executeDelete();
         }
     },
 
@@ -37,7 +37,7 @@ export const ShortcutKeys: IRegisterShortcut[] = [
         key: KeyMap.C,
         ctrl: true,
         callback: (command: Command) => {
-            command.excuteCopy();
+            command.executeCopy();
         }
     },
 
@@ -45,7 +45,7 @@ export const ShortcutKeys: IRegisterShortcut[] = [
         key: KeyMap.X,
         ctrl: true,
         callback: (command: Command) => {
-            command.excuteCut();
+            command.executeCut();
         }
     },
 
@@ -53,7 +53,7 @@ export const ShortcutKeys: IRegisterShortcut[] = [
         key: KeyMap.V,
         ctrl: true,
         callback: (command: Command) => {
-            command.excutePaste();
+            command.executePaste();
         }
     }
 ];
