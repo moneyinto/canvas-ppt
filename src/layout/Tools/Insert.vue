@@ -126,6 +126,7 @@ const insertImage = (files: File[]) => {
                 instance?.value.history.add();
                 instance?.value.stageConfig.setOperateElement(element);
                 instance?.value.stageConfig.resetCheckDrawOprate();
+                instance?.value.stageConfig.resetCheckDrawView();
             };
             image.src = reader.result as string;
         },
