@@ -3,7 +3,7 @@ import { createRandomCode } from "@/utils/create";
 import { encrypt } from "@/utils/crypto";
 import { History } from "../editor/history";
 import StageConfig from "../stage/config";
-import { IPPTElement, IPPTImageElement, IPPTShapeElement } from "../types/element";
+import { IPPTElement, IPPTElementOutline, IPPTImageElement, IPPTShapeElement } from "../types/element";
 
 export default class Command {
     private _stageConfig: StageConfig;
@@ -165,6 +165,21 @@ export default class Command {
                 ...operateElement,
                 opacity: value
             };
+
+            this.executeUpdateRender(newElement);
+        }
+    }
+
+    // 修改边框
+    public executeOutline(outline?: IPPTElementOutline) {
+        const operateElement = this._stageConfig.operateElement as IPPTShapeElement;
+        if (operateElement) {
+            const newElement = {
+                ...operateElement,
+                outline
+            };
+
+            if (!outline) delete newElement.outline;
 
             this.executeUpdateRender(newElement);
         }

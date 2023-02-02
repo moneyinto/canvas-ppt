@@ -39,6 +39,7 @@ const icons: { [key: string]: string } = {
     moveUp: new URL("@/assets/icons/moveUp.svg", import.meta.url).href,
     moveDown: new URL("@/assets/icons/moveDown.svg", import.meta.url).href,
     fillColor: new URL("@/assets/icons/fillColor.svg", import.meta.url).href,
+    borderColor: new URL("@/assets/icons/borderColor.svg", import.meta.url).href,
     flipV: new URL("@/assets/icons/flipV.svg", import.meta.url).href,
     flipH: new URL("@/assets/icons/flipH.svg", import.meta.url).href
 };

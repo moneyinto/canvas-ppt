@@ -11,20 +11,22 @@
         <a-divider class="ppt-tool-divider" v-if="showEvert" type="vertical" />
         <Evert v-if="showEvert" />
 
-        <a-divider class="ppt-tool-divider" v-if="showFillColor" type="vertical" />
+        <a-divider class="ppt-tool-divider" v-if="showFillColor || showBorder" type="vertical" />
+        <Border v-if="showBorder" :element="currentElement" />
         <FillColor v-if="showFillColor" :element="currentElement" />
     </div>
 </template>
 
 <script lang="ts" setup>
 import { inject, Ref, ref, watch } from "vue";
+import Editor from "@/plugins/editor";
+import { IPPTElement } from "@/plugins/types/element";
 import AddPPT from "./AddPPT.vue";
 import Edit from "./Edit.vue";
 import Insert from "./Insert.vue";
 import FillColor from "./FillColor.vue";
-import Editor from "@/plugins/editor";
-import { IPPTElement } from "@/plugins/types/element";
 import Evert from "./Evert.vue";
+import Border from "./Border.vue";
 
 const instance = inject<Ref<Editor>>("instance");
 const currentElement = ref<IPPTElement | null>(null);
@@ -35,9 +37,11 @@ watch(instance!, () => {
             currentElement.value = element;
             if (element) {
                 showFillColor.value = element.type === "shape";
+                showBorder.value = element.type === "shape";
                 showEvert.value = element.type === "shape";
             } else {
                 showFillColor.value = false;
+                showBorder.value = false;
                 showEvert.value = false;
             }
         };
@@ -45,6 +49,7 @@ watch(instance!, () => {
 });
 
 const showFillColor = ref(false);
+const showBorder = ref(false);
 const showEvert = ref(false);
 </script>
 
