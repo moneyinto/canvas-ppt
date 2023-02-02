@@ -18,7 +18,7 @@ export default class Editor {
     constructor(container: HTMLDivElement, slides: ISlide[]) {
         // 禁止右击系统菜单
         document.oncontextmenu = (event: Event) => {
-            event.preventDefault();
+            // event.preventDefault();
         };
 
         // 监听

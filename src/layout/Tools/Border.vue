@@ -64,6 +64,42 @@
                                     />
                                 </div>
                             </div>
+
+                            <a-divider style="margin: 12px 0" />
+
+                            <a-menu class="ppt-border-menu">
+                                <a-sub-menu class="ppt-sub-popup" title="边框样式">
+                                    <a-menu-item class="ppt-sub-menu" @click="updateStyle('solid')">
+                                        <div class="ppt-border-solid"></div>
+                                    </a-menu-item>
+                                    <a-menu-item class="ppt-sub-menu" @click="updateStyle('dashed')">
+                                        <div class="ppt-border-dashed"></div>
+                                    </a-menu-item>
+                                </a-sub-menu>
+                                <a-sub-menu title="边框粗细">
+                                    <a-menu-item class="ppt-sub-menu" @click="updateWidth(1)">
+                                        <div class="ppt-border-solid" style="border-width: 1px;"></div>
+                                    </a-menu-item>
+                                    <a-menu-item class="ppt-sub-menu" @click="updateWidth(2)">
+                                        <div class="ppt-border-solid" style="border-width: 2px;"></div>
+                                    </a-menu-item>
+                                    <a-menu-item class="ppt-sub-menu" @click="updateWidth(3)">
+                                        <div class="ppt-border-solid" style="border-width: 3px;"></div>
+                                    </a-menu-item>
+                                    <a-menu-item class="ppt-sub-menu" @click="updateWidth(4)">
+                                        <div class="ppt-border-solid" style="border-width: 4px;"></div>
+                                    </a-menu-item>
+                                    <a-menu-item class="ppt-sub-menu" @click="updateWidth(5)">
+                                        <div class="ppt-border-solid" style="border-width: 5px;"></div>
+                                    </a-menu-item>
+                                    <a-menu-item class="ppt-sub-menu" @click="updateWidth(6)">
+                                        <div class="ppt-border-solid" style="border-width: 6px;"></div>
+                                    </a-menu-item>
+                                    <a-menu-item class="ppt-sub-menu" @click="updateWidth(7)">
+                                        <div class="ppt-border-solid" style="border-width: 7px;"></div>
+                                    </a-menu-item>
+                                </a-sub-menu>
+                            </a-menu>
                         </div>
                     </template>
                 </a-popover>
@@ -147,6 +183,28 @@ const onOpacityChange = (value: number) => {
         });
     }
 };
+
+const updateStyle = (style: "dashed" | "solid") => {
+    if (props.element) {
+        const operateElement = props.element as IPPTShapeElement;
+        instance?.value.command.executeOutline({
+            ...(operateElement.outline || {}),
+            style
+        });
+    }
+    showBorder.value = false;
+};
+
+const updateWidth = (width: number) => {
+    if (props.element) {
+        const operateElement = props.element as IPPTShapeElement;
+        instance?.value.command.executeOutline({
+            ...(operateElement.outline || {}),
+            width
+        });
+    }
+    showBorder.value = false;
+};
 </script>
 
 <style lang="scss" scoped>
@@ -187,5 +245,58 @@ const onOpacityChange = (value: number) => {
             }
         }
     }
+}
+
+.ppt-border-menu {
+    border-right: 0;
+    :deep(.ant-menu-submenu-title) {
+        height: 36px !important;
+        line-height: 36px !important;
+        margin: 0  -16px !important;
+        padding: 0 20px !important;
+        font-size: 12px;
+        color: #555555;
+        &:hover {
+            color: #555555;
+            background-color: #41464b0d;
+        }
+    }
+    :deep(.ant-menu-submenu-arrow) {
+        color: #555555 !important;
+        right: 16px;
+        &:before, &:after {
+            height: 1px;
+        }
+    }
+}
+</style>
+
+<style lang="scss">
+.ppt-sub-menu {
+    height: 30px !important;
+    line-height: 30px !important;
+    margin: 0 !important;
+    background-color: #ffffff !important;
+    &:hover {
+        background-color: #41464b0d !important;
+    }
+    .ant-menu-title-content {
+        display: flex;
+        align-items: center;
+        height: 30px;
+        .ppt-border-dashed {
+            border-top: 2px dashed #555555;
+            flex: 1;
+        }
+
+        .ppt-border-solid {
+            border-top: 2px solid #555555;
+            flex: 1;
+        }
+    }
+}
+
+.ant-menu-submenu-placement-rightTop .ant-menu-vertical {
+    padding: 10px 0 !important;
 }
 </style>
