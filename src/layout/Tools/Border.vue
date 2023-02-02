@@ -40,6 +40,30 @@
                                 :color="currentColor"
                                 @change="onChangeColor"
                             />
+
+                            <a-divider style="margin: 12px 0" />
+
+                            <div class="ppt-tool-opacity">
+                                <div class="tool-opacity-title">透明度</div>
+                                <div class="tool-opacity-box">
+                                    <a-slider
+                                        class="tool-opacity-slider"
+                                        :min="0"
+                                        :max="100"
+                                        v-model:value="opacity"
+                                        @change="onOpacityChange"
+                                    />
+                                    <a-input-number
+                                        class="tool-opacity-input"
+                                        v-model:value="opacity"
+                                        :min="0"
+                                        :max="100"
+                                        :formatter="(value: string) => `${value}%`"
+                                        :parser="(value: string) => value.replace('%', '')"
+                                        @change="onOpacityChange"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </template>
                 </a-popover>
@@ -113,6 +137,16 @@ const onChangeColor = (
         cacheBorderColor.value = color;
     }
 };
+
+const onOpacityChange = (value: number) => {
+    if (props.element) {
+        const operateElement = props.element as IPPTShapeElement;
+        instance?.value.command.executeOutline({
+            ...(operateElement.outline || {}),
+            opacity: value
+        });
+    }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -126,6 +160,31 @@ const onChangeColor = (
             height: 3.5px;
             bottom: 4px;
             left: 9px;
+        }
+    }
+}
+
+.ppt-tool-opacity {
+    .tool-opacity-title {
+        font-size: 12px;
+        color: #919397;
+    }
+
+    .tool-opacity-box {
+        display: flex;
+        align-items: center;
+
+        .tool-opacity-slider {
+            flex: 1;
+            margin-left: 0;
+        }
+
+        .tool-opacity-input {
+            width: 70px;
+            margin-left: 5px;
+            :deep(.ant-input-number-input) {
+                padding-left: 5px;
+            }
         }
     }
 }
