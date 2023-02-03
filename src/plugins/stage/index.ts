@@ -13,7 +13,8 @@ export default class Stage {
     public listener: Listener | undefined;
     constructor(
         container: HTMLDivElement,
-        stageConfig: StageConfig
+        stageConfig: StageConfig,
+        resize?: boolean
     ) {
         this.container = container;
         this.stageConfig = stageConfig;
@@ -22,10 +23,12 @@ export default class Stage {
 
         this.ctx = ctx;
         this.canvas = canvas;
-        window.addEventListener(
-            "resize",
-            throttleRAF(this._resetStage.bind(this))
-        );
+        if (resize) {
+            window.addEventListener(
+                "resize",
+                throttleRAF(this._resetStage.bind(this))
+            );
+        }
     }
 
     private _resetStage() {

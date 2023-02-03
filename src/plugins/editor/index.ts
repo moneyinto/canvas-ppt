@@ -44,10 +44,10 @@ export default class Editor {
         this.command = new Command(this.stageConfig, this.history);
 
         // 创建展示画板
-        this._viewStage = new ViewStage(container, this.stageConfig);
+        this._viewStage = new ViewStage(container, this.stageConfig, true);
 
         // 创建操作画板
-        this._controlStage = new ControlStage(container, this.stageConfig, this.command, this.history);
+        this._controlStage = new ControlStage(container, this.stageConfig, this.command, true);
 
         // 快捷键
         const shortcut = new Shortcut(container, this.listener, this.stageConfig, this.command);

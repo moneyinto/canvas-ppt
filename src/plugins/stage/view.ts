@@ -2,8 +2,8 @@ import Stage from ".";
 import StageConfig from "./config";
 
 export default class ViewStage extends Stage {
-    constructor(container: HTMLDivElement, stageConfig: StageConfig) {
-        super(container, stageConfig);
+    constructor(container: HTMLDivElement, stageConfig: StageConfig, resize?: boolean) {
+        super(container, stageConfig, resize);
 
         this._drawPage();
     }

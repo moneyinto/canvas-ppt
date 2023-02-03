@@ -23,17 +23,14 @@ export default class ControlStage extends Stage {
     private _opreateCacheElement: IPPTElement | null;
     private _startAngle: number;
     private _storeAngle: number;
-    private _history: History;
     private _menuDom: HTMLDivElement | null;
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
         command: Command,
-        history: History
+        resize?: boolean
     ) {
-        super(container, stageConfig);
-
-        this._history = history;
+        super(container, stageConfig, resize);
 
         this._canMoveCanvas = false;
         this._canCreate = false;
