@@ -127,7 +127,7 @@ export default class Command {
                 flipH: operateElement.flipH === -1 ? 1 : -1
             };
 
-            this.executeUpdateRender(newElement);
+            this.executeUpdateRender(newElement, true);
         }
     }
 
@@ -140,7 +140,7 @@ export default class Command {
                 flipV: operateElement.flipV === -1 ? 1 : -1
             };
 
-            this.executeUpdateRender(newElement);
+            this.executeUpdateRender(newElement, true);
         }
     }
 
@@ -153,7 +153,7 @@ export default class Command {
                 fill: color
             };
 
-            this.executeUpdateRender(newElement);
+            this.executeUpdateRender(newElement, true);
         }
     }
 
@@ -166,7 +166,7 @@ export default class Command {
                 opacity: value
             };
 
-            this.executeUpdateRender(newElement);
+            this.executeUpdateRender(newElement, true);
         }
     }
 
@@ -181,7 +181,7 @@ export default class Command {
 
             if (!outline) delete newElement.outline;
 
-            this.executeUpdateRender(newElement);
+            this.executeUpdateRender(newElement, true);
         }
     }
 
@@ -241,11 +241,15 @@ export default class Command {
     }
 
     // 元素更新及渲染
-    public executeUpdateRender(element: IPPTElement) {
+    public executeUpdateRender(element: IPPTElement, addHistory?: boolean) {
         this._stageConfig.setOperateElement(element);
         this._stageConfig.updateElement(element);
 
-        this.executeLogRender();
+        if (addHistory) {
+            this.executeLogRender();
+        } else {
+            this.executeRender();
+        }
     }
 
     // 元素新增及渲染

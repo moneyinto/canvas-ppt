@@ -3,7 +3,7 @@ import { ISlide } from "@/plugins/types/slide";
 
 export const slides: ISlide[] = [
     {
-        id: "slideid",
+        id: "slideid1",
         elements: [
             {
                 id: "elementid",
@@ -52,6 +52,40 @@ export const slides: ISlide[] = [
                 name: "线条",
                 type: "line",
                 borderWidth: 12
+            }
+        ]
+    },
+    {
+        id: "slideid2",
+        elements: [
+            {
+                name: "形状",
+                type: "shape",
+                shape: SHAPE_TYPE.RIGHT_TRIANGLE,
+                id: "9Hvcq8",
+                left: -9.992007221626409e-15,
+                top: -0.05590339892662244,
+                width: 279.06976744186045,
+                height: 242.39713774597493,
+                fill: "#5b9bd5",
+                fixedRatio: false,
+                rotate: 0,
+                flipV: -1
+            },
+            {
+                name: "形状",
+                type: "shape",
+                shape: SHAPE_TYPE.RIGHT_TRIANGLE,
+                id: "OxVslP",
+                left: 0.16100178890877714,
+                top: 112.80635062611793,
+                width: 518.783542039356,
+                height: 449.91055456171733,
+                fill: "#5b9bd5",
+                fixedRatio: false,
+                rotate: 0,
+                flipV: 1,
+                opacity: 30
             }
         ]
     }

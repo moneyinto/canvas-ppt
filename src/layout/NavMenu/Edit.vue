@@ -3,15 +3,15 @@
         <div class="ppt-menu-item">编辑</div>
         <template #overlay>
             <a-menu>
-                <a-menu-item>
+                <a-menu-item :disabled="!canUndo" @click="undo()">
                     <div class="ppt-menu-option">
-                        <PPTIcon icon="undo" />
+                        <PPTIcon :class="!canUndo && 'disabled'" icon="undo" />
                         &nbsp;&nbsp;撤销
                     </div>
                 </a-menu-item>
-                <a-menu-item>
+                <a-menu-item :disabled="!canRedo" @click="redo()">
                     <div class="ppt-menu-option">
-                        <PPTIcon icon="redo" />
+                        <PPTIcon :class="!canRedo && 'disabled'" icon="redo" />
                         &nbsp;&nbsp;重做
                     </div>
                 </a-menu-item>
@@ -55,11 +55,26 @@
 
 <script lang="ts" setup>
 import Editor from "@/plugins/editor";
-import { inject, Ref } from "vue";
+import { inject, Ref, computed } from "vue";
+import { throttleRAF } from "@/utils";
 
 const instance = inject<Ref<Editor>>("instance");
 
 const onSave = () => {
-    console.log(instance?.value.stageConfig.slides);
+    console.log(JSON.stringify(instance?.value.stageConfig.slides));
 };
+
+const historyCursor = inject<Ref<number>>("historyCursor");
+const historyLength = inject<Ref<number>>("historyLength");
+
+const canRedo = computed(() => historyCursor!.value < historyLength!.value - 1);
+const canUndo = computed(() => historyCursor!.value > 0);
+
+const undo = throttleRAF(() => {
+    if (canUndo.value) instance?.value.history.undo();
+});
+
+const redo = throttleRAF(() => {
+    if (canRedo.value) instance?.value.history.redo();
+});
 </script>

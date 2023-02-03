@@ -1,0 +1,62 @@
+<template>
+    <div
+        class="ppt-thumbnail-slide"
+        :style="{
+            width: thumbnailWidth + 'px',
+            height: thumbnailWidth * VIEWRATIO + 'px'
+        }"
+        ref="thumbnail"
+    ></div>
+</template>
+
+<script lang="ts" setup>
+import { computed, nextTick, onUnmounted, PropType, ref } from "vue";
+import { VIEWRATIO } from "@/plugins/config/stage";
+import { ISlide } from "@/plugins/types/slide";
+import Thumbnail from "@/plugins/screen/thumbnail";
+import emitter, { EmitterEvents } from "@/utils/emitter";
+
+const props = defineProps({
+    size: {
+        type: Number,
+        required: true
+    },
+    slide: {
+        type: Object as PropType<ISlide>,
+        required: true
+    }
+});
+
+const thumbnail = ref();
+const thumbnailWidth = computed(() => props.size);
+const slide = computed(() => props.slide);
+
+let instance: Thumbnail | null;
+
+const updateSlide = (id: string) => {
+    if (id === slide.value.id) {
+        // 更新
+        instance?.updateSlide(slide.value);
+    }
+};
+
+nextTick(() => {
+    if (thumbnail.value) {
+        instance = new Thumbnail(thumbnail.value, slide.value);
+
+        emitter.on(EmitterEvents.UPDATE_THUMBNAIL, updateSlide);
+    }
+});
+
+onUnmounted(() => {
+    emitter.off(EmitterEvents.UPDATE_THUMBNAIL, updateSlide);
+});
+</script>
+
+<style lang="scss" scoped>
+.ppt-thumbnail-slide {
+    background-color: #fff;
+    cursor: pointer;
+    position: relative;
+}
+</style>

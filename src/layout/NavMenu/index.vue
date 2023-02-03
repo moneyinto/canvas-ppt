@@ -35,5 +35,8 @@ import Edit from "./Edit.vue";
     align-items: center;
     font-size: 12px;
     width: 140px;
+    .disabled {
+        opacity: 0.3;
+    }
 }
 </style>

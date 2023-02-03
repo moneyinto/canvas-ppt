@@ -10,14 +10,12 @@ export default class Stage {
     public ctx: CanvasRenderingContext2D;
     public stageConfig: StageConfig;
     public container: HTMLDivElement;
-    public listener: Listener;
+    public listener: Listener | undefined;
     constructor(
         container: HTMLDivElement,
-        listener: Listener,
         stageConfig: StageConfig
     ) {
         this.container = container;
-        this.listener = listener;
         this.stageConfig = stageConfig;
 
         const { canvas, ctx } = this._createStage();
@@ -445,5 +443,14 @@ export default class Stage {
             }
             this.ctx.restore();
         }
+    }
+
+    public drawElements(elements: IPPTElement[]) {
+        elements.forEach(element => {
+            // if (!this.stageConfig.operateElement || this.stageConfig.operateElement.id !== element.id) {
+            //     this.drawElement(element);
+            // }
+            this.drawElement(element);
+        });
     }
 }

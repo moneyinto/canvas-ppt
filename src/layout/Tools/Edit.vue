@@ -20,24 +20,16 @@
 
 <script lang="ts" setup>
 import Editor from "@/plugins/editor";
-import { computed, inject, ref, Ref, watch } from "vue";
+import { computed, inject, Ref } from "vue";
 import { throttleRAF } from "@/utils";
+
+const historyCursor = inject<Ref<number>>("historyCursor");
+const historyLength = inject<Ref<number>>("historyLength");
 
 const instance = inject<Ref<Editor>>("instance");
 
-const historyCursor = ref(0);
-const historyLength = ref(0);
-const canRedo = computed(() => historyCursor.value < historyLength.value - 1);
-const canUndo = computed(() => historyCursor.value > 0);
-
-watch(instance!, () => {
-    if (instance?.value) {
-        instance.value.listener.onEditChange = (cursor, length) => {
-            historyCursor.value = cursor;
-            historyLength.value = length;
-        };
-    }
-});
+const canRedo = computed(() => historyCursor!.value < historyLength!.value - 1);
+const canUndo = computed(() => historyCursor!.value > 0);
 
 const undo = throttleRAF(() => {
     if (canUndo.value) instance?.value.history.undo();

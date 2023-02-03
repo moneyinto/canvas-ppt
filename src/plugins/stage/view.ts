@@ -1,11 +1,9 @@
 import Stage from ".";
-import Listener from "../listener";
-import { IPPTElement } from "../types/element";
 import StageConfig from "./config";
 
 export default class ViewStage extends Stage {
-    constructor(container: HTMLDivElement, listener: Listener, stageConfig: StageConfig) {
-        super(container, listener, stageConfig);
+    constructor(container: HTMLDivElement, stageConfig: StageConfig) {
+        super(container, stageConfig);
 
         this._drawPage();
     }
@@ -34,14 +32,5 @@ export default class ViewStage extends Stage {
         this.ctx.clearRect(0, 0, width, height);
 
         this._drawPage();
-    }
-
-    public drawElements(elements: IPPTElement[]) {
-        elements.forEach(element => {
-            // if (!this.stageConfig.operateElement || this.stageConfig.operateElement.id !== element.id) {
-            //     this.drawElement(element);
-            // }
-            this.drawElement(element);
-        });
     }
 }

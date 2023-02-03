@@ -22,13 +22,14 @@ export default class StageConfig {
     public resetDrawOprate: (() => void) | null;
 
     private _container: HTMLDivElement;
-    private _listener: Listener;
+    private _listener: Listener | undefined;
 
     // 边距
-    private _margin = 40;
-    constructor(container: HTMLDivElement, listener: Listener) {
+    private _margin = 0;
+    constructor(container: HTMLDivElement, listener?: Listener, margin?: number) {
         this._container = container;
         this._listener = listener;
+        this._margin = margin || 0;
         this.scrollX = 0;
         this.scrollY = 0;
         this.zoom = this.getFitZoom();
@@ -64,7 +65,7 @@ export default class StageConfig {
         this.resetCheckDrawView();
         this.resetCheckDrawOprate();
 
-        this._listener.onZoomChange && this._listener.onZoomChange(this.zoom);
+        this._listener?.onZoomChange && this._listener.onZoomChange(this.zoom);
     }
 
     public getWidth() {
@@ -101,7 +102,7 @@ export default class StageConfig {
         this.resetCheckDrawView();
         this.resetCheckDrawOprate();
 
-        this._listener.onZoomChange && this._listener.onZoomChange(this.zoom);
+        this._listener?.onZoomChange && this._listener.onZoomChange(this.zoom);
     }
 
     public getStageArea() {
@@ -158,7 +159,7 @@ export default class StageConfig {
     public setOperateElement(element: IPPTElement | null) {
         const operateElement = deepClone(element);
         this.operateElement = operateElement;
-        if (this._listener.onSelectedChange) this._listener.onSelectedChange(operateElement);
+        if (this._listener?.onSelectedChange) this._listener.onSelectedChange(operateElement);
     }
 
     public setOperateType(opreateType: string) {

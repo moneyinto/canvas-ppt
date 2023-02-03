@@ -25,7 +25,7 @@ export default class Editor {
         this.listener = new Listener();
 
         // 画板配置
-        this.stageConfig = new StageConfig(container, this.listener);
+        this.stageConfig = new StageConfig(container, this.listener, 40);
         this.stageConfig.resetDrawView = () => {
             this._viewStage.resetDrawPage();
         };
@@ -34,7 +34,7 @@ export default class Editor {
         };
 
         this.stageConfig.setSildes(slides);
-        if (slides.length > 0) this.stageConfig.setSlideId(slides[0].id);
+        // if (slides.length > 0) this.stageConfig.setSlideId(slides[0].id);
 
         // 历史数据
         this.history = new History(this.stageConfig, this.listener);
@@ -44,10 +44,10 @@ export default class Editor {
         this.command = new Command(this.stageConfig, this.history);
 
         // 创建展示画板
-        this._viewStage = new ViewStage(container, this.listener, this.stageConfig);
+        this._viewStage = new ViewStage(container, this.stageConfig);
 
         // 创建操作画板
-        this._controlStage = new ControlStage(container, this.listener, this.stageConfig, this.command, this.history);
+        this._controlStage = new ControlStage(container, this.stageConfig, this.command, this.history);
 
         // 快捷键
         const shortcut = new Shortcut(container, this.listener, this.stageConfig, this.command);

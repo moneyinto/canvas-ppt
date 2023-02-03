@@ -1,5 +1,4 @@
 import Stage from ".";
-import Listener from "../listener";
 import StageConfig from "./config";
 import { throttleRAF, deepClone, normalizeAngle, checkIsMac } from "@/utils";
 import Command from "../command";
@@ -28,12 +27,11 @@ export default class ControlStage extends Stage {
     private _menuDom: HTMLDivElement | null;
     constructor(
         container: HTMLDivElement,
-        listener: Listener,
         stageConfig: StageConfig,
         command: Command,
         history: History
     ) {
-        super(container, listener, stageConfig);
+        super(container, stageConfig);
 
         this._history = history;
 
@@ -579,15 +577,7 @@ export default class ControlStage extends Stage {
             (this._canMoveElement || this._canResizeElement)
         ) {
             // 更改silde中对应的元素数据
-            const slide = this.stageConfig.getCurrentSlide();
-            if (slide) {
-                const i = slide.elements.findIndex(
-                    (element) =>
-                        element.id === this.stageConfig.operateElement?.id
-                );
-                slide.elements[i] = deepClone(this.stageConfig.operateElement);
-                this._history.add();
-            }
+            this._command.executeUpdateRender(deepClone(this.stageConfig.operateElement), true);
         }
         this._canMoveCanvas = false;
         this._canMoveElement = false;
