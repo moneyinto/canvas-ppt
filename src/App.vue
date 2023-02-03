@@ -5,7 +5,7 @@
             <Tools />
         </div>
         <div class="ppt-body">
-            <div class="ppt-thumbnail">
+            <div class="ppt-thumbnail" @keydown.stop="onKeydown" tabindex="0">
                 <div
                     class="ppt-thumbnail-box"
                     v-for="(slide, index) in viewSlides"
@@ -23,10 +23,25 @@
                     ></div>
                 </div>
             </div>
-            <div class="ppt-content" ref="pptRef"></div>
+            <div class="ppt-content" ref="pptRef">
+                <div
+                    class="ppt-no-slide"
+                    v-if="viewSlides.length === 0"
+                    @click="addEmptyPPT()"
+                >
+                    <div
+                        class="ppt-add-slide"
+                        :style="{
+                            transform: `scale(${zoom}) translate(-50%, -50%)`
+                        }"
+                    >
+                        点击此处添加第一张幻灯片
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="ppt-footer">
-            <Footer :zoom="zoom" />
+            <Footer @onZoomChange="resize" />
         </div>
     </div>
 </template>
@@ -42,6 +57,7 @@ import { ISlide } from "./plugins/types/slide";
 import { slides } from "./mock";
 import emitter, { EmitterEvents } from "./utils/emitter";
 import { createRandomCode } from "./utils/create";
+import { KeyMap } from "./plugins/shortCut/keyMap";
 
 const pptRef = ref();
 const zoom = ref(1);
@@ -77,17 +93,25 @@ nextTick(() => {
             viewSlides.value = instance.value!.stageConfig.slides;
             if (slideId !== selectedSlideId.value) {
                 // id不相等切换页
-                const updateSlide = viewSlides.value.find(slide => slide.id === selectedSlideId.value);
+                const updateSlide = viewSlides.value.find(
+                    (slide) => slide.id === selectedSlideId.value
+                );
                 if (updateSlide) emitter.emit(EmitterEvents.UPDATE_THUMBNAIL, updateSlide);
                 onSelectedSlide(slideId);
             }
-            const updateSlide = viewSlides.value.find(slide => slide.id === slideId);
+            const updateSlide = viewSlides.value.find(
+                (slide) => slide.id === slideId
+            );
             if (updateSlide) emitter.emit(EmitterEvents.UPDATE_THUMBNAIL, updateSlide);
         };
 
         emitter.on(EmitterEvents.ADD_EMPTY_SLIDE, addEmptyPPT);
     }
 });
+
+const resize = (scale: number) => {
+    zoom.value = scale / 100;
+};
 
 const addEmptyPPT = (slide?: ISlide) => {
     slideIndex.value++;
@@ -105,6 +129,26 @@ const onSelectedSlide = (id: string) => {
     instance.value?.stageConfig.setSlideId(selectedSlideId.value);
     instance.value?.stageConfig.setOperateElement(null);
     instance.value?.command.executeRender();
+};
+
+const onKeydown = (event: KeyboardEvent) => {
+    if (event.key === KeyMap.Delete || event.key === KeyMap.Backspace) {
+        // 执行页面删除
+        if (viewSlides.value.length === 0) return;
+        viewSlides.value.splice(slideIndex.value, 1);
+        if (
+            viewSlides.value.length === slideIndex.value &&
+            viewSlides.value.length > 0
+        ) {
+            slideIndex.value--;
+        }
+        if (viewSlides.value.length === 0) {
+            instance.value?.command.executeRender();
+            return;
+        }
+        const slideId = viewSlides.value[slideIndex.value].id;
+        if (slideId) onSelectedSlide(slideId);
+    }
 };
 
 onUnmounted(() => {
@@ -125,6 +169,30 @@ onUnmounted(() => {
     background-color: #eee;
 }
 
+.ppt-no-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    width: 100%;
+    height: 100%;
+    background-color: #eee;
+    .ppt-add-slide {
+        border: 1px dashed #555555;
+        width: 1000px;
+        height: 562.5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 50px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        cursor: pointer;
+        transform-origin: top left;
+    }
+}
+
 .ppt-toolbar {
     height: 62px;
     background-color: #f7f7f7;
@@ -135,6 +203,7 @@ onUnmounted(() => {
     min-height: 0;
     display: flex;
     .ppt-thumbnail {
+        outline: 0;
         width: 200px;
         border-right: 1px solid #d1d1d1;
         background-color: #fafafa;

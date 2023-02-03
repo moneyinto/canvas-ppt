@@ -26,7 +26,7 @@
                     </div>
 
                     <template #content>
-                        <div @keydown.stop="">
+                        <div class="ppt-border-content" @keydown.stop="" tabindex="0">
                             <a-button
                                 size="small"
                                 block
@@ -317,6 +317,12 @@ const updateWidth = (width: number) => {
             height: 1px;
         }
     }
+}
+
+.ppt-border-content {
+    padding: 12px 16px;
+    margin: -12px -16px;
+    outline: 0;
 }
 </style>
 

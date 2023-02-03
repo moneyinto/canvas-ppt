@@ -26,7 +26,7 @@
                     </div>
 
                     <template #content>
-                        <div @keydown.stop="">
+                        <div class="ppt-fill-content" @keydown.stop="" tabindex="0">
                             <a-button
                                 size="small"
                                 block
@@ -171,5 +171,11 @@ const onOpacityChange = (value: number) => {
             }
         }
     }
+}
+
+.ppt-fill-content {
+    padding: 12px 16px;
+    margin: -12px -16px;
+    outline: 0;
 }
 </style>

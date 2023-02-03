@@ -22,6 +22,8 @@ import { ref, inject, Ref, watch } from "vue";
 import { SHORTCUT } from "@/plugins/config/shortcut";
 import Editor from "@/plugins/editor";
 
+const emit = defineEmits(["onZoomChange"]);
+
 const instance = inject<Ref<Editor>>("instance");
 
 const zoom = ref(100);
@@ -29,9 +31,11 @@ const zoom = ref(100);
 watch(instance!, () => {
     if (instance?.value) {
         zoom.value = Math.floor(instance.value.command.getZoom() * 100);
+        emit("onZoomChange", zoom.value);
 
         instance.value.listener.onZoomChange = (newZoom) => {
             zoom.value = Math.floor(newZoom * 100);
+            emit("onZoomChange", zoom.value);
         };
     }
 });

@@ -1,5 +1,5 @@
 <template>
-    <div class="ppt-tools">
+    <div class="ppt-tools" @keydown.stop="" tabindex="0">
         <AddPPT />
 
         <a-divider class="ppt-tool-divider" type="vertical" />
@@ -64,6 +64,7 @@ const showEvert = ref(false);
     height: 36px;
     border-bottom: 1px solid rgba(65, 70, 75, 0.1);
     padding: 0px 10px;
+    outline: 0;
 }
 
 .ppt-tool-divider {

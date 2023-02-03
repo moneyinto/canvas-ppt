@@ -19,13 +19,15 @@
                     </div>
 
                     <template #content>
-                        <div class="ppt-flip-item" @click="setFlip('flipH')">
-                            <PPTIcon icon="flipH" :size="28" />
-                            <div class="ppt-flip-text">水平翻转</div>
-                        </div>
-                        <div class="ppt-flip-item" @click="setFlip('flipV')">
-                            <PPTIcon icon="flipV" :size="28" />
-                            <div class="ppt-flip-text">垂直翻转</div>
+                        <div class="ppt-evert-content" @keydown.stop="" tabindex="0">
+                            <div class="ppt-flip-item" @click="setFlip('flipH')">
+                                <PPTIcon icon="flipH" :size="28" />
+                                <div class="ppt-flip-text">水平翻转</div>
+                            </div>
+                            <div class="ppt-flip-item" @click="setFlip('flipV')">
+                                <PPTIcon icon="flipV" :size="28" />
+                                <div class="ppt-flip-text">垂直翻转</div>
+                            </div>
                         </div>
                     </template>
                 </a-popover>
@@ -92,5 +94,11 @@ const setFlip = (flipText: string) => {
     .ppt-flip-text {
         margin-top: 2px;
     }
+}
+
+.ppt-evert-content {
+    padding: 12px 16px;
+    margin: -12px -16px;
+    outline: 0;
 }
 </style>

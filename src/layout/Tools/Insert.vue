@@ -24,7 +24,7 @@
             </a-tooltip>
 
             <template #content>
-                <div class="shape-pool">
+                <div class="shape-pool" @keydown.stop="" tabindex="0">
                     <div
                         class="category"
                         v-for="item in SHAPE_LIST"
@@ -142,6 +142,7 @@ const insertImage = (files: File[]) => {
 
 .shape-pool {
     width: 280px;
+    outline: 0;
     .category {
         .category-name {
             font-size: 12px;

@@ -1,5 +1,5 @@
 <template>
-    <div class="ppt-nav-menu">
+    <div class="ppt-nav-menu" @keydown.stop="" tabindex="0">
         <Edit />
     </div>
 </template>
@@ -18,6 +18,7 @@ import Edit from "./Edit.vue";
     display: flex;
     align-items: center;
     padding: 0 10px;
+    outline: 0;
     .ppt-menu-item {
         padding: 1px 15px 0;
         height: 25px;

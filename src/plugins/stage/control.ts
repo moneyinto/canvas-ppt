@@ -4,7 +4,6 @@ import { throttleRAF, deepClone, normalizeAngle, checkIsMac } from "@/utils";
 import Command from "../command";
 import { createLineElement, createShapeElement } from "@/utils/create";
 import { IPPTElement, IPPTLineElement } from "../types/element";
-import { History } from "../editor/history";
 import { ELEMENT_RESIZE, THEME_COLOR } from "../config/stage";
 import { IElementOptions, IRectParameter, IRects } from "../types";
 import { LINE_TYPE } from "../config/shapes";
