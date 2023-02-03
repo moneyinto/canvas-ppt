@@ -1,6 +1,6 @@
 <template>
     <div class="ppt-tool-multifunction">
-        <div class="ppt-tool-block">
+        <div class="ppt-tool-block" @click="addPPT()">
             <PPTIcon icon="add" />
             <div class="ppt-tool-text">新建幻灯片</div>
         </div>
@@ -9,3 +9,11 @@
         </div>
     </div>
 </template>
+
+<script lang="ts" setup>
+import emitter, { EmitterEvents } from "@/utils/emitter";
+
+const addPPT = () => {
+    emitter.emit(EmitterEvents.ADD_EMPTY_SLIDE);
+};
+</script>

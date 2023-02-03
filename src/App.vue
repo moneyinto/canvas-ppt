@@ -12,15 +12,15 @@
                     :key="slide.id"
                     @click="onSelectedSlide(slide.id)"
                 >
-                    <ThumbnailSlide
-                        :size="150"
-                        :slide="slide"
-                    />
+                    <ThumbnailSlide :size="150" :slide="slide" />
 
                     <div class="ppt-thumbnail-index">
                         {{ index + 1 }}
                     </div>
-                    <div class="ppt-thumbnail-selected" v-if="slide.id === selectedSlideId"></div>
+                    <div
+                        class="ppt-thumbnail-selected"
+                        v-if="slide.id === selectedSlideId"
+                    ></div>
                 </div>
             </div>
             <div class="ppt-content" ref="pptRef"></div>
@@ -32,14 +32,16 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, provide, ref } from "vue";
+import { nextTick, onUnmounted, provide, ref } from "vue";
 import NavMenu from "./layout/NavMenu/index.vue";
 import Tools from "./layout/Tools/index.vue";
 import ThumbnailSlide from "./layout/ThumbnailSlide.vue";
 import Footer from "./layout/Footer.vue";
 import Editor from "./plugins/editor";
+import { ISlide } from "./plugins/types/slide";
 import { slides } from "./mock";
 import emitter, { EmitterEvents } from "./utils/emitter";
+import { createRandomCode } from "./utils/create";
 
 const pptRef = ref();
 const zoom = ref(1);
@@ -73,8 +75,18 @@ nextTick(() => {
 
             emitter.emit(EmitterEvents.UPDATE_THUMBNAIL, selectedSlideId.value);
         };
+
+        emitter.on(EmitterEvents.ADD_EMPTY_SLIDE, addEmptyPPT);
     }
 });
+
+const addEmptyPPT = (slide?: ISlide) => {
+    slideIndex.value++;
+    const id = createRandomCode();
+    const newSlide = slide ? { ...slide, id } : { id, elements: [] };
+    viewSlides.value.splice(slideIndex.value, 0, newSlide);
+    onSelectedSlide(id);
+};
 
 const onSelectedSlide = (id: string) => {
     slideIndex.value = viewSlides.value.findIndex((slide) => slide.id === id);
@@ -83,6 +95,10 @@ const onSelectedSlide = (id: string) => {
     instance.value?.stageConfig.setOperateElement(null);
     instance.value?.command.executeRender();
 };
+
+onUnmounted(() => {
+    emitter.off(EmitterEvents.ADD_EMPTY_SLIDE, addEmptyPPT);
+});
 </script>
 
 <style lang="scss" scoped>
