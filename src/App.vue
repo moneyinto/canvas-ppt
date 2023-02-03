@@ -66,14 +66,23 @@ nextTick(() => {
             instance.value.stageConfig.setSlideId(selectedSlideId.value);
             // 进行渲染
             instance.value.command.executeRender();
+            // 初始化时增加历史记录
+            instance.value.history.add();
         }
 
         // 编辑监听
-        instance.value.listener.onEditChange = (cursor, length) => {
+        instance.value.listener.onEditChange = (cursor, length, slideId) => {
             historyCursor.value = cursor;
             historyLength.value = length;
-
-            emitter.emit(EmitterEvents.UPDATE_THUMBNAIL, selectedSlideId.value);
+            viewSlides.value = instance.value!.stageConfig.slides;
+            if (slideId !== selectedSlideId.value) {
+                // id不相等切换页
+                const updateSlide = viewSlides.value.find(slide => slide.id === selectedSlideId.value);
+                if (updateSlide) emitter.emit(EmitterEvents.UPDATE_THUMBNAIL, updateSlide);
+                onSelectedSlide(slideId);
+            }
+            const updateSlide = viewSlides.value.find(slide => slide.id === slideId);
+            if (updateSlide) emitter.emit(EmitterEvents.UPDATE_THUMBNAIL, updateSlide);
         };
 
         emitter.on(EmitterEvents.ADD_EMPTY_SLIDE, addEmptyPPT);
@@ -86,6 +95,8 @@ const addEmptyPPT = (slide?: ISlide) => {
     const newSlide = slide ? { ...slide, id } : { id, elements: [] };
     viewSlides.value.splice(slideIndex.value, 0, newSlide);
     onSelectedSlide(id);
+    instance.value?.stageConfig.setSildes(viewSlides.value);
+    instance.value?.history.add();
 };
 
 const onSelectedSlide = (id: string) => {

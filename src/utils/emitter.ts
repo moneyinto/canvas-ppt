@@ -7,7 +7,7 @@ export const enum EmitterEvents {
 }
 
 type Events = {
-    [EmitterEvents.UPDATE_THUMBNAIL]: string;
+    [EmitterEvents.UPDATE_THUMBNAIL]: ISlide;
     [EmitterEvents.ADD_EMPTY_SLIDE]: ISlide | undefined;
 };
 

@@ -38,7 +38,6 @@ export default class Editor {
 
         // 历史数据
         this.history = new History(this.stageConfig, this.listener);
-        this.history.add();
 
         // 命令
         this.command = new Command(this.stageConfig, this.history);

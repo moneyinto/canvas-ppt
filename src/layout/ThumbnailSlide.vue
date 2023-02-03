@@ -33,10 +33,10 @@ const slide = computed(() => props.slide);
 
 let instance: Thumbnail | null;
 
-const updateSlide = (id: string) => {
-    if (id === slide.value.id) {
+const updateSlide = (updateSlide: ISlide) => {
+    if (updateSlide.id === slide.value.id) {
         // 更新
-        instance?.updateSlide(slide.value);
+        instance?.updateSlide(updateSlide);
     }
 };
 
