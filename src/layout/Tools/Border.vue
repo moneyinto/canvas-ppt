@@ -68,35 +68,73 @@
                             <a-divider style="margin: 12px 0" />
 
                             <a-menu class="ppt-border-menu">
-                                <a-sub-menu class="ppt-sub-popup" title="边框样式">
-                                    <a-menu-item class="ppt-sub-menu" @click="updateStyle('solid')">
+                                <a-sub-menu class="ppt-sub-popup">
+                                    <template #icon>
+                                        <PPTIcon
+                                            icon="borderStyle"
+                                            :size="30"
+                                        />
+                                    </template>
+                                    <template #title>
+                                        <div class="ppt-border-title">
+                                            边框样式
+                                        </div>
+                                    </template>
+                                    <a-menu-item
+                                        class="ppt-sub-menu"
+                                        @click="updateStyle('solid')"
+                                    >
                                         <div class="ppt-border-solid"></div>
+                                        <PPTIcon
+                                            class="border-checked"
+                                            :class="borderStyle === 'solid' && 'active'"
+                                            icon="checked"
+                                            :size="28"
+                                        />
                                     </a-menu-item>
-                                    <a-menu-item class="ppt-sub-menu" @click="updateStyle('dashed')">
+                                    <a-menu-item
+                                        class="ppt-sub-menu"
+                                        @click="updateStyle('dashed')"
+                                    >
                                         <div class="ppt-border-dashed"></div>
+                                        <PPTIcon
+                                            class="border-checked"
+                                            :class="borderStyle === 'dashed' && 'active'"
+                                            icon="checked"
+                                            :size="28"
+                                        />
                                     </a-menu-item>
                                 </a-sub-menu>
-                                <a-sub-menu title="边框粗细">
-                                    <a-menu-item class="ppt-sub-menu" @click="updateWidth(1)">
-                                        <div class="ppt-border-solid" style="border-width: 1px;"></div>
-                                    </a-menu-item>
-                                    <a-menu-item class="ppt-sub-menu" @click="updateWidth(2)">
-                                        <div class="ppt-border-solid" style="border-width: 2px;"></div>
-                                    </a-menu-item>
-                                    <a-menu-item class="ppt-sub-menu" @click="updateWidth(3)">
-                                        <div class="ppt-border-solid" style="border-width: 3px;"></div>
-                                    </a-menu-item>
-                                    <a-menu-item class="ppt-sub-menu" @click="updateWidth(4)">
-                                        <div class="ppt-border-solid" style="border-width: 4px;"></div>
-                                    </a-menu-item>
-                                    <a-menu-item class="ppt-sub-menu" @click="updateWidth(5)">
-                                        <div class="ppt-border-solid" style="border-width: 5px;"></div>
-                                    </a-menu-item>
-                                    <a-menu-item class="ppt-sub-menu" @click="updateWidth(6)">
-                                        <div class="ppt-border-solid" style="border-width: 6px;"></div>
-                                    </a-menu-item>
-                                    <a-menu-item class="ppt-sub-menu" @click="updateWidth(7)">
-                                        <div class="ppt-border-solid" style="border-width: 7px;"></div>
+                                <a-sub-menu>
+                                    <template #icon>
+                                        <PPTIcon
+                                            icon="borderWidth"
+                                            :size="30"
+                                        />
+                                    </template>
+                                    <template #title>
+                                        <div class="ppt-border-title">
+                                            边框粗细
+                                        </div>
+                                    </template>
+                                    <a-menu-item
+                                        class="ppt-sub-menu"
+                                        @click="updateWidth(width)"
+                                        v-for="width in borderWidthList"
+                                        :key="width"
+                                    >
+                                        <div
+                                            class="ppt-border-solid"
+                                            :style="{
+                                                borderWidth: width + 'px'
+                                            }"
+                                        ></div>
+                                        <PPTIcon
+                                            class="border-checked"
+                                            :class="borderWidth === width && 'active'"
+                                            icon="checked"
+                                            :size="28"
+                                        />
                                     </a-menu-item>
                                 </a-sub-menu>
                             </a-menu>
@@ -133,6 +171,12 @@ const showBorder = ref(false);
 const hoverBorder = ref(false);
 const noBorder = ref(true);
 const opacity = ref(0);
+const borderStyle = ref("solid");
+const borderWidth = ref(2);
+
+const borderWidthList = ref(
+    Array.from({ length: 6 }, (_x: undefined, i) => i + 1)
+);
 
 const init = () => {
     if (props.element) {
@@ -140,6 +184,8 @@ const init = () => {
         currentColor.value = operateElement.outline?.color || THEME_COLOR;
         noBorder.value = !operateElement.outline;
         opacity.value = operateElement.outline?.opacity || 0;
+        borderStyle.value = operateElement.outline?.style || "solid";
+        borderWidth.value = operateElement.outline?.width || 2;
     }
 };
 
@@ -252,10 +298,12 @@ const updateWidth = (width: number) => {
     :deep(.ant-menu-submenu-title) {
         height: 36px !important;
         line-height: 36px !important;
-        margin: 0  -16px !important;
-        padding: 0 20px !important;
+        margin: 0 -16px !important;
+        padding: 0 16px !important;
         font-size: 12px;
         color: #555555;
+        display: flex;
+        align-items: center;
         &:hover {
             color: #555555;
             background-color: #41464b0d;
@@ -264,7 +312,8 @@ const updateWidth = (width: number) => {
     :deep(.ant-menu-submenu-arrow) {
         color: #555555 !important;
         right: 16px;
-        &:before, &:after {
+        &:before,
+        &:after {
             height: 1px;
         }
     }
@@ -292,6 +341,14 @@ const updateWidth = (width: number) => {
         .ppt-border-solid {
             border-top: 2px solid #555555;
             flex: 1;
+        }
+    }
+
+    .border-checked {
+        margin-left: 10px;
+        visibility: hidden;
+        &.active {
+            visibility: visible;
         }
     }
 }
