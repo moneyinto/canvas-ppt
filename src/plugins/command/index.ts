@@ -1,4 +1,3 @@
-import { debounce } from "@/utils";
 import { CLIPBOARD_STRING_TYPE, copyText, pasteCustomClipboardString, readClipboard } from "@/utils/clipboard";
 import { createRandomCode } from "@/utils/create";
 import { encrypt } from "@/utils/crypto";

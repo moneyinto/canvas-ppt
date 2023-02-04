@@ -49,6 +49,7 @@ export default class Editor {
         this._controlStage = new ControlStage(container, this.stageConfig, this.command, true);
 
         // 快捷键
-        const shortcut = new Shortcut(container, this.stageConfig, this.command);
+        // eslint-disable-next-line
+        new Shortcut(container, this.stageConfig, this.command);
     }
 }
