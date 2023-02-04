@@ -2,10 +2,18 @@ import { ref, Ref } from "vue";
 import Editor from "@/plugins/editor";
 import { ISlide } from "@/plugins/types/slide";
 import { createRandomCode } from "@/utils/create";
-import { CLIPBOARD_STRING_TYPE, copyText, pasteCustomClipboardString, readClipboard } from "@/utils/clipboard";
+import {
+    CLIPBOARD_STRING_TYPE,
+    copyText,
+    pasteCustomClipboardString,
+    readClipboard
+} from "@/utils/clipboard";
 import { encrypt } from "@/utils/crypto";
 
-export default (instance: Ref<Editor | undefined>, viewSlides: Ref<ISlide[]>) => {
+export default (
+    instance: Ref<Editor | undefined>,
+    viewSlides: Ref<ISlide[]>
+) => {
     const slideIndex = ref(0);
     const selectedSlideId = ref("");
 
@@ -52,7 +60,11 @@ export default (instance: Ref<Editor | undefined>, viewSlides: Ref<ISlide[]>) =>
         // 选中元素时
         if (slide) {
             // 将元素json数据加密存入剪切板
-            await copyText(encrypt(`${CLIPBOARD_STRING_TYPE.SLIDE}${JSON.stringify(slide)}`));
+            await copyText(
+                encrypt(
+                    `${CLIPBOARD_STRING_TYPE.SLIDE}${JSON.stringify(slide)}`
+                )
+            );
         }
     };
 
@@ -67,7 +79,11 @@ export default (instance: Ref<Editor | undefined>, viewSlides: Ref<ISlide[]>) =>
             addPPT(slide);
 
             // 再次写入剪切板，为了下一次粘贴能够在上一次的基础上进行偏移
-            await copyText(encrypt(`${CLIPBOARD_STRING_TYPE.SLIDE}${JSON.stringify(slide)}`));
+            await copyText(
+                encrypt(
+                    `${CLIPBOARD_STRING_TYPE.SLIDE}${JSON.stringify(slide)}`
+                )
+            );
         }
     };
 
@@ -82,7 +98,9 @@ export default (instance: Ref<Editor | undefined>, viewSlides: Ref<ISlide[]>) =>
     };
 
     const onSelectedSlide = (id: string) => {
-        slideIndex.value = viewSlides.value.findIndex((slide) => slide.id === id);
+        slideIndex.value = viewSlides.value.findIndex(
+            (slide) => slide.id === id
+        );
         selectedSlideId.value = id;
         instance.value?.stageConfig.setSlideId(selectedSlideId.value);
         instance.value?.stageConfig.setOperateElement(null);
@@ -90,7 +108,10 @@ export default (instance: Ref<Editor | undefined>, viewSlides: Ref<ISlide[]>) =>
     };
 
     const switchSlide = () => {
-        if (slideIndex.value > -1 && slideIndex.value < viewSlides.value.length) {
+        if (
+            slideIndex.value > -1 &&
+            slideIndex.value < viewSlides.value.length
+        ) {
             onSelectedSlide(viewSlides.value[slideIndex.value].id);
         }
     };

@@ -5,14 +5,47 @@
             <Tools />
         </div>
         <div class="ppt-body">
-            <div class="ppt-thumbnail" @keydown.stop="onKeydown" tabindex="0">
+            <div
+                class="ppt-thumbnail"
+                @keydown.stop="onKeydown"
+                tabindex="0"
+                @drop="onDrop"
+                @dragend="onDragEnd"
+                @dragover="onDragOver"
+            >
                 <div
                     class="ppt-thumbnail-box"
                     v-for="(slide, index) in viewSlides"
                     :key="slide.id"
                     @click="onSelectedSlide(slide.id)"
+                    @dragstart="onDragStart(index)"
                 >
-                    <ThumbnailSlide :size="150" :slide="slide" />
+                    <ThumbnailSlide
+                        draggable="true"
+                        :size="150"
+                        :slide="slide"
+                    />
+
+                    <div
+                        class="ppt-sort-top"
+                        :class="
+                            sortIndex === index &&
+                            sortType === 'top' &&
+                            'ppt-sort-line'
+                        "
+                        v-if="sortIndex !== -1"
+                        @dragenter="onDragEnter(index, 'top')"
+                    ></div>
+                    <div
+                        class="ppt-sort-bottom"
+                        :class="
+                            sortIndex === index &&
+                            sortType === 'bottom' &&
+                            'ppt-sort-line'
+                        "
+                        v-if="sortIndex !== -1"
+                        @dragenter="onDragEnter(index, 'bottom')"
+                    ></div>
 
                     <div class="ppt-thumbnail-index">
                         {{ index + 1 }}
@@ -58,6 +91,7 @@ import emitter, { EmitterEvents } from "./utils/emitter";
 import { KeyMap } from "./plugins/shortCut/keyMap";
 import { checkIsMac } from "./utils";
 import useSlideHandler from "@/hooks/useSlideHandler";
+import useSlideSort from "@/hooks/useSlideSort";
 
 const pptRef = ref();
 const zoom = ref(1);
@@ -84,6 +118,16 @@ const {
     deleteSlide
 } = useSlideHandler(instance, viewSlides);
 
+const {
+    sortIndex,
+    sortType,
+    onDragStart,
+    onDragEnter,
+    onDragOver,
+    onDragEnd,
+    onDrop
+} = useSlideSort(instance, viewSlides);
+
 nextTick(() => {
     if (pptRef.value) {
         instance.value = new Editor(pptRef.value, slides);
@@ -100,13 +144,17 @@ nextTick(() => {
                 const updateSlide = viewSlides.value.find(
                     (slide) => slide.id === selectedSlideId.value
                 );
-                if (updateSlide) emitter.emit(EmitterEvents.UPDATE_THUMBNAIL, updateSlide);
+                if (updateSlide) {
+                    emitter.emit(EmitterEvents.UPDATE_THUMBNAIL, updateSlide);
+                }
                 onSelectedSlide(slideId);
             }
             const updateSlide = viewSlides.value.find(
                 (slide) => slide.id === slideId
             );
-            if (updateSlide) emitter.emit(EmitterEvents.UPDATE_THUMBNAIL, updateSlide);
+            if (updateSlide) {
+                emitter.emit(EmitterEvents.UPDATE_THUMBNAIL, updateSlide);
+            }
         };
 
         emitter.on(EmitterEvents.ADD_EMPTY_SLIDE, addPPT);
@@ -261,6 +309,37 @@ onUnmounted(() => {
             position: relative;
             margin: 0 15px 15px 35px;
             width: 150px;
+
+            .ppt-sort-top,
+            .ppt-sort-bottom {
+                position: absolute;
+                height: 30px;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
+
+            .ppt-sort-top {
+                top: 0;
+                bottom: inherit;
+            }
+
+            .ppt-sort-line:after {
+                content: "";
+                position: absolute;
+                height: 2px;
+                left: 0;
+                right: 0;
+                background-color: #5b9bd5;
+            }
+
+            .ppt-sort-top.ppt-sort-line:after {
+                top: -8px;
+            }
+
+            .ppt-sort-bottom.ppt-sort-line:after {
+                bottom: -8px;
+            }
         }
 
         .ppt-thumbnail-selected {
