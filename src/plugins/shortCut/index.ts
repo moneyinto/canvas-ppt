@@ -9,13 +9,15 @@ export default class Shortcut {
     private _command: Command;
     private _stageConfig: StageConfig;
     private _shortcutKeys: IRegisterShortcut[];
-    constructor(stageConfig: StageConfig, command: Command) {
+    constructor(container: HTMLDivElement, stageConfig: StageConfig, command: Command) {
         this._command = command;
         this._stageConfig = stageConfig;
 
         this._shortcutKeys = ShortcutKeys;
-        document.addEventListener("keydown", this._agentKeydown.bind(this));
-        document.addEventListener("keyup", this._agentKeyup.bind(this));
+
+        container.tabIndex = 0;
+        container.addEventListener("keydown", this._agentKeydown.bind(this));
+        container.addEventListener("keyup", this._agentKeyup.bind(this));
     }
 
     private _agentKeydown(evt: KeyboardEvent) {
@@ -46,5 +48,8 @@ export default class Shortcut {
             }
         }
         evt.preventDefault();
+        setTimeout(() => {
+            (evt.target as HTMLDivElement).focus();
+        }, 100);
     }
 }
