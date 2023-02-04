@@ -131,23 +131,49 @@ const onSelectedSlide = (id: string) => {
     instance.value?.command.executeRender();
 };
 
+const switchSlide = () => {
+    if (slideIndex.value > -1 && slideIndex.value < viewSlides.value.length) {
+        onSelectedSlide(viewSlides.value[slideIndex.value].id);
+    }
+};
+
 const onKeydown = (event: KeyboardEvent) => {
-    if (event.key === KeyMap.Delete || event.key === KeyMap.Backspace) {
-        // 执行页面删除
-        if (viewSlides.value.length === 0) return;
-        viewSlides.value.splice(slideIndex.value, 1);
-        if (
-            viewSlides.value.length === slideIndex.value &&
-            viewSlides.value.length > 0
-        ) {
-            slideIndex.value--;
+    switch (event.key) {
+        case KeyMap.Delete:
+        case KeyMap.Backspace: {
+            // 执行页面删除
+            if (viewSlides.value.length === 0) return;
+            viewSlides.value.splice(slideIndex.value, 1);
+            if (
+                viewSlides.value.length === slideIndex.value &&
+                viewSlides.value.length > 0
+            ) {
+                slideIndex.value--;
+            }
+            if (viewSlides.value.length === 0) {
+                instance.value?.command.executeRender();
+                return;
+            }
+            const slideId = viewSlides.value[slideIndex.value].id;
+            if (slideId) onSelectedSlide(slideId);
+            break;
         }
-        if (viewSlides.value.length === 0) {
-            instance.value?.command.executeRender();
-            return;
+        case KeyMap.Up: {
+            // 上一页
+            if (slideIndex.value > 0) {
+                slideIndex.value--;
+                switchSlide();
+            }
+            break;
         }
-        const slideId = viewSlides.value[slideIndex.value].id;
-        if (slideId) onSelectedSlide(slideId);
+        case KeyMap.Down: {
+            // 下一页
+            if (slideIndex.value < viewSlides.value.length - 1) {
+                slideIndex.value++;
+                switchSlide();
+            }
+            break;
+        }
     }
 };
 
