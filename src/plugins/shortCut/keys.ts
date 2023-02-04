@@ -55,5 +55,33 @@ export const ShortcutKeys: IRegisterShortcut[] = [
         callback: (command: Command) => {
             command.executePaste();
         }
+    },
+
+    {
+        key: KeyMap.Up,
+        callback: (command: Command) => {
+            command.executeMove(KeyMap.Up);
+        }
+    },
+
+    {
+        key: KeyMap.Down,
+        callback: (command: Command) => {
+            command.executeMove(KeyMap.Down);
+        }
+    },
+
+    {
+        key: KeyMap.Left,
+        callback: (command: Command) => {
+            command.executeMove(KeyMap.Left);
+        }
+    },
+
+    {
+        key: KeyMap.Right,
+        callback: (command: Command) => {
+            command.executeMove(KeyMap.Right);
+        }
     }
 ];

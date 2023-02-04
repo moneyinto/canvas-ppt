@@ -16,6 +16,7 @@ export default class Shortcut {
         this._shortcutKeys = ShortcutKeys;
 
         container.tabIndex = 0;
+        container.style.outline = "0";
         container.addEventListener("keydown", this._agentKeydown.bind(this));
         container.addEventListener("keyup", this._agentKeyup.bind(this));
     }

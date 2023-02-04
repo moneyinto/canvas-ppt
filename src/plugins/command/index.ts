@@ -1,16 +1,22 @@
+import { debounce } from "@/utils";
 import { CLIPBOARD_STRING_TYPE, copyText, pasteCustomClipboardString, readClipboard } from "@/utils/clipboard";
 import { createRandomCode } from "@/utils/create";
 import { encrypt } from "@/utils/crypto";
 import { History } from "../editor/history";
+import { KeyMap } from "../shortCut/keyMap";
 import StageConfig from "../stage/config";
 import { IPPTElement, IPPTElementOutline, IPPTImageElement, IPPTShapeElement } from "../types/element";
 
 export default class Command {
     private _stageConfig: StageConfig;
     private _history: History;
+
+    private _updateDebounce: null | number;
     constructor(stageConfig: StageConfig, history: History) {
         this._stageConfig = stageConfig;
         this._history = history;
+
+        this._updateDebounce = null;
     }
 
     public getZoom() {
@@ -227,6 +233,44 @@ export default class Command {
         const operateElement = this._stageConfig.operateElement;
         if (operateElement) {
             this.executeDeleteRender(operateElement);
+        }
+    }
+
+    // 元素移动
+    public executeMove(direction: string) {
+        const operateElement = this._stageConfig.operateElement;
+        if (operateElement) {
+            switch (direction) {
+                case KeyMap.Up: {
+                    operateElement.top = Math.floor(operateElement.top - 1);
+                    break;
+                }
+                case KeyMap.Down: {
+                    operateElement.top = Math.ceil(operateElement.top + 1);
+                    break;
+                }
+                case KeyMap.Left: {
+                    operateElement.left = Math.floor(operateElement.left - 1);
+                    break;
+                }
+                case KeyMap.Right: {
+                    operateElement.left = Math.ceil(operateElement.left + 1);
+                    break;
+                }
+            }
+
+            this.executeUpdateRender(operateElement);
+
+            // 更新记录做防抖延迟
+            if (this._updateDebounce) {
+                clearTimeout(this._updateDebounce);
+                this._updateDebounce = null;
+            }
+
+            this._updateDebounce = setTimeout(() => {
+                this.executeLogRender();
+                this._updateDebounce = null;
+            }, 1000);
         }
     }
 
