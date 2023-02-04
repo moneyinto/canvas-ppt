@@ -59,9 +59,24 @@ export const normalizeAngle = (angle: number): number => {
     if (angle < 0) {
         newAngle = angle + 2 * Math.PI;
     }
-    return newAngle / Math.PI * 180;
+    return (newAngle / Math.PI) * 180;
 };
 
 export const checkIsMac = () => {
     return /macintosh|mac os x/i.test(navigator.userAgent);
+};
+
+export const debounce = <T extends unknown[]>(fn: (...args: T) => void, delay: number) => {
+    let timerId: number | null = null; // 使用闭包的特性，存储timerId
+    return function(...args: T) {
+        // 当timerId有值时，说明有正在准备执行的函数，需要将它清除
+        if (timerId !== null) {
+            clearTimeout(timerId);
+        }
+        // 设置新的延时执行
+        timerId = setTimeout(() => {
+            fn(...args);
+            timerId = null;
+        }, delay);
+    };
 };
