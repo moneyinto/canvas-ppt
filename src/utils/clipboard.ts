@@ -1,6 +1,11 @@
 import Clipboard from "clipboard";
 import { decrypt } from "./crypto";
 
+export enum CLIPBOARD_STRING_TYPE {
+    SLIDE = "TYPE:SLIDE;",
+    ELEMENT = "TYPE:ELEMENT;"
+}
+
 // 复制内容到剪切板
 export const copyText = (text: string) => {
     return new Promise((resolve, reject) => {
@@ -30,7 +35,7 @@ export const readClipboard = (): Promise<string> => {
         if (navigator.clipboard?.readText) {
             navigator.clipboard.readText().then((text) => {
                 if (!text) reject(new Error("剪贴板为空或者不包含文本"));
-                return resolve(pasteCustomClipboardString(text));
+                return resolve(decrypt(text));
             });
         } else reject(new Error("浏览器不支持或禁止访问剪贴板，请使用快捷键 Ctrl + V"));
     });
@@ -40,7 +45,7 @@ export const readClipboard = (): Promise<string> => {
 export const pasteCustomClipboardString = (text: string) => {
     let clipboardData;
     try {
-        clipboardData = JSON.parse(decrypt(text));
+        clipboardData = JSON.parse(text);
     } catch {
         clipboardData = text;
     }

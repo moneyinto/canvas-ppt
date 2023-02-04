@@ -1,3 +1,4 @@
+import { checkIsMac } from "@/utils";
 import Command from "../command";
 import StageConfig from "../stage/config";
 import { IRegisterShortcut } from "../types/shortcut";
@@ -35,8 +36,7 @@ export default class Shortcut {
         for (let s = 0; s < shortCutList.length; s++) {
             const shortCut = shortCutList[s];
             if (
-                (evt.ctrlKey === !!shortCut.ctrl ||
-                    evt.metaKey === !!shortCut.ctrl) &&
+                ((checkIsMac() ? evt.metaKey : evt.ctrlKey) === !!shortCut.ctrl) &&
                 evt.shiftKey === !!shortCut.shift &&
                 evt.altKey === !!shortCut.alt &&
                 evt.key === shortCut.key

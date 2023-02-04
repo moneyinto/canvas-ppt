@@ -1,4 +1,4 @@
-import { copyText, readClipboard } from "@/utils/clipboard";
+import { CLIPBOARD_STRING_TYPE, copyText, pasteCustomClipboardString, readClipboard } from "@/utils/clipboard";
 import { createRandomCode } from "@/utils/create";
 import { encrypt } from "@/utils/crypto";
 import { History } from "../editor/history";
@@ -191,7 +191,7 @@ export default class Command {
         // 选中元素时
         if (operateElement) {
             // 将元素json数据加密存入剪切板
-            await copyText(encrypt(JSON.stringify(operateElement)));
+            await copyText(encrypt(`${CLIPBOARD_STRING_TYPE.ELEMENT}${JSON.stringify(operateElement)}`));
         }
     }
 
@@ -204,9 +204,12 @@ export default class Command {
     // 粘贴
     public async executePaste() {
         const content = await readClipboard();
-        // 粘贴的内容为元素数据
-        if (typeof content === "object") {
-            const element = content as IPPTElement;
+        const index = content.indexOf(CLIPBOARD_STRING_TYPE.ELEMENT);
+        if (index > -1) {
+            // 粘贴的内容为元素数据
+            const resultText = content.replace(CLIPBOARD_STRING_TYPE.ELEMENT, "");
+            const element = pasteCustomClipboardString(resultText) as IPPTElement;
+            // 粘贴的内容为元素数据
             element.id = createRandomCode();
             // 新元素较旧元素偏移一段距离
             element.left += 10;
@@ -215,7 +218,7 @@ export default class Command {
             this.executeAddRender(element);
 
             // 再次写入剪切板，为了下一次粘贴能够在上一次的基础上进行偏移
-            await copyText(encrypt(JSON.stringify(element)));
+            await copyText(encrypt(`${CLIPBOARD_STRING_TYPE.ELEMENT}${JSON.stringify(element)}`));
         }
     }
 

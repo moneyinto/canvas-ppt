@@ -27,7 +27,7 @@
                 <div
                     class="ppt-no-slide"
                     v-if="viewSlides.length === 0"
-                    @click="addEmptyPPT()"
+                    @click="addPPT()"
                 >
                     <div
                         class="ppt-add-slide"
@@ -53,16 +53,14 @@ import Tools from "./layout/Tools/index.vue";
 import ThumbnailSlide from "./layout/ThumbnailSlide.vue";
 import Footer from "./layout/Footer.vue";
 import Editor from "./plugins/editor";
-import { ISlide } from "./plugins/types/slide";
 import { slides } from "./mock";
 import emitter, { EmitterEvents } from "./utils/emitter";
-import { createRandomCode } from "./utils/create";
 import { KeyMap } from "./plugins/shortCut/keyMap";
+import { checkIsMac } from "./utils";
+import useSlideHandler from "@/hooks/useSlideHandler";
 
 const pptRef = ref();
 const zoom = ref(1);
-const slideIndex = ref(0);
-const selectedSlideId = ref("");
 const instance = ref<Editor>();
 const viewSlides = ref(slides);
 
@@ -73,18 +71,24 @@ provide("instance", instance);
 provide("historyCursor", historyCursor);
 provide("historyLength", historyLength);
 
+const {
+    slideIndex,
+    selectedSlideId,
+    initSlide,
+    addPPT,
+    onSelectedSlide,
+    switchSlide,
+    cutSlide,
+    copySlide,
+    pasteSlide,
+    deleteSlide
+} = useSlideHandler(instance, viewSlides);
+
 nextTick(() => {
     if (pptRef.value) {
         instance.value = new Editor(pptRef.value, slides);
         // 设置初始化页面
-        if (slides.length > 0) {
-            selectedSlideId.value = slides[slideIndex.value].id;
-            instance.value.stageConfig.setSlideId(selectedSlideId.value);
-            // 进行渲染
-            instance.value.command.executeRender();
-            // 初始化时增加历史记录
-            instance.value.history.add();
-        }
+        initSlide();
 
         // 编辑监听
         instance.value.listener.onEditChange = (cursor, length, slideId) => {
@@ -105,7 +109,7 @@ nextTick(() => {
             if (updateSlide) emitter.emit(EmitterEvents.UPDATE_THUMBNAIL, updateSlide);
         };
 
-        emitter.on(EmitterEvents.ADD_EMPTY_SLIDE, addEmptyPPT);
+        emitter.on(EmitterEvents.ADD_EMPTY_SLIDE, addPPT);
     }
 });
 
@@ -113,49 +117,11 @@ const resize = (scale: number) => {
     zoom.value = scale / 100;
 };
 
-const addEmptyPPT = (slide?: ISlide) => {
-    slideIndex.value++;
-    const id = createRandomCode();
-    const newSlide = slide ? { ...slide, id } : { id, elements: [] };
-    viewSlides.value.splice(slideIndex.value, 0, newSlide);
-    onSelectedSlide(id);
-    instance.value?.stageConfig.setSildes(viewSlides.value);
-    instance.value?.history.add();
-};
-
-const onSelectedSlide = (id: string) => {
-    slideIndex.value = viewSlides.value.findIndex((slide) => slide.id === id);
-    selectedSlideId.value = id;
-    instance.value?.stageConfig.setSlideId(selectedSlideId.value);
-    instance.value?.stageConfig.setOperateElement(null);
-    instance.value?.command.executeRender();
-};
-
-const switchSlide = () => {
-    if (slideIndex.value > -1 && slideIndex.value < viewSlides.value.length) {
-        onSelectedSlide(viewSlides.value[slideIndex.value].id);
-    }
-};
-
 const onKeydown = (event: KeyboardEvent) => {
     switch (event.key) {
         case KeyMap.Delete:
         case KeyMap.Backspace: {
-            // 执行页面删除
-            if (viewSlides.value.length === 0) return;
-            viewSlides.value.splice(slideIndex.value, 1);
-            if (
-                viewSlides.value.length === slideIndex.value &&
-                viewSlides.value.length > 0
-            ) {
-                slideIndex.value--;
-            }
-            if (viewSlides.value.length === 0) {
-                instance.value?.command.executeRender();
-                return;
-            }
-            const slideId = viewSlides.value[slideIndex.value].id;
-            if (slideId) onSelectedSlide(slideId);
+            deleteSlide();
             break;
         }
         case KeyMap.Up: {
@@ -174,11 +140,60 @@ const onKeydown = (event: KeyboardEvent) => {
             }
             break;
         }
+        case KeyMap.X_UPPERCASE:
+        case KeyMap.X: {
+            console.log(event);
+            if (checkIsMac()) {
+                if (event.metaKey) {
+                    // 剪切
+                    cutSlide();
+                }
+            } else {
+                if (event.ctrlKey) {
+                    cutSlide();
+                }
+            }
+            break;
+        }
+        case KeyMap.C_UPPERCASE:
+        case KeyMap.C: {
+            if (checkIsMac()) {
+                if (event.metaKey) {
+                    // 复制
+                    copySlide();
+                }
+            } else {
+                if (event.ctrlKey) {
+                    copySlide();
+                }
+            }
+            break;
+        }
+
+        case KeyMap.V_UPPERCASE:
+        case KeyMap.V: {
+            if (checkIsMac()) {
+                if (event.metaKey) {
+                    // 复制
+                    pasteSlide();
+                }
+            } else {
+                if (event.ctrlKey) {
+                    pasteSlide();
+                }
+            }
+            break;
+        }
     }
+
+    setTimeout(() => {
+        // 重新聚焦
+        (event.target as HTMLDivElement).focus();
+    }, 100);
 };
 
 onUnmounted(() => {
-    emitter.off(EmitterEvents.ADD_EMPTY_SLIDE, addEmptyPPT);
+    emitter.off(EmitterEvents.ADD_EMPTY_SLIDE, addPPT);
 });
 </script>
 
