@@ -1,5 +1,5 @@
 import { CLIPBOARD_STRING_TYPE, copyText, pasteCustomClipboardString, readClipboard } from "@/utils/clipboard";
-import { createRandomCode } from "@/utils/create";
+import { createImageElement, createRandomCode } from "@/utils/create";
 import { encrypt } from "@/utils/crypto";
 import { History } from "../editor/history";
 import { KeyMap } from "../shortCut/keyMap";
@@ -209,8 +209,7 @@ export default class Command {
     // 粘贴
     public async executePaste() {
         const content = await readClipboard();
-        const index = content.indexOf(CLIPBOARD_STRING_TYPE.ELEMENT);
-        if (index > -1) {
+        if (content.indexOf(CLIPBOARD_STRING_TYPE.ELEMENT) > -1) {
             // 粘贴的内容为元素数据
             const resultText = content.replace(CLIPBOARD_STRING_TYPE.ELEMENT, "");
             const element = pasteCustomClipboardString(resultText) as IPPTElement;
@@ -224,6 +223,18 @@ export default class Command {
 
             // 再次写入剪切板，为了下一次粘贴能够在上一次的基础上进行偏移
             await copyText(encrypt(`${CLIPBOARD_STRING_TYPE.ELEMENT}${JSON.stringify(element)}`));
+        } else if (content.indexOf(CLIPBOARD_STRING_TYPE.IMAGE) > -1) {
+            // 粘贴外来图片
+            const image = new Image();
+            image.onload = () => {
+                const element = createImageElement(
+                    image.width,
+                    image.height,
+                    content
+                );
+                this.executeAddRender(element);
+            };
+            image.src = content;
         }
     }
 

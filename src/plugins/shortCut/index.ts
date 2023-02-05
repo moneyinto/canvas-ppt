@@ -36,6 +36,7 @@ export default class Shortcut {
     }
 
     private _execute(evt: KeyboardEvent, shortCutList: IRegisterShortcut[]) {
+        let isPreventDefault = false;
         for (let s = 0; s < shortCutList.length; s++) {
             const shortCut = shortCutList[s];
             if (
@@ -45,10 +46,11 @@ export default class Shortcut {
                 evt.key === shortCut.key
             ) {
                 shortCut.callback(this._command);
+                isPreventDefault = true;
                 break;
             }
         }
-        evt.preventDefault();
+        if (isPreventDefault) evt.preventDefault();
         setTimeout(() => {
             (evt.target as HTMLDivElement).focus();
         }, 100);

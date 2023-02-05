@@ -190,7 +190,6 @@ const onKeydown = (event: KeyboardEvent) => {
         }
         case KeyMap.X_UPPERCASE:
         case KeyMap.X: {
-            console.log(event);
             if (checkIsMac()) {
                 if (event.metaKey) {
                     // 剪切

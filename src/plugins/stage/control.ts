@@ -220,7 +220,11 @@ export default class ControlStage extends Stage {
                 );
 
                 // 存在已选中，重复选中不执行下面操作
-                if (operateElement && this.stageConfig.operateElement && operateElement.id === this.stageConfig.operateElement.id) {
+                if (
+                    operateElement &&
+                    this.stageConfig.operateElement &&
+                    operateElement.id === this.stageConfig.operateElement.id
+                ) {
                     this._canMoveElement = true;
                     return;
                 }
@@ -250,8 +254,10 @@ export default class ControlStage extends Stage {
             if (newElement) this.drawElement(newElement);
         } else if (this._canMoveCanvas && this.stageConfig.canMove) {
             // 移动画布
-            const scrollX = -(evt.pageX - this._startPoint[0]) + this.stageConfig.scrollX;
-            const scrollY = -(evt.pageY - this._startPoint[1]) + this.stageConfig.scrollY;
+            const scrollX =
+                -(evt.pageX - this._startPoint[0]) + this.stageConfig.scrollX;
+            const scrollY =
+                -(evt.pageY - this._startPoint[1]) + this.stageConfig.scrollY;
             this._startPoint = [evt.pageX, evt.pageY];
             this.stageConfig.setScroll(scrollX, scrollY);
         } else if (this._canMoveElement && this.stageConfig.operateElement) {
@@ -281,7 +287,10 @@ export default class ControlStage extends Stage {
                     const { left, top } = this._getMousePosition(evt);
                     const currentAngle = Math.atan2(top - cy, left - cx);
                     // 翻转后变化角度要取反
-                    const changeAngle = (currentAngle - this._startAngle) * (element.flipV || 1) * (element.flipH || 1);
+                    const changeAngle =
+                        (currentAngle - this._startAngle) *
+                        (element.flipV || 1) *
+                        (element.flipH || 1);
                     const angle = normalizeAngle(
                         changeAngle + this._storeAngle
                     );
@@ -338,7 +347,11 @@ export default class ControlStage extends Stage {
                         }
 
                         // 矩形位置坐标点旋转
-                        const angle = (originElement.rotate / 180) * (originElement.flipV || 1) * (originElement.flipH || 1) * Math.PI;
+                        const angle =
+                            (originElement.rotate / 180) *
+                            (originElement.flipV || 1) *
+                            (originElement.flipH || 1) *
+                            Math.PI;
                         let [rx, ry] = this.stageConfig.rotate(
                             originLeft,
                             originTop,
@@ -400,9 +413,9 @@ export default class ControlStage extends Stage {
                             -angle
                         );
 
-                         // 矩形位置坐标点往回翻转
-                         if (originElement.flipH === -1) ox = 2 * changeCX - ox;
-                         if (originElement.flipV === -1) oy = 2 * changeCY - oy;
+                        // 矩形位置坐标点往回翻转
+                        if (originElement.flipH === -1) ox = 2 * changeCX - ox;
+                        if (originElement.flipV === -1) oy = 2 * changeCY - oy;
 
                         // 限制缩放的最小值
                         if (storeData.width > 0 && storeData.height > 0) {
@@ -573,7 +586,10 @@ export default class ControlStage extends Stage {
             (this._canMoveElement || this._canResizeElement)
         ) {
             // 更改silde中对应的元素数据
-            this._command.executeUpdateRender(deepClone(this.stageConfig.operateElement), true);
+            this._command.executeUpdateRender(
+                deepClone(this.stageConfig.operateElement),
+                true
+            );
         }
         this._canMoveCanvas = false;
         this._canMoveElement = false;
@@ -902,8 +918,10 @@ export default class ControlStage extends Stage {
         const newWidth = oldWidth + move;
 
         // 原点偏移
-        const originOffsetX = move * Math.cos(angle) * direction * (originElement.flipH || 1);
-        const originOffsetY = move * Math.sin(angle) * direction * (originElement.flipV || 1);
+        const originOffsetX =
+            move * Math.cos(angle) * direction * (originElement.flipH || 1);
+        const originOffsetY =
+            move * Math.sin(angle) * direction * (originElement.flipV || 1);
 
         return { ofx: originOffsetX, ofy: originOffsetY, width: newWidth };
     }
@@ -935,8 +953,10 @@ export default class ControlStage extends Stage {
         const newHeight = oldHeight + move;
 
         // 原点偏移
-        const originOffsetX = -move * Math.sin(angle) * direction * (originElement.flipH || 1);
-        const originOffsetY = move * Math.cos(angle) * direction * (originElement.flipV || 1);
+        const originOffsetX =
+            -move * Math.sin(angle) * direction * (originElement.flipH || 1);
+        const originOffsetY =
+            move * Math.cos(angle) * direction * (originElement.flipV || 1);
 
         return { ofx: originOffsetX, ofy: originOffsetY, height: newHeight };
     }
