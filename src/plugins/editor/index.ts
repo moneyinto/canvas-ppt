@@ -34,7 +34,7 @@ export default class Editor {
         };
 
         this.stageConfig.setSildes(slides);
-        // if (slides.length > 0) this.stageConfig.setSlideId(slides[0].id);
+        if (slides.length > 0) this.stageConfig.setSlideId(slides[0].id);
 
         // 历史数据
         this.history = new History(this.stageConfig, this.listener);

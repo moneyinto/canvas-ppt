@@ -92,11 +92,12 @@ import { KeyMap } from "./plugins/shortCut/keyMap";
 import { checkIsMac } from "./utils";
 import useSlideHandler from "@/hooks/useSlideHandler";
 import useSlideSort from "@/hooks/useSlideSort";
+import { ISlide } from "./plugins/types/slide";
 
 const pptRef = ref();
 const zoom = ref(1);
 const instance = ref<Editor>();
-const viewSlides = ref(slides);
+const viewSlides = ref<ISlide[]>([]);
 
 const historyCursor = ref(0);
 const historyLength = ref(0);
@@ -116,7 +117,7 @@ const {
     copySlide,
     pasteSlide,
     deleteSlide
-} = useSlideHandler(instance, viewSlides);
+} = useSlideHandler(instance, viewSlides, historyCursor, historyLength);
 
 const {
     sortIndex,

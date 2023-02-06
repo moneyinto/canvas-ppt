@@ -12,19 +12,29 @@ import { encrypt } from "@/utils/crypto";
 
 export default (
     instance: Ref<Editor | undefined>,
-    viewSlides: Ref<ISlide[]>
+    viewSlides: Ref<ISlide[]>,
+    historyCursor: Ref<number>,
+    historyLength: Ref<number>
 ) => {
     const slideIndex = ref(0);
     const selectedSlideId = ref("");
 
-    const initSlide = () => {
+    const initSlide = async () => {
+        // 获取历史记录的数据进行展示
+        if (instance.value) {
+            viewSlides.value = await instance.value.history.getHistorySnapshot();
+            instance.value.stageConfig.setSildes(viewSlides.value);
+            historyCursor.value = instance.value.history.cursor;
+            historyLength.value = historyCursor.value + 1;
+        }
+
         if (viewSlides.value.length > 0) {
             selectedSlideId.value = viewSlides.value[slideIndex.value].id;
             instance.value?.stageConfig.setSlideId(selectedSlideId.value);
             // 进行渲染
             instance.value?.command.executeRender();
             // 初始化时增加历史记录
-            instance.value?.history.add();
+            // instance.value?.history.add();
         }
     };
 

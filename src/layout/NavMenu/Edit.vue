@@ -60,8 +60,11 @@ import { throttleRAF } from "@/utils";
 
 const instance = inject<Ref<Editor>>("instance");
 
-const onSave = () => {
+const onSave = async () => {
     console.log(JSON.stringify(instance?.value.stageConfig.slides));
+    // 清理历史记录 初始化历史记录
+    await instance?.value.history.clear();
+    instance?.value.history.getHistorySnapshot();
 };
 
 const historyCursor = inject<Ref<number>>("historyCursor");
