@@ -63,6 +63,7 @@ npm run dev
 - [ ] 元素坐标、尺寸和旋转角度设置
 
 #### 文字
+- [x] [研究canvas文本编辑器](https://github.com/moneyinto/canvas-editor)
 
 #### 图片
 - [x] 粘贴外来图片
