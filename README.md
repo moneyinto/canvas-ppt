@@ -9,9 +9,6 @@
     <a href="https://www.github.com/moneyinto/canvas-ppt/network/members" target="_black">
         <img src="https://img.shields.io/github/forks/moneyinto/canvas-ppt?logo=github" alt="forks" />
     </a>
-    <a href="https://www.github.com/moneyinto/canvas-ppt/blob/master/LICENSE" target="_black">
-        <img src="https://img.shields.io/github/license/moneyinto/canvas-ppt?color=%232DCE89&logo=github" alt="license" />
-    </a>
     <a href="https://www.typescriptlang.org" target="_black">
         <img src="https://img.shields.io/badge/language-TypeScript-blue.svg" alt="language">
     </a>
