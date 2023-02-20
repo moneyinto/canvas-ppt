@@ -1,6 +1,6 @@
 import StageConfig from "./config";
 import { throttleRAF } from "@/utils";
-import { IPPTElement, IPPTImageElement, IPPTLineElement, IPPTShapeElement } from "../types/element";
+import { IPPTElement, IPPTImageElement, IPPTLineElement, IPPTShapeElement, IPPTTextElement } from "../types/element";
 import { SHAPE_TYPE } from "../config/shapes";
 import { ICacheImage } from "../types";
 
@@ -80,6 +80,10 @@ export default class Stage {
             }
             case "image": {
                 this.drawImage(element);
+                break;
+            }
+            case "text": {
+                this.drawText(element);
                 break;
             }
         }
@@ -181,6 +185,10 @@ export default class Stage {
         const point1 = this.stageConfig.rotate(rx, ry, cx, cy, 𝜃);
         const point2 = this.stageConfig.rotate(rx, ry, cx, cy, -𝜃);
         return { point1, point2, point3: [cx, cy] };
+    }
+
+    public drawText(element: IPPTTextElement) {
+        // 绘制text
     }
 
     public drawShape(element: IPPTShapeElement) {

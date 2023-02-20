@@ -4,7 +4,8 @@ import {
     IElementPosition,
     IPPTImageElement,
     IPPTLineElement,
-    IPPTShapeElement
+    IPPTShapeElement,
+    IPPTTextElement
 } from "../plugins/types/element";
 
 /**
@@ -21,6 +22,25 @@ export const createRandomCode = (len = 6) => {
         ret += charset[randomIndex];
     }
     return ret;
+};
+
+export const createTextElement = (position: IElementPosition) => {
+    const { left, top, width, height } = position;
+    const id = createRandomCode();
+    const name = "文本";
+    const newElement: IPPTTextElement = {
+        name,
+        type: "text",
+        text: "",
+        id,
+        left,
+        top,
+        width,
+        height: 10 + 24,
+        rotate: 0
+    };
+    // 文本框默认边距5 默认字体大小24
+    return newElement;
 };
 
 export const createShapeElement = (

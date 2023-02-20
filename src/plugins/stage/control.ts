@@ -2,7 +2,7 @@ import Stage from ".";
 import StageConfig from "./config";
 import { throttleRAF, deepClone, normalizeAngle, checkIsMac } from "@/utils";
 import Command from "../command";
-import { createLineElement, createShapeElement } from "@/utils/create";
+import { createLineElement, createShapeElement, createTextElement } from "@/utils/create";
 import { IPPTElement, IPPTLineElement, IPPTTextElement } from "../types/element";
 import { ELEMENT_RESIZE, THEME_COLOR } from "../config/stage";
 import { IElementOptions, IRectParameter, IRects } from "../types";
@@ -255,13 +255,12 @@ export default class ControlStage extends Stage {
                 this.stageConfig.resetCheckDrawView();
             }
             const newElement = this._createElement(evt);
-            if (newElement) this.drawElement(newElement);
+            if (newElement && newElement.type !== "text") this.drawElement(newElement);
+            if (newElement && newElement.type === "text") this._drawOprate(newElement);
         } else if (this._canMoveCanvas && this.stageConfig.canMove) {
             // 移动画布
-            const scrollX =
-                -(evt.pageX - this._startPoint[0]) + this.stageConfig.scrollX;
-            const scrollY =
-                -(evt.pageY - this._startPoint[1]) + this.stageConfig.scrollY;
+            const scrollX = -(evt.pageX - this._startPoint[0]) + this.stageConfig.scrollX;
+            const scrollY = -(evt.pageY - this._startPoint[1]) + this.stageConfig.scrollY;
             this._startPoint = [evt.pageX, evt.pageY];
             this.stageConfig.setScroll(scrollX, scrollY);
         } else if (this._canMoveElement && this.stageConfig.operateElement) {
@@ -280,11 +279,12 @@ export default class ControlStage extends Stage {
 
             this._startPoint = [evt.pageX, evt.pageY];
         } else if (this._canResizeElement && this.stageConfig.operateElement) {
-            if (this.stageConfig.operateElement.type !== "line" && this.stageConfig.operateElement.type !== "text") {
+            if (this.stageConfig.operateElement.type !== "line") {
                 // 旋转缩放元素
                 if (this.stageConfig.opreateType === "ANGLE") {
                     // 旋转
                     const element = this.stageConfig.operateElement;
+                    const isText = element.type === "text";
                     const cx = element.left + element.width / 2;
                     const cy = element.top + element.height / 2;
 
@@ -293,8 +293,8 @@ export default class ControlStage extends Stage {
                     // 翻转后变化角度要取反
                     const changeAngle =
                         (currentAngle - this._startAngle) *
-                        (element.flipV || 1) *
-                        (element.flipH || 1);
+                        (isText ? 1 : element.flipV || 1) *
+                        (isText ? 1 : element.flipH || 1);
                     const angle = normalizeAngle(
                         changeAngle + this._storeAngle
                     );
@@ -309,7 +309,7 @@ export default class ControlStage extends Stage {
                     // 缩放
                     // const element = this.stageConfig.operateElement;
                     const originElement = this._opreateCacheElement;
-                    if (originElement && originElement.type !== "line" && originElement.type !== "text") {
+                    if (originElement && originElement.type !== "line") {
                         const { left, top } = this._getMousePosition(evt);
                         const storeData = {
                             ofx: 0,
@@ -340,12 +340,13 @@ export default class ControlStage extends Stage {
                         const startOriginX = this._startOriginPoint[0];
                         const startOriginY = this._startOriginPoint[1];
 
+                        const isText = originElement.type === "text";
                         // 矩形位置坐标点翻转
-                        if (originElement.flipH === -1) {
+                        if (!isText && originElement.flipH === -1) {
                             originLeft = 2 * cx - originLeft;
                             // startOriginX = 2 * cx - startOriginX;
                         }
-                        if (originElement.flipV === -1) {
+                        if (!isText && originElement.flipV === -1) {
                             originTop = 2 * cy - originTop;
                             // startOriginY = 2 * cx - startOriginY;
                         }
@@ -353,8 +354,8 @@ export default class ControlStage extends Stage {
                         // 矩形位置坐标点旋转
                         const angle =
                             (originElement.rotate / 180) *
-                            (originElement.flipV || 1) *
-                            (originElement.flipH || 1) *
+                            (isText ? 1 : originElement.flipV || 1) *
+                            (isText ? 1 : originElement.flipH || 1) *
                             Math.PI;
                         let [rx, ry] = this.stageConfig.rotate(
                             originLeft,
@@ -418,8 +419,8 @@ export default class ControlStage extends Stage {
                         );
 
                         // 矩形位置坐标点往回翻转
-                        if (originElement.flipH === -1) ox = 2 * changeCX - ox;
-                        if (originElement.flipV === -1) oy = 2 * changeCY - oy;
+                        if (!isText && originElement.flipH === -1) ox = 2 * changeCX - ox;
+                        if (!isText && originElement.flipV === -1) oy = 2 * changeCY - oy;
 
                         // 限制缩放的最小值
                         if (storeData.width > 0 && storeData.height > 0) {
@@ -459,8 +460,6 @@ export default class ControlStage extends Stage {
 
                     this._command.executeUpdateRender(newElement);
                 }
-            } else if (this.stageConfig.operateElement.type === "text") {
-                // 文本框控制
             }
         } else if (
             !this.stageConfig.insertElement &&
@@ -506,8 +505,6 @@ export default class ControlStage extends Stage {
                         (ELEMENT_RESIZE as IElementOptions)[
                             this.stageConfig.opreateType
                         ] || "default";
-                } else if (this.stageConfig.operateElement.type === "text") {
-                    // 文本框控制
                 } else {
                     const element = this.stageConfig.operateElement;
                     // 鼠标悬浮到操作区域展示形式
@@ -517,6 +514,8 @@ export default class ControlStage extends Stage {
 
                     const dashedLinePadding = 0 + margin / zoom;
                     const dashWidth = 8 / zoom;
+
+                    const isText = element.type === "text";
 
                     const rects: IRects = this._getElementResizePoints(
                         offsetX,
@@ -546,8 +545,8 @@ export default class ControlStage extends Stage {
                                 cx,
                                 cy,
                                 (element.rotate / 180) * Math.PI,
-                                element.flipH || 1,
-                                element.flipV || 1
+                                isText ? 1 : element.flipH || 1,
+                                isText ? 1 : element.flipV || 1
                             )
                         ) {
                             this.stageConfig.setOperateType(key);
@@ -661,6 +660,10 @@ export default class ControlStage extends Stage {
             const position = this._getElementPosition(evt);
 
             switch (this.stageConfig.insertElement.type) {
+                case "text": {
+                    newElement = createTextElement(position);
+                    break;
+                }
                 case "shape": {
                     newElement = createShapeElement(
                         position,
@@ -853,8 +856,6 @@ export default class ControlStage extends Stage {
                 this.ctx.fillRect(...rects[key]);
                 this.ctx.strokeRect(...rects[key]);
             }
-        } else if (element.type === "text") {
-            // 文本框控制
         } else {
             const ox = x + element.left + element.width / 2;
             const oy = y + element.top + element.height / 2;
@@ -862,7 +863,8 @@ export default class ControlStage extends Stage {
             // 平移坐标原点
             this.ctx.translate(ox, oy);
             // 水平垂直翻转
-            this.ctx.scale(element.flipH || 1, element.flipV || 1);
+            const isText = element.type === "text";
+            this.ctx.scale(isText ? 1 : element.flipH || 1, isText ? 1 : element.flipV || 1);
             // 旋转画布
             this.ctx.rotate((element.rotate / 180) * Math.PI);
 
@@ -894,6 +896,7 @@ export default class ControlStage extends Stage {
             this.ctx.strokeStyle = THEME_COLOR;
             this.ctx.lineWidth = 1 / zoom;
             for (const key in rects) {
+                if (isText && key !== "LEFT" && key !== "RIGHT" && key !== "ANGLE") continue;
                 this.ctx.fillRect(...rects[key]);
                 this.ctx.strokeRect(...rects[key]);
             }
@@ -908,8 +911,9 @@ export default class ControlStage extends Stage {
         sx: number,
         sy: number,
         direction: number,
-        originElement: Exclude<IPPTElement, IPPTLineElement | IPPTTextElement>
+        originElement: Exclude<IPPTElement, IPPTLineElement>
     ) {
+        const isText = originElement.type === "text";
         const oldWidth = originElement.width;
         const angle = (originElement.rotate / 180) * Math.PI;
         // 在sx,sy以x轴平行的线段上取任意一点 绕sx，sy旋转angle
@@ -924,14 +928,12 @@ export default class ControlStage extends Stage {
         const a·b = a.x * b.x + a.y * b.y;
 
         // 移动距离
-        const move = -(a·b / B) * direction * (originElement.flipH || 1);
+        const move = -(a·b / B) * direction * (isText ? 1 : originElement.flipH || 1);
         const newWidth = oldWidth + move;
 
         // 原点偏移
-        const originOffsetX =
-            move * Math.cos(angle) * direction * (originElement.flipH || 1);
-        const originOffsetY =
-            move * Math.sin(angle) * direction * (originElement.flipV || 1);
+        const originOffsetX = move * Math.cos(angle) * direction * (isText ? 1 : originElement.flipH || 1);
+        const originOffsetY = move * Math.sin(angle) * direction * (isText ? 1 : originElement.flipV || 1);
 
         return { ofx: originOffsetX, ofy: originOffsetY, width: newWidth };
     }
@@ -942,8 +944,9 @@ export default class ControlStage extends Stage {
         sx: number,
         sy: number,
         direction: number,
-        originElement: Exclude<IPPTElement, IPPTLineElement | IPPTTextElement>
+        originElement: Exclude<IPPTElement, IPPTLineElement>
     ) {
+        const isText = originElement.type === "text";
         const oldHeight = originElement.height;
         const angle = (originElement.rotate / 180) * Math.PI;
 
@@ -959,14 +962,12 @@ export default class ControlStage extends Stage {
         const a·b = a.x * b.x + a.y * b.y;
 
         // 移动距离
-        const move = -(a·b / B) * direction * (originElement.flipV || 1);
+        const move = -(a·b / B) * direction * (isText ? 1 : originElement.flipV || 1);
         const newHeight = oldHeight + move;
 
         // 原点偏移
-        const originOffsetX =
-            -move * Math.sin(angle) * direction * (originElement.flipH || 1);
-        const originOffsetY =
-            move * Math.cos(angle) * direction * (originElement.flipV || 1);
+        const originOffsetX = -move * Math.sin(angle) * direction * (isText ? 1 : originElement.flipH || 1);
+        const originOffsetY = move * Math.cos(angle) * direction * (isText ? 1 : originElement.flipV || 1);
 
         return { ofx: originOffsetX, ofy: originOffsetY, height: newHeight };
     }
