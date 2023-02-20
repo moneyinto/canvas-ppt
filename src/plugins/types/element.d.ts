@@ -1,3 +1,4 @@
+import { IFontData } from "./font";
 import { ILineItem, IShape, IShapeItem } from "./shape";
 
 export interface IElementPosition {
@@ -251,7 +252,9 @@ export interface IPPTImageElement extends IPPTBaseElement {
 
 export interface IPPTTextElement extends IPPTBaseElement {
     type: "text";
-    text: string;
+    content: IFontData[];
+    wordSpace: number,
+    lineHeight: number,
     rotate: number;
 }
 

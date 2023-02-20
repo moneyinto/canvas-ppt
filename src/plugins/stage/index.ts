@@ -3,12 +3,14 @@ import { throttleRAF } from "@/utils";
 import { IPPTElement, IPPTImageElement, IPPTLineElement, IPPTShapeElement, IPPTTextElement } from "../types/element";
 import { SHAPE_TYPE } from "../config/shapes";
 import { ICacheImage } from "../types";
+import { Text } from "./text";
 
 export default class Stage {
     public canvas: HTMLCanvasElement;
     public ctx: CanvasRenderingContext2D;
     public stageConfig: StageConfig;
     public container: HTMLDivElement;
+    public text: Text;
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
@@ -27,6 +29,9 @@ export default class Stage {
                 throttleRAF(this._resetStage.bind(this))
             );
         }
+
+        // 文本框
+        this.text = new Text(container, stageConfig, ctx);
     }
 
     private _resetStage() {

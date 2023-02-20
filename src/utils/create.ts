@@ -31,12 +31,14 @@ export const createTextElement = (position: IElementPosition) => {
     const newElement: IPPTTextElement = {
         name,
         type: "text",
-        text: "",
+        content: [],
+        wordSpace: 1,
+        lineHeight: 2,
         id,
         left,
         top,
         width,
-        height: 10 + 24,
+        height: 10 + 24 * 2,
         rotate: 0
     };
     // 文本框默认边距5 默认字体大小24

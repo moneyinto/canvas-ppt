@@ -11,3 +11,21 @@ body {
 .ant-dropdown-menu {
     margin-top: -3px;
 }
+
+.editor-cursor {
+    animation: cursor 1s ease infinite;
+}
+
+@keyframes cursor {
+    from {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}

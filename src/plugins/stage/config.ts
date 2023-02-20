@@ -1,8 +1,10 @@
 import { deepClone } from "@/utils";
+import { baseFontConfig } from "../config/font";
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import Listener from "../listener";
 import { ICacheImage, IRectParameter } from "../types";
 import { ICreatingElement, IPPTElement } from "../types/element";
+import { IFontConfig } from "../types/font";
 import { ISlide } from "../types/slide";
 
 export default class StageConfig {
@@ -17,6 +19,9 @@ export default class StageConfig {
 
     public slides: ISlide[] = [];
     public slideId = "";
+
+    public fontConfig: IFontConfig = deepClone(baseFontConfig); // 富文本聚焦后前一个字体配置 或 默认配置
+    public textFocus = false; // 富文本框是否聚焦 双击聚焦后才可以编辑
 
     public resetDrawView: (() => void) | null;
     public resetDrawOprate: (() => void) | null;
@@ -41,6 +46,10 @@ export default class StageConfig {
 
         this.resetDrawView = null;
         this.resetDrawOprate = null;
+    }
+
+    public setFontConfig(fontConfig: IFontConfig) {
+        this.fontConfig = fontConfig;
     }
 
     public resetCheckDrawView() {
