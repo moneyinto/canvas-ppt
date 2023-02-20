@@ -146,6 +146,7 @@ export default class StageConfig {
             this._container.style.cursor = "default";
         }
         this.insertElement = element;
+        this._listener?.onInsertElementChange && this._listener.onInsertElementChange(element);
     }
 
     public updateElement(element: IPPTElement) {
@@ -280,8 +281,8 @@ export default class StageConfig {
                     cx,
                     cy,
                     (element.rotate / 180) * Math.PI,
-                    element.flipH || 1,
-                    element.flipV || 1
+                    element.type === "text" ? 1 : element.flipH || 1,
+                    element.type === "text" ? 1 : element.flipV || 1
                 );
             }
         });

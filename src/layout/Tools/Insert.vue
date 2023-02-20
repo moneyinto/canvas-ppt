@@ -24,7 +24,7 @@
             </a-tooltip>
 
             <template #content>
-                <div class="shape-pool" @keydown.stop="" tabindex="0">
+                <div class="shape-pool" @keydown.stop tabindex="0">
                     <div
                         class="category"
                         v-for="item in SHAPE_LIST"
@@ -75,6 +75,12 @@
                 </div>
             </template>
         </a-popover>
+
+        <a-tooltip title="插入文字">
+            <div class="ppt-tool-btn" :class="insertTextActive && 'active'" @click="insertText">
+                <PPTIcon icon="text" :size="28" />
+            </div>
+        </a-tooltip>
     </div>
 </template>
 
@@ -84,7 +90,7 @@ import Editor from "@/plugins/editor";
 import FileInput from "@/components/FileInput.vue";
 import { SHAPE_LIST } from "@/plugins/config/shapes";
 import { ILineItem, IShapeItem } from "@/plugins/types/shape";
-import { inject, ref, Ref } from "vue";
+import { inject, ref, Ref, watch } from "vue";
 import { ICreatingType } from "@/plugins/types/element";
 import { createImageElement } from "@/utils/create";
 
@@ -92,6 +98,18 @@ const showShapePool = ref(false);
 const hoverShapePool = ref(false);
 
 const instance = inject<Ref<Editor>>("instance");
+
+watch(instance!, () => {
+    if (instance?.value) {
+        instance.value.listener.onInsertElementChange = (element) => {
+            if (element && element.type === "text") {
+                insertTextActive.value = true;
+            } else {
+                insertTextActive.value = false;
+            }
+        };
+    }
+});
 
 const selectShape = (type: ICreatingType, shape: IShapeItem | ILineItem) => {
     showShapePool.value = false;
@@ -104,6 +122,15 @@ const selectShape = (type: ICreatingType, shape: IShapeItem | ILineItem) => {
         instance?.value.stageConfig.setInsertElement({
             type,
             data: shape as IShapeItem
+        });
+    }
+};
+
+const insertTextActive = ref(false);
+const insertText = () => {
+    if (!instance?.value.stageConfig.insertElement) {
+        instance?.value.stageConfig.setInsertElement({
+            type: "text"
         });
     }
 };

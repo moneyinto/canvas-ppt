@@ -46,7 +46,7 @@ export default class Editor {
         this._viewStage = new ViewStage(container, this.stageConfig, true);
 
         // 创建操作画板
-        this._controlStage = new ControlStage(container, this.stageConfig, this.command, true);
+        this._controlStage = new ControlStage(container, this.stageConfig, this.command, this.listener, true);
 
         // 快捷键
         // eslint-disable-next-line

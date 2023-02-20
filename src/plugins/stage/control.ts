@@ -3,16 +3,18 @@ import StageConfig from "./config";
 import { throttleRAF, deepClone, normalizeAngle, checkIsMac } from "@/utils";
 import Command from "../command";
 import { createLineElement, createShapeElement } from "@/utils/create";
-import { IPPTElement, IPPTLineElement } from "../types/element";
+import { IPPTElement, IPPTLineElement, IPPTTextElement } from "../types/element";
 import { ELEMENT_RESIZE, THEME_COLOR } from "../config/stage";
 import { IElementOptions, IRectParameter, IRects } from "../types";
 import { LINE_TYPE } from "../config/shapes";
 import ContextmenuComponent from "@/components/Contextmenu/index.vue";
 import { createVNode, render } from "vue";
 import { IContextmenuItem } from "../types/contextmenu";
+import Listener from "../listener";
 
 export default class ControlStage extends Stage {
     private _command: Command;
+    private _listener: Listener;
     private _canMoveCanvas: boolean;
     private _canCreate: boolean;
     private _canMoveElement: boolean;
@@ -27,6 +29,7 @@ export default class ControlStage extends Stage {
         container: HTMLDivElement,
         stageConfig: StageConfig,
         command: Command,
+        listener: Listener,
         resize?: boolean
     ) {
         super(container, stageConfig, resize);
@@ -44,6 +47,7 @@ export default class ControlStage extends Stage {
         this._menuDom = null;
 
         this._command = command;
+        this._listener = listener;
         // 后面考虑要不要改成window ？？？？？？？？？？？？？？？？？？？？？？
         this.container.addEventListener(
             "mousewheel",
@@ -276,7 +280,7 @@ export default class ControlStage extends Stage {
 
             this._startPoint = [evt.pageX, evt.pageY];
         } else if (this._canResizeElement && this.stageConfig.operateElement) {
-            if (this.stageConfig.operateElement.type !== "line") {
+            if (this.stageConfig.operateElement.type !== "line" && this.stageConfig.operateElement.type !== "text") {
                 // 旋转缩放元素
                 if (this.stageConfig.opreateType === "ANGLE") {
                     // 旋转
@@ -305,7 +309,7 @@ export default class ControlStage extends Stage {
                     // 缩放
                     // const element = this.stageConfig.operateElement;
                     const originElement = this._opreateCacheElement;
-                    if (originElement && originElement.type !== "line") {
+                    if (originElement && originElement.type !== "line" && originElement.type !== "text") {
                         const { left, top } = this._getMousePosition(evt);
                         const storeData = {
                             ofx: 0,
@@ -431,7 +435,7 @@ export default class ControlStage extends Stage {
                         }
                     }
                 }
-            } else {
+            } else if (this.stageConfig.operateElement.type === "line") {
                 const { left, top } = this._getMousePosition(evt);
                 const element = this.stageConfig.operateElement;
                 // 线条控制
@@ -455,6 +459,8 @@ export default class ControlStage extends Stage {
 
                     this._command.executeUpdateRender(newElement);
                 }
+            } else if (this.stageConfig.operateElement.type === "text") {
+                // 文本框控制
             }
         } else if (
             !this.stageConfig.insertElement &&
@@ -500,6 +506,8 @@ export default class ControlStage extends Stage {
                         (ELEMENT_RESIZE as IElementOptions)[
                             this.stageConfig.opreateType
                         ] || "default";
+                } else if (this.stageConfig.operateElement.type === "text") {
+                    // 文本框控制
                 } else {
                     const element = this.stageConfig.operateElement;
                     // 鼠标悬浮到操作区域展示形式
@@ -845,6 +853,8 @@ export default class ControlStage extends Stage {
                 this.ctx.fillRect(...rects[key]);
                 this.ctx.strokeRect(...rects[key]);
             }
+        } else if (element.type === "text") {
+            // 文本框控制
         } else {
             const ox = x + element.left + element.width / 2;
             const oy = y + element.top + element.height / 2;
@@ -898,7 +908,7 @@ export default class ControlStage extends Stage {
         sx: number,
         sy: number,
         direction: number,
-        originElement: Exclude<IPPTElement, IPPTLineElement>
+        originElement: Exclude<IPPTElement, IPPTLineElement | IPPTTextElement>
     ) {
         const oldWidth = originElement.width;
         const angle = (originElement.rotate / 180) * Math.PI;
@@ -932,7 +942,7 @@ export default class ControlStage extends Stage {
         sx: number,
         sy: number,
         direction: number,
-        originElement: Exclude<IPPTElement, IPPTLineElement>
+        originElement: Exclude<IPPTElement, IPPTLineElement | IPPTTextElement>
     ) {
         const oldHeight = originElement.height;
         const angle = (originElement.rotate / 180) * Math.PI;

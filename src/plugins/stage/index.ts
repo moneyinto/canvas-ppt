@@ -1,4 +1,3 @@
-import Listener from "../listener";
 import StageConfig from "./config";
 import { throttleRAF } from "@/utils";
 import { IPPTElement, IPPTImageElement, IPPTLineElement, IPPTShapeElement } from "../types/element";
@@ -10,7 +9,6 @@ export default class Stage {
     public ctx: CanvasRenderingContext2D;
     public stageConfig: StageConfig;
     public container: HTMLDivElement;
-    public listener: Listener | undefined;
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,

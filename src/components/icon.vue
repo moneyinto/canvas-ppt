@@ -44,7 +44,8 @@ const icons: { [key: string]: string } = {
     flipH: new URL("@/assets/icons/flipH.svg", import.meta.url).href,
     borderWidth: new URL("@/assets/icons/borderWidth.svg", import.meta.url).href,
     borderStyle: new URL("@/assets/icons/borderStyle.svg", import.meta.url).href,
-    checked: new URL("@/assets/icons/checked.svg", import.meta.url).href
+    checked: new URL("@/assets/icons/checked.svg", import.meta.url).href,
+    text: new URL("@/assets/icons/text.svg", import.meta.url).href
 };
 
 const iconUrl = computed(() => icons[icon.value]);

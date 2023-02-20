@@ -249,7 +249,13 @@ export interface IPPTImageElement extends IPPTBaseElement {
     flipV?: 1 | -1;
 }
 
-export type IPPTElement = IPPTShapeElement | IPPTLineElement | IPPTImageElement;
+export interface IPPTTextElement extends IPPTBaseElement {
+    type: "text";
+    text: string;
+    rotate: number;
+}
+
+export type IPPTElement = IPPTShapeElement | IPPTLineElement | IPPTImageElement | IPPTTextElement;
 
 export interface ICreatingTextElement {
     type: "text";
