@@ -25,6 +25,7 @@ export default class StageConfig {
 
     public resetDrawView: (() => void) | null;
     public resetDrawOprate: (() => void) | null;
+    public hideCursor:(() => void) | null;
 
     private _container: HTMLDivElement;
     private _listener: Listener | undefined;
@@ -46,6 +47,7 @@ export default class StageConfig {
 
         this.resetDrawView = null;
         this.resetDrawOprate = null;
+        this.hideCursor = null;
     }
 
     public setFontConfig(fontConfig: IFontConfig) {
@@ -169,6 +171,10 @@ export default class StageConfig {
     public setOperateElement(element: IPPTElement | null) {
         const operateElement = deepClone(element);
         this.operateElement = operateElement;
+        if (!operateElement) {
+            this.textFocus = false;
+            this.hideCursor && this.hideCursor();
+        }
         if (this._listener?.onSelectedChange) this._listener.onSelectedChange(operateElement);
     }
 

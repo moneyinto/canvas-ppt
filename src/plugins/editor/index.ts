@@ -32,6 +32,9 @@ export default class Editor {
         this.stageConfig.resetDrawOprate = () => {
             this._controlStage.resetDrawOprate();
         };
+        this.stageConfig.hideCursor = () => {
+            this._controlStage.hideCursor();
+        };
 
         this.stageConfig.setSildes(slides);
         if (slides.length > 0) this.stageConfig.setSlideId(slides[0].id);

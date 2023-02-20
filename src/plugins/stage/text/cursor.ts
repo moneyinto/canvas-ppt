@@ -1,4 +1,5 @@
 import { IFontData, ILineData } from "@/plugins/types/font";
+import StageConfig from "../config";
 import { Data, TEXT_MARGIN } from "./data";
 import { Textarea } from "./Textarea";
 
@@ -10,6 +11,7 @@ export class Cursor {
     private _textarea: Textarea;
 
     private _data: Data;
+    private _stageConfig: StageConfig;
 
     // 坐标位置
     private _height: number;
@@ -21,8 +23,9 @@ export class Cursor {
 
     // 原数据索引位置 -1 为最前面 之后值为数据索引值 及光标在该索引数据后面
     private _dataPosition: number;
-    constructor(container: HTMLDivElement, data: Data, textarea: Textarea) {
+    constructor(container: HTMLDivElement, stageConfig: StageConfig, data: Data, textarea: Textarea) {
         this._container = container;
+        this._stageConfig = stageConfig;
         this._cursor = null;
 
         this._data = data;
@@ -31,8 +34,8 @@ export class Cursor {
         const config = this._data.config;
 
         this._height = this._data.lineHeight * config.fontSize + COMPENSTATE_LEN;
-        this._top = TEXT_MARGIN - COMPENSTATE_LEN / 2 + 1;
-        this._left = TEXT_MARGIN - this._data.wordSpace / 2 - 0.5; // 0.5为光标宽度补偿值
+        this._top = this._data.elementLeft + TEXT_MARGIN - COMPENSTATE_LEN / 2 + 1;
+        this._left = this._data.elementTop + TEXT_MARGIN - this._data.wordSpace / 2 - 0.5; // 0.5为光标宽度补偿值
 
         this._dataPosition = -1;
         this._renderDataPosition = [-1, 0];
@@ -64,19 +67,24 @@ export class Cursor {
 
     updateCursor() {
         if (!this._cursor) return;
+        const { x, y } = this._stageConfig.getStageArea();
         const renderContent = this._data.getRenderContent();
-
+        this.setCursorHeight(this._data.config.fontSize);
         renderContent.forEach((line, index) => {
             if (index === this._renderDataPosition[0] || (index === 0 && this._renderDataPosition[0] === -1)) {
                 this.setCursorHeight(line.height);
             }
         });
-        this._cursor.style.left = `${this._left}px`;
-        this._cursor.style.top = `${this._top}px`;
-        this._cursor.style.height = `${this._height}px`;
+
+        const left = (this._data.elementLeft + this._left) * this._data.zoom + x;
+        const top = (this._data.elementTop + this._top) * this._data.zoom + y;
+        const height = this._height * this._data.zoom;
+        this._cursor.style.left = `${left}px`;
+        this._cursor.style.top = `${top}px`;
+        this._cursor.style.height = `${height}px`;
 
         // 更新textarea到光标位置
-        this._textarea.setTextareaPosition(this._left, this._top + this._height / 2);
+        this._textarea.setTextareaPosition(left, top + height / 2);
     }
 
     getCursorPosition(x: number, y: number, renderContent: ILineData[]) {
@@ -84,7 +92,7 @@ export class Cursor {
         const { top, textY } = this._getTextYCursorPosition(renderContent, y);
 
         // 计算在某行的位置
-        const line = renderContent[textY];
+        const line = renderContent.length > 0 ? renderContent[textY] : { texts: [], width: 0, height: 0 } as ILineData;
         const lineData = line.texts;
         const offsetX = this._data.getAlignOffsetX(line);
         const { left, textX } = this._getTextXCursorPosition(lineData, x - offsetX);
@@ -183,7 +191,7 @@ export class Cursor {
     }
 
     setCursorHeight(height: number) {
-        this._height = height * this._data.lineHeight + COMPENSTATE_LEN;
+        this._height = height * this._data.lineHeight;
     }
 
     setRenderDataPosition() {

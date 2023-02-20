@@ -11,6 +11,8 @@ export class Data {
     private _elementWidth: number;
     private _wordSpace: number;
     private _lineHeight: number;
+    private _elementLeft: number;
+    private _elementTop: number;
     private _renderContent: ILineData[];
     private _ctx: CanvasRenderingContext2D;
     private _stageConfig: StageConfig;
@@ -23,6 +25,8 @@ export class Data {
         this._elementWidth = 0;
         this._wordSpace = 1;
         this._lineHeight = 2;
+        this._elementLeft = 0;
+        this._elementTop = 0;
     }
 
     get config() {
@@ -35,6 +39,18 @@ export class Data {
 
     get wordSpace() {
         return this._wordSpace;
+    }
+
+    get elementLeft() {
+        return this._elementLeft;
+    }
+
+    get elementTop() {
+        return this._elementTop;
+    }
+
+    get zoom() {
+        return this._stageConfig.zoom;
     }
 
     resetConfig() {
@@ -54,11 +70,15 @@ export class Data {
             this._elementWidth = element.width;
             this._wordSpace = element.wordSpace;
             this._lineHeight = element.lineHeight;
+            this._elementLeft = element.left;
+            this._elementTop = element.top;
         } else {
             this._content = [];
             this._elementWidth = 0;
             this._wordSpace = 1;
             this._lineHeight = 2;
+            this._elementLeft = 0;
+            this._elementTop = 0;
         }
     }
 

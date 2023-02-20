@@ -11,6 +11,7 @@ import ContextmenuComponent from "@/components/Contextmenu/index.vue";
 import { createVNode, render } from "vue";
 import { IContextmenuItem } from "../types/contextmenu";
 import Listener from "../listener";
+import { Text } from "./text";
 
 export default class ControlStage extends Stage {
     private _command: Command;
@@ -25,6 +26,7 @@ export default class ControlStage extends Stage {
     private _startAngle: number;
     private _storeAngle: number;
     private _menuDom: HTMLDivElement | null;
+    private _text: Text;
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
@@ -48,6 +50,8 @@ export default class ControlStage extends Stage {
 
         this._command = command;
         this._listener = listener;
+        // 文本框
+        this._text = new Text(container, stageConfig, this.ctx);
         // 后面考虑要不要改成window ？？？？？？？？？？？？？？？？？？？？？？
         this.container.addEventListener(
             "mousewheel",
@@ -92,6 +96,8 @@ export default class ControlStage extends Stage {
             // 当元素被选中，且被双击时，开启编辑
             this.stageConfig.textFocus = true;
             this.container.style.cursor = "text";
+            this._text.cursor.showCursor();
+            this._text.cursor.updateCursor();
         }
     }
 
@@ -231,6 +237,8 @@ export default class ControlStage extends Stage {
                     this._storeAngle = (element.rotate / 180) * Math.PI;
                 }
                 this._opreateCacheElement = deepClone(element);
+
+                this._text.cursor.hideCursor();
             } else {
                 const operateElement = this.stageConfig.getMouseInElement(
                     left,
@@ -247,11 +255,13 @@ export default class ControlStage extends Stage {
                     return;
                 }
 
-                if (!operateElement) {
-                    this.stageConfig.textFocus = false;
-                }
-
                 this.stageConfig.setOperateElement(operateElement || null);
+                if (operateElement && operateElement.type === "text") {
+                    this._text.data.setElement(operateElement);
+                    const renderContent = this._text.data.getRenderContent();
+                    const { textX, textY } = this._text.cursor.getCursorPosition(evt.offsetX, evt.offsetY, renderContent);
+                    console.log(textX, textY);
+                }
                 this.stageConfig.resetCheckDrawView();
                 if (operateElement) {
                     this.resetDrawOprate();
@@ -282,20 +292,24 @@ export default class ControlStage extends Stage {
             this._startPoint = [evt.pageX, evt.pageY];
             this.stageConfig.setScroll(scrollX, scrollY);
         } else if (this._canMoveElement && this.stageConfig.operateElement) {
-            // 移动元素
-            const zoom = this.stageConfig.zoom;
-            const moveX = (evt.pageX - this._startPoint[0]) / zoom;
-            const moveY = (evt.pageY - this._startPoint[1]) / zoom;
+            if (this.stageConfig.textFocus) {
+                // 文本编辑状态
+            } else {
+                // 移动元素
+                const zoom = this.stageConfig.zoom;
+                const moveX = (evt.pageX - this._startPoint[0]) / zoom;
+                const moveY = (evt.pageY - this._startPoint[1]) / zoom;
 
-            const newElement = {
-                ...this.stageConfig.operateElement,
-                left: this.stageConfig.operateElement.left + moveX,
-                top: this.stageConfig.operateElement.top + moveY
-            };
+                const newElement = {
+                    ...this.stageConfig.operateElement,
+                    left: this.stageConfig.operateElement.left + moveX,
+                    top: this.stageConfig.operateElement.top + moveY
+                };
 
-            this._command.executeUpdateRender(newElement);
+                this._command.executeUpdateRender(newElement);
 
-            this._startPoint = [evt.pageX, evt.pageY];
+                this._startPoint = [evt.pageX, evt.pageY];
+            }
         } else if (this._canResizeElement && this.stageConfig.operateElement) {
             if (this.stageConfig.operateElement.type !== "line") {
                 // 旋转缩放元素
@@ -995,5 +1009,9 @@ export default class ControlStage extends Stage {
         if (!element) return;
         // this.drawElement(element);
         this._drawOprate(element);
+    }
+
+    public hideCursor() {
+        this._text.cursor.hideCursor();
     }
 }

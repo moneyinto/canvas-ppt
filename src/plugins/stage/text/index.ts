@@ -13,6 +13,6 @@ export class Text {
 
         this.textarea = new Textarea(container);
         this.data = new Data(ctx, stageConfig);
-        this.cursor = new Cursor(container, this.data, this.textarea);
+        this.cursor = new Cursor(container, stageConfig, this.data, this.textarea);
     }
 }

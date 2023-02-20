@@ -93,6 +93,7 @@ export class History {
             this._stageConfig.setOperateElement(operateElement || null);
             this._stageConfig.resetCheckDrawOprate();
         }
+        this._stageConfig.hideCursor && this._stageConfig.hideCursor();
         this._listener.onEditChange && this._listener.onEditChange(this.cursor, this.length, history.slideId as string);
     }
 }

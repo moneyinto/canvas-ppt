@@ -1,7 +1,7 @@
 import { IFontConfig } from "../types/font";
 
 export const baseFontConfig: IFontConfig = {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "normal",
     fontFamily: "楷体",
     fontColor: "#444",
