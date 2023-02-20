@@ -3,7 +3,7 @@ import StageConfig from "./config";
 import { throttleRAF, deepClone, normalizeAngle, checkIsMac } from "@/utils";
 import Command from "../command";
 import { createLineElement, createShapeElement, createTextElement } from "@/utils/create";
-import { IPPTElement, IPPTLineElement, IPPTTextElement } from "../types/element";
+import { IPPTElement, IPPTLineElement } from "../types/element";
 import { ELEMENT_RESIZE, THEME_COLOR } from "../config/stage";
 import { IElementOptions, IRectParameter, IRects } from "../types";
 import { LINE_TYPE } from "../config/shapes";
@@ -60,6 +60,11 @@ export default class ControlStage extends Stage {
             false
         );
         this.container.addEventListener(
+            "dblclick",
+            this._dblClick.bind(this),
+            false
+        );
+        this.container.addEventListener(
             "mousemove",
             throttleRAF(this._mousemove.bind(this)),
             false
@@ -79,6 +84,15 @@ export default class ControlStage extends Stage {
             this._contextmenu.bind(this),
             false
         );
+    }
+
+    private _dblClick() {
+        const operateElement = this.stageConfig.operateElement;
+        if (operateElement && operateElement.type === "text") {
+            // 当元素被选中，且被双击时，开启编辑
+            this.stageConfig.textFocus = true;
+            this.container.style.cursor = "text";
+        }
     }
 
     private _removeContextmenu() {
@@ -231,6 +245,10 @@ export default class ControlStage extends Stage {
                 ) {
                     this._canMoveElement = true;
                     return;
+                }
+
+                if (!operateElement) {
+                    this.stageConfig.textFocus = false;
                 }
 
                 this.stageConfig.setOperateElement(operateElement || null);
@@ -555,10 +573,7 @@ export default class ControlStage extends Stage {
                     }
 
                     // 考虑结合旋转角度来改变优化cursor ？？？？？？？？？？？？？？？？？？？？
-                    this.container.style.cursor =
-                        (ELEMENT_RESIZE as IElementOptions)[
-                            this.stageConfig.opreateType
-                        ] || "default";
+                    this.container.style.cursor = (ELEMENT_RESIZE as IElementOptions)[this.stageConfig.opreateType] || "default";
                 }
             }
 
@@ -569,7 +584,9 @@ export default class ControlStage extends Stage {
                 );
 
                 if (hoverElement) {
-                    if (this.container.style.cursor !== "move") {
+                    if (this.stageConfig.operateElement && hoverElement.type === "text" && this.stageConfig.textFocus) {
+                        if (this.container.style.cursor !== "text") this.container.style.cursor = "text";
+                    } else if (this.container.style.cursor !== "move") {
                         this.container.style.cursor = "move";
                     }
                 } else {
