@@ -378,14 +378,14 @@ export default class StageConfig {
             } else {
                 renderContent.push(lineData);
                 lineData = {
-                    height: 0,
-                    width: 0,
+                    height: text.fontSize,
+                    width: text.width,
                     texts: [text]
                 };
                 countWidth = text.width + element.wordSpace;
             }
         });
-
+        console.log(renderContent);
         return renderContent;
     }
 

@@ -113,6 +113,7 @@ export default class ControlStage extends Stage {
 
             // 聚焦光标到点击位置
             this._cursor.focus(left - operateElement.left, top - operateElement.top);
+            this._command.executeUpdateFontConfig();
             // this._text.cursor.showCursor();
             // this._text.cursor.updateCursor();
         }
@@ -271,6 +272,7 @@ export default class ControlStage extends Stage {
                     if (this.stageConfig.textFocus) {
                         // 更新文本框光标位置
                         this._cursor.focus(left - operateElement.left, top - operateElement.top);
+                        this._command.executeUpdateFontConfig();
                         return;
                     }
                     this._canMoveElement = true;

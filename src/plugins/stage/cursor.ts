@@ -256,8 +256,6 @@ export class Cursor {
         this.updateCursor();
         this.showCursor();
 
-        // this._updateFontStyleByCursorFont();
-
         setTimeout(() => {
             this._textarea.getTextareaElement().focus();
         }, 100);

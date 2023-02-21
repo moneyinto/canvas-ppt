@@ -253,9 +253,7 @@ export default class Command {
 
                 // 当存在中英文混合时 删除正好某行空一个英文字符的空格，删除后正好有个英文字符将会填充到上一行，光标应该处理该行倒数第二个字符
                 if (result && direction === 0) {
-                    this._cursor.setDataPosition(position - 1);
-                    this._cursor.setCursorPositionByData();
-                    this._cursor.updateCursor();
+                    this._updateCursor(position - 1);
                 }
             } else {
                 this.executeDeleteRender(operateElement);
@@ -278,9 +276,10 @@ export default class Command {
                 fontFamily: text.fontFamily,
                 fontStyle: text.fontStyle,
                 fontWeight: text.fontWeight,
-                underline: !!text.underline,
-                strikout: !!text.strikout
+                underline: text.underline,
+                strikout: text.strikout
             };
+            console.log(config, text);
             this._stageConfig.setFontConfig(config);
         }
     }
@@ -295,16 +294,7 @@ export default class Command {
 
             this.executeUpdateRender(operateElement);
 
-            // 更新记录做防抖延迟
-            if (this._updateDebounce) {
-                clearTimeout(this._updateDebounce);
-                this._updateDebounce = null;
-            }
-
-            this._updateDebounce = setTimeout(() => {
-                this.executeLogRender();
-                this._updateDebounce = null;
-            }, 1000);
+            this._debounceLog();
             return true;
         }
         return false;
@@ -346,11 +336,7 @@ export default class Command {
                             // 处理光标在行首的情况
                             if (upLineX === -1) upLineX = 0;
 
-                            this._cursor.setDataPosition(position - (renderPosition[1] + 1 + upLineData.texts.length - upLineX));
-                            this._cursor.setCursorPositionByData();
-                            this._cursor.updateCursor();
-
-                            this.executeUpdateFontConfig();
+                            this._updateCursor(position - (renderPosition[1] + 1 + upLineData.texts.length - upLineX));
                         }
                         break;
                     }
@@ -382,30 +368,19 @@ export default class Command {
                             // 处理光标在行首的情况
                             if (downLineX === -1) downLineX = 0;
 
-                            this._cursor.setDataPosition(position + (currentLineData.texts.length - (renderPosition[1] + 1) + downLineX));
-                            this._cursor.setCursorPositionByData();
-                            this._cursor.updateCursor();
-
-                            this.executeUpdateFontConfig();
+                            this._updateCursor(position + (currentLineData.texts.length - (renderPosition[1] + 1) + downLineX));
                         }
                         break;
                     }
                     case KeyMap.Left: {
                         const position = this._cursor.getDataPosition();
-                        this._cursor.setDataPosition(position - 1);
-                        this._cursor.setCursorPositionByData();
-                        this._cursor.updateCursor();
 
-                        this.executeUpdateFontConfig();
+                        this._updateCursor(position - 1);
                         break;
                     }
                     case KeyMap.Right: {
                         const position = this._cursor.getDataPosition();
-                        this._cursor.setDataPosition(position + 1);
-                        this._cursor.setCursorPositionByData();
-                        this._cursor.updateCursor();
-
-                        this.executeUpdateFontConfig();
+                        this._updateCursor(position + 1);
                         break;
                     }
                 }
@@ -432,16 +407,7 @@ export default class Command {
 
                 this.executeUpdateRender(operateElement);
 
-                // 更新记录做防抖延迟
-                if (this._updateDebounce) {
-                    clearTimeout(this._updateDebounce);
-                    this._updateDebounce = null;
-                }
-
-                this._updateDebounce = setTimeout(() => {
-                    this.executeLogRender();
-                    this._updateDebounce = null;
-                }, 1000);
+                this._debounceLog();
             }
         }
     }
@@ -505,16 +471,28 @@ export default class Command {
 
             this.executeUpdateRender(operateElement);
 
-            // 更新记录做防抖延迟
-            if (this._updateDebounce) {
-                clearTimeout(this._updateDebounce);
-                this._updateDebounce = null;
-            }
-
-            this._updateDebounce = setTimeout(() => {
-                this.executeLogRender();
-                this._updateDebounce = null;
-            }, 1000);
+            this._debounceLog();
         }
+    }
+
+    private _updateCursor(position: number) {
+        this._cursor.setDataPosition(position);
+        this._cursor.setCursorPositionByData();
+        this._cursor.updateCursor();
+
+        this.executeUpdateFontConfig();
+    }
+
+    private _debounceLog() {
+         // 更新记录做防抖延迟
+         if (this._updateDebounce) {
+            clearTimeout(this._updateDebounce);
+            this._updateDebounce = null;
+        }
+
+        this._updateDebounce = setTimeout(() => {
+            this.executeLogRender();
+            this._updateDebounce = null;
+        }, 1000);
     }
 }
