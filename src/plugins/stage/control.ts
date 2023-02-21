@@ -90,10 +90,12 @@ export default class ControlStage extends Stage {
         );
     }
 
-    private _dblClick() {
+    private _dblClick(evt: MouseEvent) {
         const operateElement = this.stageConfig.operateElement;
         if (operateElement && operateElement.type === "text") {
             this._text.data.setElement(operateElement);
+            // 点击位置坐标
+            const { left, top } = this._getMousePosition(evt);
             // const renderContent = this._text.data.getRenderContent();
             // const { textX, textY } = this._text.cursor.getCursorPosition(evt.offsetX, evt.offsetY, renderContent);
             // console.log(textX, textY);
@@ -101,7 +103,8 @@ export default class ControlStage extends Stage {
             this.stageConfig.textFocus = true;
             this.container.style.cursor = "text";
 
-            this._text.focus(0, 0);
+            // 聚焦光标到点击位置
+            this._text.focus(left - operateElement.left, top - operateElement.top);
             // this._text.cursor.showCursor();
             // this._text.cursor.updateCursor();
         }
@@ -257,6 +260,11 @@ export default class ControlStage extends Stage {
                     this.stageConfig.operateElement &&
                     operateElement.id === this.stageConfig.operateElement.id
                 ) {
+                    if (this.stageConfig.textFocus) {
+                        // 更新文本框光标位置
+                        this._text.focus(left - operateElement.left, top - operateElement.top);
+                        return;
+                    }
                     this._canMoveElement = true;
                     return;
                 }

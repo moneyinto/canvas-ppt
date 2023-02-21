@@ -189,55 +189,6 @@ export default class Stage {
         return { point1, point2, point3: [cx, cy] };
     }
 
-    public getRenderContent(element: IPPTTextElement) {
-        const width = element.width - TEXT_MARGIN * 2;
-        const renderContent: ILineData[] = [];
-        let lineData: ILineData = {
-            height: 0,
-            width: 0,
-            texts: []
-        };
-        let countWidth = 0;
-        element.content.forEach((text) => {
-            if (lineData.height === 0) lineData.height = text.fontSize;
-            if (text.value === "\n") {
-                lineData.texts.push(text);
-                renderContent.push(lineData);
-                lineData = {
-                    height: 0,
-                    width: 0,
-                    texts: []
-                };
-                countWidth = 0;
-            } else if (countWidth + text.width < width) {
-                // 一行数据可以摆得下
-                lineData.texts.push(text);
-                if (lineData.height < text.fontSize) lineData.height = text.fontSize;
-                countWidth = countWidth + text.width + element.wordSpace;
-                lineData.width = countWidth;
-            } else {
-                renderContent.push(lineData);
-                lineData = {
-                    height: 0,
-                    width: 0,
-                    texts: [text]
-                };
-                countWidth = text.width + element.wordSpace;
-            }
-        });
-
-        return renderContent;
-    }
-
-    public getAlignOffsetX(line: ILineData, element: IPPTTextElement) {
-        const align = element.align;
-        return {
-            left: 0,
-            center: (element.width - TEXT_MARGIN * 2 - line.width) / 2,
-            right: element.width - TEXT_MARGIN * 2 - line.width
-        }[align];
-    }
-
     private _drawStrikout(text: IFontData, x: number, y: number, fontHeight: number, lineHeight: number, wordSpace: number) {
         const offsetY = fontHeight + fontHeight * (lineHeight - 1) / 2;
         const compensateY = (fontHeight - text.fontSize) * 0.1; // 英文，大小字体存在时，存在错位感，对小字号进行一些值的补偿
@@ -292,7 +243,7 @@ export default class Stage {
 
         this.ctx.translate(moveX, moveY);
         // 绘制text
-        const lineTexts = this.getRenderContent(element);
+        const lineTexts = this.stageConfig.getRenderContent(element);
         let textX = TEXT_MARGIN;
         let textY = TEXT_MARGIN;
         lineTexts.forEach((lineData, index) => {
@@ -302,7 +253,7 @@ export default class Stage {
             // }
 
             const lineHeight = lineData.height * element.lineHeight;
-            const offsetX = this.getAlignOffsetX(lineData, element);
+            const offsetX = this.stageConfig.getAlignOffsetX(lineData, element);
             lineData.texts.forEach(text => {
                 // 排除换行情况
                 if (text.value !== "\n") {

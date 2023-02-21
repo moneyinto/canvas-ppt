@@ -3,9 +3,10 @@ import { baseFontConfig } from "../config/font";
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import Listener from "../listener";
 import { ICacheImage, IRectParameter } from "../types";
-import { ICreatingElement, IPPTElement } from "../types/element";
-import { IFontConfig } from "../types/font";
+import { ICreatingElement, IPPTElement, IPPTTextElement } from "../types/element";
+import { IFontConfig, ILineData } from "../types/font";
 import { ISlide } from "../types/slide";
+import { TEXT_MARGIN } from "./text/data";
 
 export default class StageConfig {
     public scrollX: number;
@@ -345,5 +346,54 @@ export default class StageConfig {
             translatePoint[1] > minY &&
             translatePoint[1] < maxY
         );
+    }
+
+    public getRenderContent(element: IPPTTextElement) {
+        const width = element.width - TEXT_MARGIN * 2;
+        const renderContent: ILineData[] = [];
+        let lineData: ILineData = {
+            height: 0,
+            width: 0,
+            texts: []
+        };
+        let countWidth = 0;
+        element.content.forEach((text) => {
+            if (lineData.height === 0) lineData.height = text.fontSize;
+            if (text.value === "\n") {
+                lineData.texts.push(text);
+                renderContent.push(lineData);
+                lineData = {
+                    height: 0,
+                    width: 0,
+                    texts: []
+                };
+                countWidth = 0;
+            } else if (countWidth + text.width < width) {
+                // 一行数据可以摆得下
+                lineData.texts.push(text);
+                if (lineData.height < text.fontSize) lineData.height = text.fontSize;
+                countWidth = countWidth + text.width + element.wordSpace;
+                lineData.width = countWidth;
+            } else {
+                renderContent.push(lineData);
+                lineData = {
+                    height: 0,
+                    width: 0,
+                    texts: [text]
+                };
+                countWidth = text.width + element.wordSpace;
+            }
+        });
+
+        return renderContent;
+    }
+
+    public getAlignOffsetX(line: ILineData, element: IPPTTextElement) {
+        const align = element.align;
+        return {
+            left: 0,
+            center: (element.width - TEXT_MARGIN * 2 - line.width) / 2,
+            right: element.width - TEXT_MARGIN * 2 - line.width
+        }[align];
     }
 }

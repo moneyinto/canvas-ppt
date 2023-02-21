@@ -67,8 +67,10 @@ export class Cursor {
 
     updateCursor() {
         if (!this._cursor) return;
+        const element = this._data.element;
+        if (!element) return;
         const { x, y } = this._stageConfig.getStageArea();
-        const renderContent = this._data.getRenderContent();
+        const renderContent = this._stageConfig.getRenderContent(element);
         this.setCursorHeight(this._data.config.fontSize);
         renderContent.forEach((line, index) => {
             if (index === this._renderDataPosition[0] || (index === 0 && this._renderDataPosition[0] === -1)) {
@@ -88,13 +90,15 @@ export class Cursor {
     }
 
     getCursorPosition(x: number, y: number, renderContent: ILineData[]) {
+        const element = this._data.element;
+        if (!element) return { left: 0, textX: 0, top: 0, textY: 0 };
         // 先计算属于哪一行
         const { top, textY } = this._getTextYCursorPosition(renderContent, y);
 
         // 计算在某行的位置
         const line = renderContent.length > 0 ? renderContent[textY] : { texts: [], width: 0, height: 0 } as ILineData;
         const lineData = line.texts;
-        const offsetX = this._data.getAlignOffsetX(line);
+        const offsetX = this._stageConfig.getAlignOffsetX(line, element);
         const { left, textX } = this._getTextXCursorPosition(lineData, x - offsetX);
 
         this._renderDataPosition = [textY, textX];
@@ -103,7 +107,9 @@ export class Cursor {
     }
 
     setCursorPosition(x: number, y: number) {
-        const renderContent = this._data.getRenderContent();
+        const element = this._data.element;
+        if (!element) return;
+        const renderContent = this._stageConfig.getRenderContent(element);
 
         const { left, textX, top, textY } = this.getCursorPosition(x, y, renderContent);
         this._top = top;
@@ -124,9 +130,11 @@ export class Cursor {
     }
 
     private _getLineCursorPositionByData() {
+        const element = this._data.element;
+        if (!element) return { top: 0, left: 0 };
         let top = TEXT_MARGIN - COMPENSTATE_LEN / 2 + 1;
         let left = TEXT_MARGIN - this._data.wordSpace / 2 - 0.5;
-        const renderContent = this._data.getRenderContent();
+        const renderContent = this._stageConfig.getRenderContent(element);
 
         if (renderContent.length > 0) {
             for (const [lineY, line] of renderContent.entries()) {
@@ -148,7 +156,7 @@ export class Cursor {
                     }
                 }
 
-                offsetX = this._data.getAlignOffsetX(line);
+                offsetX = this._stageConfig.getAlignOffsetX(line, element);
             }
 
             left = left + offsetX;
@@ -195,10 +203,12 @@ export class Cursor {
     }
 
     setRenderDataPosition() {
+        const element = this._data.element;
+        if (!element) return;
         if (this._dataPosition === -1) {
             this._renderDataPosition = [0, -1];
         } else {
-            const renderContent = this._data.getRenderContent();
+            const renderContent = this._stageConfig.getRenderContent(element);
             let x = 0;
             for (const [line, lineData] of renderContent.entries()) {
                 // 减一是去掉回车符 当行元素只有一个的时候为只有回车符
@@ -219,7 +229,6 @@ export class Cursor {
     setDataPosition(position: number) {
         if (position < -1 || position >= this._data.getLength() - 1) return;
         this._dataPosition = position;
-
         this.setRenderDataPosition();
     }
 
