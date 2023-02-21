@@ -12,6 +12,8 @@ import { createVNode, render } from "vue";
 import { IContextmenuItem } from "../types/contextmenu";
 import Listener from "../listener";
 import { Text } from "./text";
+import { Cursor } from "./cursor";
+import { Textarea } from "./textarea";
 
 export default class ControlStage extends Stage {
     private _command: Command;
@@ -27,6 +29,7 @@ export default class ControlStage extends Stage {
     private _storeAngle: number;
     private _menuDom: HTMLDivElement | null;
     private _text: Text;
+    private _cursor: Cursor;
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
@@ -51,7 +54,9 @@ export default class ControlStage extends Stage {
         this._command = command;
         this._listener = listener;
         // 文本框
-        this._text = new Text(container, stageConfig, command, this.ctx);
+        const textarea = new Textarea(container);
+        this._cursor = new Cursor(container, textarea, stageConfig);
+        this._text = new Text(this.ctx, stageConfig, command, textarea, this._cursor);
         // 后面考虑要不要改成window ？？？？？？？？？？？？？？？？？？？？？？
         this.container.addEventListener(
             "mousewheel",
@@ -93,7 +98,7 @@ export default class ControlStage extends Stage {
     private _dblClick(evt: MouseEvent) {
         const operateElement = this.stageConfig.operateElement;
         if (operateElement && operateElement.type === "text") {
-            this._text.data.setElement(operateElement);
+            // this._text.data.setElement(operateElement);
             // 点击位置坐标
             const { left, top } = this._getMousePosition(evt);
             // const renderContent = this._text.data.getRenderContent();
@@ -104,7 +109,7 @@ export default class ControlStage extends Stage {
             this.container.style.cursor = "text";
 
             // 聚焦光标到点击位置
-            this._text.focus(left - operateElement.left, top - operateElement.top);
+            this._cursor.focus(left - operateElement.left, top - operateElement.top);
             // this._text.cursor.showCursor();
             // this._text.cursor.updateCursor();
         }
@@ -247,7 +252,7 @@ export default class ControlStage extends Stage {
                 }
                 this._opreateCacheElement = deepClone(element);
 
-                this._text.cursor.hideCursor();
+                this._cursor.hideCursor();
             } else {
                 const operateElement = this.stageConfig.getMouseInElement(
                     left,
@@ -262,7 +267,7 @@ export default class ControlStage extends Stage {
                 ) {
                     if (this.stageConfig.textFocus) {
                         // 更新文本框光标位置
-                        this._text.focus(left - operateElement.left, top - operateElement.top);
+                        this._cursor.focus(left - operateElement.left, top - operateElement.top);
                         return;
                     }
                     this._canMoveElement = true;
@@ -1020,6 +1025,6 @@ export default class ControlStage extends Stage {
     }
 
     public hideCursor() {
-        this._text.cursor.hideCursor();
+        this._cursor.hideCursor();
     }
 }

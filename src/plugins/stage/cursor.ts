@@ -1,16 +1,15 @@
 import { IFontData, ILineData } from "@/plugins/types/font";
-import StageConfig from "../config";
-import { Data, TEXT_MARGIN } from "./data";
-import { Textarea } from "./Textarea";
+import { IPPTTextElement } from "../types/element";
+import StageConfig, { TEXT_MARGIN } from "./config";
+import { Textarea } from "./textarea";
 
 const COMPENSTATE_LEN = 4;
 
 export class Cursor {
     private _container: HTMLDivElement;
-    private _cursor: HTMLDivElement | null;
     private _textarea: Textarea;
+    private _cursor: HTMLDivElement | null;
 
-    private _data: Data;
     private _stageConfig: StageConfig;
 
     // 坐标位置
@@ -23,25 +22,33 @@ export class Cursor {
 
     // 原数据索引位置 -1 为最前面 之后值为数据索引值 及光标在该索引数据后面
     private _dataPosition: number;
-    constructor(container: HTMLDivElement, stageConfig: StageConfig, data: Data, textarea: Textarea) {
+    constructor(container: HTMLDivElement, textarea: Textarea, stageConfig: StageConfig) {
         this._container = container;
+        this._textarea = textarea;
         this._stageConfig = stageConfig;
+
         this._cursor = null;
 
-        this._data = data;
-        this._textarea = textarea;
-
-        const config = this._data.config;
-
-        this._height = this._data.lineHeight * config.fontSize + COMPENSTATE_LEN;
-        this._top = this._data.elementLeft + TEXT_MARGIN - COMPENSTATE_LEN / 2 + 1;
-        this._left = this._data.elementTop + TEXT_MARGIN - this._data.wordSpace / 2 - 0.5; // 0.5为光标宽度补偿值
+        this._height = 0;
+        this._top = 0;
+        this._left = 0;
 
         this._dataPosition = -1;
         this._renderDataPosition = [-1, 0];
 
         this._createCursor();
-        this.updateCursor();
+    }
+
+    get opreateElement() {
+        return this._stageConfig.textFocus ? this._stageConfig.operateElement as IPPTTextElement : null;
+    }
+
+    get config() {
+        return this._stageConfig.fontConfig;
+    }
+
+    get zoom() {
+        return this._stageConfig.zoom;
     }
 
     private _createCursor() {
@@ -66,21 +73,20 @@ export class Cursor {
     }
 
     updateCursor() {
-        if (!this._cursor) return;
-        const element = this._data.element;
-        if (!element) return;
+        const element = this.opreateElement;
+        if (!this._cursor || !element) return;
         const { x, y } = this._stageConfig.getStageArea();
         const renderContent = this._stageConfig.getRenderContent(element);
-        this.setCursorHeight(this._data.config.fontSize);
+        this.setCursorHeight(this.config.fontSize);
         renderContent.forEach((line, index) => {
             if (index === this._renderDataPosition[0] || (index === 0 && this._renderDataPosition[0] === -1)) {
                 this.setCursorHeight(line.height);
             }
         });
 
-        const left = (this._data.elementLeft + this._left) * this._data.zoom + x;
-        const top = (this._data.elementTop + this._top) * this._data.zoom + y;
-        const height = this._height * this._data.zoom;
+        const left = (element.left + this._left) * this.zoom + x;
+        const top = (element.top + this._top) * this.zoom + y;
+        const height = this._height * this.zoom;
         this._cursor.style.left = `${left}px`;
         this._cursor.style.top = `${top}px`;
         this._cursor.style.height = `${height}px`;
@@ -90,7 +96,7 @@ export class Cursor {
     }
 
     getCursorPosition(x: number, y: number, renderContent: ILineData[]) {
-        const element = this._data.element;
+        const element = this.opreateElement;
         if (!element) return { left: 0, textX: 0, top: 0, textY: 0 };
         // 先计算属于哪一行
         const { top, textY } = this._getTextYCursorPosition(renderContent, y);
@@ -107,7 +113,7 @@ export class Cursor {
     }
 
     setCursorPosition(x: number, y: number) {
-        const element = this._data.element;
+        const element = this.opreateElement;
         if (!element) return;
         const renderContent = this._stageConfig.getRenderContent(element);
 
@@ -130,10 +136,10 @@ export class Cursor {
     }
 
     private _getLineCursorPositionByData() {
-        const element = this._data.element;
+        const element = this.opreateElement;
         if (!element) return { top: 0, left: 0 };
         let top = TEXT_MARGIN - COMPENSTATE_LEN / 2 + 1;
-        let left = TEXT_MARGIN - this._data.wordSpace / 2 - 0.5;
+        let left = TEXT_MARGIN - element.wordSpace / 2 - 0.5;
         const renderContent = this._stageConfig.getRenderContent(element);
 
         if (renderContent.length > 0) {
@@ -141,7 +147,7 @@ export class Cursor {
                 if (this._renderDataPosition[0] === lineY) {
                     break;
                 } else {
-                    top = top + line.height * this._data.lineHeight;
+                    top = top + line.height * element.lineHeight;
                 }
             }
             const line = renderContent[this._renderDataPosition[0]];
@@ -152,7 +158,7 @@ export class Cursor {
                     if (this._renderDataPosition[1] < lineX) {
                         break;
                     } else {
-                        left = left + data.width + this._data.wordSpace;
+                        left = left + data.width + element.wordSpace;
                     }
                 }
 
@@ -166,16 +172,18 @@ export class Cursor {
     }
 
     private _getTextYCursorPosition(renderContent: ILineData[], y: number) {
+        const element = this.opreateElement;
+        if (!element) return { top: 0, textY: 0 };
         let top = TEXT_MARGIN - COMPENSTATE_LEN / 2 + 1;
         let textY = 0;
         const len = renderContent.length;
         for (const [index, line] of renderContent.entries()) {
-            if (y < top + line.height * this._data.lineHeight) {
+            if (y < top + line.height * element.lineHeight) {
                 break;
             } else {
                 if (index + 1 < len) {
                     textY++;
-                    top = top + line.height * this._data.lineHeight;
+                    top = top + line.height * element.lineHeight;
                 }
             }
         }
@@ -183,14 +191,16 @@ export class Cursor {
     }
 
     private _getTextXCursorPosition(lineData: IFontData[], x: number) {
-        let left = TEXT_MARGIN - this._data.wordSpace / 2 - 0.5;
+        const element = this.opreateElement;
+        if (!element) return { left: 0, textX: 0 };
+        let left = TEXT_MARGIN - element.wordSpace / 2 - 0.5;
         let textX = -1;
         for (const data of lineData) {
             if (x < left + data.width / 2) {
                 break;
             } else {
                 textX++;
-                left = left + data.width + this._data.wordSpace;
+                left = left + data.width + element.wordSpace;
             }
         }
         // 处于最右一位的时候因为回车符减掉1
@@ -199,11 +209,13 @@ export class Cursor {
     }
 
     setCursorHeight(height: number) {
-        this._height = height * this._data.lineHeight;
+        const element = this.opreateElement;
+        if (!element) return;
+        this._height = height * element.lineHeight;
     }
 
     setRenderDataPosition() {
-        const element = this._data.element;
+        const element = this.opreateElement;
         if (!element) return;
         if (this._dataPosition === -1) {
             this._renderDataPosition = [0, -1];
@@ -227,12 +239,26 @@ export class Cursor {
     }
 
     setDataPosition(position: number) {
-        if (position < -1 || position >= this._data.getLength() - 1) return;
+        const element = this.opreateElement;
+        if (!element || position < -1 || position >= element.content.length - 1) return;
         this._dataPosition = position;
         this.setRenderDataPosition();
     }
 
     getDataPosition() {
         return this._dataPosition;
+    }
+
+    focus(x: number, y: number) {
+        // 暂时默认到最后
+        this.setCursorPosition(x, y);
+        this.updateCursor();
+        this.showCursor();
+
+        // this._updateFontStyleByCursorFont();
+
+        setTimeout(() => {
+            this._textarea.getTextareaElement().focus();
+        }, 100);
     }
 }

@@ -6,7 +6,8 @@ import { ICacheImage, IRectParameter } from "../types";
 import { ICreatingElement, IPPTElement, IPPTTextElement } from "../types/element";
 import { IFontConfig, ILineData } from "../types/font";
 import { ISlide } from "../types/slide";
-import { TEXT_MARGIN } from "./text/data";
+
+export const TEXT_MARGIN = 5;
 
 export default class StageConfig {
     public scrollX: number;

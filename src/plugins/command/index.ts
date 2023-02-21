@@ -3,8 +3,9 @@ import { createImageElement, createRandomCode } from "@/utils/create";
 import { encrypt } from "@/utils/crypto";
 import { History } from "../editor/history";
 import { KeyMap } from "../shortCut/keyMap";
-import StageConfig from "../stage/config";
-import { IPPTElement, IPPTElementOutline, IPPTImageElement, IPPTShapeElement } from "../types/element";
+import StageConfig, { TEXT_MARGIN } from "../stage/config";
+import { IPPTElement, IPPTElementOutline, IPPTImageElement, IPPTShapeElement, IPPTTextElement } from "../types/element";
+import { IFontData } from "../types/font";
 
 export default class Command {
     private _stageConfig: StageConfig;
@@ -326,6 +327,22 @@ export default class Command {
             this._stageConfig.setOperateElement(null);
 
             this.executeLogRender();
+        }
+    }
+
+    // 文本输入
+    public executeAddText(text: IFontData, position: number) {
+        const operateElement = this._stageConfig.operateElement as IPPTTextElement;
+        if (operateElement) {
+            operateElement.content.splice(position, 0, text);
+            const renderContent = this._stageConfig.getRenderContent(operateElement);
+            let height = TEXT_MARGIN * 2;
+            renderContent.forEach(line => {
+                height += line.height * operateElement.lineHeight;
+            });
+            operateElement.height = height;
+
+            this.executeUpdateRender(operateElement, true);
         }
     }
 }

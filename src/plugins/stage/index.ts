@@ -1,10 +1,9 @@
-import StageConfig from "./config";
+import StageConfig, { TEXT_MARGIN } from "./config";
 import { throttleRAF } from "@/utils";
 import { IPPTElement, IPPTImageElement, IPPTLineElement, IPPTShapeElement, IPPTTextElement } from "../types/element";
 import { SHAPE_TYPE } from "../config/shapes";
 import { ICacheImage } from "../types";
-import { TEXT_MARGIN } from "./text/data";
-import { IFontData, ILineData } from "../types/font";
+import { IFontData } from "../types/font";
 
 export default class Stage {
     public canvas: HTMLCanvasElement;
