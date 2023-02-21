@@ -1,3 +1,4 @@
+import Command from "@/plugins/command";
 import { baseFontConfig } from "@/plugins/config/font";
 import { IPPTTextElement } from "@/plugins/types/element";
 import { IFontConfig, IFontData, ILineData } from "@/plugins/types/font";
@@ -17,9 +18,11 @@ export class Data {
     private _renderContent: ILineData[];
     private _ctx: CanvasRenderingContext2D;
     private _stageConfig: StageConfig;
-    constructor(ctx: CanvasRenderingContext2D, stageConfig: StageConfig) {
+    private _command: Command;
+    constructor(ctx: CanvasRenderingContext2D, stageConfig: StageConfig, command: Command) {
         this._ctx = ctx;
         this._stageConfig = stageConfig;
+        this._command = command;
         this._renderContent = [];
 
         this._content = [];
@@ -103,6 +106,20 @@ export class Data {
 
     addContent(text: IFontData, position: number) {
         this._content.splice(position, 0, text);
+
+        if (this.element) {
+            const element = {
+                ...this.element,
+                content: this._content
+            };
+            const renderContent = this._stageConfig.getRenderContent(element);
+            let height = TEXT_MARGIN * 2;
+            renderContent.forEach(line => {
+                height += line.height * element.lineHeight;
+            });
+            element.height = height;
+            this._command.executeUpdateRender(element, true);
+        }
     }
 
     deleteContent(position: number) {

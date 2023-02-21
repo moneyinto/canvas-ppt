@@ -1,3 +1,4 @@
+import Command from "@/plugins/command";
 import { IFontData } from "@/plugins/types/font";
 import StageConfig from "../config";
 import { Cursor } from "./cursor";
@@ -14,11 +15,11 @@ export class Text {
 
     // [开始字坐标，开始行坐标，结束字坐标，结束行坐标]
     private _selectArea: [number, number, number, number] | null;
-    constructor(container: HTMLDivElement, stageConfig: StageConfig, ctx: CanvasRenderingContext2D) {
+    constructor(container: HTMLDivElement, stageConfig: StageConfig, command: Command, ctx: CanvasRenderingContext2D) {
         this._stageConfig = stageConfig;
 
         this.textarea = new Textarea(container);
-        this.data = new Data(ctx, stageConfig);
+        this.data = new Data(ctx, stageConfig, command);
         this.cursor = new Cursor(container, stageConfig, this.data, this.textarea);
 
         this._selectArea = null;

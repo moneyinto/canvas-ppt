@@ -51,7 +51,7 @@ export default class ControlStage extends Stage {
         this._command = command;
         this._listener = listener;
         // 文本框
-        this._text = new Text(container, stageConfig, this.ctx);
+        this._text = new Text(container, stageConfig, command, this.ctx);
         // 后面考虑要不要改成window ？？？？？？？？？？？？？？？？？？？？？？
         this.container.addEventListener(
             "mousewheel",
