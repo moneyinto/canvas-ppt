@@ -3,6 +3,8 @@ import { throttleRAF } from "@/utils";
 import { IPPTElement, IPPTImageElement, IPPTLineElement, IPPTShapeElement, IPPTTextElement } from "../types/element";
 import { SHAPE_TYPE } from "../config/shapes";
 import { ICacheImage } from "../types";
+import { TEXT_MARGIN } from "./text/data";
+import { IFontData, ILineData } from "../types/font";
 
 export default class Stage {
     public canvas: HTMLCanvasElement;
@@ -187,8 +189,140 @@ export default class Stage {
         return { point1, point2, point3: [cx, cy] };
     }
 
+    public getRenderContent(element: IPPTTextElement) {
+        const width = element.width - TEXT_MARGIN * 2;
+        const renderContent: ILineData[] = [];
+        let lineData: ILineData = {
+            height: 0,
+            width: 0,
+            texts: []
+        };
+        let countWidth = 0;
+        element.content.forEach((text) => {
+            if (lineData.height === 0) lineData.height = text.fontSize;
+            if (text.value === "\n") {
+                lineData.texts.push(text);
+                renderContent.push(lineData);
+                lineData = {
+                    height: 0,
+                    width: 0,
+                    texts: []
+                };
+                countWidth = 0;
+            } else if (countWidth + text.width < width) {
+                // 一行数据可以摆得下
+                lineData.texts.push(text);
+                if (lineData.height < text.fontSize) lineData.height = text.fontSize;
+                countWidth = countWidth + text.width + element.wordSpace;
+                lineData.width = countWidth;
+            } else {
+                renderContent.push(lineData);
+                lineData = {
+                    height: 0,
+                    width: 0,
+                    texts: [text]
+                };
+                countWidth = text.width + element.wordSpace;
+            }
+        });
+
+        return renderContent;
+    }
+
+    public getAlignOffsetX(line: ILineData, element: IPPTTextElement) {
+        const align = element.align;
+        return {
+            left: 0,
+            center: (element.width - TEXT_MARGIN * 2 - line.width) / 2,
+            right: element.width - TEXT_MARGIN * 2 - line.width
+        }[align];
+    }
+
+    private _drawStrikout(text: IFontData, x: number, y: number, fontHeight: number, lineHeight: number, wordSpace: number) {
+        const offsetY = fontHeight + fontHeight * (lineHeight - 1) / 2;
+        const compensateY = (fontHeight - text.fontSize) * 0.1; // 英文，大小字体存在时，存在错位感，对小字号进行一些值的补偿
+        const underLineY = y + offsetY + 2 - text.fontSize / 2 - compensateY; // 补两个像素
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.lineWidth = text.fontSize / 10;
+        this.ctx.strokeStyle = text.fontColor;
+        const compensate = Math.sign(this.ctx.lineWidth - 2) * 0.2; // 字体大和小，中划线有明显的断开或交叉，进行0.2的补偿错位
+        this.ctx.moveTo(x - wordSpace / 2 - compensate, underLineY);
+        this.ctx.lineTo(x + text.width + wordSpace / 2 + compensate, underLineY);
+        this.ctx.stroke();
+        this.ctx.restore();
+    }
+
+    private _drawUnderLine(text: IFontData, x: number, y: number, fontHeight: number, lineHeight: number, wordSpace: number) {
+        const offsetY = fontHeight + fontHeight * (lineHeight - 1) / 2;
+        const underLineY = y + offsetY + 2; // 补两个像素
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.lineWidth = Math.ceil(fontHeight / 20);
+        this.ctx.strokeStyle = text.fontColor;
+        const compensate = Math.sign(this.ctx.lineWidth - 2) * 0.2; // 字体大和小，下划线有明显的断开或交叉，进行0.2的补偿错位
+        this.ctx.moveTo(x - wordSpace / 2 - compensate, underLineY);
+        this.ctx.lineTo(x + text.width + wordSpace / 2 + compensate, underLineY);
+        this.ctx.stroke();
+        this.ctx.restore();
+    }
+
+    private _fillText(text: IFontData, x: number, y: number, fontHeight: number, lineHeight: number) {
+        this.ctx.save();
+        this.ctx.textBaseline = "bottom";
+        this.ctx.fillStyle = text.fontColor;
+        this.ctx.font = `${text.fontStyle} ${text.fontWeight} ${text.fontSize}px ${text.fontFamily}`;
+        const compensate = (fontHeight - text.fontSize) * 0.1; // 英文，大小字体存在时，存在错位感，对小字号进行一些值的补偿
+        const offsetY = fontHeight + fontHeight * (lineHeight - 1) / 2 - compensate;
+        this.ctx.fillText(text.value, x, y + offsetY, text.fontSize);
+        this.ctx.restore();
+    }
+
     public drawText(element: IPPTTextElement) {
+        const zoom = this.stageConfig.zoom;
+        const { x, y } = this.stageConfig.getStageOrigin();
+
+        this.ctx.save();
+
+        // 缩放画布
+        this.ctx.scale(zoom, zoom);
+
+        const moveX = x + element.left;
+        const moveY = y + element.top;
+
+        this.ctx.translate(moveX, moveY);
         // 绘制text
+        const lineTexts = this.getRenderContent(element);
+        let textX = TEXT_MARGIN;
+        let textY = TEXT_MARGIN;
+        lineTexts.forEach((lineData, index) => {
+            // if (this._selectArea) {
+            //     const rangeRecord = this.data.getRenderSelect(x, y, lineData, index, this._selectArea);
+            //     if (rangeRecord) this.renderRange(rangeRecord);
+            // }
+
+            const lineHeight = lineData.height * element.lineHeight;
+            const offsetX = this.getAlignOffsetX(lineData, element);
+            lineData.texts.forEach(text => {
+                // 排除换行情况
+                if (text.value !== "\n") {
+                    if (text.underline) {
+                        this._drawUnderLine(text, textX + offsetX, textY, lineData.height, element.lineHeight, element.wordSpace);
+                    }
+
+                    if (text.strikout) {
+                        this._drawStrikout(text, textX + offsetX, textY, lineData.height, element.lineHeight, element.wordSpace);
+                    }
+
+                    this._fillText(text, textX + offsetX, textY, lineData.height, element.lineHeight);
+                    textX = textX + text.width + element.wordSpace;
+                }
+            });
+            textX = TEXT_MARGIN;
+            textY = textY + lineHeight;
+        });
+
+        this.ctx.restore();
     }
 
     public drawShape(element: IPPTShapeElement) {

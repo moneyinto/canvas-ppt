@@ -52,6 +52,69 @@ export const slides: ISlide[] = [
                 name: "线条",
                 type: "line",
                 borderWidth: 12
+            },
+            {
+                id: "7Yw88w",
+                left: 200,
+                top: 200,
+                name: "文本",
+                type: "text",
+                content: [
+                    {
+                        value: "富",
+                        fontSize: 56,
+                        width: 56,
+                        height: 51.85600280761719,
+                        fontStyle: "normal",
+                        fontWeight: "normal",
+                        fontFamily: "楷体",
+                        fontColor: "#444",
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "文",
+                        fontSize: 56,
+                        width: 56,
+                        height: 51.96800231933594,
+                        fontStyle: "normal",
+                        fontWeight: "normal",
+                        fontFamily: "楷体",
+                        fontColor: "#444",
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "本",
+                        fontSize: 56,
+                        width: 56,
+                        height: 51.183998107910156,
+                        fontStyle: "normal",
+                        fontWeight: "normal",
+                        fontFamily: "楷体",
+                        fontColor: "#444",
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "\n",
+                        fontSize: 56,
+                        width: 0,
+                        height: 0,
+                        fontStyle: "normal",
+                        fontWeight: "normal",
+                        fontFamily: "楷体",
+                        fontColor: "#444",
+                        underline: false,
+                        strikout: false
+                    }
+                ],
+                lineHeight: 2,
+                wordSpace: 1,
+                rotate: 0,
+                width: 200,
+                height: 122,
+                align: "left"
             }
         ]
     },

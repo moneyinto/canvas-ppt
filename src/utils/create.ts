@@ -39,7 +39,8 @@ export const createTextElement = (position: IElementPosition) => {
         top,
         width,
         height: 10 + 24 * 2,
-        rotate: 0
+        rotate: 0,
+        align: "left"
     };
     // 文本框默认边距5 默认字体大小24
     return newElement;

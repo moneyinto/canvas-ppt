@@ -93,11 +93,17 @@ export default class ControlStage extends Stage {
     private _dblClick() {
         const operateElement = this.stageConfig.operateElement;
         if (operateElement && operateElement.type === "text") {
+            this._text.data.setElement(operateElement);
+            // const renderContent = this._text.data.getRenderContent();
+            // const { textX, textY } = this._text.cursor.getCursorPosition(evt.offsetX, evt.offsetY, renderContent);
+            // console.log(textX, textY);
             // 当元素被选中，且被双击时，开启编辑
             this.stageConfig.textFocus = true;
             this.container.style.cursor = "text";
-            this._text.cursor.showCursor();
-            this._text.cursor.updateCursor();
+
+            this._text.focus(0, 0);
+            // this._text.cursor.showCursor();
+            // this._text.cursor.updateCursor();
         }
     }
 
@@ -256,12 +262,6 @@ export default class ControlStage extends Stage {
                 }
 
                 this.stageConfig.setOperateElement(operateElement || null);
-                if (operateElement && operateElement.type === "text") {
-                    this._text.data.setElement(operateElement);
-                    const renderContent = this._text.data.getRenderContent();
-                    const { textX, textY } = this._text.cursor.getCursorPosition(evt.offsetX, evt.offsetY, renderContent);
-                    console.log(textX, textY);
-                }
                 this.stageConfig.resetCheckDrawView();
                 if (operateElement) {
                     this.resetDrawOprate();
