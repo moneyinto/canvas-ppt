@@ -242,11 +242,24 @@ export default class Command {
         }
     }
 
-    // 删除元素
-    public executeDelete() {
+    // 删除元素 或 删除文本
+    public executeDelete(direction = 0) {
         const operateElement = this._stageConfig.operateElement;
         if (operateElement) {
-            this.executeDeleteRender(operateElement);
+            if (this._stageConfig.textFocus) {
+                // 删除文本
+                const position = this._cursor.getDataPosition();
+                const result = this.excuteDeleteText(position + direction);
+
+                // 当存在中英文混合时 删除正好某行空一个英文字符的空格，删除后正好有个英文字符将会填充到上一行，光标应该处理该行倒数第二个字符
+                if (result && direction === 0) {
+                    this._cursor.setDataPosition(position - 1);
+                    this._cursor.setCursorPositionByData();
+                    this._cursor.updateCursor();
+                }
+            } else {
+                this.executeDeleteRender(operateElement);
+            }
         }
     }
 
@@ -270,6 +283,31 @@ export default class Command {
             };
             this._stageConfig.setFontConfig(config);
         }
+    }
+
+    // 删除文本内容
+    public excuteDeleteText(position: number) {
+        const operateElement = this._stageConfig.operateElement as IPPTTextElement;
+        if (operateElement) {
+            console.log(position, operateElement.content.length);
+            if (position >= operateElement.content.length - 1 || position === -1) return false;
+            operateElement.content.splice(position, 1);
+
+            this.executeUpdateRender(operateElement);
+
+            // 更新记录做防抖延迟
+            if (this._updateDebounce) {
+                clearTimeout(this._updateDebounce);
+                this._updateDebounce = null;
+            }
+
+            this._updateDebounce = setTimeout(() => {
+                this.executeLogRender();
+                this._updateDebounce = null;
+            }, 1000);
+            return true;
+        }
+        return false;
     }
 
     // 元素移动 及 光标移动
@@ -465,7 +503,18 @@ export default class Command {
             });
             operateElement.height = height;
 
-            this.executeUpdateRender(operateElement, true);
+            this.executeUpdateRender(operateElement);
+
+            // 更新记录做防抖延迟
+            if (this._updateDebounce) {
+                clearTimeout(this._updateDebounce);
+                this._updateDebounce = null;
+            }
+
+            this._updateDebounce = setTimeout(() => {
+                this.executeLogRender();
+                this._updateDebounce = null;
+            }, 1000);
         }
     }
 }

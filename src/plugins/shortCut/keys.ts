@@ -29,7 +29,7 @@ export const ShortcutKeys: IRegisterShortcut[] = [
     {
         key: KeyMap.Delete,
         callback: (command: Command) => {
-            command.executeDelete();
+            command.executeDelete(1);
         }
     },
 
