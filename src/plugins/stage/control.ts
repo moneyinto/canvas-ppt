@@ -30,10 +30,13 @@ export default class ControlStage extends Stage {
     private _menuDom: HTMLDivElement | null;
     private _text: Text;
     private _cursor: Cursor;
+    private _textarea: Textarea;
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
         command: Command,
+        cursor: Cursor,
+        textarea: Textarea,
         listener: Listener,
         resize?: boolean
     ) {
@@ -52,11 +55,11 @@ export default class ControlStage extends Stage {
         this._menuDom = null;
 
         this._command = command;
+        this._cursor = cursor;
+        this._textarea = textarea;
         this._listener = listener;
         // 文本框
-        const textarea = new Textarea(container);
-        this._cursor = new Cursor(container, textarea, stageConfig);
-        this._text = new Text(this.ctx, stageConfig, command, textarea, this._cursor);
+        this._text = new Text(this.ctx, stageConfig, command, this._textarea, this._cursor);
         // 后面考虑要不要改成window ？？？？？？？？？？？？？？？？？？？？？？
         this.container.addEventListener(
             "mousewheel",

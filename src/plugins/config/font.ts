@@ -7,6 +7,5 @@ export const baseFontConfig: IFontConfig = {
     fontColor: "#444",
     fontStyle: "normal",
     underline: false,
-    strikout: false,
-    align: "left"
+    strikout: false
 };

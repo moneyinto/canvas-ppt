@@ -58,6 +58,7 @@ export class Cursor {
         cursor.style.background = "black";
         cursor.style.display = "none";
         cursor.style.userSelect = "none";
+        cursor.style.zIndex = "1";
         cursor.classList.add("editor-cursor");
 
         this._cursor = cursor;

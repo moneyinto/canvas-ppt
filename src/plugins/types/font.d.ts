@@ -6,7 +6,6 @@ export interface IFontConfig {
     fontStyle: string;
     underline: boolean;
     strikout: boolean;
-    align: "left" | "center" | "right";
 }
 
 export interface IFontData {

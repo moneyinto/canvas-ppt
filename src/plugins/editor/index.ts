@@ -3,6 +3,8 @@ import Listener from "../listener";
 import Shortcut from "../shortCut";
 import StageConfig from "../stage/config";
 import ControlStage from "../stage/control";
+import { Cursor } from "../stage/cursor";
+import { Textarea } from "../stage/textarea";
 import ViewStage from "../stage/view";
 import { ISlide } from "../types/slide";
 import { History } from "./history";
@@ -13,6 +15,8 @@ export default class Editor {
     public stageConfig: StageConfig;
     public history: History;
 
+    private _cursor: Cursor;
+    private _textarea: Textarea;
     private _viewStage: ViewStage;
     private _controlStage: ControlStage;
     constructor(container: HTMLDivElement, slides: ISlide[]) {
@@ -42,14 +46,25 @@ export default class Editor {
         // 历史数据
         this.history = new History(this.stageConfig, this.listener);
 
+        this._textarea = new Textarea(container);
+        this._cursor = new Cursor(container, this._textarea, this.stageConfig);
+
         // 命令
-        this.command = new Command(this.stageConfig, this.history);
+        this.command = new Command(this.stageConfig, this.history, this._cursor);
 
         // 创建展示画板
         this._viewStage = new ViewStage(container, this.stageConfig, true);
 
         // 创建操作画板
-        this._controlStage = new ControlStage(container, this.stageConfig, this.command, this.listener, true);
+        this._controlStage = new ControlStage(
+            container,
+            this.stageConfig,
+            this.command,
+            this._cursor,
+            this._textarea,
+            this.listener,
+            true
+        );
 
         // 快捷键
         // eslint-disable-next-line

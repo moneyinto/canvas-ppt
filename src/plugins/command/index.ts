@@ -4,17 +4,20 @@ import { encrypt } from "@/utils/crypto";
 import { History } from "../editor/history";
 import { KeyMap } from "../shortCut/keyMap";
 import StageConfig, { TEXT_MARGIN } from "../stage/config";
+import { Cursor } from "../stage/cursor";
 import { IPPTElement, IPPTElementOutline, IPPTImageElement, IPPTShapeElement, IPPTTextElement } from "../types/element";
 import { IFontData } from "../types/font";
 
 export default class Command {
     private _stageConfig: StageConfig;
     private _history: History;
+    private _cursor: Cursor;
 
     private _updateDebounce: null | number;
-    constructor(stageConfig: StageConfig, history: History) {
+    constructor(stageConfig: StageConfig, history: History, cursor: Cursor) {
         this._stageConfig = stageConfig;
         this._history = history;
+        this._cursor = cursor;
 
         this._updateDebounce = null;
     }
@@ -247,41 +250,161 @@ export default class Command {
         }
     }
 
-    // 元素移动
+    // 选中位置字体更新字体样式配置
+    public executeUpdateFontConfig() {
+        // 获取前一个字的样式，设置config
+        const operateElement = this._stageConfig.operateElement as IPPTTextElement;
+        if (operateElement && this._stageConfig.textFocus) {
+            const currentDataPosition = this._cursor.getDataPosition();
+            const content = operateElement.content;
+            const text = currentDataPosition === -1 ? this._stageConfig.fontConfig : content[currentDataPosition];
+
+            const config = {
+                fontSize: text.fontSize,
+                fontColor: text.fontColor,
+                fontFamily: text.fontFamily,
+                fontStyle: text.fontStyle,
+                fontWeight: text.fontWeight,
+                underline: !!text.underline,
+                strikout: !!text.strikout
+            };
+            this._stageConfig.setFontConfig(config);
+        }
+    }
+
+    // 元素移动 及 光标移动
     public executeMove(direction: string) {
         const operateElement = this._stageConfig.operateElement;
         if (operateElement) {
-            switch (direction) {
-                case KeyMap.Up: {
-                    operateElement.top = Math.floor(operateElement.top - 1);
-                    break;
+            if (this._stageConfig.textFocus) {
+                // 光标移动
+                switch (direction) {
+                    case KeyMap.Up: {
+                        const position = this._cursor.getDataPosition();
+                        const renderPosition = this._cursor.getRenderDataPosition();
+                        if (renderPosition[0] > 0) {
+                            const renderContent = this._stageConfig.getRenderContent(operateElement as IPPTTextElement);
+
+                            const currentLineData = renderContent[renderPosition[0]];
+                            let currentLeft = this._stageConfig.getAlignOffsetX(currentLineData, operateElement as IPPTTextElement);
+                            for (const [index, data] of currentLineData.texts.entries()) {
+                                if (index <= renderPosition[1]) {
+                                    currentLeft += data.width;
+                                }
+                            }
+
+                            const upLineData = renderContent[renderPosition[0] - 1];
+                            let upLineX = -1;
+                            let upLeft = this._stageConfig.getAlignOffsetX(upLineData, operateElement as IPPTTextElement);
+                            for (const data of upLineData.texts) {
+                                if (upLeft <= currentLeft) {
+                                    upLineX++;
+                                    upLeft += data.width;
+                                } else {
+                                    break;
+                                }
+                            }
+
+                            // 处理光标在行首的情况
+                            if (upLineX === -1) upLineX = 0;
+
+                            this._cursor.setDataPosition(position - (renderPosition[1] + 1 + upLineData.texts.length - upLineX));
+                            this._cursor.setCursorPositionByData();
+                            this._cursor.updateCursor();
+
+                            this.executeUpdateFontConfig();
+                        }
+                        break;
+                    }
+                    case KeyMap.Down: {
+                        const position = this._cursor.getDataPosition();
+                        const renderPosition = this._cursor.getRenderDataPosition();
+                        const renderContent = this._stageConfig.getRenderContent(operateElement as IPPTTextElement);
+                        if (renderPosition[0] < renderContent.length - 1) {
+                            const currentLineData = renderContent[renderPosition[0]];
+                            let currentLeft = this._stageConfig.getAlignOffsetX(currentLineData, operateElement as IPPTTextElement);
+                            for (const [index, data] of currentLineData.texts.entries()) {
+                                if (index <= renderPosition[1]) {
+                                    currentLeft += data.width;
+                                }
+                            }
+
+                            const downLineData = renderContent[renderPosition[0] + 1];
+                            let downLineX = -1;
+                            let downLeft = this._stageConfig.getAlignOffsetX(downLineData, operateElement as IPPTTextElement);
+                            for (const data of downLineData.texts) {
+                                if (downLeft <= currentLeft) {
+                                    downLineX++;
+                                    downLeft += data.width;
+                                } else {
+                                    break;
+                                }
+                            }
+
+                            // 处理光标在行首的情况
+                            if (downLineX === -1) downLineX = 0;
+
+                            this._cursor.setDataPosition(position + (currentLineData.texts.length - (renderPosition[1] + 1) + downLineX));
+                            this._cursor.setCursorPositionByData();
+                            this._cursor.updateCursor();
+
+                            this.executeUpdateFontConfig();
+                        }
+                        break;
+                    }
+                    case KeyMap.Left: {
+                        const position = this._cursor.getDataPosition();
+                        this._cursor.setDataPosition(position - 1);
+                        this._cursor.setCursorPositionByData();
+                        this._cursor.updateCursor();
+
+                        this.executeUpdateFontConfig();
+                        break;
+                    }
+                    case KeyMap.Right: {
+                        const position = this._cursor.getDataPosition();
+                        this._cursor.setDataPosition(position + 1);
+                        this._cursor.setCursorPositionByData();
+                        this._cursor.updateCursor();
+
+                        this.executeUpdateFontConfig();
+                        break;
+                    }
                 }
-                case KeyMap.Down: {
-                    operateElement.top = Math.ceil(operateElement.top + 1);
-                    break;
+            } else {
+                // 元素移动
+                switch (direction) {
+                    case KeyMap.Up: {
+                        operateElement.top = Math.floor(operateElement.top - 1);
+                        break;
+                    }
+                    case KeyMap.Down: {
+                        operateElement.top = Math.ceil(operateElement.top + 1);
+                        break;
+                    }
+                    case KeyMap.Left: {
+                        operateElement.left = Math.floor(operateElement.left - 1);
+                        break;
+                    }
+                    case KeyMap.Right: {
+                        operateElement.left = Math.ceil(operateElement.left + 1);
+                        break;
+                    }
                 }
-                case KeyMap.Left: {
-                    operateElement.left = Math.floor(operateElement.left - 1);
-                    break;
+
+                this.executeUpdateRender(operateElement);
+
+                // 更新记录做防抖延迟
+                if (this._updateDebounce) {
+                    clearTimeout(this._updateDebounce);
+                    this._updateDebounce = null;
                 }
-                case KeyMap.Right: {
-                    operateElement.left = Math.ceil(operateElement.left + 1);
-                    break;
-                }
+
+                this._updateDebounce = setTimeout(() => {
+                    this.executeLogRender();
+                    this._updateDebounce = null;
+                }, 1000);
             }
-
-            this.executeUpdateRender(operateElement);
-
-            // 更新记录做防抖延迟
-            if (this._updateDebounce) {
-                clearTimeout(this._updateDebounce);
-                this._updateDebounce = null;
-            }
-
-            this._updateDebounce = setTimeout(() => {
-                this.executeLogRender();
-                this._updateDebounce = null;
-            }, 1000);
         }
     }
 
