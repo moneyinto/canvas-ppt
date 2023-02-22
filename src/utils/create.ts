@@ -7,6 +7,7 @@ import {
     IPPTShapeElement,
     IPPTTextElement
 } from "../plugins/types/element";
+import { baseFontConfig } from "@/plugins/config/font";
 
 /**
  * 生成随机码
@@ -28,10 +29,18 @@ export const createTextElement = (position: IElementPosition) => {
     const { left, top, width, height } = position;
     const id = createRandomCode();
     const name = "文本";
+
     const newElement: IPPTTextElement = {
         name,
         type: "text",
-        content: [],
+        content: [
+            {
+                value: "\n",
+                ...baseFontConfig,
+                width: 0,
+                height: 0
+            }
+        ],
         wordSpace: 1,
         lineHeight: 2,
         id,

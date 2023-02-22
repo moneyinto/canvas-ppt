@@ -264,4 +264,8 @@ export class Cursor {
             this._textarea.getTextareaElement().focus();
         }, 200);
     }
+
+    getTextareaText() {
+        return this._textarea.getTextareaElement().value;
+    }
 }

@@ -28,12 +28,12 @@ export class Text {
 
         this._ctx = ctx;
 
-        this._textarea.addEventListener("input", (e) =>
-            this._onInput(e as InputEvent)
-        );
-        this._textarea.addEventListener("compositionend", (e) =>
-            this._onCompEnd(e as CompositionEvent)
-        );
+        this._textarea.addEventListener("input", (e) => {
+            this._onInput(e as InputEvent);
+        });
+        this._textarea.addEventListener("compositionend", (e) => {
+            this._onCompEnd(e as CompositionEvent);
+        });
     }
 
     getFontSize(text: IFontData) {
@@ -71,8 +71,8 @@ export class Text {
             fontStyle: config.fontStyle,
             width: config.fontSize,
             height: config.fontSize,
-            underline: !!config.underline,
-            strikout: !!config.strikout
+            underline: config.underline,
+            strikout: config.strikout
         };
 
         const { width, height } = this.getFontSize(text);

@@ -245,12 +245,7 @@ export default class Stage {
         const lineTexts = this.stageConfig.getRenderContent(element);
         let textX = TEXT_MARGIN;
         let textY = TEXT_MARGIN;
-        lineTexts.forEach((lineData, index) => {
-            // if (this._selectArea) {
-            //     const rangeRecord = this.data.getRenderSelect(x, y, lineData, index, this._selectArea);
-            //     if (rangeRecord) this.renderRange(rangeRecord);
-            // }
-
+        lineTexts.forEach(lineData => {
             const lineHeight = lineData.height * element.lineHeight;
             const offsetX = this.stageConfig.getAlignOffsetX(lineData, element);
             lineData.texts.forEach(text => {

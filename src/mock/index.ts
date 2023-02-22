@@ -3,122 +3,6 @@ import { ISlide } from "@/plugins/types/slide";
 
 export const slides: ISlide[] = [
     {
-        id: "slideid1",
-        elements: [
-            {
-                id: "elementid",
-                type: "shape",
-                shape: SHAPE_TYPE.RECT,
-                fixedRatio: false,
-                fill: "#f60000",
-                rotate: 20,
-                name: "矩形",
-                left: 10,
-                top: 20,
-                width: 200,
-                height: 100,
-                opacity: 70,
-                flipV: -1,
-                flipH: 1,
-                outline: {
-                    style: "dashed",
-                    width: 2,
-                    color: "blue"
-                }
-            },
-            {
-                fill: "#5b9bd5",
-                fixedRatio: false,
-                height: 210.7843137254902,
-                id: "7Yw8SR",
-                left: 314.54248366013064,
-                name: "形状",
-                rotate: 0,
-                shape: SHAPE_TYPE.RECT_RADIUS,
-                top: 120.71078431372548,
-                type: "shape",
-                width: 370.91503267973854
-            },
-            {
-                color: "#5b9bd5",
-                id: "7Yw88R",
-                left: 300,
-                top: 400,
-                start: [0, 0],
-                end: [-100, 80],
-                style: "solid",
-                startStyle: "arrow",
-                endStyle: "dot",
-                name: "线条",
-                type: "line",
-                borderWidth: 12
-            },
-            {
-                id: "7Yw88w",
-                left: 200,
-                top: 200,
-                name: "文本",
-                type: "text",
-                content: [
-                    {
-                        value: "富",
-                        fontSize: 56,
-                        width: 56,
-                        height: 51.85600280761719,
-                        fontStyle: "normal",
-                        fontWeight: "normal",
-                        fontFamily: "楷体",
-                        fontColor: "#444",
-                        underline: false,
-                        strikout: false
-                    },
-                    {
-                        value: "文",
-                        fontSize: 56,
-                        width: 56,
-                        height: 51.96800231933594,
-                        fontStyle: "normal",
-                        fontWeight: "normal",
-                        fontFamily: "楷体",
-                        fontColor: "#444",
-                        underline: false,
-                        strikout: false
-                    },
-                    {
-                        value: "本",
-                        fontSize: 56,
-                        width: 56,
-                        height: 51.183998107910156,
-                        fontStyle: "normal",
-                        fontWeight: "normal",
-                        fontFamily: "楷体",
-                        fontColor: "#444",
-                        underline: false,
-                        strikout: false
-                    },
-                    {
-                        value: "\n",
-                        fontSize: 56,
-                        width: 0,
-                        height: 0,
-                        fontStyle: "normal",
-                        fontWeight: "normal",
-                        fontFamily: "楷体",
-                        fontColor: "#444",
-                        underline: false,
-                        strikout: false
-                    }
-                ],
-                lineHeight: 2,
-                wordSpace: 1,
-                rotate: 0,
-                width: 200,
-                height: 122,
-                align: "left"
-            }
-        ]
-    },
-    {
         id: "slideid2",
         elements: [
             {
@@ -149,6 +33,396 @@ export const slides: ISlide[] = [
                 rotate: 0,
                 flipV: 1,
                 opacity: 30
+            },
+            {
+                name: "文本",
+                type: "text",
+                content: [
+                    {
+                        value: "C",
+                        fontSize: 58,
+                        fontFamily: "Arial",
+                        fontWeight: "bold",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 41.8857421875,
+                        height: 42.93359375,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "a",
+                        fontSize: 58,
+                        fontFamily: "Arial",
+                        fontWeight: "bold",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 32.2568359375,
+                        height: 31.435546875,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "n",
+                        fontSize: 58,
+                        fontFamily: "Arial",
+                        fontWeight: "bold",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 35.4287109375,
+                        height: 30.755859375,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "v",
+                        fontSize: 58,
+                        fontFamily: "Arial",
+                        fontWeight: "bold",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 32.2568359375,
+                        height: 30.076171875,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "a",
+                        fontSize: 58,
+                        fontFamily: "Arial",
+                        fontWeight: "bold",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 32.2568359375,
+                        height: 31.435546875,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "s",
+                        fontSize: 58,
+                        fontFamily: "Arial",
+                        fontWeight: "bold",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 32.2568359375,
+                        height: 31.435546875,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "实",
+                        fontSize: 58,
+                        fontFamily: "Arial",
+                        fontWeight: "bold",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 58,
+                        height: 54.40399932861328,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "现",
+                        fontSize: 58,
+                        fontFamily: "Arial",
+                        fontWeight: "bold",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 58,
+                        height: 52.20000076293945,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "在",
+                        fontSize: 58,
+                        fontFamily: "Arial",
+                        fontWeight: "bold",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 58,
+                        height: 54.46200180053711,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "线",
+                        fontSize: 58,
+                        fontFamily: "Arial",
+                        fontWeight: "bold",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 58,
+                        height: 53.47600173950195,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "演",
+                        fontSize: 58,
+                        fontFamily: "Arial",
+                        fontWeight: "bold",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 58,
+                        height: 54.694000244140625,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "示",
+                        fontSize: 58,
+                        fontFamily: "Arial",
+                        fontWeight: "bold",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 58,
+                        height: 50.459999084472656,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "文",
+                        fontSize: 58,
+                        fontFamily: "Arial",
+                        fontWeight: "bold",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 58,
+                        height: 54.694000244140625,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "稿",
+                        fontSize: 58,
+                        fontFamily: "Arial",
+                        fontWeight: "bold",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 58,
+                        height: 54.055999755859375,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "\n",
+                        fontSize: 24,
+                        width: 0,
+                        height: 0,
+                        fontStyle: "normal",
+                        fontWeight: "normal",
+                        fontFamily: "Arial",
+                        fontColor: "#444",
+                        underline: false,
+                        strikout: false
+                    }
+                ],
+                wordSpace: 1,
+                lineHeight: 2,
+                id: "4bdkmJ",
+                left: 198.81889763779495,
+                top: 148.86811023622045,
+                width: 704.7244094488188,
+                height: 126,
+                rotate: 0,
+                align: "left"
+            }
+        ]
+    },
+    {
+        id: "slideid1",
+        elements: [
+            {
+                id: "elementid",
+                type: "shape",
+                shape: SHAPE_TYPE.RECT,
+                fixedRatio: false,
+                fill: "#f60000",
+                rotate: 20,
+                name: "矩形",
+                left: 10,
+                top: 20,
+                width: 200,
+                height: 100,
+                opacity: 70,
+                flipV: -1,
+                flipH: 1,
+                outline: { style: "dashed", width: 2, color: "blue" }
+            },
+            {
+                color: "#5b9bd5",
+                id: "7Yw88R",
+                left: 300,
+                top: 400,
+                start: [0, 0],
+                end: [-100, 80],
+                style: "solid",
+                startStyle: "arrow",
+                endStyle: "dot",
+                name: "线条",
+                type: "line",
+                borderWidth: 12
+            },
+            {
+                id: "7Yw88w",
+                left: 479.5275590551181,
+                top: 52.362204724409416,
+                name: "文本",
+                type: "text",
+                content: [
+                    {
+                        value: "h",
+                        fontSize: 56,
+                        fontFamily: "楷体",
+                        fontWeight: "normal",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 31.135986328125,
+                        height: 40.76799774169922,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "a",
+                        fontSize: 56,
+                        fontFamily: "楷体",
+                        fontWeight: "normal",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 31.303985595703125,
+                        height: 30.520000457763672,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "o",
+                        fontSize: 56,
+                        fontFamily: "楷体",
+                        fontWeight: "normal",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 32.81599426269531,
+                        height: 30.520000457763672,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "好",
+                        fontSize: 56,
+                        fontFamily: "楷体",
+                        fontWeight: "normal",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 56,
+                        height: 52.19200134277344,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "就",
+                        fontSize: 56,
+                        fontFamily: "楷体",
+                        fontWeight: "normal",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 56,
+                        height: 50.90400314331055,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "是",
+                        fontSize: 56,
+                        fontFamily: "楷体",
+                        fontWeight: "normal",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 56,
+                        height: 49.279998779296875,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "这",
+                        fontSize: 56,
+                        fontFamily: "楷体",
+                        fontWeight: "normal",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 56,
+                        height: 51.52000427246094,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "样",
+                        fontSize: 56,
+                        fontFamily: "楷体",
+                        fontWeight: "normal",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 56,
+                        height: 51.63199996948242,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "吧",
+                        fontSize: 56,
+                        fontFamily: "楷体",
+                        fontWeight: "normal",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        width: 56,
+                        height: 47.711997985839844,
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "\n",
+                        fontSize: 56,
+                        fontFamily: "楷体",
+                        fontWeight: "normal",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        underline: false,
+                        strikout: false,
+                        width: 0,
+                        height: 0
+                    },
+                    {
+                        value: "本",
+                        fontSize: 56,
+                        width: 56,
+                        height: 51.183998107910156,
+                        fontStyle: "normal",
+                        fontWeight: "normal",
+                        fontFamily: "楷体",
+                        fontColor: "#444",
+                        underline: false,
+                        strikout: false
+                    },
+                    {
+                        value: "\n",
+                        fontSize: 56,
+                        width: 0,
+                        height: 0,
+                        fontStyle: "normal",
+                        fontWeight: "normal",
+                        fontFamily: "楷体",
+                        fontColor: "#444",
+                        underline: false,
+                        strikout: false
+                    }
+                ],
+                lineHeight: 2,
+                wordSpace: 1,
+                rotate: 0,
+                width: 200,
+                height: 458,
+                align: "left"
             }
         ]
     }

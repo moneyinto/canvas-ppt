@@ -247,6 +247,7 @@ export default class Command {
         const operateElement = this._stageConfig.operateElement;
         if (operateElement) {
             if (this._stageConfig.textFocus) {
+                if (this._cursor.getTextareaText()) return;
                 if (this._stageConfig.selectArea) {
                     // 删除选中文本
                     this._deleteSelectText();
@@ -449,6 +450,7 @@ export default class Command {
         if (operateElement) {
             // 文本框编辑时回车
             if (this._stageConfig.textFocus) {
+                if (this._cursor.getTextareaText()) return;
                 const config = this._stageConfig.fontConfig;
                 const text: IFontData = {
                     value: "\n",
