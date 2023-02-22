@@ -274,7 +274,8 @@ export default class Command {
         if (operateElement && this._stageConfig.textFocus) {
             const currentDataPosition = this._cursor.getDataPosition();
             const content = operateElement.content;
-            const text = currentDataPosition === -1 ? this._stageConfig.fontConfig : content[currentDataPosition];
+            // 前面一个字没有，获取后面一个回车符的字样
+            const text = currentDataPosition === -1 ? content[0] : content[currentDataPosition];
 
             const config = {
                 fontSize: text.fontSize,
