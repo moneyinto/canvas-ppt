@@ -273,33 +273,71 @@ export default class Command {
             // 普通外来文本
             // 这里考虑是否带格式，先处理不带格式的
             if (content) {
-                const baseText: IFontData = {
-                    value: "",
-                    fontSize: baseFontConfig.fontSize,
-                    fontFamily: baseFontConfig.fontFamily,
-                    fontWeight: baseFontConfig.fontWeight,
-                    fontColor: baseFontConfig.fontColor,
-                    fontStyle: baseFontConfig.fontStyle,
-                    width: baseFontConfig.fontSize,
-                    height: baseFontConfig.fontSize,
-                    underline: baseFontConfig.underline,
-                    strikout: baseFontConfig.strikout
-                };
-                const pasteContent: IFontData[] = [];
-                let contentWidth = TEXT_MARGIN * 2;
-                const newElement = createTextElement({ left: 0, top: 0, width: 0, height: 0 });
-                content.split("").forEach(text => {
-                    baseText.value = text;
-                    const { width, height } = this._stageConfig.getFontSize!(baseText);
-                    baseText.width = width;
-                    baseText.height = height;
-                    contentWidth += width + newElement.wordSpace;
-                    pasteContent.push(deepClone(baseText));
-                });
-                newElement.content.splice(0, 0, ...pasteContent);
-                newElement.width = contentWidth;
-                newElement.height = this._getTextHeight(newElement);
-                this.executeAddRender(newElement);
+                const operateElement = this._stageConfig.operateElement;
+                if (operateElement && operateElement.type === "text" && this._stageConfig.textFocus) {
+                    const selectArea = this._stageConfig.selectArea;
+                    if (selectArea) {
+                        // 选中区域存在替换选中区域
+                        this._deleteSelectText();
+                    }
+
+                    // 光标位置粘贴
+                    const config = this._stageConfig.fontConfig;
+                    const baseText: IFontData = {
+                        value: "",
+                        fontSize: config.fontSize,
+                        fontFamily: config.fontFamily,
+                        fontWeight: config.fontWeight,
+                        fontColor: config.fontColor,
+                        fontStyle: config.fontStyle,
+                        width: config.fontSize,
+                        height: config.fontSize,
+                        underline: config.underline,
+                        strikout: config.strikout
+                    };
+                    const elementContent: IFontData[] = [];
+                    content.split("").forEach(text => {
+                        baseText.value = text;
+                        const { width, height } = this._stageConfig.getFontSize!(baseText);
+                        baseText.width = width;
+                        baseText.height = height;
+                        elementContent.push(deepClone(baseText));
+                    });
+                    const position = this._cursor.getDataPosition();
+                    operateElement.content.splice(position + 1, 0, ...elementContent);
+                    operateElement.height = this._getTextHeight(operateElement);
+                    const cursorPosition = position + elementContent.length;
+                    this.executeUpdateRender(operateElement, true);
+                    this._updateCursor(cursorPosition);
+                } else {
+                    const baseText: IFontData = {
+                        value: "",
+                        fontSize: baseFontConfig.fontSize,
+                        fontFamily: baseFontConfig.fontFamily,
+                        fontWeight: baseFontConfig.fontWeight,
+                        fontColor: baseFontConfig.fontColor,
+                        fontStyle: baseFontConfig.fontStyle,
+                        width: baseFontConfig.fontSize,
+                        height: baseFontConfig.fontSize,
+                        underline: baseFontConfig.underline,
+                        strikout: baseFontConfig.strikout
+                    };
+                    const pasteContent: IFontData[] = [];
+                    let contentWidth = TEXT_MARGIN * 2;
+                    const newElement = createTextElement({ left: 0, top: 0, width: 0, height: 0 });
+                    content.split("").forEach(text => {
+                        baseText.value = text;
+                        const { width, height } = this._stageConfig.getFontSize!(baseText);
+                        baseText.width = width;
+                        baseText.height = height;
+                        contentWidth += width + newElement.wordSpace;
+                        pasteContent.push(deepClone(baseText));
+                    });
+                    newElement.content.splice(0, 0, ...pasteContent);
+                    newElement.width = contentWidth;
+                    newElement.height = this._getTextHeight(newElement);
+                    this.executeAddRender(newElement);
+                }
             }
         }
     }
