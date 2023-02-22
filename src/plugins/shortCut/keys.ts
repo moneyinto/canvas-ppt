@@ -34,6 +34,13 @@ export const ShortcutKeys: IRegisterShortcut[] = [
     },
 
     {
+        key: KeyMap.Enter,
+        callback: (command: Command) => {
+            command.executeEnter();
+        }
+    },
+
+    {
         key: KeyMap.C,
         ctrl: true,
         callback: (command: Command) => {

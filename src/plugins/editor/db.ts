@@ -42,7 +42,6 @@ export default class DB {
 
     async setData(slideId: string, slides: ISlide[]) {
         if (!this.db) await this.init();
-        console.log(slides);
         this.db!.transaction("history", "readwrite")
             .objectStore("history")
             .add({ slideId: slideId, slides: JSON.parse(JSON.stringify(slides)) });

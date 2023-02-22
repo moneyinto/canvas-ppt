@@ -385,7 +385,6 @@ export default class StageConfig {
                 countWidth = text.width + element.wordSpace;
             }
         });
-        console.log(renderContent);
         return renderContent;
     }
 

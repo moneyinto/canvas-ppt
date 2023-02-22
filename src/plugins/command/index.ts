@@ -279,7 +279,6 @@ export default class Command {
                 underline: text.underline,
                 strikout: text.strikout
             };
-            console.log(config, text);
             this._stageConfig.setFontConfig(config);
         }
     }
@@ -288,9 +287,14 @@ export default class Command {
     public excuteDeleteText(position: number) {
         const operateElement = this._stageConfig.operateElement as IPPTTextElement;
         if (operateElement) {
-            console.log(position, operateElement.content.length);
             if (position >= operateElement.content.length - 1 || position === -1) return false;
             operateElement.content.splice(position, 1);
+            const renderContent = this._stageConfig.getRenderContent(operateElement);
+            let height = TEXT_MARGIN * 2;
+            renderContent.forEach(line => {
+                height += line.height * operateElement.lineHeight;
+            });
+            operateElement.height = height;
 
             this.executeUpdateRender(operateElement);
 
@@ -408,6 +412,32 @@ export default class Command {
                 this.executeUpdateRender(operateElement);
 
                 this._debounceLog();
+            }
+        }
+    }
+
+    // 回车键
+    public executeEnter() {
+        const operateElement = this._stageConfig.operateElement;
+        if (operateElement) {
+            // 文本框编辑时回车
+            if (this._stageConfig.textFocus) {
+                const config = this._stageConfig.fontConfig;
+                const text: IFontData = {
+                    value: "\n",
+                    fontSize: config.fontSize,
+                    fontFamily: config.fontFamily,
+                    fontWeight: config.fontWeight,
+                    fontColor: config.fontColor,
+                    fontStyle: config.fontStyle,
+                    underline: config.underline,
+                    strikout: config.strikout,
+                    width: 0,
+                    height: 0
+                };
+                const currentDataPosition = this._cursor.getDataPosition();
+                this.executeAddText(text, currentDataPosition + 1);
+                this._updateCursor(currentDataPosition + 1);
             }
         }
     }
