@@ -311,6 +311,7 @@ export default class ControlStage extends Stage {
                 this.stageConfig.resetCheckDrawView();
                 if (operateElement) {
                     this._cursor.hideCursor();
+                    this.stageConfig.textFocus = false;
                     this.resetDrawOprate();
                     this._canMoveElement = true;
                 } else {
@@ -696,6 +697,7 @@ export default class ControlStage extends Stage {
                     if (
                         operateElement &&
                         hoverElement.type === "text" &&
+                        hoverElement.id === operateElement.id &&
                         this.stageConfig.textFocus
                     ) {
                         if (this.container.style.cursor !== "text") {
