@@ -4,7 +4,7 @@ import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import Listener from "../listener";
 import { ICacheImage, IRectParameter } from "../types";
 import { ICreatingElement, IPPTElement, IPPTTextElement } from "../types/element";
-import { IFontConfig, ILineData } from "../types/font";
+import { IFontConfig, IFontData, ILineData } from "../types/font";
 import { ISlide } from "../types/slide";
 
 export const TEXT_MARGIN = 5;
@@ -29,7 +29,8 @@ export default class StageConfig {
 
     public resetDrawView: (() => void) | null;
     public resetDrawOprate: (() => void) | null;
-    public hideCursor:(() => void) | null;
+    public hideCursor: (() => void) | null;
+    public getFontSize: ((text: IFontData) => { width: number, height: number }) | null;
 
     private _container: HTMLDivElement;
     private _listener: Listener | undefined;
@@ -52,6 +53,7 @@ export default class StageConfig {
         this.resetDrawView = null;
         this.resetDrawOprate = null;
         this.hideCursor = null;
+        this.getFontSize = null;
     }
 
     public setFontConfig(fontConfig: IFontConfig) {

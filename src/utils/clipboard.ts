@@ -63,7 +63,8 @@ export const readClipboard = async () => {
     if (navigator.clipboard?.readText) {
         const text = await navigator.clipboard.readText();
         if (!text) console.error(new Error("剪贴板为空或者不包含文本"));
-        return decrypt(text);
+        const result = decrypt(text);
+        return result || text;
     }
 
     return "";

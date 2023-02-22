@@ -22,6 +22,7 @@ import Listener from "../listener";
 import { Text } from "./text";
 import { Cursor } from "./cursor";
 import { Textarea } from "./textarea";
+import { IFontData } from "../types/font";
 
 export default class ControlStage extends Stage {
     private _command: Command;
@@ -1184,6 +1185,10 @@ export default class ControlStage extends Stage {
         this.ctx.fillStyle = "#AECBFA";
         this.ctx.fillRect(x, y, width, height);
         this.ctx.restore();
+    }
+
+    public getFontSize(text: IFontData) {
+        return this._text.getFontSize(text);
     }
 
     public hideCursor() {

@@ -1,6 +1,8 @@
+import { deepClone } from "@/utils";
 import { CLIPBOARD_STRING_TYPE, copyText, pasteCustomClipboardString, readClipboard } from "@/utils/clipboard";
-import { createImageElement, createRandomCode } from "@/utils/create";
+import { createImageElement, createRandomCode, createTextElement } from "@/utils/create";
 import { encrypt } from "@/utils/crypto";
+import { baseFontConfig } from "../config/font";
 import { History } from "../editor/history";
 import { KeyMap } from "../shortCut/keyMap";
 import StageConfig, { TEXT_MARGIN } from "../stage/config";
@@ -266,6 +268,38 @@ export default class Command {
                 const cursorPosition = position + elementContent.length;
                 this.executeUpdateRender(operateElement, true);
                 this._updateCursor(cursorPosition);
+            }
+        } else {
+            // 普通外来文本
+            // 这里考虑是否带格式，先处理不带格式的
+            if (content) {
+                const baseText: IFontData = {
+                    value: "",
+                    fontSize: baseFontConfig.fontSize,
+                    fontFamily: baseFontConfig.fontFamily,
+                    fontWeight: baseFontConfig.fontWeight,
+                    fontColor: baseFontConfig.fontColor,
+                    fontStyle: baseFontConfig.fontStyle,
+                    width: baseFontConfig.fontSize,
+                    height: baseFontConfig.fontSize,
+                    underline: baseFontConfig.underline,
+                    strikout: baseFontConfig.strikout
+                };
+                const pasteContent: IFontData[] = [];
+                let contentWidth = TEXT_MARGIN * 2;
+                const newElement = createTextElement({ left: 0, top: 0, width: 0, height: 0 });
+                content.split("").forEach(text => {
+                    baseText.value = text;
+                    const { width, height } = this._stageConfig.getFontSize!(baseText);
+                    baseText.width = width;
+                    baseText.height = height;
+                    contentWidth += width + newElement.wordSpace;
+                    pasteContent.push(deepClone(baseText));
+                });
+                newElement.content.splice(0, 0, ...pasteContent);
+                newElement.width = contentWidth;
+                newElement.height = this._getTextHeight(newElement);
+                this.executeAddRender(newElement);
             }
         }
     }

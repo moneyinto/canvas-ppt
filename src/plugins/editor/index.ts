@@ -39,6 +39,9 @@ export default class Editor {
         this.stageConfig.hideCursor = () => {
             this._controlStage.hideCursor();
         };
+        this.stageConfig.getFontSize = (text) => {
+            return this._controlStage.getFontSize(text);
+        };
 
         this.stageConfig.setSildes(slides);
         if (slides.length > 0) this.stageConfig.setSlideId(slides[0].id);
