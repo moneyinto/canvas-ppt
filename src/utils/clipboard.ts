@@ -4,6 +4,7 @@ import { decrypt } from "./crypto";
 export enum CLIPBOARD_STRING_TYPE {
     SLIDE = "TYPE:SLIDE;",
     ELEMENT = "TYPE:ELEMENT;",
+    TEXT = "TYPE:TEXT",
     IMAGE = "data:image"
 }
 

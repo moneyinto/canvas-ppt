@@ -276,6 +276,8 @@ export default class ControlStage extends Stage {
                     top
                 );
 
+                this.stageConfig.setSelectArea(null);
+
                 // 存在已选中，重复选中不执行下面操作
                 if (
                     operateElement &&
@@ -286,7 +288,6 @@ export default class ControlStage extends Stage {
                         this._cursor.hideCursor();
                         const x = left - operateElement.left;
                         const y = top - operateElement.top;
-                        this.stageConfig.setSelectArea(null);
                         const renderContent = this.stageConfig.getRenderContent(
                             operateElement as IPPTTextElement
                         );

@@ -199,8 +199,17 @@ export default class Command {
         const operateElement = this._stageConfig.operateElement;
         // 选中元素时
         if (operateElement) {
-            // 将元素json数据加密存入剪切板
-            await copyText(encrypt(`${CLIPBOARD_STRING_TYPE.ELEMENT}${JSON.stringify(operateElement)}`));
+            if (this._stageConfig.textFocus) {
+                const selectArea = this._stageConfig.selectArea;
+                if (selectArea) {
+                    const { startX, endX } = this._stageConfig.getSelectArea(selectArea, operateElement as IPPTTextElement);
+                    const copyContent = (operateElement as IPPTTextElement).content.slice(startX, endX);
+                    await copyText(encrypt(`${CLIPBOARD_STRING_TYPE.TEXT}${JSON.stringify(copyContent)}`));
+                }
+            } else {
+                // 将元素json数据加密存入剪切板
+                await copyText(encrypt(`${CLIPBOARD_STRING_TYPE.ELEMENT}${JSON.stringify(operateElement)}`));
+            }
         }
     }
 
@@ -239,6 +248,25 @@ export default class Command {
                 this.executeAddRender(element);
             };
             image.src = content;
+        } else if (content.indexOf(CLIPBOARD_STRING_TYPE.TEXT) > -1) {
+            const resultText = content.replace(CLIPBOARD_STRING_TYPE.TEXT, "");
+            const elementContent = pasteCustomClipboardString(resultText) as IFontData[];
+            const operateElement = this._stageConfig.operateElement;
+            if (operateElement && operateElement.type === "text" && this._stageConfig.textFocus) {
+                const selectArea = this._stageConfig.selectArea;
+                if (selectArea) {
+                    // 选中区域存在替换选中区域
+                    this._deleteSelectText();
+                }
+
+                // 光标位置粘贴
+                const position = this._cursor.getDataPosition();
+                operateElement.content.splice(position + 1, 0, ...elementContent);
+                operateElement.height = this._getTextHeight(operateElement);
+                const cursorPosition = position + elementContent.length;
+                this.executeUpdateRender(operateElement, true);
+                this._updateCursor(cursorPosition);
+            }
         }
     }
 
@@ -290,6 +318,16 @@ export default class Command {
         }
     }
 
+    // 获取文本变更后文本框高度
+    private _getTextHeight(operateElement: IPPTTextElement) {
+        const renderContent = this._stageConfig.getRenderContent(operateElement);
+        let height = TEXT_MARGIN * 2;
+        renderContent.forEach(line => {
+            height += line.height * operateElement.lineHeight;
+        });
+        return height;
+    }
+
     // 删除选中文本
     private _deleteSelectText() {
         const operateElement = this._stageConfig.operateElement as IPPTTextElement;
@@ -297,12 +335,7 @@ export default class Command {
         if (operateElement && selectArea) {
             const { startX, endX } = this._stageConfig.getSelectArea(selectArea, operateElement);
             operateElement.content.splice(startX, endX - startX);
-            const renderContent = this._stageConfig.getRenderContent(operateElement);
-            let height = TEXT_MARGIN * 2;
-            renderContent.forEach(line => {
-                height += line.height * operateElement.lineHeight;
-            });
-            operateElement.height = height;
+            operateElement.height = this._getTextHeight(operateElement);
 
             this._stageConfig.setSelectArea(null);
 
@@ -318,12 +351,7 @@ export default class Command {
         if (operateElement) {
             if (position >= operateElement.content.length - 1 || position === -1) return false;
             operateElement.content.splice(position, 1);
-            const renderContent = this._stageConfig.getRenderContent(operateElement);
-            let height = TEXT_MARGIN * 2;
-            renderContent.forEach(line => {
-                height += line.height * operateElement.lineHeight;
-            });
-            operateElement.height = height;
+            operateElement.height = this._getTextHeight(operateElement);
 
             this.executeUpdateRender(operateElement);
 
@@ -522,12 +550,7 @@ export default class Command {
         const operateElement = this._stageConfig.operateElement as IPPTTextElement;
         if (operateElement) {
             operateElement.content.splice(position, 0, text);
-            const renderContent = this._stageConfig.getRenderContent(operateElement);
-            let height = TEXT_MARGIN * 2;
-            renderContent.forEach(line => {
-                height += line.height * operateElement.lineHeight;
-            });
-            operateElement.height = height;
+            operateElement.height = this._getTextHeight(operateElement);
 
             this.executeUpdateRender(operateElement);
 
