@@ -310,6 +310,7 @@ export default class ControlStage extends Stage {
                 this.stageConfig.setOperateElement(operateElement || null);
                 this.stageConfig.resetCheckDrawView();
                 if (operateElement) {
+                    this._cursor.hideCursor();
                     this.resetDrawOprate();
                     this._canMoveElement = true;
                 } else {
