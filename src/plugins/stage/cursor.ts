@@ -256,8 +256,12 @@ export class Cursor {
         this.updateCursor();
         this.showCursor();
 
+        this.setInputFocus();
+    }
+
+    setInputFocus() {
         setTimeout(() => {
             this._textarea.getTextareaElement().focus();
-        }, 100);
+        }, 200);
     }
 }

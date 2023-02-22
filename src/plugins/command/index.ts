@@ -247,13 +247,18 @@ export default class Command {
         const operateElement = this._stageConfig.operateElement;
         if (operateElement) {
             if (this._stageConfig.textFocus) {
-                // 删除文本
-                const position = this._cursor.getDataPosition();
-                const result = this.excuteDeleteText(position + direction);
+                if (this._stageConfig.selectArea) {
+                    // 删除选中文本
+                    this._deleteSelectText();
+                } else {
+                    // 删除文本
+                    const position = this._cursor.getDataPosition();
+                    const result = this._deleteText(position + direction);
 
-                // 当存在中英文混合时 删除正好某行空一个英文字符的空格，删除后正好有个英文字符将会填充到上一行，光标应该处理该行倒数第二个字符
-                if (result && direction === 0) {
-                    this._updateCursor(position - 1);
+                    // 当存在中英文混合时 删除正好某行空一个英文字符的空格，删除后正好有个英文字符将会填充到上一行，光标应该处理该行倒数第二个字符
+                    if (result && direction === 0) {
+                        this._updateCursor(position - 1);
+                    }
                 }
             } else {
                 this.executeDeleteRender(operateElement);
@@ -283,8 +288,30 @@ export default class Command {
         }
     }
 
+    // 删除选中文本
+    private _deleteSelectText() {
+        const operateElement = this._stageConfig.operateElement as IPPTTextElement;
+        const selectArea = this._stageConfig.selectArea;
+        if (operateElement && selectArea) {
+            const { startX, endX } = this._stageConfig.getSelectArea(selectArea, operateElement);
+            operateElement.content.splice(startX, endX - startX);
+            const renderContent = this._stageConfig.getRenderContent(operateElement);
+            let height = TEXT_MARGIN * 2;
+            renderContent.forEach(line => {
+                height += line.height * operateElement.lineHeight;
+            });
+            operateElement.height = height;
+
+            this._stageConfig.setSelectArea(null);
+
+            this.executeUpdateRender(operateElement, true);
+
+            this._updateCursor(startX - 1);
+        }
+    }
+
     // 删除文本内容
-    public excuteDeleteText(position: number) {
+    private _deleteText(position: number) {
         const operateElement = this._stageConfig.operateElement as IPPTTextElement;
         if (operateElement) {
             if (position >= operateElement.content.length - 1 || position === -1) return false;
@@ -506,9 +533,12 @@ export default class Command {
     }
 
     private _updateCursor(position: number) {
+        this._cursor.showCursor();
         this._cursor.setDataPosition(position);
         this._cursor.setCursorPositionByData();
         this._cursor.updateCursor();
+
+        this._cursor.setInputFocus();
 
         this.executeUpdateFontConfig();
     }

@@ -403,6 +403,36 @@ export default class StageConfig {
         }[align];
     }
 
+    public getSelectArea(selectArea: [number, number, number, number], element: IPPTTextElement) {
+        const renderContent = this.getRenderContent(element);
+        let startX = 0;
+        let endX = 0;
+        let startOk = false;
+        let endOk = false;
+        renderContent.forEach((lineData, index) => {
+            if (selectArea[1] === index) {
+                // 起始位置属于当前行
+                startX += selectArea[0];
+                startOk = true;
+            } else if (!startOk) {
+                startX += lineData.texts.length;
+            }
+
+            if (selectArea[3] === index) {
+                // 结束位置属于当前行
+                endX += selectArea[2];
+                endOk = true;
+            } else if (!endOk) {
+                endX += lineData.texts.length;
+            }
+        });
+
+        return {
+            startX,
+            endX
+        };
+    }
+
     public getRenderSelect(
         x: number,
         y: number,
