@@ -10,3 +10,10 @@ export interface ICacheImage {
     id: string;
     image: HTMLImageElement;
 }
+
+export interface IMouseClick {
+    x: number;
+    y: number;
+    textX: number;
+    textY: number;
+}

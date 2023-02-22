@@ -13,8 +13,6 @@ export class Text {
 
     private _ctx: CanvasRenderingContext2D;
 
-    // [开始字坐标，开始行坐标，结束字坐标，结束行坐标]
-    private _selectArea: [number, number, number, number] | null;
     constructor(
         ctx: CanvasRenderingContext2D,
         stageConfig: StageConfig,
@@ -27,8 +25,6 @@ export class Text {
         this._command = command;
 
         this._textarea = textarea.getTextareaElement();
-
-        this._selectArea = null;
 
         this._ctx = ctx;
 

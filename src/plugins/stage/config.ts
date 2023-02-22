@@ -24,6 +24,8 @@ export default class StageConfig {
 
     public fontConfig: IFontConfig = deepClone(baseFontConfig); // 富文本聚焦后前一个字体配置 或 默认配置
     public textFocus = false; // 富文本框是否聚焦 双击聚焦后才可以编辑
+    // [开始字坐标，开始行坐标，结束字坐标，结束行坐标]
+    public selectArea: [number, number, number, number] | null = null;
 
     public resetDrawView: (() => void) | null;
     public resetDrawOprate: (() => void) | null;
@@ -203,6 +205,10 @@ export default class StageConfig {
 
     public addCacheImage(cacheImage: ICacheImage) {
         this.cacheImage.push(cacheImage);
+    }
+
+    public setSelectArea(selectArea: [number, number, number, number] | null) {
+        this.selectArea = selectArea;
     }
 
     /**
@@ -395,5 +401,64 @@ export default class StageConfig {
             center: (element.width - TEXT_MARGIN * 2 - line.width) / 2,
             right: element.width - TEXT_MARGIN * 2 - line.width
         }[align];
+    }
+
+    public getRenderSelect(
+        x: number,
+        y: number,
+        lineData: ILineData,
+        index: number,
+        selectArea: [number, number, number, number],
+        element: IPPTTextElement
+    ) {
+        if (index >= selectArea[1] && index <= selectArea[3]) {
+            let startX = 0;
+            let endX = 0;
+            if (selectArea[1] === selectArea[3]) {
+                // 仅选中该行
+                startX = selectArea[0];
+                endX = selectArea[2];
+            } else if (selectArea[1] === index) {
+                // 选中的第一行
+                startX = selectArea[0];
+                endX = lineData.texts.length;
+            } else if (index < selectArea[3]) {
+                // 选中中间的行
+                startX = 0;
+                endX = lineData.texts.length;
+            } else if (index === selectArea[3]) {
+                // 选中的最后一行
+                startX = 0;
+                endX = selectArea[2];
+            }
+
+            if (startX === endX) return undefined;
+
+            // 存在选中区域
+            if (startX > 0) {
+                x += lineData.texts
+                    .slice(0, startX)
+                    .map((text) => text.width)
+                    .reduce((acr, cur) => {
+                        return acr + cur + element.wordSpace;
+                    });
+            }
+
+            const width = lineData.texts
+                .slice(startX, endX)
+                .map((text) => text.width)
+                .reduce((acr, cur) => {
+                    return acr + cur + element.wordSpace;
+                });
+
+            const offsetX = this.getAlignOffsetX(lineData, element);
+            return {
+                x: x + offsetX,
+                y,
+                width: width + element.wordSpace,
+                height: lineData.height * element.lineHeight
+            };
+        }
+        return undefined;
     }
 }

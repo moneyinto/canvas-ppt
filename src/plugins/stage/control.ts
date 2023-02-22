@@ -1,11 +1,19 @@
 import Stage from ".";
-import StageConfig from "./config";
+import StageConfig, { TEXT_MARGIN } from "./config";
 import { throttleRAF, deepClone, normalizeAngle, checkIsMac } from "@/utils";
 import Command from "../command";
-import { createLineElement, createShapeElement, createTextElement } from "@/utils/create";
-import { IPPTElement, IPPTLineElement } from "../types/element";
+import {
+    createLineElement,
+    createShapeElement,
+    createTextElement
+} from "@/utils/create";
+import {
+    IPPTElement,
+    IPPTLineElement,
+    IPPTTextElement
+} from "../types/element";
 import { ELEMENT_RESIZE, THEME_COLOR } from "../config/stage";
-import { IElementOptions, IRectParameter, IRects } from "../types";
+import { IElementOptions, IMouseClick, IRectParameter, IRects } from "../types";
 import { LINE_TYPE } from "../config/shapes";
 import ContextmenuComponent from "@/components/Contextmenu/index.vue";
 import { createVNode, render } from "vue";
@@ -31,6 +39,7 @@ export default class ControlStage extends Stage {
     private _text: Text;
     private _cursor: Cursor;
     private _textarea: Textarea;
+    private _textClick: IMouseClick | null;
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
@@ -58,8 +67,15 @@ export default class ControlStage extends Stage {
         this._cursor = cursor;
         this._textarea = textarea;
         this._listener = listener;
+        this._textClick = null;
         // 文本框
-        this._text = new Text(this.ctx, stageConfig, command, this._textarea, this._cursor);
+        this._text = new Text(
+            this.ctx,
+            stageConfig,
+            command,
+            this._textarea,
+            this._cursor
+        );
         // 后面考虑要不要改成window ？？？？？？？？？？？？？？？？？？？？？？
         this.container.addEventListener(
             "mousewheel",
@@ -101,21 +117,18 @@ export default class ControlStage extends Stage {
     private _dblClick(evt: MouseEvent) {
         const operateElement = this.stageConfig.operateElement;
         if (operateElement && operateElement.type === "text") {
-            // this._text.data.setElement(operateElement);
             // 点击位置坐标
             const { left, top } = this._getMousePosition(evt);
-            // const renderContent = this._text.data.getRenderContent();
-            // const { textX, textY } = this._text.cursor.getCursorPosition(evt.offsetX, evt.offsetY, renderContent);
-            // console.log(textX, textY);
             // 当元素被选中，且被双击时，开启编辑
             this.stageConfig.textFocus = true;
             this.container.style.cursor = "text";
 
             // 聚焦光标到点击位置
-            this._cursor.focus(left - operateElement.left, top - operateElement.top);
+            this._cursor.focus(
+                left - operateElement.left,
+                top - operateElement.top
+            );
             this._command.executeUpdateFontConfig();
-            // this._text.cursor.showCursor();
-            // this._text.cursor.updateCursor();
         }
     }
 
@@ -270,9 +283,24 @@ export default class ControlStage extends Stage {
                     operateElement.id === this.stageConfig.operateElement.id
                 ) {
                     if (this.stageConfig.textFocus) {
-                        // 更新文本框光标位置
-                        this._cursor.focus(left - operateElement.left, top - operateElement.top);
-                        this._command.executeUpdateFontConfig();
+                        this._cursor.hideCursor();
+                        const x = left - operateElement.left;
+                        const y = top - operateElement.top;
+                        this.stageConfig.setSelectArea(null);
+                        const renderContent = this.stageConfig.getRenderContent(
+                            operateElement as IPPTTextElement
+                        );
+                        const { textX, textY } = this._cursor.getCursorPosition(
+                            x,
+                            y,
+                            renderContent
+                        );
+                        this._textClick = {
+                            x,
+                            y,
+                            textX: textX + 1,
+                            textY
+                        };
                         return;
                     }
                     this._canMoveElement = true;
@@ -293,47 +321,49 @@ export default class ControlStage extends Stage {
     }
 
     private _mousemove(evt: MouseEvent) {
+        const operateElement = this.stageConfig.operateElement;
         if (this.stageConfig.insertElement && this._canCreate) {
             // 创建元素
-            if (this.stageConfig.operateElement) {
+            if (operateElement) {
                 // 当存在选中的元素的时候，移除
                 this.stageConfig.setOperateElement(null);
                 this.stageConfig.resetCheckDrawView();
             }
             const newElement = this._createElement(evt);
-            if (newElement && newElement.type !== "text") this.drawElement(newElement);
-            if (newElement && newElement.type === "text") this._drawOprate(newElement);
+            if (newElement && newElement.type !== "text") {
+                this.drawElement(newElement);
+            }
+
+            if (newElement && newElement.type === "text") {
+                this._drawOprate(newElement);
+            }
         } else if (this._canMoveCanvas && this.stageConfig.canMove) {
             // 移动画布
             const scrollX = -(evt.pageX - this._startPoint[0]) + this.stageConfig.scrollX;
             const scrollY = -(evt.pageY - this._startPoint[1]) + this.stageConfig.scrollY;
             this._startPoint = [evt.pageX, evt.pageY];
             this.stageConfig.setScroll(scrollX, scrollY);
-        } else if (this._canMoveElement && this.stageConfig.operateElement) {
-            if (this.stageConfig.textFocus) {
-                // 文本编辑状态
-            } else {
-                // 移动元素
-                const zoom = this.stageConfig.zoom;
-                const moveX = (evt.pageX - this._startPoint[0]) / zoom;
-                const moveY = (evt.pageY - this._startPoint[1]) / zoom;
+        } else if (this._canMoveElement && operateElement) {
+            // 移动元素
+            const zoom = this.stageConfig.zoom;
+            const moveX = (evt.pageX - this._startPoint[0]) / zoom;
+            const moveY = (evt.pageY - this._startPoint[1]) / zoom;
 
-                const newElement = {
-                    ...this.stageConfig.operateElement,
-                    left: this.stageConfig.operateElement.left + moveX,
-                    top: this.stageConfig.operateElement.top + moveY
-                };
+            const newElement = {
+                ...operateElement,
+                left: operateElement.left + moveX,
+                top: operateElement.top + moveY
+            };
 
-                this._command.executeUpdateRender(newElement);
+            this._command.executeUpdateRender(newElement);
 
-                this._startPoint = [evt.pageX, evt.pageY];
-            }
-        } else if (this._canResizeElement && this.stageConfig.operateElement) {
-            if (this.stageConfig.operateElement.type !== "line") {
+            this._startPoint = [evt.pageX, evt.pageY];
+        } else if (this._canResizeElement && operateElement) {
+            if (operateElement.type !== "line") {
                 // 旋转缩放元素
                 if (this.stageConfig.opreateType === "ANGLE") {
                     // 旋转
-                    const element = this.stageConfig.operateElement;
+                    const element = operateElement;
                     const isText = element.type === "text";
                     const cx = element.left + element.width / 2;
                     const cy = element.top + element.height / 2;
@@ -350,7 +380,7 @@ export default class ControlStage extends Stage {
                     );
 
                     const newElement = {
-                        ...this.stageConfig.operateElement,
+                        ...operateElement,
                         rotate: angle
                     };
 
@@ -394,11 +424,9 @@ export default class ControlStage extends Stage {
                         // 矩形位置坐标点翻转
                         if (!isText && originElement.flipH === -1) {
                             originLeft = 2 * cx - originLeft;
-                            // startOriginX = 2 * cx - startOriginX;
                         }
                         if (!isText && originElement.flipV === -1) {
                             originTop = 2 * cy - originTop;
-                            // startOriginY = 2 * cx - startOriginY;
                         }
 
                         // 矩形位置坐标点旋转
@@ -469,8 +497,12 @@ export default class ControlStage extends Stage {
                         );
 
                         // 矩形位置坐标点往回翻转
-                        if (!isText && originElement.flipH === -1) ox = 2 * changeCX - ox;
-                        if (!isText && originElement.flipV === -1) oy = 2 * changeCY - oy;
+                        if (!isText && originElement.flipH === -1) {
+                            ox = 2 * changeCX - ox;
+                        }
+                        if (!isText && originElement.flipV === -1) {
+                            oy = 2 * changeCY - oy;
+                        }
 
                         // 限制缩放的最小值
                         if (storeData.width > 0 && storeData.height > 0) {
@@ -486,26 +518,28 @@ export default class ControlStage extends Stage {
                         }
                     }
                 }
-            } else if (this.stageConfig.operateElement.type === "line") {
+            } else if (operateElement.type === "line") {
                 const { left, top } = this._getMousePosition(evt);
-                const element = this.stageConfig.operateElement;
                 // 线条控制
                 if (this.stageConfig.opreateType === "START") {
                     const newElement: IPPTElement = {
-                        ...element,
+                        ...operateElement,
                         left,
                         top,
                         end: [
-                            element.left - left + element.end[0],
-                            element.top - top + element.end[1]
+                            operateElement.left - left + operateElement.end[0],
+                            operateElement.top - top + operateElement.end[1]
                         ]
                     };
 
                     this._command.executeUpdateRender(newElement);
                 } else if (this.stageConfig.opreateType === "END") {
                     const newElement: IPPTElement = {
-                        ...element,
-                        end: [left - element.left, top - element.top]
+                        ...operateElement,
+                        end: [
+                            left - operateElement.left,
+                            top - operateElement.top
+                        ]
                     };
 
                     this._command.executeUpdateRender(newElement);
@@ -519,16 +553,15 @@ export default class ControlStage extends Stage {
             // 悬浮到元素
             const { left, top } = this._getMousePosition(evt);
 
-            if (this.stageConfig.operateElement) {
+            if (operateElement) {
                 const zoom = this.stageConfig.zoom;
-                if (this.stageConfig.operateElement.type === "line") {
-                    const element = this.stageConfig.operateElement;
+                if (operateElement.type === "line") {
                     const dashWidth = 8 / zoom;
 
                     const rects: IRects = this._getElementLinePoints(
-                        element.left,
-                        element.top,
-                        element.end,
+                        operateElement.left,
+                        operateElement.top,
+                        operateElement.end,
                         dashWidth
                     );
 
@@ -556,28 +589,27 @@ export default class ControlStage extends Stage {
                             this.stageConfig.opreateType
                         ] || "default";
                 } else {
-                    const element = this.stageConfig.operateElement;
                     // 鼠标悬浮到操作区域展示形式
                     const margin = 1;
-                    const offsetX = -element.width / 2 - margin;
-                    const offsetY = -element.height / 2 - margin;
+                    const offsetX = -operateElement.width / 2 - margin;
+                    const offsetY = -operateElement.height / 2 - margin;
 
                     const dashedLinePadding = 0 + margin / zoom;
                     const dashWidth = 8 / zoom;
 
-                    const isText = element.type === "text";
+                    const isText = operateElement.type === "text";
 
                     const rects: IRects = this._getElementResizePoints(
                         offsetX,
                         offsetY,
-                        element.width + margin * 2,
-                        element.height + margin * 2,
+                        operateElement.width + margin * 2,
+                        operateElement.height + margin * 2,
                         dashedLinePadding,
                         dashWidth
                     );
 
-                    const cx = element.left + element.width / 2;
-                    const cy = element.top + element.height / 2;
+                    const cx = operateElement.left + operateElement.width / 2;
+                    const cy = operateElement.top + operateElement.height / 2;
 
                     this.stageConfig.setOperateType("");
                     for (const key in rects) {
@@ -594,9 +626,9 @@ export default class ControlStage extends Stage {
                                 rect,
                                 cx,
                                 cy,
-                                (element.rotate / 180) * Math.PI,
-                                isText ? 1 : element.flipH || 1,
-                                isText ? 1 : element.flipV || 1
+                                (operateElement.rotate / 180) * Math.PI,
+                                isText ? 1 : operateElement.flipH || 1,
+                                isText ? 1 : operateElement.flipV || 1
                             )
                         ) {
                             this.stageConfig.setOperateType(key);
@@ -605,7 +637,51 @@ export default class ControlStage extends Stage {
                     }
 
                     // 考虑结合旋转角度来改变优化cursor ？？？？？？？？？？？？？？？？？？？？
-                    this.container.style.cursor = (ELEMENT_RESIZE as IElementOptions)[this.stageConfig.opreateType] || "default";
+                    this.container.style.cursor =
+                        (ELEMENT_RESIZE as IElementOptions)[
+                            this.stageConfig.opreateType
+                        ] || "default";
+                }
+
+                if (
+                    operateElement.type === "text" &&
+                    this.stageConfig.textFocus
+                ) {
+                    // 文本编辑状态
+                    if (this._textClick) {
+                        const { left, top } = this._getMousePosition(evt);
+                        const x = left - operateElement.left;
+                        const y = top - operateElement.top;
+                        const renderContent = this.stageConfig.getRenderContent(
+                            operateElement as IPPTTextElement
+                        );
+                        const { textX, textY } = this._cursor.getCursorPosition(
+                            x,
+                            y,
+                            renderContent
+                        );
+                        let startX = this._textClick.textX;
+                        let startY = this._textClick.textY;
+                        let endX = textX + 1;
+                        let endY = textY;
+                        if (endY < startY) {
+                            endX = this._textClick.textX;
+                            endY = this._textClick.textY;
+                            startX = textX + 1;
+                            startY = textY;
+                        } else if (endY === startY && startX > endX) {
+                            endX = this._textClick.textX;
+                            startX = textX + 1;
+                        }
+
+                        this.stageConfig.setSelectArea([
+                            startX,
+                            startY,
+                            endX,
+                            endY
+                        ]);
+                        this.resetDrawOprate();
+                    }
                 }
             }
 
@@ -616,8 +692,14 @@ export default class ControlStage extends Stage {
                 );
 
                 if (hoverElement) {
-                    if (this.stageConfig.operateElement && hoverElement.type === "text" && this.stageConfig.textFocus) {
-                        if (this.container.style.cursor !== "text") this.container.style.cursor = "text";
+                    if (
+                        operateElement &&
+                        hoverElement.type === "text" &&
+                        this.stageConfig.textFocus
+                    ) {
+                        if (this.container.style.cursor !== "text") {
+                            this.container.style.cursor = "text";
+                        }
                     } else if (this.container.style.cursor !== "move") {
                         this.container.style.cursor = "move";
                     }
@@ -631,6 +713,7 @@ export default class ControlStage extends Stage {
     }
 
     private _mouseup(evt: MouseEvent) {
+        const operateElement = this.stageConfig.operateElement;
         if (this.stageConfig.insertElement && this._canCreate) {
             const newElement = this._createElement(evt);
             if (newElement) {
@@ -638,15 +721,24 @@ export default class ControlStage extends Stage {
             }
             this.stageConfig.setInsertElement(null);
         } else if (
-            this.stageConfig.operateElement &&
+            operateElement &&
             (this._canMoveElement || this._canResizeElement)
         ) {
             // 更改silde中对应的元素数据
             this._command.executeUpdateRender(
-                deepClone(this.stageConfig.operateElement),
+                deepClone(operateElement),
                 true
             );
+        } else if (this.stageConfig.textFocus && operateElement && !this.stageConfig.selectArea) {
+            // 更新文本框光标位置
+            const { left, top } = this._getMousePosition(evt);
+            const x = left - operateElement.left;
+            const y = top - operateElement.top;
+            this._cursor.focus(x, y);
+            this._command.executeUpdateFontConfig();
+            this.resetDrawOprate();
         }
+        this._textClick = null;
         this._canMoveCanvas = false;
         this._canMoveElement = false;
         this._canCreate = false;
@@ -906,14 +998,44 @@ export default class ControlStage extends Stage {
                 this.ctx.strokeRect(...rects[key]);
             }
         } else {
-            const ox = x + element.left + element.width / 2;
-            const oy = y + element.top + element.height / 2;
+            const sx = x + element.left;
+            const sy = y + element.top;
 
-            // 平移坐标原点
-            this.ctx.translate(ox, oy);
+            // 平移原点到元素起始点
+            this.ctx.translate(sx, sy);
+            const selectArea = this.stageConfig.selectArea;
+            if (
+                selectArea &&
+                this.stageConfig.textFocus &&
+                element.type === "text"
+            ) {
+                // 存在文本选中状态
+                const lineTexts = this.stageConfig.getRenderContent(element);
+                const x = TEXT_MARGIN;
+                let y = TEXT_MARGIN;
+                lineTexts.forEach((lineData, index) => {
+                    const lineHeight = lineData.height * element.lineHeight;
+                    const rangeRecord = this.stageConfig.getRenderSelect(
+                        x,
+                        y,
+                        lineData,
+                        index,
+                        selectArea,
+                        element
+                    );
+                    if (rangeRecord) this._renderRange(rangeRecord);
+                    y = y + lineHeight;
+                });
+            }
+
+            // 平移坐标原点到元素中心
+            this.ctx.translate(element.width / 2, element.height / 2);
             // 水平垂直翻转
             const isText = element.type === "text";
-            this.ctx.scale(isText ? 1 : element.flipH || 1, isText ? 1 : element.flipV || 1);
+            this.ctx.scale(
+                isText ? 1 : element.flipH || 1,
+                isText ? 1 : element.flipV || 1
+            );
             // 旋转画布
             this.ctx.rotate((element.rotate / 180) * Math.PI);
 
@@ -945,7 +1067,12 @@ export default class ControlStage extends Stage {
             this.ctx.strokeStyle = THEME_COLOR;
             this.ctx.lineWidth = 1 / zoom;
             for (const key in rects) {
-                if (isText && key !== "LEFT" && key !== "RIGHT" && key !== "ANGLE") continue;
+                if (
+                    isText &&
+                    key !== "LEFT" &&
+                    key !== "RIGHT" &&
+                    key !== "ANGLE"
+                ) continue;
                 this.ctx.fillRect(...rects[key]);
                 this.ctx.strokeRect(...rects[key]);
             }
@@ -977,12 +1104,21 @@ export default class ControlStage extends Stage {
         const a·b = a.x * b.x + a.y * b.y;
 
         // 移动距离
-        const move = -(a·b / B) * direction * (isText ? 1 : originElement.flipH || 1);
+        const move =
+            -(a·b / B) * direction * (isText ? 1 : originElement.flipH || 1);
         const newWidth = oldWidth + move;
 
         // 原点偏移
-        const originOffsetX = move * Math.cos(angle) * direction * (isText ? 1 : originElement.flipH || 1);
-        const originOffsetY = move * Math.sin(angle) * direction * (isText ? 1 : originElement.flipV || 1);
+        const originOffsetX =
+            move *
+            Math.cos(angle) *
+            direction *
+            (isText ? 1 : originElement.flipH || 1);
+        const originOffsetY =
+            move *
+            Math.sin(angle) *
+            direction *
+            (isText ? 1 : originElement.flipV || 1);
 
         return { ofx: originOffsetX, ofy: originOffsetY, width: newWidth };
     }
@@ -1011,12 +1147,21 @@ export default class ControlStage extends Stage {
         const a·b = a.x * b.x + a.y * b.y;
 
         // 移动距离
-        const move = -(a·b / B) * direction * (isText ? 1 : originElement.flipV || 1);
+        const move =
+            -(a·b / B) * direction * (isText ? 1 : originElement.flipV || 1);
         const newHeight = oldHeight + move;
 
         // 原点偏移
-        const originOffsetX = -move * Math.sin(angle) * direction * (isText ? 1 : originElement.flipH || 1);
-        const originOffsetY = move * Math.cos(angle) * direction * (isText ? 1 : originElement.flipV || 1);
+        const originOffsetX =
+            -move *
+            Math.sin(angle) *
+            direction *
+            (isText ? 1 : originElement.flipH || 1);
+        const originOffsetY =
+            move *
+            Math.cos(angle) *
+            direction *
+            (isText ? 1 : originElement.flipV || 1);
 
         return { ofx: originOffsetX, ofy: originOffsetY, height: newHeight };
     }
@@ -1027,6 +1172,14 @@ export default class ControlStage extends Stage {
         if (!element) return;
         // this.drawElement(element);
         this._drawOprate(element);
+    }
+
+    private _renderRange({ x, y, width, height }: any) {
+        this.ctx.save();
+        this.ctx.globalAlpha = 0.5;
+        this.ctx.fillStyle = "#AECBFA";
+        this.ctx.fillRect(x, y, width, height);
+        this.ctx.restore();
     }
 
     public hideCursor() {
