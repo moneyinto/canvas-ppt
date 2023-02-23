@@ -53,7 +53,7 @@ export default class Editor {
         this._cursor = new Cursor(container, this._textarea, this.stageConfig);
 
         // 命令
-        this.command = new Command(this.stageConfig, this.history, this._cursor);
+        this.command = new Command(this.stageConfig, this.listener, this.history, this._cursor);
 
         // 创建展示画板
         this._viewStage = new ViewStage(container, this.stageConfig, true);

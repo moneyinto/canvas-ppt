@@ -11,6 +11,9 @@
         <a-divider class="ppt-tool-divider" v-if="showEvert" type="vertical" />
         <Evert v-if="showEvert" />
 
+        <a-divider class="ppt-tool-divider" v-if="showTextEidt" type="vertical" />
+        <TextEdit v-if="showTextEidt" :element="currentElement" />
+
         <a-divider class="ppt-tool-divider" v-if="showFillColor || showBorder" type="vertical" />
         <Border v-if="showBorder" :element="currentElement" />
         <FillColor v-if="showFillColor" :element="currentElement" />
@@ -27,6 +30,7 @@ import Insert from "./Insert.vue";
 import FillColor from "./FillColor.vue";
 import Evert from "./Evert.vue";
 import Border from "./Border.vue";
+import TextEdit from "./TextEdit/index.vue";
 
 const instance = inject<Ref<Editor>>("instance");
 const currentElement = ref<IPPTElement | null>(null);
@@ -39,10 +43,12 @@ watch(instance!, () => {
                 showFillColor.value = element.type === "shape";
                 showBorder.value = element.type === "shape";
                 showEvert.value = element.type === "shape";
+                showTextEidt.value = element.type === "text";
             } else {
                 showFillColor.value = false;
                 showBorder.value = false;
                 showEvert.value = false;
+                showTextEidt.value = false;
             }
         };
     }
@@ -51,6 +57,7 @@ watch(instance!, () => {
 const showFillColor = ref(false);
 const showBorder = ref(false);
 const showEvert = ref(false);
+const showTextEidt = ref(false);
 </script>
 
 <style lang="scss" scoped>

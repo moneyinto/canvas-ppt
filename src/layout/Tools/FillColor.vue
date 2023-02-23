@@ -76,7 +76,7 @@
 import { THEME_COLOR } from "@/plugins/config/stage";
 import { inject, PropType, Ref, ref, watch } from "vue";
 import ColorBoard from "@/components/ColorBoard.vue";
-import { IPPTElement, IPPTShapeElement } from "@/plugins/types/element";
+import { IPPTElement } from "@/plugins/types/element";
 import { STORAGE_FILL_COLOR } from "@/utils/storage";
 import Editor from "@/plugins/editor";
 
@@ -99,8 +99,8 @@ const noFill = ref(true);
 const opacity = ref(0);
 
 const init = () => {
-    if (props.element) {
-        const operateElement = props.element as IPPTShapeElement;
+    if (props.element && props.element.type === "shape") {
+        const operateElement = props.element;
         currentColor.value = operateElement.fill;
         noFill.value = !operateElement.fill;
         opacity.value = operateElement.opacity || 0;

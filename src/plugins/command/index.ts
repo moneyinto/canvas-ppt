@@ -4,6 +4,7 @@ import { createImageElement, createRandomCode, createTextElement } from "@/utils
 import { encrypt } from "@/utils/crypto";
 import { baseFontConfig } from "../config/font";
 import { History } from "../editor/history";
+import Listener from "../listener";
 import { KeyMap } from "../shortCut/keyMap";
 import StageConfig, { TEXT_MARGIN } from "../stage/config";
 import { Cursor } from "../stage/cursor";
@@ -12,12 +13,14 @@ import { IFontData } from "../types/font";
 
 export default class Command {
     private _stageConfig: StageConfig;
+    private _listener: Listener;
     private _history: History;
     private _cursor: Cursor;
 
     private _updateDebounce: null | number;
-    constructor(stageConfig: StageConfig, history: History, cursor: Cursor) {
+    constructor(stageConfig: StageConfig, listener: Listener, history: History, cursor: Cursor) {
         this._stageConfig = stageConfig;
+        this._listener = listener;
         this._history = history;
         this._cursor = cursor;
 
@@ -298,9 +301,7 @@ export default class Command {
                     const elementContent: IFontData[] = [];
                     content.split("").forEach(text => {
                         baseText.value = text;
-                        const { width, height } = this._stageConfig.getFontSize!(baseText);
-                        baseText.width = width;
-                        baseText.height = height;
+                        this._resetTextFontSize(baseText);
                         elementContent.push(deepClone(baseText));
                     });
                     const position = this._cursor.getDataPosition();
@@ -327,10 +328,8 @@ export default class Command {
                     const newElement = createTextElement({ left: 0, top: 0, width: 0, height: 0 });
                     content.split("").forEach(text => {
                         baseText.value = text;
-                        const { width, height } = this._stageConfig.getFontSize!(baseText);
-                        baseText.width = width;
-                        baseText.height = height;
-                        contentWidth += width + newElement.wordSpace;
+                        this._resetTextFontSize(baseText);
+                        contentWidth += baseText.width + newElement.wordSpace;
                         pasteContent.push(deepClone(baseText));
                     });
                     newElement.content.splice(0, 0, ...pasteContent);
@@ -387,6 +386,8 @@ export default class Command {
                 strikout: text.strikout
             };
             this._stageConfig.setFontConfig(config);
+
+            this._listener.onFontSizeChange && this._listener.onFontSizeChange(config.fontSize);
         }
     }
 
@@ -622,6 +623,69 @@ export default class Command {
         const operateElement = this._stageConfig.operateElement as IPPTTextElement;
         if (operateElement) {
             operateElement.content.splice(position, 0, text);
+            operateElement.height = this._getTextHeight(operateElement);
+
+            this.executeUpdateRender(operateElement);
+
+            this._debounceLog();
+        }
+    }
+
+    // 循环选中文本
+    private _forSelectTexts(element: IPPTTextElement, selectArea: [ number, number, number, number ], callback: (text: IFontData) => void) {
+        const renderContent = this._stageConfig.getRenderContent(element);
+        const [startX, startY, endX, endY] = selectArea;
+        renderContent.forEach((lineData, line) => {
+            if (line >= startY && line <= endY) {
+                lineData.texts.forEach((text, index) => {
+                    if (
+                        (startY === endY && startX <= index && index < endX) ||
+                        (startY !== endY && line === startY && startX <= index) ||
+                        (startY !== endY && line !== startY && line !== endY) ||
+                        (startY !== endY && line === endY && index <= endX)
+                    ) {
+                        callback && callback(text);
+                    }
+                });
+            }
+        });
+    }
+
+    // 重置text中字体宽高数据
+    private _resetTextFontSize(text: IFontData) {
+        const { width, height } = this._stageConfig.getFontSize!(text);
+        text.width = width;
+        text.height = height;
+    }
+
+    // 设置文本字体大小
+    public executeSetFontSize(fontSize: number) {
+        const operateElement = this._stageConfig.operateElement;
+        if (operateElement && operateElement.type === "text") {
+            if (this._stageConfig.textFocus) {
+                const selectArea = this._stageConfig.selectArea;
+                if (selectArea) {
+                    this._forSelectTexts(operateElement, selectArea, (text) => {
+                        text.fontSize = fontSize;
+                        this._resetTextFontSize(text);
+                    });
+                } else {
+                    // 聚焦但未选中文本，只修改字体样式配置
+                    this._stageConfig.setFontConfig({
+                        ...this._stageConfig.fontConfig,
+                        fontSize
+                    });
+                }
+                // 设置完后 文本框聚焦
+                this._cursor.setInputFocus();
+            } else {
+                // 未聚焦文本框，直接设置整个文本框内容字体大小
+                operateElement.content.forEach(text => {
+                    text.fontSize = fontSize;
+                    this._resetTextFontSize(text);
+                });
+            }
+
             operateElement.height = this._getTextHeight(operateElement);
 
             this.executeUpdateRender(operateElement);

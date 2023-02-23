@@ -112,7 +112,7 @@ export default class ControlStage extends Stage {
         );
         this.container.addEventListener(
             "mouseleave",
-            this._mouseup.bind(this),
+            this._mouseLeave.bind(this),
             false
         );
     }
@@ -736,7 +736,7 @@ export default class ControlStage extends Stage {
         }
     }
 
-    private _mouseup(evt: MouseEvent) {
+    private _mouseup(evt: MouseEvent, isMouseOut?: boolean) {
         const operateElement = this.stageConfig.operateElement;
         if (this.stageConfig.insertElement && this._canCreate) {
             const newElement = this._createElement(evt);
@@ -753,14 +753,41 @@ export default class ControlStage extends Stage {
                 deepClone(operateElement),
                 true
             );
-        } else if (this.stageConfig.textFocus && operateElement && !this.stageConfig.selectArea) {
-            // 更新文本框光标位置
-            const { left, top } = this._getMousePosition(evt);
-            const x = left - operateElement.left;
-            const y = top - operateElement.top;
-            this._cursor.focus(x, y);
-            this._command.executeUpdateFontConfig();
-            this.resetDrawOprate();
+        } else if (!isMouseOut && this.stageConfig.textFocus && operateElement) {
+            const selectArea = this.stageConfig.selectArea;
+            if (selectArea) {
+                let fontSize: string | number = "";
+                const renderContent = this.stageConfig.getRenderContent(operateElement as IPPTTextElement);
+                const [startX, startY, endX, endY] = selectArea;
+                renderContent.forEach((lineData, line) => {
+                    if (line >= startY && line <= endY) {
+                        for (const [index, text] of lineData.texts.entries()) {
+                            if (
+                                (startY === endY && startX <= index && index < endX) ||
+                                (startY !== endY && line === startY && startX <= index) ||
+                                (startY !== endY && line !== startY && line !== endY) ||
+                                (startY !== endY && line === endY && index <= endX)
+                            ) {
+                                if (fontSize === "") {
+                                    fontSize = text.fontSize;
+                                } else if (fontSize !== text.fontSize) {
+                                    fontSize = "";
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                });
+                this._listener.onFontSizeChange && this._listener.onFontSizeChange(fontSize);
+            } else {
+                // 更新文本框光标位置
+                const { left, top } = this._getMousePosition(evt);
+                const x = left - operateElement.left;
+                const y = top - operateElement.top;
+                this._cursor.focus(x, y);
+                this._command.executeUpdateFontConfig();
+                this.resetDrawOprate();
+            }
         }
         this._textClick = null;
         this._canMoveCanvas = false;
@@ -768,6 +795,10 @@ export default class ControlStage extends Stage {
         this._canCreate = false;
         this._canResizeElement = false;
         this._opreateCacheElement = null;
+    }
+
+    private _mouseLeave(evt: MouseEvent) {
+        this._mouseup(evt, true);
     }
 
     // 处理获取矩形区域的左上坐标点和左下坐标点

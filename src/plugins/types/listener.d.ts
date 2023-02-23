@@ -7,3 +7,5 @@ export type IOnEditChange = (cursor: number, length: number, slideId: string) =>
 export type IOnSelectedChange = (element: IPPTElement | null) => void;
 
 export type IOnInsertElementChange = (element: ICreatingElement | null) => void;
+
+export type IOnFontSizeChange = (size: number | string) => void;
