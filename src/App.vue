@@ -74,7 +74,7 @@
             </div>
         </div>
         <div class="ppt-footer">
-            <Footer @onZoomChange="resize" />
+            <Footer :total="slides.length" :current="slideIndex" @onZoomChange="resize" />
         </div>
     </div>
 </template>

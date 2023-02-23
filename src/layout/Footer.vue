@@ -1,5 +1,8 @@
 <template>
     <div class="footer-container">
+        <div class="ppt-index-view">
+            幻灯片 &nbsp; {{ total === 0 ? 0 : current + 1 }} / {{ total }}
+        </div>
         <div class="ppt-zoom-control">
             <a-tooltip title="适合页面">
                 <a-button class="ppt-zoom-btn" type="text" @click="fitZoom()"><PPTIcon icon="fit" :size="20" /></a-button>
@@ -18,9 +21,22 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, inject, Ref, watch } from "vue";
+import { ref, inject, Ref, watch, toRefs } from "vue";
 import { SHORTCUT } from "@/plugins/config/shortcut";
 import Editor from "@/plugins/editor";
+
+const props = defineProps({
+    total: {
+        type: Number,
+        default: 0
+    },
+    current: {
+        type: Number,
+        default: 0
+    }
+});
+
+const { total, current } = toRefs(props);
 
 const emit = defineEmits(["onZoomChange"]);
 
@@ -56,7 +72,15 @@ const increase = () => {
 <style lang="scss" scoped>
 .footer-container {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+}
+
+.ppt-index-view {
+    color: #555555;
+    font-size: 12px;
+    padding-left: 20px;
+    display: flex;
+    align-items: center;
 }
 
 .ppt-zoom-control {
