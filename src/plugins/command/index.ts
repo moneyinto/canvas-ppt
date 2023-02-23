@@ -1,6 +1,15 @@
 import { deepClone } from "@/utils";
-import { CLIPBOARD_STRING_TYPE, copyText, pasteCustomClipboardString, readClipboard } from "@/utils/clipboard";
-import { createImageElement, createRandomCode, createTextElement } from "@/utils/create";
+import {
+    CLIPBOARD_STRING_TYPE,
+    copyText,
+    pasteCustomClipboardString,
+    readClipboard
+} from "@/utils/clipboard";
+import {
+    createImageElement,
+    createRandomCode,
+    createTextElement
+} from "@/utils/create";
 import { encrypt } from "@/utils/crypto";
 import { baseFontConfig } from "../config/font";
 import { History } from "../editor/history";
@@ -8,7 +17,13 @@ import Listener from "../listener";
 import { KeyMap } from "../shortCut/keyMap";
 import StageConfig, { TEXT_MARGIN } from "../stage/config";
 import { Cursor } from "../stage/cursor";
-import { IPPTElement, IPPTElementOutline, IPPTImageElement, IPPTShapeElement, IPPTTextElement } from "../types/element";
+import {
+    IPPTElement,
+    IPPTElementOutline,
+    IPPTImageElement,
+    IPPTShapeElement,
+    IPPTTextElement
+} from "../types/element";
 import { IFontData } from "../types/font";
 
 export default class Command {
@@ -18,7 +33,12 @@ export default class Command {
     private _cursor: Cursor;
 
     private _updateDebounce: null | number;
-    constructor(stageConfig: StageConfig, listener: Listener, history: History, cursor: Cursor) {
+    constructor(
+        stageConfig: StageConfig,
+        listener: Listener,
+        history: History,
+        cursor: Cursor
+    ) {
         this._stageConfig = stageConfig;
         this._listener = listener;
         this._history = history;
@@ -61,8 +81,15 @@ export default class Command {
         const operateElement = this._stageConfig.operateElement;
         if (operateElement) {
             const slide = this._stageConfig.getCurrentSlide();
-            const zIndex = slide?.elements.findIndex(element => element.id === operateElement.id);
-            if (slide && slide.elements && typeof zIndex !== "undefined" && zIndex > -1) {
+            const zIndex = slide?.elements.findIndex(
+                (element) => element.id === operateElement.id
+            );
+            if (
+                slide &&
+                slide.elements &&
+                typeof zIndex !== "undefined" &&
+                zIndex > -1
+            ) {
                 // 已经处在顶层，无法继续移动
                 if (zIndex === slide.elements.length - 1) return;
 
@@ -80,8 +107,15 @@ export default class Command {
         const operateElement = this._stageConfig.operateElement;
         if (operateElement) {
             const slide = this._stageConfig.getCurrentSlide();
-            const zIndex = slide?.elements.findIndex(element => element.id === operateElement.id);
-            if (slide && slide.elements && typeof zIndex !== "undefined" && zIndex > -1) {
+            const zIndex = slide?.elements.findIndex(
+                (element) => element.id === operateElement.id
+            );
+            if (
+                slide &&
+                slide.elements &&
+                typeof zIndex !== "undefined" &&
+                zIndex > -1
+            ) {
                 // 已经处在底，无法继续移动
                 if (zIndex === 0) return;
 
@@ -99,8 +133,15 @@ export default class Command {
         const operateElement = this._stageConfig.operateElement;
         if (operateElement) {
             const slide = this._stageConfig.getCurrentSlide();
-            const zIndex = slide?.elements.findIndex(element => element.id === operateElement.id);
-            if (slide && slide.elements && typeof zIndex !== "undefined" && zIndex > -1) {
+            const zIndex = slide?.elements.findIndex(
+                (element) => element.id === operateElement.id
+            );
+            if (
+                slide &&
+                slide.elements &&
+                typeof zIndex !== "undefined" &&
+                zIndex > -1
+            ) {
                 // 已经处在顶层，无法继续移动
                 if (zIndex === slide.elements.length - 1) return;
 
@@ -118,8 +159,15 @@ export default class Command {
         const operateElement = this._stageConfig.operateElement;
         if (operateElement) {
             const slide = this._stageConfig.getCurrentSlide();
-            const zIndex = slide?.elements.findIndex(element => element.id === operateElement.id);
-            if (slide && slide.elements && typeof zIndex !== "undefined" && zIndex > -1) {
+            const zIndex = slide?.elements.findIndex(
+                (element) => element.id === operateElement.id
+            );
+            if (
+                slide &&
+                slide.elements &&
+                typeof zIndex !== "undefined" &&
+                zIndex > -1
+            ) {
                 // 已经处在底，无法继续移动
                 if (zIndex === 0) return;
 
@@ -134,7 +182,9 @@ export default class Command {
 
     // 水平翻转
     public executeFlipH() {
-        const operateElement = this._stageConfig.operateElement as IPPTImageElement | IPPTShapeElement;
+        const operateElement = this._stageConfig.operateElement as
+            | IPPTImageElement
+            | IPPTShapeElement;
         if (operateElement) {
             const newElement: IPPTElement = {
                 ...operateElement,
@@ -147,7 +197,9 @@ export default class Command {
 
     // 垂直翻转
     public executeFlipV() {
-        const operateElement = this._stageConfig.operateElement as IPPTImageElement | IPPTShapeElement;
+        const operateElement = this._stageConfig.operateElement as
+            | IPPTImageElement
+            | IPPTShapeElement;
         if (operateElement) {
             const newElement: IPPTElement = {
                 ...operateElement,
@@ -160,7 +212,8 @@ export default class Command {
 
     // 设置填充色
     public executeFillColor(color: string) {
-        const operateElement = this._stageConfig.operateElement as IPPTShapeElement;
+        const operateElement = this._stageConfig
+            .operateElement as IPPTShapeElement;
         if (operateElement) {
             const newElement = {
                 ...operateElement,
@@ -173,7 +226,9 @@ export default class Command {
 
     // 填充透明度设置
     public executeOpacity(value: number) {
-        const operateElement = this._stageConfig.operateElement as IPPTShapeElement | IPPTImageElement;
+        const operateElement = this._stageConfig.operateElement as
+            | IPPTShapeElement
+            | IPPTImageElement;
         if (operateElement) {
             const newElement = {
                 ...operateElement,
@@ -186,7 +241,8 @@ export default class Command {
 
     // 修改边框
     public executeOutline(outline?: IPPTElementOutline) {
-        const operateElement = this._stageConfig.operateElement as IPPTShapeElement;
+        const operateElement = this._stageConfig
+            .operateElement as IPPTShapeElement;
         if (operateElement) {
             const newElement = {
                 ...operateElement,
@@ -207,13 +263,30 @@ export default class Command {
             if (this._stageConfig.textFocus) {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
-                    const { startX, endX } = this._stageConfig.getSelectArea(selectArea, operateElement as IPPTTextElement);
-                    const copyContent = (operateElement as IPPTTextElement).content.slice(startX, endX);
-                    await copyText(encrypt(`${CLIPBOARD_STRING_TYPE.TEXT}${JSON.stringify(copyContent)}`));
+                    const { startX, endX } = this._stageConfig.getSelectArea(
+                        selectArea,
+                        operateElement as IPPTTextElement
+                    );
+                    const copyContent = (
+                        operateElement as IPPTTextElement
+                    ).content.slice(startX, endX);
+                    await copyText(
+                        encrypt(
+                            `${CLIPBOARD_STRING_TYPE.TEXT}${JSON.stringify(
+                                copyContent
+                            )}`
+                        )
+                    );
                 }
             } else {
                 // 将元素json数据加密存入剪切板
-                await copyText(encrypt(`${CLIPBOARD_STRING_TYPE.ELEMENT}${JSON.stringify(operateElement)}`));
+                await copyText(
+                    encrypt(
+                        `${CLIPBOARD_STRING_TYPE.ELEMENT}${JSON.stringify(
+                            operateElement
+                        )}`
+                    )
+                );
             }
         }
     }
@@ -229,8 +302,13 @@ export default class Command {
         const content = await readClipboard();
         if (content.indexOf(CLIPBOARD_STRING_TYPE.ELEMENT) > -1) {
             // 粘贴的内容为元素数据
-            const resultText = content.replace(CLIPBOARD_STRING_TYPE.ELEMENT, "");
-            const element = pasteCustomClipboardString(resultText) as IPPTElement;
+            const resultText = content.replace(
+                CLIPBOARD_STRING_TYPE.ELEMENT,
+                ""
+            );
+            const element = pasteCustomClipboardString(
+                resultText
+            ) as IPPTElement;
             // 粘贴的内容为元素数据
             element.id = createRandomCode();
             // 新元素较旧元素偏移一段距离
@@ -240,7 +318,11 @@ export default class Command {
             this.executeAddRender(element);
 
             // 再次写入剪切板，为了下一次粘贴能够在上一次的基础上进行偏移
-            await copyText(encrypt(`${CLIPBOARD_STRING_TYPE.ELEMENT}${JSON.stringify(element)}`));
+            await copyText(
+                encrypt(
+                    `${CLIPBOARD_STRING_TYPE.ELEMENT}${JSON.stringify(element)}`
+                )
+            );
         } else if (content.indexOf(CLIPBOARD_STRING_TYPE.IMAGE) > -1) {
             // 粘贴外来图片
             const image = new Image();
@@ -255,9 +337,15 @@ export default class Command {
             image.src = content;
         } else if (content.indexOf(CLIPBOARD_STRING_TYPE.TEXT) > -1) {
             const resultText = content.replace(CLIPBOARD_STRING_TYPE.TEXT, "");
-            const elementContent = pasteCustomClipboardString(resultText) as IFontData[];
+            const elementContent = pasteCustomClipboardString(
+                resultText
+            ) as IFontData[];
             const operateElement = this._stageConfig.operateElement;
-            if (operateElement && operateElement.type === "text" && this._stageConfig.textFocus) {
+            if (
+                operateElement &&
+                operateElement.type === "text" &&
+                this._stageConfig.textFocus
+            ) {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
                     // 选中区域存在替换选中区域
@@ -266,7 +354,11 @@ export default class Command {
 
                 // 光标位置粘贴
                 const position = this._cursor.getDataPosition();
-                operateElement.content.splice(position + 1, 0, ...elementContent);
+                operateElement.content.splice(
+                    position + 1,
+                    0,
+                    ...elementContent
+                );
                 operateElement.height = this._getTextHeight(operateElement);
                 const cursorPosition = position + elementContent.length;
                 this.executeUpdateRender(operateElement, true);
@@ -277,7 +369,11 @@ export default class Command {
             // 这里考虑是否带格式，先处理不带格式的
             if (content) {
                 const operateElement = this._stageConfig.operateElement;
-                if (operateElement && operateElement.type === "text" && this._stageConfig.textFocus) {
+                if (
+                    operateElement &&
+                    operateElement.type === "text" &&
+                    this._stageConfig.textFocus
+                ) {
                     const selectArea = this._stageConfig.selectArea;
                     if (selectArea) {
                         // 选中区域存在替换选中区域
@@ -299,13 +395,17 @@ export default class Command {
                         strikout: config.strikout
                     };
                     const elementContent: IFontData[] = [];
-                    content.split("").forEach(text => {
+                    content.split("").forEach((text) => {
                         baseText.value = text;
                         this._resetTextFontSize(baseText);
                         elementContent.push(deepClone(baseText));
                     });
                     const position = this._cursor.getDataPosition();
-                    operateElement.content.splice(position + 1, 0, ...elementContent);
+                    operateElement.content.splice(
+                        position + 1,
+                        0,
+                        ...elementContent
+                    );
                     operateElement.height = this._getTextHeight(operateElement);
                     const cursorPosition = position + elementContent.length;
                     this.executeUpdateRender(operateElement, true);
@@ -325,8 +425,13 @@ export default class Command {
                     };
                     const pasteContent: IFontData[] = [];
                     let contentWidth = TEXT_MARGIN * 2;
-                    const newElement = createTextElement({ left: 0, top: 0, width: 0, height: 0 });
-                    content.split("").forEach(text => {
+                    const newElement = createTextElement({
+                        left: 0,
+                        top: 0,
+                        width: 0,
+                        height: 0
+                    });
+                    content.split("").forEach((text) => {
                         baseText.value = text;
                         this._resetTextFontSize(baseText);
                         contentWidth += baseText.width + newElement.wordSpace;
@@ -369,12 +474,16 @@ export default class Command {
     // 选中位置字体更新字体样式配置
     public executeUpdateFontConfig() {
         // 获取前一个字的样式，设置config
-        const operateElement = this._stageConfig.operateElement as IPPTTextElement;
+        const operateElement = this._stageConfig
+            .operateElement as IPPTTextElement;
         if (operateElement && this._stageConfig.textFocus) {
             const currentDataPosition = this._cursor.getDataPosition();
             const content = operateElement.content;
             // 前面一个字没有，获取后面一个回车符的字样
-            const text = currentDataPosition === -1 ? content[0] : content[currentDataPosition];
+            const text =
+                currentDataPosition === -1
+                    ? content[0]
+                    : content[currentDataPosition];
 
             const config = {
                 fontSize: text.fontSize,
@@ -387,15 +496,17 @@ export default class Command {
             };
             this._stageConfig.setFontConfig(config);
 
-            this._listener.onFontSizeChange && this._listener.onFontSizeChange(config.fontSize);
+            this._listener.onFontSizeChange &&
+                this._listener.onFontSizeChange(config.fontSize);
         }
     }
 
     // 获取文本变更后文本框高度
     private _getTextHeight(operateElement: IPPTTextElement) {
-        const renderContent = this._stageConfig.getRenderContent(operateElement);
+        const renderContent =
+            this._stageConfig.getRenderContent(operateElement);
         let height = TEXT_MARGIN * 2;
-        renderContent.forEach(line => {
+        renderContent.forEach((line) => {
             height += line.height * operateElement.lineHeight;
         });
         return height;
@@ -403,10 +514,14 @@ export default class Command {
 
     // 删除选中文本
     private _deleteSelectText() {
-        const operateElement = this._stageConfig.operateElement as IPPTTextElement;
+        const operateElement = this._stageConfig
+            .operateElement as IPPTTextElement;
         const selectArea = this._stageConfig.selectArea;
         if (operateElement && selectArea) {
-            const { startX, endX } = this._stageConfig.getSelectArea(selectArea, operateElement);
+            const { startX, endX } = this._stageConfig.getSelectArea(
+                selectArea,
+                operateElement
+            );
             operateElement.content.splice(startX, endX - startX);
             operateElement.height = this._getTextHeight(operateElement);
 
@@ -420,9 +535,13 @@ export default class Command {
 
     // 删除文本内容
     private _deleteText(position: number) {
-        const operateElement = this._stageConfig.operateElement as IPPTTextElement;
+        const operateElement = this._stageConfig
+            .operateElement as IPPTTextElement;
         if (operateElement) {
-            if (position >= operateElement.content.length - 1 || position === -1) return false;
+            if (
+                position >= operateElement.content.length - 1 ||
+                position === -1
+            ) return false;
             operateElement.content.splice(position, 1);
             operateElement.height = this._getTextHeight(operateElement);
 
@@ -443,21 +562,36 @@ export default class Command {
                 switch (direction) {
                     case KeyMap.Up: {
                         const position = this._cursor.getDataPosition();
-                        const renderPosition = this._cursor.getRenderDataPosition();
+                        const renderPosition =
+                            this._cursor.getRenderDataPosition();
                         if (renderPosition[0] > 0) {
-                            const renderContent = this._stageConfig.getRenderContent(operateElement as IPPTTextElement);
+                            const renderContent =
+                                this._stageConfig.getRenderContent(
+                                    operateElement as IPPTTextElement
+                                );
 
-                            const currentLineData = renderContent[renderPosition[0]];
-                            let currentLeft = this._stageConfig.getAlignOffsetX(currentLineData, operateElement as IPPTTextElement);
-                            for (const [index, data] of currentLineData.texts.entries()) {
+                            const currentLineData =
+                                renderContent[renderPosition[0]];
+                            let currentLeft = this._stageConfig.getAlignOffsetX(
+                                currentLineData,
+                                operateElement as IPPTTextElement
+                            );
+                            for (const [
+                                index,
+                                data
+                            ] of currentLineData.texts.entries()) {
                                 if (index <= renderPosition[1]) {
                                     currentLeft += data.width;
                                 }
                             }
 
-                            const upLineData = renderContent[renderPosition[0] - 1];
+                            const upLineData =
+                                renderContent[renderPosition[0] - 1];
                             let upLineX = -1;
-                            let upLeft = this._stageConfig.getAlignOffsetX(upLineData, operateElement as IPPTTextElement);
+                            let upLeft = this._stageConfig.getAlignOffsetX(
+                                upLineData,
+                                operateElement as IPPTTextElement
+                            );
                             for (const data of upLineData.texts) {
                                 if (upLeft <= currentLeft) {
                                     upLineX++;
@@ -470,26 +604,47 @@ export default class Command {
                             // 处理光标在行首的情况
                             if (upLineX === -1) upLineX = 0;
 
-                            this._updateCursor(position - (renderPosition[1] + 1 + upLineData.texts.length - upLineX));
+                            this._updateCursor(
+                                position -
+                                    (renderPosition[1] +
+                                        1 +
+                                        upLineData.texts.length -
+                                        upLineX)
+                            );
                         }
                         break;
                     }
                     case KeyMap.Down: {
                         const position = this._cursor.getDataPosition();
-                        const renderPosition = this._cursor.getRenderDataPosition();
-                        const renderContent = this._stageConfig.getRenderContent(operateElement as IPPTTextElement);
+                        const renderPosition =
+                            this._cursor.getRenderDataPosition();
+                        const renderContent =
+                            this._stageConfig.getRenderContent(
+                                operateElement as IPPTTextElement
+                            );
                         if (renderPosition[0] < renderContent.length - 1) {
-                            const currentLineData = renderContent[renderPosition[0]];
-                            let currentLeft = this._stageConfig.getAlignOffsetX(currentLineData, operateElement as IPPTTextElement);
-                            for (const [index, data] of currentLineData.texts.entries()) {
+                            const currentLineData =
+                                renderContent[renderPosition[0]];
+                            let currentLeft = this._stageConfig.getAlignOffsetX(
+                                currentLineData,
+                                operateElement as IPPTTextElement
+                            );
+                            for (const [
+                                index,
+                                data
+                            ] of currentLineData.texts.entries()) {
                                 if (index <= renderPosition[1]) {
                                     currentLeft += data.width;
                                 }
                             }
 
-                            const downLineData = renderContent[renderPosition[0] + 1];
+                            const downLineData =
+                                renderContent[renderPosition[0] + 1];
                             let downLineX = -1;
-                            let downLeft = this._stageConfig.getAlignOffsetX(downLineData, operateElement as IPPTTextElement);
+                            let downLeft = this._stageConfig.getAlignOffsetX(
+                                downLineData,
+                                operateElement as IPPTTextElement
+                            );
                             for (const data of downLineData.texts) {
                                 if (downLeft <= currentLeft) {
                                     downLineX++;
@@ -502,7 +657,12 @@ export default class Command {
                             // 处理光标在行首的情况
                             if (downLineX === -1) downLineX = 0;
 
-                            this._updateCursor(position + (currentLineData.texts.length - (renderPosition[1] + 1) + downLineX));
+                            this._updateCursor(
+                                position +
+                                    (currentLineData.texts.length -
+                                        (renderPosition[1] + 1) +
+                                        downLineX)
+                            );
                         }
                         break;
                     }
@@ -530,11 +690,15 @@ export default class Command {
                         break;
                     }
                     case KeyMap.Left: {
-                        operateElement.left = Math.floor(operateElement.left - 1);
+                        operateElement.left = Math.floor(
+                            operateElement.left - 1
+                        );
                         break;
                     }
                     case KeyMap.Right: {
-                        operateElement.left = Math.ceil(operateElement.left + 1);
+                        operateElement.left = Math.ceil(
+                            operateElement.left + 1
+                        );
                         break;
                     }
                 }
@@ -609,7 +773,7 @@ export default class Command {
     // 元素删除及渲染
     public executeDeleteRender(element: IPPTElement) {
         const slide = this._stageConfig.getCurrentSlide();
-        const index = slide?.elements.findIndex(ele => ele.id === element.id);
+        const index = slide?.elements.findIndex((ele) => ele.id === element.id);
         if (typeof index !== "undefined" && index > -1) {
             slide?.elements.splice(index, 1);
             this._stageConfig.setOperateElement(null);
@@ -620,7 +784,8 @@ export default class Command {
 
     // 文本输入
     public executeAddText(text: IFontData, position: number) {
-        const operateElement = this._stageConfig.operateElement as IPPTTextElement;
+        const operateElement = this._stageConfig
+            .operateElement as IPPTTextElement;
         if (operateElement) {
             operateElement.content.splice(position, 0, text);
             operateElement.height = this._getTextHeight(operateElement);
@@ -632,7 +797,11 @@ export default class Command {
     }
 
     // 循环选中文本
-    private _forSelectTexts(element: IPPTTextElement, selectArea: [ number, number, number, number ], callback: (text: IFontData) => void) {
+    private _forSelectTexts(
+        element: IPPTTextElement,
+        selectArea: [number, number, number, number],
+        callback: (text: IFontData) => void
+    ) {
         const renderContent = this._stageConfig.getRenderContent(element);
         const [startX, startY, endX, endY] = selectArea;
         renderContent.forEach((lineData, line) => {
@@ -640,7 +809,9 @@ export default class Command {
                 lineData.texts.forEach((text, index) => {
                     if (
                         (startY === endY && startX <= index && index < endX) ||
-                        (startY !== endY && line === startY && startX <= index) ||
+                        (startY !== endY &&
+                            line === startY &&
+                            startX <= index) ||
                         (startY !== endY && line !== startY && line !== endY) ||
                         (startY !== endY && line === endY && index <= endX)
                     ) {
@@ -659,29 +830,42 @@ export default class Command {
     }
 
     // 设置文本字体大小
-    public executeSetFontSize(fontSize: number) {
+    public executeSetFontSize(fontSize: number, type?: "plus" | "minus") {
         const operateElement = this._stageConfig.operateElement;
         if (operateElement && operateElement.type === "text") {
             if (this._stageConfig.textFocus) {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
-                        text.fontSize = fontSize;
+                        text.fontSize = !type
+                            ? fontSize
+                            : type === "plus"
+                            ? text.fontSize + fontSize
+                            : text.fontSize - fontSize;
                         this._resetTextFontSize(text);
                     });
                 } else {
                     // 聚焦但未选中文本，只修改字体样式配置
+                    const config = this._stageConfig.fontConfig;
                     this._stageConfig.setFontConfig({
-                        ...this._stageConfig.fontConfig,
-                        fontSize
+                        ...config,
+                        fontSize: (config.fontSize = !type
+                            ? fontSize
+                            : type === "plus"
+                            ? config.fontSize + fontSize
+                            : config.fontSize - fontSize)
                     });
                 }
                 // 设置完后 文本框聚焦
                 this._cursor.setInputFocus();
             } else {
                 // 未聚焦文本框，直接设置整个文本框内容字体大小
-                operateElement.content.forEach(text => {
-                    text.fontSize = fontSize;
+                operateElement.content.forEach((text) => {
+                    text.fontSize = !type
+                        ? fontSize
+                        : type === "plus"
+                        ? text.fontSize + fontSize
+                        : text.fontSize - fontSize;
                     this._resetTextFontSize(text);
                 });
             }
@@ -706,8 +890,8 @@ export default class Command {
     }
 
     private _debounceLog() {
-         // 更新记录做防抖延迟
-         if (this._updateDebounce) {
+        // 更新记录做防抖延迟
+        if (this._updateDebounce) {
             clearTimeout(this._updateDebounce);
             this._updateDebounce = null;
         }

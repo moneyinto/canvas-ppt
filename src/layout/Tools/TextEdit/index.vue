@@ -1,5 +1,6 @@
 <template>
     <FontSize :element="element" />
+    <a-divider class="ppt-tool-divider" type="vertical" />
 </template>
 
 <script lang="ts" setup>
@@ -21,4 +22,9 @@ const { element } = toRefs(props);
 </script>
 
 <style lang="scss" scoped>
+.ppt-tool-divider {
+    border-left-color: #d9dadb;
+    top: 0;
+    height: 18px;
+}
 </style>

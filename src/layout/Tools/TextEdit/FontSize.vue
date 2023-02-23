@@ -50,6 +50,24 @@
                 </a-popover>
             </div>
         </a-tooltip>
+
+        <a-tooltip title="增大字号">
+            <div
+                class="ppt-tool-btn"
+                @click="plusSize()"
+            >
+                <PPTIcon icon="plusSize" :size="28" />
+            </div>
+        </a-tooltip>
+
+        <a-tooltip title="减小字号">
+            <div
+                class="ppt-tool-btn"
+                @click="minusSize()"
+            >
+                <PPTIcon icon="minusSize" :size="28" />
+            </div>
+        </a-tooltip>
     </div>
 </template>
 
@@ -116,6 +134,14 @@ const setFontSize = (size: number) => {
     showFontSize.value = false;
     fontSize.value = size;
     instance?.value.command.executeSetFontSize(size);
+};
+
+const plusSize = () => {
+    instance?.value.command.executeSetFontSize(2, "plus");
+};
+
+const minusSize = () => {
+    instance?.value.command.executeSetFontSize(2, "minus");
 };
 </script>
 
