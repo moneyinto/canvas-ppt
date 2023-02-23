@@ -5,6 +5,8 @@
     <Bold :element="element" />
 
     <Italic :element="element" />
+
+    <Underline :element="element" />
 </template>
 
 <script lang="ts" setup>
@@ -13,6 +15,7 @@ import { IPPTElement } from "@/plugins/types/element";
 import FontSize from "./FontSize.vue";
 import Bold from "./Bold.vue";
 import Italic from "./italic.vue";
+import Underline from "./Underline.vue";
 // import Editor from "@/plugins/editor";
 
 // const instance = inject<Ref<Editor>>("instance");

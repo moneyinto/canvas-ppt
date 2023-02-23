@@ -760,6 +760,7 @@ export default class ControlStage extends Stage {
                 let fontSize: string | number = "";
                 let isBold = false;
                 let isItalic = false;
+                let underline = true;
                 const renderContent = this.stageConfig.getRenderContent(operateElement as IPPTTextElement);
                 const [startX, startY, endX, endY] = selectArea;
                 renderContent.forEach((lineData, line) => {
@@ -788,6 +789,10 @@ export default class ControlStage extends Stage {
                                     if (text.fontStyle === "normal") {
                                         isItalic = false;
                                     }
+
+                                    if (!text.underline) {
+                                        underline = false;
+                                    }
                                 }
                             }
                         }
@@ -796,6 +801,7 @@ export default class ControlStage extends Stage {
                 this._listener.onFontSizeChange && this._listener.onFontSizeChange(fontSize);
                 this._listener.onFontWeightChange && this._listener.onFontWeightChange(isBold);
                 this._listener.onFontStyleChange && this._listener.onFontStyleChange(isItalic);
+                this._listener.onFontUnderLineChange && this._listener.onFontUnderLineChange(underline);
             } else {
                 // 更新文本框光标位置
                 const { left, top } = this._getMousePosition(evt);

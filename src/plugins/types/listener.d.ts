@@ -13,3 +13,5 @@ export type IOnFontSizeChange = (size: number | string) => void;
 export type IOnFontWeightChange = (bold: boolean) => void;
 
 export type IOnFontStyleChange = (italic: boolean) => void;
+
+export type IOnFontUnderLineChange = (underline: boolean) => void;
