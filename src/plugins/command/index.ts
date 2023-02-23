@@ -500,6 +500,7 @@ export default class Command {
             this._listener.onFontWeightChange && this._listener.onFontWeightChange(config.fontWeight === "bold");
             this._listener.onFontStyleChange && this._listener.onFontStyleChange(config.fontStyle === "italic");
             this._listener.onFontUnderLineChange && this._listener.onFontUnderLineChange(config.underline);
+            this._listener.onFontStrikoutChange && this._listener.onFontStrikoutChange(config.strikout);
         }
     }
 
@@ -979,6 +980,43 @@ export default class Command {
                 // 未聚焦文本框，直接设置整个文本框内容字体
                 operateElement.content.forEach((text) => {
                     text.underline = underline;
+                    this._resetTextFontSize(text);
+                });
+            }
+
+            operateElement.height = this._getTextHeight(operateElement);
+
+            this.executeUpdateRender(operateElement);
+
+            this._debounceLog();
+        }
+    }
+
+    // 设置字体删除线
+    public executeSetFontStrikout(strikout: boolean) {
+        const operateElement = this._stageConfig.operateElement;
+        if (operateElement && operateElement.type === "text") {
+            if (this._stageConfig.textFocus) {
+                const selectArea = this._stageConfig.selectArea;
+                if (selectArea) {
+                    this._forSelectTexts(operateElement, selectArea, (text) => {
+                        text.strikout = strikout;
+                        this._resetTextFontSize(text);
+                    });
+                } else {
+                    // 聚焦但未选中文本，只修改字体样式配置
+                    const config = this._stageConfig.fontConfig;
+                    this._stageConfig.setFontConfig({
+                        ...config,
+                        strikout
+                    });
+                }
+                // 设置完后 文本框聚焦
+                this._cursor.setInputFocus();
+            } else {
+                // 未聚焦文本框，直接设置整个文本框内容字体
+                operateElement.content.forEach((text) => {
+                    text.strikout = strikout;
                     this._resetTextFontSize(text);
                 });
             }

@@ -7,6 +7,8 @@
     <Italic :element="element" />
 
     <Underline :element="element" />
+
+    <Strikout :element="element" />
 </template>
 
 <script lang="ts" setup>
@@ -16,6 +18,7 @@ import FontSize from "./FontSize.vue";
 import Bold from "./Bold.vue";
 import Italic from "./italic.vue";
 import Underline from "./Underline.vue";
+import Strikout from "./Strikout.vue";
 // import Editor from "@/plugins/editor";
 
 // const instance = inject<Ref<Editor>>("instance");

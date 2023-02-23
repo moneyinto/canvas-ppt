@@ -1,12 +1,12 @@
 <template>
     <div class="ppt-edit-tools">
-       <a-tooltip title="下划线">
+       <a-tooltip title="删除线">
             <div
                 class="ppt-tool-btn"
-                :class="isUnderLine && 'active'"
-                @click="setFontUnderLine()"
+                :class="isStrikout && 'active'"
+                @click="setFontStrikout()"
             >
-                <PPTIcon icon="underline" :size="28" />
+                <PPTIcon icon="strikout" :size="28" />
             </div>
         </a-tooltip>
     </div>
@@ -21,8 +21,8 @@ import { IFontData } from "@/plugins/types/font";
 const instance = inject<Ref<Editor>>("instance");
 
 if (instance?.value) {
-    instance.value.listener.onFontUnderLineChange = (underline) => {
-        isUnderLine.value = underline;
+    instance.value.listener.onFontStrikoutChange = (strikout) => {
+        isStrikout.value = strikout;
     };
 }
 
@@ -33,23 +33,23 @@ const props = defineProps({
     }
 });
 
-const isUnderLine = ref(false);
+const isStrikout = ref(false);
 
-const getContentUnderLine = (texts: IFontData[]) => {
-    let isUnderLine = true;
+const getContentStrikout = (texts: IFontData[]) => {
+    let isStrikout = true;
     for (const text of texts) {
-        if (!text.underline) {
-            isUnderLine = false;
+        if (!text.strikout) {
+            isStrikout = false;
             break;
         }
     }
-    return isUnderLine;
+    return isStrikout;
 };
 
 const init = () => {
     if (props.element && props.element.type === "text") {
         const operateElement = props.element;
-        isUnderLine.value = getContentUnderLine(operateElement.content);
+        isStrikout.value = getContentStrikout(operateElement.content);
     }
 };
 
@@ -57,9 +57,9 @@ init();
 
 watch(() => props.element, init);
 
-const setFontUnderLine = () => {
-    isUnderLine.value = !isUnderLine.value;
-    instance?.value.command.executeSetFontUnderLine(isUnderLine.value);
+const setFontStrikout = () => {
+    isStrikout.value = !isStrikout.value;
+    instance?.value.command.executeSetFontStrikout(isStrikout.value);
 };
 </script>
 
