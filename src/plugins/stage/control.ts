@@ -756,7 +756,9 @@ export default class ControlStage extends Stage {
         } else if (!isMouseOut && this.stageConfig.textFocus && operateElement) {
             const selectArea = this.stageConfig.selectArea;
             if (selectArea) {
+                let first = true;
                 let fontSize: string | number = "";
+                let isBold = false;
                 const renderContent = this.stageConfig.getRenderContent(operateElement as IPPTTextElement);
                 const [startX, startY, endX, endY] = selectArea;
                 renderContent.forEach((lineData, line) => {
@@ -768,17 +770,25 @@ export default class ControlStage extends Stage {
                                 (startY !== endY && line !== startY && line !== endY) ||
                                 (startY !== endY && line === endY && index <= endX)
                             ) {
-                                if (fontSize === "") {
+                                if (first) {
+                                    first = false;
                                     fontSize = text.fontSize;
-                                } else if (fontSize !== text.fontSize) {
-                                    fontSize = "";
-                                    break;
+                                    isBold = text.fontWeight === "bold";
+                                } else {
+                                    if (fontSize !== text.fontSize) {
+                                        fontSize = "";
+                                    }
+
+                                    if (text.fontWeight === "normal") {
+                                        isBold = false;
+                                    }
                                 }
                             }
                         }
                     }
                 });
                 this._listener.onFontSizeChange && this._listener.onFontSizeChange(fontSize);
+                this._listener.onFontBoldChange && this._listener.onFontBoldChange(isBold);
             } else {
                 // 更新文本框光标位置
                 const { left, top } = this._getMousePosition(evt);

@@ -496,8 +496,8 @@ export default class Command {
             };
             this._stageConfig.setFontConfig(config);
 
-            this._listener.onFontSizeChange &&
-                this._listener.onFontSizeChange(config.fontSize);
+            this._listener.onFontSizeChange && this._listener.onFontSizeChange(config.fontSize);
+            this._listener.onFontBoldChange && this._listener.onFontBoldChange(config.fontWeight === "bold");
         }
     }
 
@@ -866,6 +866,43 @@ export default class Command {
                         : type === "plus"
                         ? text.fontSize + fontSize
                         : text.fontSize - fontSize;
+                    this._resetTextFontSize(text);
+                });
+            }
+
+            operateElement.height = this._getTextHeight(operateElement);
+
+            this.executeUpdateRender(operateElement);
+
+            this._debounceLog();
+        }
+    }
+
+    // 设置字体粗细
+    public executeSetFontWeight(bold: boolean) {
+        const operateElement = this._stageConfig.operateElement;
+        if (operateElement && operateElement.type === "text") {
+            if (this._stageConfig.textFocus) {
+                const selectArea = this._stageConfig.selectArea;
+                if (selectArea) {
+                    this._forSelectTexts(operateElement, selectArea, (text) => {
+                        text.fontWeight = bold ? "bold" : "normal";
+                        this._resetTextFontSize(text);
+                    });
+                } else {
+                    // 聚焦但未选中文本，只修改字体样式配置
+                    const config = this._stageConfig.fontConfig;
+                    this._stageConfig.setFontConfig({
+                        ...config,
+                        fontWeight: bold ? "bold" : "normal"
+                    });
+                }
+                // 设置完后 文本框聚焦
+                this._cursor.setInputFocus();
+            } else {
+                // 未聚焦文本框，直接设置整个文本框内容字体大小
+                operateElement.content.forEach((text) => {
+                    text.fontWeight = bold ? "bold" : "normal";
                     this._resetTextFontSize(text);
                 });
             }
