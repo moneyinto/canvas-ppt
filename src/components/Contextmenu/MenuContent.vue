@@ -120,6 +120,9 @@ $menuHeight: 32px;
     &.disable {
         color: #b1b1b1;
         cursor: no-drop;
+        .ppt-icon {
+            opacity: 0.4;
+        }
     }
 }
 .menu-item-content {

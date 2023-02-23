@@ -41,6 +41,7 @@ export default class ControlStage extends Stage {
     private _cursor: Cursor;
     private _textarea: Textarea;
     private _textClick: IMouseClick | null;
+    private _debounceSelectArea: null | number;
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
@@ -77,10 +78,16 @@ export default class ControlStage extends Stage {
             this._textarea,
             this._cursor
         );
+        this._debounceSelectArea = null;
         // 后面考虑要不要改成window ？？？？？？？？？？？？？？？？？？？？？？
         this.container.addEventListener(
             "mousewheel",
             throttleRAF(this._mousewheel.bind(this) as (evt: Event) => void),
+            false
+        );
+        this.container.addEventListener(
+            "contextmenu",
+            this._contextmenu.bind(this),
             false
         );
         this.container.addEventListener(
@@ -106,11 +113,6 @@ export default class ControlStage extends Stage {
         this.container.addEventListener(
             "mouseleave",
             this._mouseup.bind(this),
-            false
-        );
-        this.container.addEventListener(
-            "contextmenu",
-            this._contextmenu.bind(this),
             false
         );
     }
@@ -141,15 +143,23 @@ export default class ControlStage extends Stage {
     }
 
     private _contextmenu(evt: MouseEvent) {
-        this._mousedown(evt);
+        this._mousedown(evt, true);
         const isMac = checkIsMac();
-        const selectedElement = !!this.stageConfig.operateElement;
+        const operateElement = this.stageConfig.operateElement;
+        const selectedElement = !!operateElement;
+        const isTextCutCopyDisabled = () => {
+            if (operateElement && operateElement.type === "text" && this.stageConfig.textFocus) {
+                return !this.stageConfig.selectArea;
+            }
+            return false;
+        };
         const contextmenus: IContextmenuItem[] = [
             {
                 text: "剪切",
                 icon: "cut",
                 subText: `${isMac ? "⌘" : "Ctrl"} + X`,
                 hide: !selectedElement,
+                disable: isTextCutCopyDisabled(),
                 handler: () => {
                     this._command.executeCut();
                 }
@@ -159,6 +169,7 @@ export default class ControlStage extends Stage {
                 icon: "copy",
                 subText: `${isMac ? "⌘" : "Ctrl"} + C`,
                 hide: !selectedElement,
+                disable: isTextCutCopyDisabled(),
                 handler: () => {
                     this._command.executeCopy();
                 }
@@ -241,13 +252,12 @@ export default class ControlStage extends Stage {
         }
     }
 
-    private _mousedown(evt: MouseEvent) {
+    private _mousedown(evt: MouseEvent, isContextmenu?: boolean) {
         this._canMoveCanvas = !this.stageConfig.insertElement;
         this._canCreate = !!this.stageConfig.insertElement;
         this._startPoint = [evt.pageX, evt.pageY];
         const { left, top } = this._getMousePosition(evt);
         this._startOriginPoint = [left, top];
-
         if (!this.stageConfig.insertElement && !this.stageConfig.canMove) {
             if (
                 this.stageConfig.opreateType &&
@@ -277,7 +287,16 @@ export default class ControlStage extends Stage {
                     top
                 );
 
-                this.stageConfig.setSelectArea(null);
+                // 右击菜单会触发mousedown事件，这里延迟取消文本选中
+                if (isContextmenu && this._debounceSelectArea) {
+                    clearTimeout(this._debounceSelectArea);
+                }
+                if (!isContextmenu) {
+                    this._debounceSelectArea = setTimeout(() => {
+                        this.stageConfig.setSelectArea(null);
+                    }, 20);
+                }
+                // this.stageConfig.setSelectArea(null);
 
                 // 存在已选中，重复选中不执行下面操作
                 if (
