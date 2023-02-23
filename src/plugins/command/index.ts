@@ -497,7 +497,8 @@ export default class Command {
             this._stageConfig.setFontConfig(config);
 
             this._listener.onFontSizeChange && this._listener.onFontSizeChange(config.fontSize);
-            this._listener.onFontBoldChange && this._listener.onFontBoldChange(config.fontWeight === "bold");
+            this._listener.onFontWeightChange && this._listener.onFontWeightChange(config.fontWeight === "bold");
+            this._listener.onFontStyleChange && this._listener.onFontStyleChange(config.fontStyle === "italic");
         }
     }
 
@@ -900,9 +901,46 @@ export default class Command {
                 // 设置完后 文本框聚焦
                 this._cursor.setInputFocus();
             } else {
-                // 未聚焦文本框，直接设置整个文本框内容字体大小
+                // 未聚焦文本框，直接设置整个文本框内容字体
                 operateElement.content.forEach((text) => {
                     text.fontWeight = bold ? "bold" : "normal";
+                    this._resetTextFontSize(text);
+                });
+            }
+
+            operateElement.height = this._getTextHeight(operateElement);
+
+            this.executeUpdateRender(operateElement);
+
+            this._debounceLog();
+        }
+    }
+
+    // 设置字体斜体
+    public executeSetFontStyle(italic: boolean) {
+        const operateElement = this._stageConfig.operateElement;
+        if (operateElement && operateElement.type === "text") {
+            if (this._stageConfig.textFocus) {
+                const selectArea = this._stageConfig.selectArea;
+                if (selectArea) {
+                    this._forSelectTexts(operateElement, selectArea, (text) => {
+                        text.fontStyle = italic ? "italic" : "normal";
+                        this._resetTextFontSize(text);
+                    });
+                } else {
+                    // 聚焦但未选中文本，只修改字体样式配置
+                    const config = this._stageConfig.fontConfig;
+                    this._stageConfig.setFontConfig({
+                        ...config,
+                        fontStyle: italic ? "italic" : "normal"
+                    });
+                }
+                // 设置完后 文本框聚焦
+                this._cursor.setInputFocus();
+            } else {
+                // 未聚焦文本框，直接设置整个文本框内容字体
+                operateElement.content.forEach((text) => {
+                    text.fontStyle = italic ? "italic" : "normal";
                     this._resetTextFontSize(text);
                 });
             }

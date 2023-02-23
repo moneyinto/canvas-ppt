@@ -11,3 +11,5 @@ export type IOnInsertElementChange = (element: ICreatingElement | null) => void;
 export type IOnFontSizeChange = (size: number | string) => void;
 
 export type IOnFontWeightChange = (bold: boolean) => void;
+
+export type IOnFontStyleChange = (italic: boolean) => void;

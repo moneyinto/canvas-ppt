@@ -44,7 +44,7 @@ export const slides: ISlide[] = [
                         fontFamily: "Arial",
                         fontWeight: "bold",
                         fontColor: "#444",
-                        fontStyle: "normal",
+                        fontStyle: "italic",
                         width: 41.8857421875,
                         height: 42.93359375,
                         underline: false,

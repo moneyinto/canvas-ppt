@@ -44,6 +44,6 @@ export default class DB {
         if (!this.db) await this.init();
         this.db!.transaction("history", "readwrite")
             .objectStore("history")
-            .add({ slideId: slideId, slides: JSON.parse(JSON.stringify(slides)) });
+            .add({ slideId, slides: JSON.parse(JSON.stringify(slides)) });
     }
 }

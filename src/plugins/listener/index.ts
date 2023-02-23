@@ -4,7 +4,8 @@ import {
     IOnSelectedChange,
     IOnInsertElementChange,
     IOnFontSizeChange,
-    IOnFontWeightChange
+    IOnFontWeightChange,
+    IOnFontStyleChange
 } from "../types/listener";
 
 export default class Listener {
@@ -13,13 +14,15 @@ export default class Listener {
     public onSelectedChange: IOnSelectedChange | null;
     public onInsertElementChange: IOnInsertElementChange | null;
     public onFontSizeChange: IOnFontSizeChange | null;
-    public onFontBoldChange: IOnFontWeightChange | null;
+    public onFontWeightChange: IOnFontWeightChange | null;
+    public onFontStyleChange: IOnFontStyleChange | null;
     constructor() {
         this.onZoomChange = null;
         this.onEditChange = null;
         this.onSelectedChange = null;
         this.onInsertElementChange = null;
         this.onFontSizeChange = null;
-        this.onFontBoldChange = null;
+        this.onFontWeightChange = null;
+        this.onFontStyleChange = null;
     }
 }

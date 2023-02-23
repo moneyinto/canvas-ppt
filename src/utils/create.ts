@@ -26,7 +26,7 @@ export const createRandomCode = (len = 6) => {
 };
 
 export const createTextElement = (position: IElementPosition) => {
-    const { left, top, width, height } = position;
+    const { left, top, width } = position;
     const id = createRandomCode();
     const name = "文本";
 

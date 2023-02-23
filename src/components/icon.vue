@@ -48,7 +48,8 @@ const icons: { [key: string]: string } = {
     text: new URL("@/assets/icons/text.svg", import.meta.url).href,
     plusSize: new URL("@/assets/icons/plusSize.svg", import.meta.url).href,
     minusSize: new URL("@/assets/icons/minusSize.svg", import.meta.url).href,
-    boldFont: new URL("@/assets/icons/boldFont.svg", import.meta.url).href
+    boldFont: new URL("@/assets/icons/boldFont.svg", import.meta.url).href,
+    italicFont: new URL("@/assets/icons/italicFont.svg", import.meta.url).href
 };
 
 const iconUrl = computed(() => icons[icon.value]);

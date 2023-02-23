@@ -1,12 +1,12 @@
 <template>
     <div class="ppt-edit-tools">
-       <a-tooltip title="粗体">
+       <a-tooltip title="斜体">
             <div
                 class="ppt-tool-btn"
-                :class="isBold && 'active'"
-                @click="setFontWeight()"
+                :class="isItalic && 'active'"
+                @click="setFontStyle()"
             >
-                <PPTIcon icon="boldFont" :size="28" />
+                <PPTIcon icon="italicFont" :size="28" />
             </div>
         </a-tooltip>
     </div>
@@ -21,8 +21,8 @@ import { IFontData } from "@/plugins/types/font";
 const instance = inject<Ref<Editor>>("instance");
 
 if (instance?.value) {
-    instance.value.listener.onFontWeightChange = (bold) => {
-        isBold.value = bold;
+    instance.value.listener.onFontStyleChange = (italic) => {
+        isItalic.value = italic;
     };
 }
 
@@ -33,24 +33,23 @@ const props = defineProps({
     }
 });
 
-const isBold = ref(false);
+const isItalic = ref(false);
 
-const getContentBold = (texts: IFontData[]) => {
-    let isBold = true;
+const getContentItalic = (texts: IFontData[]) => {
+    let isItalic = true;
     for (const text of texts) {
-        if (text.fontWeight === "normal") {
-            // 存在没加粗的 结束循环
-            isBold = false;
+        if (text.fontStyle === "normal") {
+            isItalic = false;
             break;
         }
     }
-    return isBold;
+    return isItalic;
 };
 
 const init = () => {
     if (props.element && props.element.type === "text") {
         const operateElement = props.element;
-        isBold.value = getContentBold(operateElement.content);
+        isItalic.value = getContentItalic(operateElement.content);
     }
 };
 
@@ -58,9 +57,9 @@ init();
 
 watch(() => props.element, init);
 
-const setFontWeight = () => {
-    isBold.value = !isBold.value;
-    instance?.value.command.executeSetFontWeight(isBold.value);
+const setFontStyle = () => {
+    isItalic.value = !isItalic.value;
+    instance?.value.command.executeSetFontStyle(isItalic.value);
 };
 </script>
 

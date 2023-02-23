@@ -759,6 +759,7 @@ export default class ControlStage extends Stage {
                 let first = true;
                 let fontSize: string | number = "";
                 let isBold = false;
+                let isItalic = false;
                 const renderContent = this.stageConfig.getRenderContent(operateElement as IPPTTextElement);
                 const [startX, startY, endX, endY] = selectArea;
                 renderContent.forEach((lineData, line) => {
@@ -774,6 +775,7 @@ export default class ControlStage extends Stage {
                                     first = false;
                                     fontSize = text.fontSize;
                                     isBold = text.fontWeight === "bold";
+                                    isItalic = text.fontStyle === "italic";
                                 } else {
                                     if (fontSize !== text.fontSize) {
                                         fontSize = "";
@@ -782,13 +784,18 @@ export default class ControlStage extends Stage {
                                     if (text.fontWeight === "normal") {
                                         isBold = false;
                                     }
+
+                                    if (text.fontStyle === "normal") {
+                                        isItalic = false;
+                                    }
                                 }
                             }
                         }
                     }
                 });
                 this._listener.onFontSizeChange && this._listener.onFontSizeChange(fontSize);
-                this._listener.onFontBoldChange && this._listener.onFontBoldChange(isBold);
+                this._listener.onFontWeightChange && this._listener.onFontWeightChange(isBold);
+                this._listener.onFontStyleChange && this._listener.onFontStyleChange(isItalic);
             } else {
                 // 更新文本框光标位置
                 const { left, top } = this._getMousePosition(evt);
