@@ -51,7 +51,8 @@ const icons: { [key: string]: string } = {
     boldFont: new URL("@/assets/icons/boldFont.svg", import.meta.url).href,
     italicFont: new URL("@/assets/icons/italicFont.svg", import.meta.url).href,
     underline: new URL("@/assets/icons/underline.svg", import.meta.url).href,
-    strikout: new URL("@/assets/icons/strikout.svg", import.meta.url).href
+    strikout: new URL("@/assets/icons/strikout.svg", import.meta.url).href,
+    fontColor: new URL("@/assets/icons/fontColor.svg", import.meta.url).href
 };
 
 const iconUrl = computed(() => icons[icon.value]);

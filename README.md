@@ -63,7 +63,7 @@ npm run dev
 - [x] [研究canvas文本编辑器](https://github.com/moneyinto/canvas-editor)
 - [ ] 字体设置
 - [x] 字体大小设置
-- [ ] 字体颜色设置
+- [x] 字体颜色设置
 - [x] 字体粗体设置
 - [x] 字体斜体设置
 - [x] 字体下划线设置
