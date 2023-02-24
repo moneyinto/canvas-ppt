@@ -186,13 +186,13 @@ const minusSize = () => {
 /* Chrome, Safari, Edge, Opera */
 .ppt-size-input::-webkit-outer-spin-button,
 .ppt-size-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* Firefox */
 .ppt-size-input[type=number] {
-  -moz-appearance: textfield;
+    -moz-appearance: textfield;
 }
 
 .font-size-checked {

@@ -762,6 +762,7 @@ export default class ControlStage extends Stage {
                 let isItalic = false;
                 let underline = true;
                 let strikout = true;
+                let fontFamily = "";
                 const renderContent = this.stageConfig.getRenderContent(operateElement as IPPTTextElement);
                 const [startX, startY, endX, endY] = selectArea;
                 renderContent.forEach((lineData, line) => {
@@ -778,6 +779,7 @@ export default class ControlStage extends Stage {
                                     fontSize = text.fontSize;
                                     isBold = text.fontWeight === "bold";
                                     isItalic = text.fontStyle === "italic";
+                                    fontFamily = text.fontFamily;
                                 } else {
                                     if (fontSize !== text.fontSize) {
                                         fontSize = "";
@@ -798,6 +800,10 @@ export default class ControlStage extends Stage {
                                     if (!text.strikout) {
                                         strikout = false;
                                     }
+
+                                    if (fontFamily !== text.fontFamily) {
+                                        fontFamily = "";
+                                    }
                                 }
                             }
                         }
@@ -808,6 +814,7 @@ export default class ControlStage extends Stage {
                 this._listener.onFontStyleChange && this._listener.onFontStyleChange(isItalic);
                 this._listener.onFontUnderLineChange && this._listener.onFontUnderLineChange(underline);
                 this._listener.onFontStrikoutChange && this._listener.onFontStrikoutChange(strikout);
+                this._listener.onFontFamilyChange && this._listener.onFontFamilyChange(fontFamily);
             } else {
                 // 更新文本框光标位置
                 const { left, top } = this._getMousePosition(evt);

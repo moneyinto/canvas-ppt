@@ -7,7 +7,8 @@ import {
     IOnFontWeightChange,
     IOnFontStyleChange,
     IOnFontUnderLineChange,
-    IOnFontStrikoutChange
+    IOnFontStrikoutChange,
+    IOnFontFamilyChange
 } from "../types/listener";
 
 export default class Listener {
@@ -20,6 +21,7 @@ export default class Listener {
     public onFontStyleChange: IOnFontStyleChange | null;
     public onFontUnderLineChange: IOnFontUnderLineChange | null;
     public onFontStrikoutChange: IOnFontStrikoutChange | null;
+    public onFontFamilyChange: IOnFontFamilyChange | null;
     constructor() {
         this.onZoomChange = null;
         this.onEditChange = null;
@@ -30,5 +32,6 @@ export default class Listener {
         this.onFontStyleChange = null;
         this.onFontUnderLineChange = null;
         this.onFontStrikoutChange = null;
+        this.onFontFamilyChange = null;
     }
 }

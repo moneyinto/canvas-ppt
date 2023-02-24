@@ -501,6 +501,7 @@ export default class Command {
             this._listener.onFontStyleChange && this._listener.onFontStyleChange(config.fontStyle === "italic");
             this._listener.onFontUnderLineChange && this._listener.onFontUnderLineChange(config.underline);
             this._listener.onFontStrikoutChange && this._listener.onFontStrikoutChange(config.strikout);
+            this._listener.onFontFamilyChange && this._listener.onFontFamilyChange(config.fontFamily);
         }
     }
 
@@ -1053,6 +1054,39 @@ export default class Command {
                 // 未聚焦文本框，直接设置整个文本框内容字体
                 operateElement.content.forEach((text) => {
                     text.fontColor = fontColor;
+                });
+            }
+
+            this.executeUpdateRender(operateElement);
+
+            this._debounceLog();
+        }
+    }
+
+    // 设置字体
+    public executeSetFontFamily(fontFamily: string) {
+        const operateElement = this._stageConfig.operateElement;
+        if (operateElement && operateElement.type === "text") {
+            if (this._stageConfig.textFocus) {
+                const selectArea = this._stageConfig.selectArea;
+                if (selectArea) {
+                    this._forSelectTexts(operateElement, selectArea, (text) => {
+                        text.fontFamily = fontFamily;
+                    });
+                } else {
+                    // 聚焦但未选中文本，只修改字体样式配置
+                    const config = this._stageConfig.fontConfig;
+                    this._stageConfig.setFontConfig({
+                        ...config,
+                        fontFamily
+                    });
+                }
+                // 设置完后 文本框聚焦
+                this._cursor.setInputFocus();
+            } else {
+                // 未聚焦文本框，直接设置整个文本框内容字体
+                operateElement.content.forEach((text) => {
+                    text.fontFamily = fontFamily;
                 });
             }
 

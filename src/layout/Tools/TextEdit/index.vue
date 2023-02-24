@@ -1,4 +1,5 @@
 <template>
+    <FontFamily :element="element" />
     <FontSize :element="element" />
     <a-divider class="ppt-tool-divider" type="vertical" />
 
@@ -22,6 +23,7 @@ import Italic from "./italic.vue";
 import Underline from "./Underline.vue";
 import Strikout from "./Strikout.vue";
 import FontColor from "./FontColor.vue";
+import FontFamily from "./FontFamily.vue";
 // import Editor from "@/plugins/editor";
 
 // const instance = inject<Ref<Editor>>("instance");
