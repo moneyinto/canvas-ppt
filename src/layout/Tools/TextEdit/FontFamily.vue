@@ -169,6 +169,9 @@ const setFontFamily = (font: string) => {
     height: 32px;
     margin: 0 -16px;
     padding: 0 15px;
+    &:hover {
+        background-color: #f6f6f6;
+    }
 }
 
 .font-family-checked {

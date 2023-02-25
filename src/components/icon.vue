@@ -52,7 +52,11 @@ const icons: { [key: string]: string } = {
     italicFont: new URL("@/assets/icons/italicFont.svg", import.meta.url).href,
     underline: new URL("@/assets/icons/underline.svg", import.meta.url).href,
     strikout: new URL("@/assets/icons/strikout.svg", import.meta.url).href,
-    fontColor: new URL("@/assets/icons/fontColor.svg", import.meta.url).href
+    fontColor: new URL("@/assets/icons/fontColor.svg", import.meta.url).href,
+    alignLeft: new URL("@/assets/icons/alignLeft.svg", import.meta.url).href,
+    alignCenter: new URL("@/assets/icons/alignCenter.svg", import.meta.url).href,
+    alignRight: new URL("@/assets/icons/alignRight.svg", import.meta.url).href,
+    lineHeight: new URL("@/assets/icons/lineHeight.svg", import.meta.url).href
 };
 
 const iconUrl = computed(() => icons[icon.value]);

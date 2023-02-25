@@ -1096,6 +1096,16 @@ export default class Command {
         }
     }
 
+    // 设置文本对齐方式
+    public executeSetFontAlign(align: "left" | "center" | "right") {
+        const operateElement = this._stageConfig.operateElement;
+        if (operateElement && operateElement.type === "text") {
+            operateElement.align = align;
+
+            this.executeUpdateRender(operateElement, true);
+        }
+    }
+
     private _updateCursor(position: number) {
         this._cursor.showCursor();
         this._cursor.setDataPosition(position);

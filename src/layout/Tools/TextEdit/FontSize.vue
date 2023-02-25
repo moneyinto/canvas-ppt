@@ -163,6 +163,9 @@ const minusSize = () => {
     height: 32px;
     margin: 0 -16px;
     padding: 0 20px 0 12px;
+    &:hover {
+        background-color: #f6f6f6;
+    }
 }
 
 .ppt-input-box {

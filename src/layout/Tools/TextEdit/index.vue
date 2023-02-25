@@ -12,6 +12,9 @@
     <Strikout :element="element" />
 
     <FontColor />
+    <a-divider class="ppt-tool-divider" type="vertical" />
+
+    <Align :element="element" />
 </template>
 
 <script lang="ts" setup>
@@ -24,6 +27,7 @@ import Underline from "./Underline.vue";
 import Strikout from "./Strikout.vue";
 import FontColor from "./FontColor.vue";
 import FontFamily from "./FontFamily.vue";
+import Align from "./Align.vue";
 // import Editor from "@/plugins/editor";
 
 // const instance = inject<Ref<Editor>>("instance");
