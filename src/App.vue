@@ -1,8 +1,8 @@
 <template>
     <div class="ppt-container">
         <div class="ppt-toolbar">
-            <NavMenu />
-            <Tools />
+            <NavMenu :element="currentElement" :slideFocus="slideFocus" />
+            <Tools :element="currentElement" />
         </div>
         <div class="ppt-body">
             <div
@@ -12,6 +12,7 @@
                 @drop="onDrop"
                 @dragend="onDragEnd"
                 @dragover="onDragOver"
+                @focus="onSlideFocus"
             >
                 <div
                     class="ppt-thumbnail-box"
@@ -56,7 +57,7 @@
                     ></div>
                 </div>
             </div>
-            <div class="ppt-content" ref="pptRef">
+            <div class="ppt-content" ref="pptRef" @focus="onCanvasFocus">
                 <div
                     class="ppt-no-slide"
                     v-if="viewSlides.length === 0"
@@ -74,7 +75,11 @@
             </div>
         </div>
         <div class="ppt-footer">
-            <Footer :total="slides.length" :current="slideIndex" @onZoomChange="resize" />
+            <Footer
+                :total="slides.length"
+                :current="slideIndex"
+                @onZoomChange="resize"
+            />
         </div>
     </div>
 </template>
@@ -93,6 +98,7 @@ import { checkIsMac } from "./utils";
 import useSlideHandler from "@/hooks/useSlideHandler";
 import useSlideSort from "@/hooks/useSlideSort";
 import { ISlide } from "./plugins/types/slide";
+import { IPPTElement } from "./plugins/types/element";
 
 const pptRef = ref();
 const zoom = ref(1);
@@ -129,6 +135,17 @@ const {
     onDrop
 } = useSlideSort(instance, viewSlides);
 
+const slideFocus = ref(false);
+const onSlideFocus = () => {
+    slideFocus.value = true;
+};
+
+const onCanvasFocus = () => {
+    slideFocus.value = false;
+};
+
+const currentElement = ref<IPPTElement | undefined>(undefined);
+
 nextTick(() => {
     if (pptRef.value) {
         instance.value = new Editor(pptRef.value, slides);
@@ -158,7 +175,16 @@ nextTick(() => {
             }
         };
 
+        instance.value.listener.onSelectedChange = (
+            element: IPPTElement | undefined
+        ) => {
+            currentElement.value = element;
+        };
+
         emitter.on(EmitterEvents.ADD_EMPTY_SLIDE, addPPT);
+        emitter.on(EmitterEvents.COPY_SLIDE, copySlide);
+        emitter.on(EmitterEvents.CUT_SLIDE, cutSlide);
+        emitter.on(EmitterEvents.PASTE_SLIDE, pasteSlide);
     }
 });
 
@@ -242,6 +268,9 @@ const onKeydown = (event: KeyboardEvent) => {
 
 onUnmounted(() => {
     emitter.off(EmitterEvents.ADD_EMPTY_SLIDE, addPPT);
+    emitter.off(EmitterEvents.COPY_SLIDE, copySlide);
+    emitter.off(EmitterEvents.CUT_SLIDE, cutSlide);
+    emitter.off(EmitterEvents.PASTE_SLIDE, pasteSlide);
 });
 </script>
 

@@ -89,8 +89,7 @@ const instance = inject<Ref<Editor>>("instance");
 
 const props = defineProps({
     element: {
-        type: Object as PropType<IPPTElement | null>,
-        required: true
+        type: Object as PropType<IPPTElement>
     }
 });
 

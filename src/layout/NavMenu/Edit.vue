@@ -16,19 +16,19 @@
                     </div>
                 </a-menu-item>
                 <a-menu-divider />
-                <a-menu-item>
+                <a-menu-item :disabled="disabledCut" @click="cut()">
                     <div class="ppt-menu-option">
                         <PPTIcon icon="cut" />
                         &nbsp;&nbsp;剪切
                     </div>
                 </a-menu-item>
-                <a-menu-item>
+                <a-menu-item :disabled="disabledCut" @click="copy()">
                     <div class="ppt-menu-option">
                         <PPTIcon icon="copy" />
                         &nbsp;&nbsp;复制
                     </div>
                 </a-menu-item>
-                <a-menu-item>
+                <a-menu-item @click="paste()">
                     <div class="ppt-menu-option">
                         <PPTIcon icon="paste" />
                         &nbsp;&nbsp;粘贴
@@ -55,10 +55,52 @@
 
 <script lang="ts" setup>
 import Editor from "@/plugins/editor";
-import { inject, Ref, computed } from "vue";
+import { inject, Ref, computed, toRefs, PropType } from "vue";
 import { throttleRAF } from "@/utils";
+import { IPPTElement } from "@/plugins/types/element";
+import emitter, { EmitterEvents } from "@/utils/emitter";
+
+const props = defineProps({
+    slideFocus: {
+        type: Boolean,
+        default: false
+    },
+    element: {
+        type: Object as PropType<IPPTElement>
+    }
+});
+
+const { slideFocus, element } = toRefs(props);
+
+const disabledCut = computed(() => {
+    return !slideFocus.value && !element?.value;
+});
 
 const instance = inject<Ref<Editor>>("instance");
+
+const cut = () => {
+    if (slideFocus.value) {
+        emitter.emit(EmitterEvents.CUT_SLIDE);
+    } else if (element?.value) {
+        instance?.value.command.executeCut();
+    }
+};
+
+const copy = () => {
+    if (slideFocus.value) {
+        emitter.emit(EmitterEvents.COPY_SLIDE);
+    } else if (element?.value) {
+        instance?.value.command.executeCopy();
+    }
+};
+
+const paste = () => {
+    if (slideFocus.value) {
+        emitter.emit(EmitterEvents.PASTE_SLIDE);
+    } else {
+        instance?.value.command.executePaste();
+    }
+};
 
 const onSave = async () => {
     console.log(JSON.stringify(instance?.value.stageConfig.slides));
@@ -81,3 +123,9 @@ const redo = throttleRAF(() => {
     if (canRedo.value) instance?.value.history.redo();
 });
 </script>
+
+<style>
+.ant-dropdown-menu-item-disabled .ppt-icon {
+    opacity: 0.4;
+}
+</style>

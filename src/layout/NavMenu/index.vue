@@ -1,11 +1,24 @@
 <template>
     <div class="ppt-nav-menu" @keydown.stop="" tabindex="0">
-        <Edit />
+        <Edit :element="element" :slideFocus="slideFocus" />
     </div>
 </template>
 
 <script lang="ts" setup>
+import { IPPTElement } from "@/plugins/types/element";
+import { PropType, toRefs } from "vue";
 import Edit from "./Edit.vue";
+const props = defineProps({
+    slideFocus: {
+        type: Boolean,
+        default: false
+    },
+    element: {
+        type: Object as PropType<IPPTElement>
+    }
+});
+
+const { slideFocus, element } = toRefs(props);
 </script>
 
 <style lang="scss">

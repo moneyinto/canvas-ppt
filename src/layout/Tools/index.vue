@@ -12,17 +12,16 @@
         <Evert v-if="showEvert" />
 
         <a-divider class="ppt-tool-divider" v-if="showTextEidt" type="vertical" />
-        <TextEdit v-if="showTextEidt" :element="currentElement" />
+        <TextEdit v-if="showTextEidt" :element="element" />
 
         <a-divider class="ppt-tool-divider" v-if="showFillColor || showBorder" type="vertical" />
-        <Border v-if="showBorder || showTextEidt" :element="currentElement" />
-        <FillColor v-if="showFillColor || showTextEidt" :element="currentElement" />
+        <Border v-if="showBorder || showTextEidt" :element="element" />
+        <FillColor v-if="showFillColor || showTextEidt" :element="element" />
     </div>
 </template>
 
 <script lang="ts" setup>
-import { inject, Ref, ref, watch } from "vue";
-import Editor from "@/plugins/editor";
+import { PropType, ref, watch, toRefs } from "vue";
 import { IPPTElement } from "@/plugins/types/element";
 import AddPPT from "./AddPPT.vue";
 import Edit from "./Edit.vue";
@@ -32,25 +31,9 @@ import Evert from "./Evert.vue";
 import Border from "./Border.vue";
 import TextEdit from "./TextEdit/index.vue";
 
-const instance = inject<Ref<Editor>>("instance");
-const currentElement = ref<IPPTElement | null>(null);
-
-watch(instance!, () => {
-    if (instance?.value) {
-        instance.value.listener.onSelectedChange = (element: IPPTElement | null) => {
-            currentElement.value = element;
-            if (element) {
-                showFillColor.value = element.type === "shape";
-                showBorder.value = element.type === "shape";
-                showEvert.value = element.type === "shape";
-                showTextEidt.value = element.type === "text";
-            } else {
-                showFillColor.value = false;
-                showBorder.value = false;
-                showEvert.value = false;
-                showTextEidt.value = false;
-            }
-        };
+const props = defineProps({
+    element: {
+        type: Object as PropType<IPPTElement>
     }
 });
 
@@ -58,6 +41,22 @@ const showFillColor = ref(false);
 const showBorder = ref(false);
 const showEvert = ref(false);
 const showTextEidt = ref(false);
+
+const { element } = toRefs(props);
+
+watch(() => props.element, () => {
+    if (props.element) {
+        showFillColor.value = props.element.type === "shape";
+        showBorder.value = props.element.type === "shape";
+        showEvert.value = props.element.type === "shape";
+        showTextEidt.value = props.element.type === "text";
+    } else {
+        showFillColor.value = false;
+        showBorder.value = false;
+        showEvert.value = false;
+        showTextEidt.value = false;
+    }
+});
 </script>
 
 <style lang="scss" scoped>

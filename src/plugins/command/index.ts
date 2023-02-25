@@ -300,6 +300,7 @@ export default class Command {
     // 粘贴
     public async executePaste() {
         const content = await readClipboard();
+        if (content.indexOf(CLIPBOARD_STRING_TYPE.SLIDE) > -1) return;
         if (content.indexOf(CLIPBOARD_STRING_TYPE.ELEMENT) > -1) {
             // 粘贴的内容为元素数据
             const resultText = content.replace(

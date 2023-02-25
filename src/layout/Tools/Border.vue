@@ -156,8 +156,7 @@ import Editor from "@/plugins/editor";
 
 const props = defineProps({
     element: {
-        type: Object as PropType<IPPTElement | null>,
-        required: true
+        type: Object as PropType<IPPTElement>
     }
 });
 
