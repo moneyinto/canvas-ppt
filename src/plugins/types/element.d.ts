@@ -257,6 +257,9 @@ export interface IPPTTextElement extends IPPTBaseElement {
     lineHeight: number,
     rotate: number;
     align: "left" | "center" | "right";
+    fill?: string;
+    outline?: IPPTElementOutline;
+    opacity?: number;
 }
 
 export type IPPTElement = IPPTShapeElement | IPPTLineElement | IPPTImageElement | IPPTTextElement;

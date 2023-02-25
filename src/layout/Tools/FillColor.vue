@@ -99,9 +99,9 @@ const noFill = ref(true);
 const opacity = ref(0);
 
 const init = () => {
-    if (props.element && props.element.type === "shape") {
+    if (props.element && (props.element.type === "shape" || props.element.type === "text")) {
         const operateElement = props.element;
-        currentColor.value = operateElement.fill;
+        currentColor.value = operateElement.fill || "transprent";
         noFill.value = !operateElement.fill;
         opacity.value = operateElement.opacity || 0;
     }

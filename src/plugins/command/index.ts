@@ -228,7 +228,8 @@ export default class Command {
     public executeOpacity(value: number) {
         const operateElement = this._stageConfig.operateElement as
             | IPPTShapeElement
-            | IPPTImageElement;
+            | IPPTImageElement
+            | IPPTTextElement;
         if (operateElement) {
             const newElement = {
                 ...operateElement,
@@ -241,8 +242,7 @@ export default class Command {
 
     // 修改边框
     public executeOutline(outline?: IPPTElementOutline) {
-        const operateElement = this._stageConfig
-            .operateElement as IPPTShapeElement;
+        const operateElement = this._stageConfig.operateElement as IPPTShapeElement | IPPTTextElement;
         if (operateElement) {
             const newElement = {
                 ...operateElement,

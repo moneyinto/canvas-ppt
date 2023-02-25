@@ -15,8 +15,8 @@
         <TextEdit v-if="showTextEidt" :element="currentElement" />
 
         <a-divider class="ppt-tool-divider" v-if="showFillColor || showBorder" type="vertical" />
-        <Border v-if="showBorder" :element="currentElement" />
-        <FillColor v-if="showFillColor" :element="currentElement" />
+        <Border v-if="showBorder || showTextEidt" :element="currentElement" />
+        <FillColor v-if="showFillColor || showTextEidt" :element="currentElement" />
     </div>
 </template>
 

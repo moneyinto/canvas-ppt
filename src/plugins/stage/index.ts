@@ -1,6 +1,6 @@
 import StageConfig, { TEXT_MARGIN } from "./config";
 import { throttleRAF } from "@/utils";
-import { IPPTElement, IPPTImageElement, IPPTLineElement, IPPTShapeElement, IPPTTextElement } from "../types/element";
+import { IPPTElement, IPPTElementOutline, IPPTImageElement, IPPTLineElement, IPPTShapeElement, IPPTTextElement } from "../types/element";
 import { SHAPE_TYPE } from "../config/shapes";
 import { ICacheImage } from "../types";
 import { IFontData } from "../types/font";
@@ -241,6 +241,25 @@ export default class Stage {
         const moveY = y + element.top;
 
         this.ctx.translate(moveX, moveY);
+
+        if (element.outline) {
+            this.ctx.save();
+            this.ctx.translate(element.width / 2, element.height / 2);
+            const path = this.getShapePath(SHAPE_TYPE.RECT, element.width, element.height);
+            this._drawOutline(element.outline, path);
+            this.ctx.restore();
+        }
+
+        if (element.fill) {
+            this.ctx.save();
+            this.ctx.translate(element.width / 2, element.height / 2);
+            this.ctx.fillStyle = element.fill || "transparent";
+            this.ctx.globalAlpha = (100 - (element.opacity || 0)) / 100;
+            const path = this.getShapePath(SHAPE_TYPE.RECT, element.width, element.height);
+            this.ctx.fill(path);
+            this.ctx.restore();
+        }
+
         // 绘制text
         const lineTexts = this.stageConfig.getRenderContent(element);
         let textX = TEXT_MARGIN;
@@ -270,6 +289,22 @@ export default class Stage {
         this.ctx.restore();
     }
 
+    private _drawOutline(outline: IPPTElementOutline, path: Path2D) {
+        if (outline) {
+            this.ctx.globalAlpha = (100 - (outline.opacity || 0)) / 100;
+            const lineWidth = outline.width || 2;
+            this.ctx.lineWidth = lineWidth;
+            this.ctx.strokeStyle = outline.color || "#000";
+            if (outline.style === "dashed") {
+                this.ctx.setLineDash([
+                    (8 * lineWidth) / 2,
+                    (4 * lineWidth) / 2
+                ]);
+            }
+            this.ctx.stroke(path);
+        }
+    }
+
     public drawShape(element: IPPTShapeElement) {
         const zoom = this.stageConfig.zoom;
         const { x, y } = this.stageConfig.getStageOrigin();
@@ -291,46 +326,36 @@ export default class Stage {
 
         this.ctx.fillStyle = element.fill || "transparent";
         this.ctx.globalAlpha = (100 - (element.opacity || 0)) / 100;
-        const path = this.getShapePath(element);
+        const path = this.getShapePath(element.shape, element.width, element.height);
         this.ctx.fill(path);
 
         if (element.outline) {
-            this.ctx.globalAlpha = (100 - (element.outline.opacity || 0)) / 100;
-            const lineWidth = element.outline.width || 2;
-            this.ctx.lineWidth = lineWidth;
-            this.ctx.strokeStyle = element.outline.color || "#000";
-            if (element.outline.style === "dashed") {
-                this.ctx.setLineDash([
-                    (8 * lineWidth) / 2,
-                    (4 * lineWidth) / 2
-                ]);
-            }
-            this.ctx.stroke(path);
+            this._drawOutline(element.outline, path);
         }
 
         this.ctx.restore();
     }
 
-    public getShapePath(element: IPPTShapeElement) {
-        const offsetX = -element.width / 2;
-        const offsetY = -element.height / 2;
+    public getShapePath(type: SHAPE_TYPE, width: number, height: number) {
+        const offsetX = -width / 2;
+        const offsetY = -height / 2;
 
         const rect = {
             minX: offsetX,
             minY: offsetY,
-            maxX: element.width / 2,
-            maxY: element.height / 2
+            maxX: width / 2,
+            maxY: height / 2
         };
 
         let path = "";
 
-        switch (element.shape) {
+        switch (type) {
             case SHAPE_TYPE.RECT: {
-                path = `M${rect.minX} ${rect.minY}h${element.width}v${element.height}H${rect.minX}z`;
+                path = `M${rect.minX} ${rect.minY}h${width}v${height}H${rect.minX}z`;
                 break;
             }
             case SHAPE_TYPE.RECT_RADIUS: {
-                const radius = Math.min(element.width, element.height) * 0.1;
+                const radius = Math.min(width, height) * 0.1;
                 path = `M ${rect.minX + radius} ${rect.minY} L ${
                     rect.maxX - radius
                 } ${rect.minY} Q ${rect.maxX} ${rect.minY} ${rect.maxX} ${
@@ -347,7 +372,7 @@ export default class Stage {
                 break;
             }
             case SHAPE_TYPE.RECT_MINUS_SINGLE_ANGLE: {
-                const len = Math.min(element.width, element.height) * 0.4;
+                const len = Math.min(width, height) * 0.4;
                 path = `M${rect.maxX} ${rect.minY + len}V${rect.maxY}H${
                     rect.minX
                 }V${rect.minY}H${rect.maxX - len}L${rect.maxX} ${
@@ -356,7 +381,7 @@ export default class Stage {
                 break;
             }
             case SHAPE_TYPE.RECT_MINUS_SAME_SIDE_ANGLE: {
-                const len = Math.min(element.width, element.height) * 0.2;
+                const len = Math.min(width, height) * 0.2;
                 path = `M${rect.maxX} ${rect.minY + len}V${rect.maxY}H${
                     rect.minX
                 }V${rect.minY + len}L${rect.minX + len} ${rect.minY}H${
@@ -365,7 +390,7 @@ export default class Stage {
                 break;
             }
             case SHAPE_TYPE.RECT_MINUS_OPPOSITE_ANGLE: {
-                const len = Math.min(element.width, element.height) * 0.2;
+                const len = Math.min(width, height) * 0.2;
                 path = `M${rect.maxX} ${rect.minY + len}V${rect.maxY}H${
                     rect.minX + len
                 }L${rect.minX} ${rect.maxY - len}V${rect.minY}H${
@@ -374,8 +399,8 @@ export default class Stage {
                 break;
             }
             case SHAPE_TYPE.RECT_SINGLE_RADIUS_MINUS_SINGLE_ANGLE: {
-                const len = Math.min(element.width, element.height) * 0.2;
-                const radius = Math.min(element.width, element.height) * 0.2;
+                const len = Math.min(width, height) * 0.2;
+                const radius = Math.min(width, height) * 0.2;
                 path = `M${rect.maxX} ${rect.minY + len}V${rect.maxY}H${
                     rect.minX
                 }V${rect.minY + radius}Q${rect.minX} ${rect.minY} ${
@@ -386,7 +411,7 @@ export default class Stage {
                 break;
             }
             case SHAPE_TYPE.RECT_SINGLE_RADIUS: {
-                const radius = Math.min(element.width, element.height) * 0.2;
+                const radius = Math.min(width, height) * 0.2;
                 path = `M ${rect.minX} ${rect.minY} L ${rect.maxX - radius} ${
                     rect.minY
                 } Q ${rect.maxX} ${rect.minY} ${rect.maxX} ${
@@ -397,7 +422,7 @@ export default class Stage {
                 break;
             }
             case SHAPE_TYPE.RECT_SAME_SIDE_RADIUS: {
-                const radius = Math.min(element.width, element.height) * 0.2;
+                const radius = Math.min(width, height) * 0.2;
                 path = `M ${rect.minX + radius} ${rect.minY} L ${
                     rect.maxX - radius
                 } ${rect.minY} Q ${rect.maxX} ${rect.minY} ${rect.maxX} ${
@@ -410,7 +435,7 @@ export default class Stage {
                 break;
             }
             case SHAPE_TYPE.RECT_OPPOSITE_RADIUS: {
-                const radius = Math.min(element.width, element.height) * 0.2;
+                const radius = Math.min(width, height) * 0.2;
                 path = `M ${rect.minX + radius} ${rect.minY} L ${
                     rect.maxX - radius
                 } ${rect.minY} Q ${rect.maxX} ${rect.minY} ${rect.maxX} ${
@@ -423,8 +448,8 @@ export default class Stage {
                 break;
             }
             case SHAPE_TYPE.OVAL: {
-                const rx = element.width / 2;
-                const ry = element.height / 2;
+                const rx = width / 2;
+                const ry = height / 2;
                 const sx = (rect.minX + rect.maxX) / 2;
                 const sy = rect.minY;
                 const ex = (rect.minX + rect.maxX) / 2;
@@ -443,12 +468,12 @@ export default class Stage {
                 break;
             }
             case SHAPE_TYPE.PARALLELOGRAM: {
-                const offsetX = element.width / 2 * 0.3;
+                const offsetX = width / 2 * 0.3;
                 path = `M ${rect.minX + offsetX} ${rect.minY} L ${rect.maxX} ${rect.minY} L ${rect.maxX - offsetX} ${rect.maxY} L ${rect.minX} ${rect.maxY} Z`;
                 break;
             }
             case SHAPE_TYPE.TRAPEZOIDAL: {
-                const offsetX = element.width / 2 * 0.3;
+                const offsetX = width / 2 * 0.3;
                 path = `M ${rect.minX + offsetX} ${rect.minY} L ${rect.maxX - offsetX} ${rect.minY} L ${rect.maxX} ${rect.maxY} L ${rect.minX} ${rect.maxY} Z`;
                 break;
             }
@@ -459,14 +484,14 @@ export default class Stage {
                 break;
             }
             case SHAPE_TYPE.PENTAGON: {
-                const offsetX = element.width * 0.19;
-                const offsetY = element.height * 0.38;
+                const offsetX = width * 0.19;
+                const offsetY = height * 0.38;
                 const sx = (rect.minX + rect.maxX) / 2;
                 path = `M ${sx} ${rect.minY} L ${rect.maxX} ${rect.minY + offsetY} L ${rect.maxX - offsetX} ${rect.maxY} L ${rect.minX + offsetX} ${rect.maxY} L ${rect.minX} ${rect.minY + offsetY} Z`;
                 break;
             }
             case SHAPE_TYPE.HEXAGON: {
-                const offsetX = element.width * 0.2;
+                const offsetX = width * 0.2;
                 const sy = (rect.minY + rect.maxY) / 2;
                 path = `M ${rect.minX + offsetX} ${rect.minY} L ${rect.maxX - offsetX} ${rect.minY} L ${rect.maxX} ${sy} L ${rect.maxX - offsetX} ${rect.maxY} L ${rect.minX + offsetX} ${rect.maxY} L ${rect.minX} ${sy} Z`;
                 break;
