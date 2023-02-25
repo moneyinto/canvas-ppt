@@ -15,6 +15,8 @@
     <a-divider class="ppt-tool-divider" type="vertical" />
 
     <Align :element="element" />
+
+    <LineHeight :element="element" />
 </template>
 
 <script lang="ts" setup>
@@ -28,6 +30,7 @@ import Strikout from "./Strikout.vue";
 import FontColor from "./FontColor.vue";
 import FontFamily from "./FontFamily.vue";
 import Align from "./Align.vue";
+import LineHeight from "./LineHeight.vue";
 // import Editor from "@/plugins/editor";
 
 // const instance = inject<Ref<Editor>>("instance");

@@ -1106,6 +1106,16 @@ export default class Command {
         }
     }
 
+    // 设置文本行距
+    public executeSetLineHeight(lineHeight: number) {
+        const operateElement = this._stageConfig.operateElement;
+        if (operateElement && operateElement.type === "text") {
+            operateElement.lineHeight = lineHeight;
+            operateElement.height = this._getTextHeight(operateElement);
+            this.executeUpdateRender(operateElement, true);
+        }
+    }
+
     private _updateCursor(position: number) {
         this._cursor.showCursor();
         this._cursor.setDataPosition(position);
