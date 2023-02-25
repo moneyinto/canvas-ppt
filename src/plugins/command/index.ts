@@ -1104,6 +1104,9 @@ export default class Command {
             operateElement.align = align;
 
             this.executeUpdateRender(operateElement, true);
+
+            const position = this._cursor.getDataPosition();
+            this._updateCursor(position);
         }
     }
 

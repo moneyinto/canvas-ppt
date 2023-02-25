@@ -153,6 +153,7 @@ export default class ControlStage extends Stage {
             }
             return false;
         };
+        const textFocus = this.stageConfig.textFocus;
         const contextmenus: IContextmenuItem[] = [
             {
                 text: "剪切",
@@ -213,6 +214,34 @@ export default class ControlStage extends Stage {
                         icon: "moveDown",
                         handler: () => {
                             this._command.executeMoveDown();
+                        }
+                    }
+                ]
+            },
+            { divider: true, hide: !textFocus },
+            {
+                text: "水平对齐",
+                hide: !textFocus,
+                children: [
+                    {
+                        text: "左对齐",
+                        icon: "alignLeft",
+                        handler: () => {
+                            this._command.executeSetFontAlign("left");
+                        }
+                    },
+                    {
+                        text: "居中对齐",
+                        icon: "alignCenter",
+                        handler: () => {
+                            this._command.executeSetFontAlign("center");
+                        }
+                    },
+                    {
+                        text: "右对齐",
+                        icon: "alignRight",
+                        handler: () => {
+                            this._command.executeSetFontAlign("right");
                         }
                     }
                 ]
@@ -279,7 +308,6 @@ export default class ControlStage extends Stage {
                     this._storeAngle = (element.rotate / 180) * Math.PI;
                 }
                 this._opreateCacheElement = deepClone(element);
-
                 this._cursor.hideCursor();
             } else {
                 const operateElement = this.stageConfig.getMouseInElement(
@@ -305,7 +333,7 @@ export default class ControlStage extends Stage {
                     operateElement.id === this.stageConfig.operateElement.id
                 ) {
                     if (this.stageConfig.textFocus) {
-                        this._cursor.hideCursor();
+                        if (!isContextmenu) this._cursor.hideCursor();
                         const x = left - operateElement.left;
                         const y = top - operateElement.top;
                         const renderContent = this.stageConfig.getRenderContent(
@@ -755,7 +783,7 @@ export default class ControlStage extends Stage {
             );
         } else if (!isMouseOut && this.stageConfig.textFocus && operateElement) {
             const selectArea = this.stageConfig.selectArea;
-            if (selectArea) {
+            if (selectArea && !(selectArea[0] === selectArea[2] && selectArea[1] === selectArea[3])) {
                 let first = true;
                 let fontSize: string | number = "";
                 let isBold = false;
