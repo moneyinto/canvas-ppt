@@ -25,6 +25,8 @@ import {
     IPPTTextElement
 } from "../types/element";
 import { IFontData } from "../types/font";
+import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
+import { IElementAlignType } from "../types";
 
 export default class Command {
     private _stageConfig: StageConfig;
@@ -242,7 +244,9 @@ export default class Command {
 
     // 修改边框
     public executeOutline(outline?: IPPTElementOutline) {
-        const operateElement = this._stageConfig.operateElement as IPPTShapeElement | IPPTTextElement;
+        const operateElement = this._stageConfig.operateElement as
+            | IPPTShapeElement
+            | IPPTTextElement;
         if (operateElement) {
             const newElement = {
                 ...operateElement,
@@ -497,12 +501,18 @@ export default class Command {
             };
             this._stageConfig.setFontConfig(config);
 
-            this._listener.onFontSizeChange && this._listener.onFontSizeChange(config.fontSize);
-            this._listener.onFontWeightChange && this._listener.onFontWeightChange(config.fontWeight === "bold");
-            this._listener.onFontStyleChange && this._listener.onFontStyleChange(config.fontStyle === "italic");
-            this._listener.onFontUnderLineChange && this._listener.onFontUnderLineChange(config.underline);
-            this._listener.onFontStrikoutChange && this._listener.onFontStrikoutChange(config.strikout);
-            this._listener.onFontFamilyChange && this._listener.onFontFamilyChange(config.fontFamily);
+            this._listener.onFontSizeChange &&
+                this._listener.onFontSizeChange(config.fontSize);
+            this._listener.onFontWeightChange &&
+                this._listener.onFontWeightChange(config.fontWeight === "bold");
+            this._listener.onFontStyleChange &&
+                this._listener.onFontStyleChange(config.fontStyle === "italic");
+            this._listener.onFontUnderLineChange &&
+                this._listener.onFontUnderLineChange(config.underline);
+            this._listener.onFontStrikoutChange &&
+                this._listener.onFontStrikoutChange(config.strikout);
+            this._listener.onFontFamilyChange &&
+                this._listener.onFontFamilyChange(config.fontFamily);
         }
     }
 
@@ -1117,6 +1127,66 @@ export default class Command {
             operateElement.lineHeight = lineHeight;
             operateElement.height = this._getTextHeight(operateElement);
             this.executeUpdateRender(operateElement, true);
+        }
+    }
+
+    private setAlignElement(
+        operateElement: IPPTElement,
+        align: IElementAlignType
+    ) {
+        const width = operateElement.type === "line" ? operateElement.end[0] - operateElement.start[0] : operateElement.width;
+        const height = operateElement.type === "line" ? operateElement.end[1] - operateElement.start[1] : operateElement.height;
+        switch (align) {
+            case "canvasAlignLeft": {
+                operateElement.left = 0;
+                break;
+            }
+            case "canvasAlignCenter": {
+                operateElement.left = (VIEWPORT_SIZE - width) / 2;
+                break;
+            }
+            case "canvasAlignRight": {
+                operateElement.left = VIEWPORT_SIZE - width;
+                break;
+            }
+            case "canvasCenter": {
+                operateElement.left = (VIEWPORT_SIZE - width) / 2;
+                operateElement.top = (VIEWPORT_SIZE * VIEWRATIO - height) / 2;
+                break;
+            }
+            case "canvasOneAlignCenter": {
+                operateElement.left = (VIEWPORT_SIZE - width) / 2;
+                break;
+            }
+            case "canvasOneVerticalCenter": {
+                operateElement.top = (VIEWPORT_SIZE * VIEWRATIO - height) / 2;
+                break;
+            }
+            case "canvasVerticalTop": {
+                operateElement.top = 0;
+                break;
+            }
+            case "canvasVerticalCenter": {
+                operateElement.top = (VIEWPORT_SIZE * VIEWRATIO - height) / 2;
+                break;
+            }
+            case "canvasVerticalBottom": {
+                operateElement.top = VIEWPORT_SIZE * VIEWRATIO - height;
+                break;
+            }
+        }
+        return operateElement;
+    }
+
+    // 设置元素对齐
+    public executeSetElementAlign(
+        align: IElementAlignType
+    ) {
+        const operateElement = this._stageConfig.operateElement;
+        if (operateElement) {
+            const element = this.setAlignElement(operateElement, align);
+
+            this.executeUpdateRender(element, true);
         }
     }
 

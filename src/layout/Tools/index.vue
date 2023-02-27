@@ -8,7 +8,8 @@
         <a-divider class="ppt-tool-divider" type="vertical" />
         <Insert />
 
-        <a-divider class="ppt-tool-divider" v-if="showEvert" type="vertical" />
+        <a-divider class="ppt-tool-divider" v-if="showEvert || showAlign" type="vertical" />
+        <Align v-if="showAlign" />
         <Evert v-if="showEvert" />
 
         <a-divider class="ppt-tool-divider" v-if="showTextEidt" type="vertical" />
@@ -30,6 +31,7 @@ import FillColor from "./FillColor.vue";
 import Evert from "./Evert.vue";
 import Border from "./Border.vue";
 import TextEdit from "./TextEdit/index.vue";
+import Align from "./Align.vue";
 
 const props = defineProps({
     element: {
@@ -40,6 +42,7 @@ const props = defineProps({
 const showFillColor = ref(false);
 const showBorder = ref(false);
 const showEvert = ref(false);
+const showAlign = ref(false);
 const showTextEidt = ref(false);
 
 const { element } = toRefs(props);
@@ -50,11 +53,13 @@ watch(() => props.element, () => {
         showBorder.value = props.element.type === "shape";
         showEvert.value = props.element.type === "shape";
         showTextEidt.value = props.element.type === "text";
+        showAlign.value = true;
     } else {
         showFillColor.value = false;
         showBorder.value = false;
         showEvert.value = false;
         showTextEidt.value = false;
+        showAlign.value = false;
     }
 });
 </script>

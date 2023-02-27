@@ -56,7 +56,16 @@ const icons: { [key: string]: string } = {
     alignLeft: new URL("@/assets/icons/alignLeft.svg", import.meta.url).href,
     alignCenter: new URL("@/assets/icons/alignCenter.svg", import.meta.url).href,
     alignRight: new URL("@/assets/icons/alignRight.svg", import.meta.url).href,
-    lineHeight: new URL("@/assets/icons/lineHeight.svg", import.meta.url).href
+    lineHeight: new URL("@/assets/icons/lineHeight.svg", import.meta.url).href,
+    canvasAlignCenter: new URL("@/assets/icons/canvasAlignCenter.svg", import.meta.url).href,
+    canvasAlignLeft: new URL("@/assets/icons/canvasAlignLeft.svg", import.meta.url).href,
+    canvasAlignRight: new URL("@/assets/icons/canvasAlignRight.svg", import.meta.url).href,
+    canvasCenter: new URL("@/assets/icons/canvasCenter.svg", import.meta.url).href,
+    canvasOneAlignCenter: new URL("@/assets/icons/canvasOneAlignCenter.svg", import.meta.url).href,
+    canvasOneVerticalCenter: new URL("@/assets/icons/canvasOneVerticalCenter.svg", import.meta.url).href,
+    canvasVerticalBottom: new URL("@/assets/icons/canvasVerticalBottom.svg", import.meta.url).href,
+    canvasVerticalCenter: new URL("@/assets/icons/canvasVerticalCenter.svg", import.meta.url).href,
+    canvasVerticalTop: new URL("@/assets/icons/canvasVerticalTop.svg", import.meta.url).href
 };
 
 const iconUrl = computed(() => icons[icon.value]);

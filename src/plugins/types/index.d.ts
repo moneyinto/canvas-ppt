@@ -17,3 +17,14 @@ export interface IMouseClick {
     textX: number;
     textY: number;
 }
+
+export type IElementAlignType =
+    | "canvasAlignLeft"
+    | "canvasAlignCenter"
+    | "canvasAlignRight"
+    | "canvasCenter"
+    | "canvasOneAlignCenter"
+    | "canvasOneVerticalCenter"
+    | "canvasVerticalTop"
+    | "canvasVerticalCenter"
+    | "canvasVerticalBottom";
