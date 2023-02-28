@@ -187,7 +187,7 @@ export default class StageConfig {
         }
     }
 
-    public setOperateElement(element: IPPTElement | null, multiple: boolean) {
+    public setOperateElement(element: IPPTElement | null | undefined, multiple: boolean) {
         const operateElement = deepClone(element);
         if (!operateElement) {
             this.operateElements = [];

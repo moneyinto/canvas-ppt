@@ -20,8 +20,6 @@ import { Cursor } from "../stage/cursor";
 import {
     IPPTElement,
     IPPTElementOutline,
-    IPPTImageElement,
-    IPPTShapeElement,
     IPPTTextElement
 } from "../types/element";
 import { IFontData } from "../types/font";
@@ -80,218 +78,243 @@ export default class Command {
 
     // 上移一层
     public executeMoveUp() {
-        const operateElement = this._stageConfig.operateElement;
-        if (operateElement) {
+        const operateElements = this._stageConfig.operateElements;
+        if (operateElements.length > 0) {
             const slide = this._stageConfig.getCurrentSlide();
-            const zIndex = slide?.elements.findIndex(
-                (element) => element.id === operateElement.id
-            );
-            if (
-                slide &&
-                slide.elements &&
-                typeof zIndex !== "undefined" &&
-                zIndex > -1
-            ) {
-                // 已经处在顶层，无法继续移动
-                if (zIndex === slide.elements.length - 1) return;
+            // 对多选元素先进行排序
+            // 不然相邻的元素会出现不变化的现象
+            const sortElements = slide?.elements.filter(element => operateElements.findIndex(ele => ele.id === element.id) > -1).reverse() || [];
+            let isChange = false;
+            for (const operateElement of sortElements) {
+                const zIndex = slide?.elements.findIndex(
+                    (element) => element.id === operateElement.id
+                );
+                if (
+                    slide &&
+                    slide.elements &&
+                    typeof zIndex !== "undefined" &&
+                    zIndex > -1
+                ) {
+                    // 已经处在顶层，无法继续移动
+                    if (zIndex === slide.elements.length - 1) return;
 
-                // 移动
-                const movedElement = slide.elements.splice(zIndex, 1)[0];
-                slide.elements.splice(zIndex + 1, 0, movedElement);
-
-                this.executeLogRender();
+                    // 移动
+                    const movedElement = slide.elements.splice(zIndex, 1)[0];
+                    slide.elements.splice(zIndex + 1, 0, movedElement);
+                    isChange = true;
+                }
             }
+            if (isChange) this.executeLogRender();
         }
     }
 
     // 下移一层
     public executeMoveDown() {
-        const operateElement = this._stageConfig.operateElement;
-        if (operateElement) {
+        const operateElements = this._stageConfig.operateElements;
+        if (operateElements.length > 0) {
             const slide = this._stageConfig.getCurrentSlide();
-            const zIndex = slide?.elements.findIndex(
-                (element) => element.id === operateElement.id
-            );
-            if (
-                slide &&
-                slide.elements &&
-                typeof zIndex !== "undefined" &&
-                zIndex > -1
-            ) {
-                // 已经处在底，无法继续移动
-                if (zIndex === 0) return;
-
-                // 移动
-                const movedElement = slide.elements.splice(zIndex, 1)[0];
-                slide.elements.splice(zIndex - 1, 0, movedElement);
-
-                this.executeLogRender();
+            let isChange = false;
+            const sortElements = slide?.elements.filter(element => operateElements.findIndex(ele => ele.id === element.id) > -1).reverse() || [];
+            for (const operateElement of sortElements) {
+                const zIndex = slide?.elements.findIndex(
+                    (element) => element.id === operateElement.id
+                );
+                if (
+                    slide &&
+                    slide.elements &&
+                    typeof zIndex !== "undefined" &&
+                    zIndex > -1
+                ) {
+                    // 已经处在底，无法继续移动
+                    if (zIndex === 0) return;
+    
+                    // 移动
+                    const movedElement = slide.elements.splice(zIndex, 1)[0];
+                    slide.elements.splice(zIndex - 1, 0, movedElement);
+                    isChange = true;
+                }
             }
+            if (isChange) this.executeLogRender();
         }
     }
 
     // 置于顶层
     public executeMoveTop() {
-        const operateElement = this._stageConfig.operateElement;
-        if (operateElement) {
+        const operateElements = this._stageConfig.operateElements;
+        if (operateElements.length > 0) {
             const slide = this._stageConfig.getCurrentSlide();
-            const zIndex = slide?.elements.findIndex(
-                (element) => element.id === operateElement.id
-            );
-            if (
-                slide &&
-                slide.elements &&
-                typeof zIndex !== "undefined" &&
-                zIndex > -1
-            ) {
-                // 已经处在顶层，无法继续移动
-                if (zIndex === slide.elements.length - 1) return;
-
-                // 移动
-                const movedElement = slide.elements.splice(zIndex, 1)[0];
-                slide.elements.push(movedElement);
-
-                this.executeLogRender();
+            let isChange = false;
+            for (const operateElement of operateElements) {
+                const zIndex = slide?.elements.findIndex(
+                    (element) => element.id === operateElement.id
+                );
+                if (
+                    slide &&
+                    slide.elements &&
+                    typeof zIndex !== "undefined" &&
+                    zIndex > -1
+                ) {
+                    // 已经处在顶层，无法继续移动
+                    if (zIndex === slide.elements.length - 1) return;
+    
+                    // 移动
+                    const movedElement = slide.elements.splice(zIndex, 1)[0];
+                    slide.elements.push(movedElement);
+                    isChange = true;
+                }
             }
+            if (isChange) this.executeLogRender();
         }
     }
 
     // 置于底层
     public executeMoveBottom() {
-        const operateElement = this._stageConfig.operateElement;
-        if (operateElement) {
+        const operateElements = this._stageConfig.operateElements;
+        if (operateElements.length > 0) {
             const slide = this._stageConfig.getCurrentSlide();
-            const zIndex = slide?.elements.findIndex(
-                (element) => element.id === operateElement.id
-            );
-            if (
-                slide &&
-                slide.elements &&
-                typeof zIndex !== "undefined" &&
-                zIndex > -1
-            ) {
-                // 已经处在底，无法继续移动
-                if (zIndex === 0) return;
-
-                // 移动
-                const movedElement = slide.elements.splice(zIndex, 1)[0];
-                slide.elements.unshift(movedElement);
-
-                this.executeLogRender();
+            let isChange = false;
+            for (const operateElement of operateElements) {
+                const zIndex = slide?.elements.findIndex(
+                    (element) => element.id === operateElement.id
+                );
+                if (
+                    slide &&
+                    slide.elements &&
+                    typeof zIndex !== "undefined" &&
+                    zIndex > -1
+                ) {
+                    // 已经处在底，无法继续移动
+                    if (zIndex === 0) return;
+    
+                    // 移动
+                    const movedElement = slide.elements.splice(zIndex, 1)[0];
+                    slide.elements.unshift(movedElement);
+                    isChange = true;
+                }
             }
+            if (isChange) this.executeLogRender();
         }
     }
 
     // 水平翻转
     public executeFlipH() {
-        const operateElement = this._stageConfig.operateElement as
-            | IPPTImageElement
-            | IPPTShapeElement;
-        if (operateElement) {
-            const newElement: IPPTElement = {
-                ...operateElement,
-                flipH: operateElement.flipH === -1 ? 1 : -1
-            };
+        const operateElements = this._stageConfig.operateElements;
+        const newElements: IPPTElement[] = [];
+        for (const operateElement of operateElements) {
+            if (operateElement.type === "shape" || operateElement.type === "image") {
+                const newElement: IPPTElement = {
+                    ...operateElement,
+                    flipH: operateElement.flipH === -1 ? 1 : -1
+                };
 
-            this.executeUpdateRender(newElement, true);
+                newElements.push(newElement);
+            }
         }
+        this.executeUpdateRender(newElements, true);
     }
 
     // 垂直翻转
     public executeFlipV() {
-        const operateElement = this._stageConfig.operateElement as
-            | IPPTImageElement
-            | IPPTShapeElement;
-        if (operateElement) {
-            const newElement: IPPTElement = {
-                ...operateElement,
-                flipV: operateElement.flipV === -1 ? 1 : -1
-            };
+        const operateElements = this._stageConfig.operateElements;
+        const newElements: IPPTElement[] = [];
+        for (const operateElement of operateElements) {
+            if (operateElement.type === "shape" || operateElement.type === "image") {
+                const newElement: IPPTElement = {
+                    ...operateElement,
+                    flipV: operateElement.flipV === -1 ? 1 : -1
+                };
 
-            this.executeUpdateRender(newElement, true);
+                newElements.push(newElement);
+            }
         }
+        this.executeUpdateRender(newElements, true);
     }
 
     // 设置填充色
     public executeFillColor(color: string) {
-        const operateElement = this._stageConfig
-            .operateElement as IPPTShapeElement;
-        if (operateElement) {
-            const newElement = {
-                ...operateElement,
-                fill: color
-            };
+        const operateElements = this._stageConfig.operateElements;
+        const newElements: IPPTElement[] = [];
+        for (const operateElement of operateElements) {
+            if (operateElement) {
+                const newElement = {
+                    ...operateElement,
+                    fill: color
+                };
 
-            this.executeUpdateRender(newElement, true);
+                newElements.push(newElement);
+            }
         }
+        this.executeUpdateRender(newElements, true);
     }
 
     // 填充透明度设置
     public executeOpacity(value: number) {
-        const operateElement = this._stageConfig.operateElement as
-            | IPPTShapeElement
-            | IPPTImageElement
-            | IPPTTextElement;
-        if (operateElement) {
-            const newElement = {
-                ...operateElement,
-                opacity: value
-            };
+        const operateElements = this._stageConfig.operateElements;
+        const newElements: IPPTElement[] = [];
+        for (const operateElement of operateElements) {
+            if (operateElement) {
+                const newElement = {
+                    ...operateElement,
+                    opacity: value
+                };
 
-            this.executeUpdateRender(newElement, true);
+                newElements.push(newElement);
+            }
         }
+        this.executeUpdateRender(newElements, true);
     }
 
     // 修改边框
     public executeOutline(outline?: IPPTElementOutline) {
-        const operateElement = this._stageConfig.operateElement as
-            | IPPTShapeElement
-            | IPPTTextElement;
-        if (operateElement) {
-            const newElement = {
-                ...operateElement,
-                outline
-            };
+        const operateElements = this._stageConfig.operateElements;
+        const newElements: IPPTElement[] = [];
+        for (const operateElement of operateElements) {
+            if (operateElement) {
+                const newElement = {
+                    ...operateElement,
+                    outline
+                };
+    
+                if (!outline) delete newElement.outline;
 
-            if (!outline) delete newElement.outline;
-
-            this.executeUpdateRender(newElement, true);
+                newElements.push(newElement);
+            }
         }
+        this.executeUpdateRender(newElements, true);
     }
 
     // 复制
     public async executeCopy() {
-        const operateElement = this._stageConfig.operateElement;
-        // 选中元素时
-        if (operateElement) {
-            if (this._stageConfig.textFocus) {
-                const selectArea = this._stageConfig.selectArea;
-                if (selectArea) {
-                    const { startX, endX } = this._stageConfig.getSelectArea(
-                        selectArea,
-                        operateElement as IPPTTextElement
-                    );
-                    const copyContent = (
-                        operateElement as IPPTTextElement
-                    ).content.slice(startX, endX);
-                    await copyText(
-                        encrypt(
-                            `${CLIPBOARD_STRING_TYPE.TEXT}${JSON.stringify(
-                                copyContent
-                            )}`
-                        )
-                    );
-                }
-            } else {
-                // 将元素json数据加密存入剪切板
+        const operateElements = this._stageConfig.operateElements;
+        // 选中文本框元素内容
+        if (this._stageConfig.textFocus) {
+            const selectArea = this._stageConfig.selectArea;
+            if (selectArea) {
+                const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+                const { startX, endX } = this._stageConfig.getSelectArea(
+                    selectArea,
+                    operateElement as IPPTTextElement
+                );
+                const copyContent = (
+                    operateElement as IPPTTextElement
+                ).content.slice(startX, endX);
                 await copyText(
                     encrypt(
-                        `${CLIPBOARD_STRING_TYPE.ELEMENT}${JSON.stringify(
-                            operateElement
+                        `${CLIPBOARD_STRING_TYPE.TEXT}${JSON.stringify(
+                            copyContent
                         )}`
                     )
                 );
             }
+        } else {
+            // 将元素json数据加密存入剪切板
+            await copyText(
+                encrypt(
+                    `${CLIPBOARD_STRING_TYPE.ELEMENT}${JSON.stringify(
+                        operateElements
+                    )}`
+                )
+            );
         }
     }
 
@@ -311,21 +334,24 @@ export default class Command {
                 CLIPBOARD_STRING_TYPE.ELEMENT,
                 ""
             );
-            const element = pasteCustomClipboardString(
+            const elements = pasteCustomClipboardString(
                 resultText
-            ) as IPPTElement;
-            // 粘贴的内容为元素数据
-            element.id = createRandomCode();
-            // 新元素较旧元素偏移一段距离
-            element.left += 10;
-            element.top += 10;
+            ) as IPPTElement[];
+            
+            for (const element of elements) {
+                // 粘贴的内容为元素数据
+                element.id = createRandomCode();
+                // 新元素较旧元素偏移一段距离
+                element.left += 10;
+                element.top += 10;
+            }
 
-            this.executeAddRender(element);
+            this.executeAddRender(elements);
 
             // 再次写入剪切板，为了下一次粘贴能够在上一次的基础上进行偏移
             await copyText(
                 encrypt(
-                    `${CLIPBOARD_STRING_TYPE.ELEMENT}${JSON.stringify(element)}`
+                    `${CLIPBOARD_STRING_TYPE.ELEMENT}${JSON.stringify(elements)}`
                 )
             );
         } else if (content.indexOf(CLIPBOARD_STRING_TYPE.IMAGE) > -1) {
@@ -337,7 +363,7 @@ export default class Command {
                     image.height,
                     content
                 );
-                this.executeAddRender(element);
+                this.executeAddRender([element]);
             };
             image.src = content;
         } else if (content.indexOf(CLIPBOARD_STRING_TYPE.TEXT) > -1) {
@@ -345,40 +371,11 @@ export default class Command {
             const elementContent = pasteCustomClipboardString(
                 resultText
             ) as IFontData[];
-            const operateElement = this._stageConfig.operateElement;
-            if (
-                operateElement &&
-                operateElement.type === "text" &&
-                this._stageConfig.textFocus
-            ) {
-                const selectArea = this._stageConfig.selectArea;
-                if (selectArea) {
-                    // 选中区域存在替换选中区域
-                    this._deleteSelectText();
-                }
+            if (this._stageConfig.textFocus) {
+                const operateElements = this._stageConfig.operateElements;
+                const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
 
-                // 光标位置粘贴
-                const position = this._cursor.getDataPosition();
-                operateElement.content.splice(
-                    position + 1,
-                    0,
-                    ...elementContent
-                );
-                operateElement.height = this._getTextHeight(operateElement);
-                const cursorPosition = position + elementContent.length;
-                this.executeUpdateRender(operateElement, true);
-                this._updateCursor(cursorPosition);
-            }
-        } else {
-            // 普通外来文本
-            // 这里考虑是否带格式，先处理不带格式的
-            if (content) {
-                const operateElement = this._stageConfig.operateElement;
-                if (
-                    operateElement &&
-                    operateElement.type === "text" &&
-                    this._stageConfig.textFocus
-                ) {
+                if (operateElement && operateElement.type === "text") {
                     const selectArea = this._stageConfig.selectArea;
                     if (selectArea) {
                         // 选中区域存在替换选中区域
@@ -386,25 +383,6 @@ export default class Command {
                     }
 
                     // 光标位置粘贴
-                    const config = this._stageConfig.fontConfig;
-                    const baseText: IFontData = {
-                        value: "",
-                        fontSize: config.fontSize,
-                        fontFamily: config.fontFamily,
-                        fontWeight: config.fontWeight,
-                        fontColor: config.fontColor,
-                        fontStyle: config.fontStyle,
-                        width: config.fontSize,
-                        height: config.fontSize,
-                        underline: config.underline,
-                        strikout: config.strikout
-                    };
-                    const elementContent: IFontData[] = [];
-                    content.split("").forEach((text) => {
-                        baseText.value = text;
-                        this._resetTextFontSize(baseText);
-                        elementContent.push(deepClone(baseText));
-                    });
                     const position = this._cursor.getDataPosition();
                     operateElement.content.splice(
                         position + 1,
@@ -413,8 +391,70 @@ export default class Command {
                     );
                     operateElement.height = this._getTextHeight(operateElement);
                     const cursorPosition = position + elementContent.length;
-                    this.executeUpdateRender(operateElement, true);
+                    this.executeUpdateRender(operateElements, true);
                     this._updateCursor(cursorPosition);
+                }
+            } else {
+                let contentWidth = TEXT_MARGIN * 2;
+                const newElement = createTextElement({
+                    left: 0,
+                    top: 0,
+                    width: 0,
+                    height: 0
+                });
+                elementContent.forEach((text) => {
+                    contentWidth += text.width + newElement.wordSpace;
+                });
+                newElement.content.splice(0, 0, ...elementContent);
+                newElement.width = contentWidth;
+                newElement.height = this._getTextHeight(newElement);
+                this.executeAddRender([newElement]);
+            }
+        } else {
+            // 普通外来文本
+            // 这里考虑是否带格式，先处理不带格式的
+            if (content) {
+                if (this._stageConfig.textFocus) {
+                    const operateElements = this._stageConfig.operateElements;
+                    const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+                    if (operateElement && operateElement.type === "text") {
+                        const selectArea = this._stageConfig.selectArea;
+                        if (selectArea) {
+                            // 选中区域存在替换选中区域
+                            this._deleteSelectText();
+                        }
+
+                        // 光标位置粘贴
+                        const config = this._stageConfig.fontConfig;
+                        const baseText: IFontData = {
+                            value: "",
+                            fontSize: config.fontSize,
+                            fontFamily: config.fontFamily,
+                            fontWeight: config.fontWeight,
+                            fontColor: config.fontColor,
+                            fontStyle: config.fontStyle,
+                            width: config.fontSize,
+                            height: config.fontSize,
+                            underline: config.underline,
+                            strikout: config.strikout
+                        };
+                        const elementContent: IFontData[] = [];
+                        content.split("").forEach((text) => {
+                            baseText.value = text;
+                            this._resetTextFontSize(baseText);
+                            elementContent.push(deepClone(baseText));
+                        });
+                        const position = this._cursor.getDataPosition();
+                        operateElement.content.splice(
+                            position + 1,
+                            0,
+                            ...elementContent
+                        );
+                        operateElement.height = this._getTextHeight(operateElement);
+                        const cursorPosition = position + elementContent.length;
+                        this.executeUpdateRender(operateElements, true);
+                        this._updateCursor(cursorPosition);
+                    }
                 } else {
                     const baseText: IFontData = {
                         value: "",
@@ -445,74 +485,68 @@ export default class Command {
                     newElement.content.splice(0, 0, ...pasteContent);
                     newElement.width = contentWidth;
                     newElement.height = this._getTextHeight(newElement);
-                    this.executeAddRender(newElement);
-                }
+                    this.executeAddRender([newElement]);
+                }                                                                                                                                                                 
             }
         }
     }
 
     // 删除元素 或 删除文本
     public executeDelete(direction = 0) {
-        const operateElement = this._stageConfig.operateElement;
-        if (operateElement) {
-            if (this._stageConfig.textFocus) {
-                if (this._cursor.getTextareaText()) return;
-                if (this._stageConfig.selectArea) {
-                    // 删除选中文本
-                    this._deleteSelectText();
-                } else {
-                    // 删除文本
-                    const position = this._cursor.getDataPosition();
-                    const result = this._deleteText(position + direction);
-
-                    // 当存在中英文混合时 删除正好某行空一个英文字符的空格，删除后正好有个英文字符将会填充到上一行，光标应该处理该行倒数第二个字符
-                    if (result && direction === 0) {
-                        this._updateCursor(position - 1);
-                    }
-                }
+        if (this._stageConfig.textFocus) {
+            if (this._cursor.getTextareaText()) return;
+            if (this._stageConfig.selectArea) {
+                // 删除选中文本
+                this._deleteSelectText();
             } else {
-                this.executeDeleteRender(operateElement);
+                // 删除文本
+                const position = this._cursor.getDataPosition();
+                const result = this._deleteText(position + direction);
+
+                // 当存在中英文混合时 删除正好某行空一个英文字符的空格，删除后正好有个英文字符将会填充到上一行，光标应该处理该行倒数第二个字符
+                if (result && direction === 0) {
+                    this._updateCursor(position - 1);
+                }
             }
+        } else {
+            const operateElements = this._stageConfig.operateElements;
+            this.executeDeleteRender(operateElements);
         }
     }
 
     // 选中位置字体更新字体样式配置
     public executeUpdateFontConfig() {
         // 获取前一个字的样式，设置config
-        const operateElement = this._stageConfig
-            .operateElement as IPPTTextElement;
-        if (operateElement && this._stageConfig.textFocus) {
-            const currentDataPosition = this._cursor.getDataPosition();
-            const content = operateElement.content;
-            // 前面一个字没有，获取后面一个回车符的字样
-            const text =
-                currentDataPosition === -1
-                    ? content[0]
-                    : content[currentDataPosition];
+        if (this._stageConfig.textFocus) {
+            const operateElements = this._stageConfig.operateElements;
+            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            if (operateElement && operateElement.type === "text") {
+                const currentDataPosition = this._cursor.getDataPosition();
+                const content = operateElement.content;
+                // 前面一个字没有，获取后面一个回车符的字样
+                const text =
+                    currentDataPosition === -1
+                        ? content[0]
+                        : content[currentDataPosition];
 
-            const config = {
-                fontSize: text.fontSize,
-                fontColor: text.fontColor,
-                fontFamily: text.fontFamily,
-                fontStyle: text.fontStyle,
-                fontWeight: text.fontWeight,
-                underline: text.underline,
-                strikout: text.strikout
-            };
-            this._stageConfig.setFontConfig(config);
+                const config = {
+                    fontSize: text.fontSize,
+                    fontColor: text.fontColor,
+                    fontFamily: text.fontFamily,
+                    fontStyle: text.fontStyle,
+                    fontWeight: text.fontWeight,
+                    underline: text.underline,
+                    strikout: text.strikout
+                };
+                this._stageConfig.setFontConfig(config);
 
-            this._listener.onFontSizeChange &&
-                this._listener.onFontSizeChange(config.fontSize);
-            this._listener.onFontWeightChange &&
-                this._listener.onFontWeightChange(config.fontWeight === "bold");
-            this._listener.onFontStyleChange &&
-                this._listener.onFontStyleChange(config.fontStyle === "italic");
-            this._listener.onFontUnderLineChange &&
-                this._listener.onFontUnderLineChange(config.underline);
-            this._listener.onFontStrikoutChange &&
-                this._listener.onFontStrikoutChange(config.strikout);
-            this._listener.onFontFamilyChange &&
-                this._listener.onFontFamilyChange(config.fontFamily);
+                this._listener.onFontSizeChange && this._listener.onFontSizeChange(config.fontSize);
+                this._listener.onFontWeightChange && this._listener.onFontWeightChange(config.fontWeight === "bold");
+                this._listener.onFontStyleChange && this._listener.onFontStyleChange(config.fontStyle === "italic");
+                this._listener.onFontUnderLineChange && this._listener.onFontUnderLineChange(config.underline);
+                this._listener.onFontStrikoutChange && this._listener.onFontStrikoutChange(config.strikout);
+                this._listener.onFontFamilyChange && this._listener.onFontFamilyChange(config.fontFamily);
+            }
         }
     }
 
@@ -529,30 +563,32 @@ export default class Command {
 
     // 删除选中文本
     private _deleteSelectText() {
-        const operateElement = this._stageConfig
-            .operateElement as IPPTTextElement;
         const selectArea = this._stageConfig.selectArea;
-        if (operateElement && selectArea) {
-            const { startX, endX } = this._stageConfig.getSelectArea(
-                selectArea,
-                operateElement
-            );
-            operateElement.content.splice(startX, endX - startX);
-            operateElement.height = this._getTextHeight(operateElement);
-
-            this._stageConfig.setSelectArea(null);
-
-            this.executeUpdateRender(operateElement, true);
-
-            this._updateCursor(startX - 1);
+        if (selectArea) {
+            const operateElements = this._stageConfig.operateElements;
+            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            if (operateElement && operateElement.type === "text") {
+                const { startX, endX } = this._stageConfig.getSelectArea(
+                    selectArea,
+                    operateElement
+                );
+                operateElement.content.splice(startX, endX - startX);
+                operateElement.height = this._getTextHeight(operateElement);
+    
+                this._stageConfig.setSelectArea(null);
+    
+                this.executeUpdateRender(operateElements, true);
+    
+                this._updateCursor(startX - 1);
+            }
         }
     }
 
     // 删除文本内容
     private _deleteText(position: number) {
-        const operateElement = this._stageConfig
-            .operateElement as IPPTTextElement;
-        if (operateElement) {
+        const operateElements = this._stageConfig.operateElements;
+        const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+        if (operateElement && operateElement.type === "text") {
             if (
                 position >= operateElement.content.length - 1 ||
                 position === -1
@@ -560,7 +596,7 @@ export default class Command {
             operateElement.content.splice(position, 1);
             operateElement.height = this._getTextHeight(operateElement);
 
-            this.executeUpdateRender(operateElement);
+            this.executeUpdateRender(operateElements);
 
             this._debounceLog();
             return true;
@@ -570,9 +606,10 @@ export default class Command {
 
     // 元素移动 及 光标移动
     public executeMove(direction: string) {
-        const operateElement = this._stageConfig.operateElement;
-        if (operateElement) {
-            if (this._stageConfig.textFocus) {
+        const operateElements = this._stageConfig.operateElements;
+        if (this._stageConfig.textFocus) {
+            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            if (operateElement && operateElement.type === "text") {
                 // 光标移动
                 switch (direction) {
                     case KeyMap.Up: {
@@ -693,7 +730,9 @@ export default class Command {
                         break;
                     }
                 }
-            } else {
+            }
+        } else {
+            for (const operateElement of operateElements) {
                 // 元素移动
                 switch (direction) {
                     case KeyMap.Up: {
@@ -717,20 +756,21 @@ export default class Command {
                         break;
                     }
                 }
-
-                this.executeUpdateRender(operateElement);
-
-                this._debounceLog();
             }
+
+            this.executeUpdateRender(operateElements);
+
+            this._debounceLog();
         }
     }
 
     // 回车键
     public executeEnter() {
-        const operateElement = this._stageConfig.operateElement;
-        if (operateElement) {
-            // 文本框编辑时回车
-            if (this._stageConfig.textFocus) {
+        // 文本框编辑时回车
+        if (this._stageConfig.textFocus) {
+            const operateElements = this._stageConfig.operateElements;
+            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            if (operateElement && operateElement.type === "text") {
                 if (this._cursor.getTextareaText()) return;
                 const config = this._stageConfig.fontConfig;
                 const text: IFontData = {
@@ -778,9 +818,12 @@ export default class Command {
     }
 
     // 元素新增及渲染
-    public executeAddRender(element: IPPTElement) {
-        this._stageConfig.addElement(element);
-        this._stageConfig.setOperateElement(element, false);
+    public executeAddRender(elements: IPPTElement[]) {
+        for (const element of elements) {
+            this._stageConfig.addElement(element);
+        }
+
+        this._stageConfig.updateOperateElements(elements);
 
         this.executeLogRender();
     }
@@ -798,13 +841,13 @@ export default class Command {
 
     // 文本输入
     public executeAddText(text: IFontData, position: number) {
-        const operateElement = this._stageConfig
-            .operateElement as IPPTTextElement;
-        if (operateElement) {
+        const operateElements = this._stageConfig.operateElements;
+        const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+        if (operateElement && operateElement.type === "text") {
             operateElement.content.splice(position, 0, text);
             operateElement.height = this._getTextHeight(operateElement);
 
-            this.executeUpdateRender(operateElement);
+            this.executeUpdateRender(operateElements);
 
             this._debounceLog();
         }
@@ -845,9 +888,10 @@ export default class Command {
 
     // 设置文本字体大小
     public executeSetFontSize(fontSize: number, type?: "plus" | "minus") {
-        const operateElement = this._stageConfig.operateElement;
-        if (operateElement && operateElement.type === "text") {
-            if (this._stageConfig.textFocus) {
+        const operateElements = this._stageConfig.operateElements;
+        if (this._stageConfig.textFocus) {
+            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            if (operateElement && operateElement.type === "text") {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
@@ -858,6 +902,12 @@ export default class Command {
                             : text.fontSize - fontSize;
                         this._resetTextFontSize(text);
                     });
+
+                    operateElement.height = this._getTextHeight(operateElement);
+
+                    this.executeUpdateRender(operateElements);
+
+                    this._debounceLog();
                 } else {
                     // 聚焦但未选中文本，只修改字体样式配置
                     const config = this._stageConfig.fontConfig;
@@ -872,21 +922,25 @@ export default class Command {
                 }
                 // 设置完后 文本框聚焦
                 this._cursor.setInputFocus();
-            } else {
-                // 未聚焦文本框，直接设置整个文本框内容字体大小
-                operateElement.content.forEach((text) => {
-                    text.fontSize = !type
-                        ? fontSize
-                        : type === "plus"
-                        ? text.fontSize + fontSize
-                        : text.fontSize - fontSize;
-                    this._resetTextFontSize(text);
-                });
+            }
+        } else {
+            for (const operateElement of operateElements) {
+                if (operateElement.type === "text") {
+                    // 未聚焦文本框，直接设置整个文本框内容字体大小
+                    operateElement.content.forEach((text) => {
+                        text.fontSize = !type
+                            ? fontSize
+                            : type === "plus"
+                            ? text.fontSize + fontSize
+                            : text.fontSize - fontSize;
+                        this._resetTextFontSize(text);
+                    });
+
+                    operateElement.height = this._getTextHeight(operateElement);
+                }
             }
 
-            operateElement.height = this._getTextHeight(operateElement);
-
-            this.executeUpdateRender(operateElement);
+            this.executeUpdateRender(operateElements);
 
             this._debounceLog();
         }
@@ -894,15 +948,22 @@ export default class Command {
 
     // 设置字体粗细
     public executeSetFontWeight(bold: boolean) {
-        const operateElement = this._stageConfig.operateElement;
-        if (operateElement && operateElement.type === "text") {
-            if (this._stageConfig.textFocus) {
+        const operateElements = this._stageConfig.operateElements;
+        if (this._stageConfig.textFocus) {
+            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            if (operateElement && operateElement.type === "text") {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
                         text.fontWeight = bold ? "bold" : "normal";
                         this._resetTextFontSize(text);
                     });
+
+                    operateElement.height = this._getTextHeight(operateElement);
+
+                    this.executeUpdateRender(operateElements);
+
+                    this._debounceLog();
                 } else {
                     // 聚焦但未选中文本，只修改字体样式配置
                     const config = this._stageConfig.fontConfig;
@@ -913,17 +974,22 @@ export default class Command {
                 }
                 // 设置完后 文本框聚焦
                 this._cursor.setInputFocus();
-            } else {
-                // 未聚焦文本框，直接设置整个文本框内容字体
-                operateElement.content.forEach((text) => {
-                    text.fontWeight = bold ? "bold" : "normal";
-                    this._resetTextFontSize(text);
-                });
             }
+            
+        } else {
+            for (const operateElement of operateElements) {
+                if (operateElement.type === "text") {
+                    // 未聚焦文本框，直接设置整个文本框内容字体
+                    operateElement.content.forEach((text) => {
+                        text.fontWeight = bold ? "bold" : "normal";
+                        this._resetTextFontSize(text);
+                    });
 
-            operateElement.height = this._getTextHeight(operateElement);
-
-            this.executeUpdateRender(operateElement);
+                    operateElement.height = this._getTextHeight(operateElement);
+                }
+            }
+            
+            this.executeUpdateRender(operateElements);
 
             this._debounceLog();
         }
@@ -931,15 +997,22 @@ export default class Command {
 
     // 设置字体斜体
     public executeSetFontStyle(italic: boolean) {
-        const operateElement = this._stageConfig.operateElement;
-        if (operateElement && operateElement.type === "text") {
-            if (this._stageConfig.textFocus) {
+        const operateElements = this._stageConfig.operateElements;
+        if (this._stageConfig.textFocus) {
+            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            if (operateElement && operateElement.type === "text") {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
                         text.fontStyle = italic ? "italic" : "normal";
                         this._resetTextFontSize(text);
                     });
+
+                    operateElement.height = this._getTextHeight(operateElement);
+
+                    this.executeUpdateRender(operateElements);
+
+                    this._debounceLog();
                 } else {
                     // 聚焦但未选中文本，只修改字体样式配置
                     const config = this._stageConfig.fontConfig;
@@ -950,17 +1023,21 @@ export default class Command {
                 }
                 // 设置完后 文本框聚焦
                 this._cursor.setInputFocus();
-            } else {
-                // 未聚焦文本框，直接设置整个文本框内容字体
-                operateElement.content.forEach((text) => {
-                    text.fontStyle = italic ? "italic" : "normal";
-                    this._resetTextFontSize(text);
-                });
             }
+        } else {
+            for (const operateElement of operateElements) {
+                if (operateElement.type === "text") {
+                    // 未聚焦文本框，直接设置整个文本框内容字体
+                    operateElement.content.forEach((text) => {
+                        text.fontStyle = italic ? "italic" : "normal";
+                        this._resetTextFontSize(text);
+                    });
 
-            operateElement.height = this._getTextHeight(operateElement);
-
-            this.executeUpdateRender(operateElement);
+                    operateElement.height = this._getTextHeight(operateElement);
+                }
+            }
+            
+            this.executeUpdateRender(operateElements);
 
             this._debounceLog();
         }
@@ -968,15 +1045,22 @@ export default class Command {
 
     // 设置字体下划线
     public executeSetFontUnderLine(underline: boolean) {
-        const operateElement = this._stageConfig.operateElement;
-        if (operateElement && operateElement.type === "text") {
-            if (this._stageConfig.textFocus) {
+        const operateElements = this._stageConfig.operateElements;
+        if (this._stageConfig.textFocus) {
+            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            if (operateElement && operateElement.type === "text") {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
                         text.underline = underline;
                         this._resetTextFontSize(text);
                     });
+
+                    operateElement.height = this._getTextHeight(operateElement);
+
+                    this.executeUpdateRender(operateElements);
+
+                    this._debounceLog();
                 } else {
                     // 聚焦但未选中文本，只修改字体样式配置
                     const config = this._stageConfig.fontConfig;
@@ -987,17 +1071,21 @@ export default class Command {
                 }
                 // 设置完后 文本框聚焦
                 this._cursor.setInputFocus();
-            } else {
-                // 未聚焦文本框，直接设置整个文本框内容字体
-                operateElement.content.forEach((text) => {
-                    text.underline = underline;
-                    this._resetTextFontSize(text);
-                });
+            }
+        } else {
+            for (const operateElement of operateElements) {
+                if (operateElement.type === "text") {
+                    // 未聚焦文本框，直接设置整个文本框内容字体
+                    operateElement.content.forEach((text) => {
+                        text.underline = underline;
+                        this._resetTextFontSize(text);
+                    });
+
+                    operateElement.height = this._getTextHeight(operateElement);
+                }
             }
 
-            operateElement.height = this._getTextHeight(operateElement);
-
-            this.executeUpdateRender(operateElement);
+            this.executeUpdateRender(operateElements);
 
             this._debounceLog();
         }
@@ -1005,15 +1093,22 @@ export default class Command {
 
     // 设置字体删除线
     public executeSetFontStrikout(strikout: boolean) {
-        const operateElement = this._stageConfig.operateElement;
-        if (operateElement && operateElement.type === "text") {
-            if (this._stageConfig.textFocus) {
+        const operateElements = this._stageConfig.operateElements;
+        if (this._stageConfig.textFocus) {
+            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            if (operateElement && operateElement.type === "text") {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
                         text.strikout = strikout;
                         this._resetTextFontSize(text);
                     });
+
+                    operateElement.height = this._getTextHeight(operateElement);
+
+                    this.executeUpdateRender(operateElements);
+
+                    this._debounceLog();
                 } else {
                     // 聚焦但未选中文本，只修改字体样式配置
                     const config = this._stageConfig.fontConfig;
@@ -1024,17 +1119,21 @@ export default class Command {
                 }
                 // 设置完后 文本框聚焦
                 this._cursor.setInputFocus();
-            } else {
-                // 未聚焦文本框，直接设置整个文本框内容字体
-                operateElement.content.forEach((text) => {
-                    text.strikout = strikout;
-                    this._resetTextFontSize(text);
-                });
+            }
+        } else {
+            for (const operateElement of operateElements) {
+                if (operateElement.type === "text") {
+                    // 未聚焦文本框，直接设置整个文本框内容字体
+                    operateElement.content.forEach((text) => {
+                        text.strikout = strikout;
+                        this._resetTextFontSize(text);
+                    });
+
+                    operateElement.height = this._getTextHeight(operateElement);
+                }
             }
 
-            operateElement.height = this._getTextHeight(operateElement);
-
-            this.executeUpdateRender(operateElement);
+            this.executeUpdateRender(operateElements);
 
             this._debounceLog();
         }
@@ -1042,14 +1141,21 @@ export default class Command {
 
     // 设置字体颜色
     public executeSetFontColor(fontColor: string) {
-        const operateElement = this._stageConfig.operateElement;
-        if (operateElement && operateElement.type === "text") {
-            if (this._stageConfig.textFocus) {
+        const operateElements = this._stageConfig.operateElements;
+        if (this._stageConfig.textFocus) {
+            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            if (operateElement && operateElement.type === "text") {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
                         text.fontColor = fontColor;
                     });
+
+                    operateElement.height = this._getTextHeight(operateElement);
+
+                    this.executeUpdateRender(operateElements);
+
+                    this._debounceLog();
                 } else {
                     // 聚焦但未选中文本，只修改字体样式配置
                     const config = this._stageConfig.fontConfig;
@@ -1060,14 +1166,20 @@ export default class Command {
                 }
                 // 设置完后 文本框聚焦
                 this._cursor.setInputFocus();
-            } else {
-                // 未聚焦文本框，直接设置整个文本框内容字体
-                operateElement.content.forEach((text) => {
-                    text.fontColor = fontColor;
-                });
+            }
+        } else {
+            for (const operateElement of operateElements) {
+                if (operateElement.type === "text") {
+                    // 未聚焦文本框，直接设置整个文本框内容字体
+                    operateElement.content.forEach((text) => {
+                        text.fontColor = fontColor;
+                    });
+
+                    operateElement.height = this._getTextHeight(operateElement);
+                }
             }
 
-            this.executeUpdateRender(operateElement);
+            this.executeUpdateRender(operateElements);
 
             this._debounceLog();
         }
@@ -1075,14 +1187,21 @@ export default class Command {
 
     // 设置字体
     public executeSetFontFamily(fontFamily: string) {
-        const operateElement = this._stageConfig.operateElement;
-        if (operateElement && operateElement.type === "text") {
-            if (this._stageConfig.textFocus) {
+        const operateElements = this._stageConfig.operateElements;
+        if (this._stageConfig.textFocus) {
+            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            if (operateElement && operateElement.type === "text") {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
                         text.fontFamily = fontFamily;
                     });
+
+                    operateElement.height = this._getTextHeight(operateElement);
+
+                    this.executeUpdateRender(operateElements);
+
+                    this._debounceLog();
                 } else {
                     // 聚焦但未选中文本，只修改字体样式配置
                     const config = this._stageConfig.fontConfig;
@@ -1093,14 +1212,20 @@ export default class Command {
                 }
                 // 设置完后 文本框聚焦
                 this._cursor.setInputFocus();
-            } else {
-                // 未聚焦文本框，直接设置整个文本框内容字体
-                operateElement.content.forEach((text) => {
-                    text.fontFamily = fontFamily;
-                });
+            }
+        } else {
+            for (const operateElement of operateElements) {
+                if (operateElement.type === "text") {
+                    // 未聚焦文本框，直接设置整个文本框内容字体
+                    operateElement.content.forEach((text) => {
+                        text.fontFamily = fontFamily;
+                    });
+
+                    operateElement.height = this._getTextHeight(operateElement);
+                }
             }
 
-            this.executeUpdateRender(operateElement);
+            this.executeUpdateRender(operateElements);
 
             this._debounceLog();
         }
@@ -1108,11 +1233,16 @@ export default class Command {
 
     // 设置文本对齐方式
     public executeSetFontAlign(align: "left" | "center" | "right") {
-        const operateElement = this._stageConfig.operateElement;
-        if (operateElement && operateElement.type === "text") {
-            operateElement.align = align;
+        const operateElements = this._stageConfig.operateElements;
 
-            this.executeUpdateRender(operateElement, true);
+        for (const operateElement of operateElements) {
+            if (operateElement && operateElement.type === "text") {
+                operateElement.align = align;
+            }
+        }
+
+        if (operateElements.length > 0) {
+            this.executeUpdateRender(operateElements, true);
 
             const position = this._cursor.getDataPosition();
             this._updateCursor(position);
@@ -1121,12 +1251,16 @@ export default class Command {
 
     // 设置文本行距
     public executeSetLineHeight(lineHeight: number) {
-        const operateElement = this._stageConfig.operateElement;
-        if (operateElement && operateElement.type === "text") {
-            operateElement.lineHeight = lineHeight;
-            operateElement.height = this._getTextHeight(operateElement);
-            this.executeUpdateRender(operateElement, true);
+        const operateElements = this._stageConfig.operateElements;
+
+        for (const operateElement of operateElements) {
+            if (operateElement && operateElement.type === "text") {
+                operateElement.lineHeight = lineHeight;
+                operateElement.height = this._getTextHeight(operateElement);
+            }
         }
+
+        if (operateElements.length > 0) this.executeUpdateRender(operateElements, true);
     }
 
     private setAlignElement(
@@ -1181,12 +1315,15 @@ export default class Command {
     public executeSetElementAlign(
         align: IElementAlignType
     ) {
-        const operateElement = this._stageConfig.operateElement;
-        if (operateElement) {
-            const element = this.setAlignElement(operateElement, align);
+        const operateElements = this._stageConfig.operateElements;
 
-            this.executeUpdateRender(element, true);
+        const elements: IPPTElement[] = [];
+        for (const operateElement of operateElements) {
+            const element = this.setAlignElement(operateElement, align);
+            elements.push(element);
         }
+        
+        if (operateElements.length > 0) this.executeUpdateRender(elements, true);
     }
 
     private _updateCursor(position: number) {

@@ -40,7 +40,7 @@ export class Cursor {
     }
 
     get opreateElement() {
-        return this._stageConfig.textFocus ? this._stageConfig.operateElement as IPPTTextElement : null;
+        return this._stageConfig.textFocus ? this._stageConfig.operateElements.find(opreateElement => opreateElement.id === this._stageConfig.textFocusElementId) as IPPTTextElement : null;
     }
 
     get config() {

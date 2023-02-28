@@ -86,11 +86,12 @@ export class History {
         const slides = history.slides as ISlide[];
         this._stageConfig.setSildes(slides);
         this._stageConfig.resetCheckDrawView();
-        // oprateElement存在时，这里需要验证一下oprateElement是否还在slides中
-        if (this._stageConfig.operateElement) {
+        // oprateElements存在时，这里需要验证一下oprateElements是否还在slides中
+        const operateElements = this._stageConfig.operateElements;
+        if (operateElements.length > 0) {
             const currentSlide = this._stageConfig.getCurrentSlide();
-            const operateElement = currentSlide?.elements.find(element => element.id === this._stageConfig.operateElement!.id);
-            this._stageConfig.setOperateElement(operateElement || null);
+            const elements = currentSlide?.elements.filter(element => operateElements.findIndex(ele => element.id === ele.id) !== -1);
+            this._stageConfig.updateOperateElements(elements?.length === operateElements.length ? elements : []);
             this._stageConfig.resetCheckDrawOprate();
         }
         this._stageConfig.hideCursor && this._stageConfig.hideCursor();

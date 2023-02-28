@@ -782,7 +782,7 @@ export default class ControlStage extends Stage {
             }
 
             if (newElement && newElement.type === "text") {
-                this._drawOprate(newElement);
+                this._drawOprate([newElement]);
             }
         } else if (this._canMoveCanvas && this.stageConfig.canMove) {
             // 移动画布
@@ -806,93 +806,101 @@ export default class ControlStage extends Stage {
         }
     }
 
-    private _mouseup(evt: MouseEvent, isMouseOut?: boolean) {
-        const operateElement = this.stageConfig.operateElement;
-        if (this.stageConfig.insertElement && this._canCreate) {
-            const newElement = this._createElement(evt);
-            if (newElement) {
-                this._command.executeAddRender(newElement);
-            }
-            this.stageConfig.setInsertElement(null);
-        } else if (
-            operateElement &&
-            (this._canMoveElement || this._canResizeElement)
-        ) {
-            // 更改silde中对应的元素数据
-            this._command.executeUpdateRender(
-                deepClone(operateElement),
-                true
-            );
-        } else if (!isMouseOut && this.stageConfig.textFocus && operateElement) {
-            const selectArea = this.stageConfig.selectArea;
-            if (selectArea && !(selectArea[0] === selectArea[2] && selectArea[1] === selectArea[3])) {
-                let first = true;
-                let fontSize: string | number = "";
-                let isBold = false;
-                let isItalic = false;
-                let underline = true;
-                let strikout = true;
-                let fontFamily = "";
-                const renderContent = this.stageConfig.getRenderContent(operateElement as IPPTTextElement);
-                const [startX, startY, endX, endY] = selectArea;
-                renderContent.forEach((lineData, line) => {
-                    if (line >= startY && line <= endY) {
-                        for (const [index, text] of lineData.texts.entries()) {
-                            if (
-                                (startY === endY && startX <= index && index < endX) ||
-                                (startY !== endY && line === startY && startX <= index) ||
-                                (startY !== endY && line !== startY && line !== endY) ||
-                                (startY !== endY && line === endY && index <= endX)
-                            ) {
-                                if (first) {
-                                    first = false;
-                                    fontSize = text.fontSize;
-                                    isBold = text.fontWeight === "bold";
-                                    isItalic = text.fontStyle === "italic";
-                                    fontFamily = text.fontFamily;
-                                } else {
-                                    if (fontSize !== text.fontSize) {
-                                        fontSize = "";
-                                    }
+    // 文本框数据显示处理
+    private _dealSelectText(evt: MouseEvent, operateElement: IPPTTextElement) {
+        const selectArea = this.stageConfig.selectArea;
+        if (selectArea && !(selectArea[0] === selectArea[2] && selectArea[1] === selectArea[3])) {
+            let first = true;
+            let fontSize: string | number = "";
+            let isBold = false;
+            let isItalic = false;
+            let underline = true;
+            let strikout = true;
+            let fontFamily = "";
+            const renderContent = this.stageConfig.getRenderContent(operateElement);
+            const [startX, startY, endX, endY] = selectArea;
+            renderContent.forEach((lineData, line) => {
+                if (line >= startY && line <= endY) {
+                    for (const [index, text] of lineData.texts.entries()) {
+                        if (
+                            (startY === endY && startX <= index && index < endX) ||
+                            (startY !== endY && line === startY && startX <= index) ||
+                            (startY !== endY && line !== startY && line !== endY) ||
+                            (startY !== endY && line === endY && index <= endX)
+                        ) {
+                            if (first) {
+                                first = false;
+                                fontSize = text.fontSize;
+                                isBold = text.fontWeight === "bold";
+                                isItalic = text.fontStyle === "italic";
+                                fontFamily = text.fontFamily;
+                            } else {
+                                if (fontSize !== text.fontSize) {
+                                    fontSize = "";
+                                }
 
-                                    if (text.fontWeight === "normal") {
-                                        isBold = false;
-                                    }
+                                if (text.fontWeight === "normal") {
+                                    isBold = false;
+                                }
 
-                                    if (text.fontStyle === "normal") {
-                                        isItalic = false;
-                                    }
+                                if (text.fontStyle === "normal") {
+                                    isItalic = false;
+                                }
 
-                                    if (!text.underline) {
-                                        underline = false;
-                                    }
+                                if (!text.underline) {
+                                    underline = false;
+                                }
 
-                                    if (!text.strikout) {
-                                        strikout = false;
-                                    }
+                                if (!text.strikout) {
+                                    strikout = false;
+                                }
 
-                                    if (fontFamily !== text.fontFamily) {
-                                        fontFamily = "";
-                                    }
+                                if (fontFamily !== text.fontFamily) {
+                                    fontFamily = "";
                                 }
                             }
                         }
                     }
-                });
-                this._listener.onFontSizeChange && this._listener.onFontSizeChange(fontSize);
-                this._listener.onFontWeightChange && this._listener.onFontWeightChange(isBold);
-                this._listener.onFontStyleChange && this._listener.onFontStyleChange(isItalic);
-                this._listener.onFontUnderLineChange && this._listener.onFontUnderLineChange(underline);
-                this._listener.onFontStrikoutChange && this._listener.onFontStrikoutChange(strikout);
-                this._listener.onFontFamilyChange && this._listener.onFontFamilyChange(fontFamily);
-            } else {
-                // 更新文本框光标位置
-                const { left, top } = this._getMousePosition(evt);
-                const x = left - operateElement.left;
-                const y = top - operateElement.top;
-                this._cursor.focus(x, y);
-                this._command.executeUpdateFontConfig();
-                this.resetDrawOprate();
+                }
+            });
+            this._listener.onFontSizeChange && this._listener.onFontSizeChange(fontSize);
+            this._listener.onFontWeightChange && this._listener.onFontWeightChange(isBold);
+            this._listener.onFontStyleChange && this._listener.onFontStyleChange(isItalic);
+            this._listener.onFontUnderLineChange && this._listener.onFontUnderLineChange(underline);
+            this._listener.onFontStrikoutChange && this._listener.onFontStrikoutChange(strikout);
+            this._listener.onFontFamilyChange && this._listener.onFontFamilyChange(fontFamily);
+        } else {
+            // 更新文本框光标位置
+            const { left, top } = this._getMousePosition(evt);
+            const x = left - operateElement.left;
+            const y = top - operateElement.top;
+            this._cursor.focus(x, y);
+            this._command.executeUpdateFontConfig();
+            this.resetDrawOprate();
+        }
+    }
+
+    private _mouseup(evt: MouseEvent, isMouseOut?: boolean) {
+        const operateElements = this.stageConfig.operateElements;
+        if (this.stageConfig.insertElement && this._canCreate) {
+            const newElement = this._createElement(evt);
+            if (newElement) {
+                this._command.executeAddRender([newElement]);
+            }
+            this.stageConfig.setInsertElement(null);
+        } else if (
+            operateElements.length > 0 &&
+            (this._canMoveElement || this._canResizeElement)
+        ) {
+            // 更改silde中对应的元素数据
+            this._command.executeUpdateRender(
+                deepClone(operateElements),
+                true
+            );
+        } else if (!isMouseOut && this.stageConfig.textFocus && operateElements.length > 0) {
+            const operateElement = operateElements.find(element => element.id === this.stageConfig.textFocusElementId);
+            if (operateElement) {
+                this._dealSelectText(evt, operateElement as IPPTTextElement);
             }
         }
         this._textClick = null;
@@ -900,7 +908,7 @@ export default class ControlStage extends Stage {
         this._canMoveElement = false;
         this._canCreate = false;
         this._canResizeElement = false;
-        this._opreateCacheElement = null;
+        this._opreateCacheElements = [];
     }
 
     private _mouseLeave(evt: MouseEvent) {
@@ -1128,118 +1136,118 @@ export default class ControlStage extends Stage {
         };
     }
 
-    private _drawOprate(element: IPPTElement) {
+    private _drawOprate(elements: IPPTElement[]) {
         const zoom = this.stageConfig.zoom;
-        if (!element) return;
+        if (elements.length === 0) return;
         const { x, y } = this.stageConfig.getStageOrigin();
 
-        this.ctx.save();
+        for (const element of elements) {
+            this.ctx.save();
+            // 缩放画布
+            this.ctx.scale(zoom, zoom);
 
-        // 缩放画布
-        this.ctx.scale(zoom, zoom);
-
-        if (element.type === "line") {
-            this.ctx.translate(x, y);
-
-            this.ctx.fillStyle = "#ffffff";
-            this.ctx.strokeStyle = THEME_COLOR;
-            this.ctx.lineWidth = 1 / zoom;
-            const dashWidth = 8 / zoom;
-            const rects: IRects = this._getElementLinePoints(
-                element.left,
-                element.top,
-                element.end,
-                dashWidth
-            );
-            this.ctx.fillStyle = "#ffffff";
-            this.ctx.strokeStyle = THEME_COLOR;
-            this.ctx.lineWidth = 1 / zoom;
-            for (const key in rects) {
-                this.ctx.fillRect(...rects[key]);
-                this.ctx.strokeRect(...rects[key]);
-            }
-        } else {
-            const sx = x + element.left;
-            const sy = y + element.top;
-
-            // 平移原点到元素起始点
-            this.ctx.translate(sx, sy);
-            const selectArea = this.stageConfig.selectArea;
-            if (
-                selectArea &&
-                this.stageConfig.textFocus &&
-                element.type === "text"
-            ) {
-                // 存在文本选中状态
-                const lineTexts = this.stageConfig.getRenderContent(element);
-                const x = TEXT_MARGIN;
-                let y = TEXT_MARGIN;
-                lineTexts.forEach((lineData, index) => {
-                    const lineHeight = lineData.height * element.lineHeight;
-                    const rangeRecord = this.stageConfig.getRenderSelect(
-                        x,
-                        y,
-                        lineData,
-                        index,
-                        selectArea,
-                        element
-                    );
-                    if (rangeRecord) this._renderRange(rangeRecord);
-                    y = y + lineHeight;
-                });
-            }
-
-            // 平移坐标原点到元素中心
-            this.ctx.translate(element.width / 2, element.height / 2);
-            // 水平垂直翻转
-            const isText = element.type === "text";
-            this.ctx.scale(
-                isText ? 1 : element.flipH || 1,
-                isText ? 1 : element.flipV || 1
-            );
-            // 旋转画布
-            this.ctx.rotate((element.rotate / 180) * Math.PI);
-
-            this.ctx.strokeStyle = THEME_COLOR;
-            this.ctx.lineWidth = 1 / zoom;
-            // 增加选中框与元素的间隙距离
-            const margin = 1;
-            const offsetX = -element.width / 2 - margin;
-            const offsetY = -element.height / 2 - margin;
-            this.ctx.strokeRect(
-                offsetX,
-                offsetY,
-                element.width + margin * 2,
-                element.height + margin * 2
-            );
-
-            const dashedLinePadding = 0 + margin / zoom;
-            const dashWidth = 8 / zoom;
-
-            const rects: IRects = this._getElementResizePoints(
-                offsetX,
-                offsetY,
-                element.width + margin * 2,
-                element.height + margin * 2,
-                dashedLinePadding,
-                dashWidth
-            );
-            this.ctx.fillStyle = "#ffffff";
-            this.ctx.strokeStyle = THEME_COLOR;
-            this.ctx.lineWidth = 1 / zoom;
-            for (const key in rects) {
+            if (element.type === "line") {
+                this.ctx.translate(x, y);
+    
+                this.ctx.fillStyle = "#ffffff";
+                this.ctx.strokeStyle = THEME_COLOR;
+                this.ctx.lineWidth = 1 / zoom;
+                const dashWidth = 8 / zoom;
+                const rects: IRects = this._getElementLinePoints(
+                    element.left,
+                    element.top,
+                    element.end,
+                    dashWidth
+                );
+                this.ctx.fillStyle = "#ffffff";
+                this.ctx.strokeStyle = THEME_COLOR;
+                this.ctx.lineWidth = 1 / zoom;
+                for (const key in rects) {
+                    this.ctx.fillRect(...rects[key]);
+                    this.ctx.strokeRect(...rects[key]);
+                }
+            } else {
+                const sx = x + element.left;
+                const sy = y + element.top;
+    
+                // 平移原点到元素起始点
+                this.ctx.translate(sx, sy);
+                const selectArea = this.stageConfig.selectArea;
                 if (
-                    isText &&
-                    key !== "LEFT" &&
-                    key !== "RIGHT" &&
-                    key !== "ANGLE"
-                ) continue;
-                this.ctx.fillRect(...rects[key]);
-                this.ctx.strokeRect(...rects[key]);
+                    selectArea &&
+                    this.stageConfig.textFocus &&
+                    element.type === "text"
+                ) {
+                    // 存在文本选中状态
+                    const lineTexts = this.stageConfig.getRenderContent(element);
+                    const x = TEXT_MARGIN;
+                    let y = TEXT_MARGIN;
+                    lineTexts.forEach((lineData, index) => {
+                        const lineHeight = lineData.height * element.lineHeight;
+                        const rangeRecord = this.stageConfig.getRenderSelect(
+                            x,
+                            y,
+                            lineData,
+                            index,
+                            selectArea,
+                            element
+                        );
+                        if (rangeRecord) this._renderRange(rangeRecord);
+                        y = y + lineHeight;
+                    });
+                }
+    
+                // 平移坐标原点到元素中心
+                this.ctx.translate(element.width / 2, element.height / 2);
+                // 水平垂直翻转
+                const isText = element.type === "text";
+                this.ctx.scale(
+                    isText ? 1 : element.flipH || 1,
+                    isText ? 1 : element.flipV || 1
+                );
+                // 旋转画布
+                this.ctx.rotate((element.rotate / 180) * Math.PI);
+    
+                this.ctx.strokeStyle = THEME_COLOR;
+                this.ctx.lineWidth = 1 / zoom;
+                // 增加选中框与元素的间隙距离
+                const margin = 1;
+                const offsetX = -element.width / 2 - margin;
+                const offsetY = -element.height / 2 - margin;
+                this.ctx.strokeRect(
+                    offsetX,
+                    offsetY,
+                    element.width + margin * 2,
+                    element.height + margin * 2
+                );
+    
+                const dashedLinePadding = 0 + margin / zoom;
+                const dashWidth = 8 / zoom;
+    
+                const rects: IRects = this._getElementResizePoints(
+                    offsetX,
+                    offsetY,
+                    element.width + margin * 2,
+                    element.height + margin * 2,
+                    dashedLinePadding,
+                    dashWidth
+                );
+                this.ctx.fillStyle = "#ffffff";
+                this.ctx.strokeStyle = THEME_COLOR;
+                this.ctx.lineWidth = 1 / zoom;
+                for (const key in rects) {
+                    if (
+                        isText &&
+                        key !== "LEFT" &&
+                        key !== "RIGHT" &&
+                        key !== "ANGLE"
+                    ) continue;
+                    this.ctx.fillRect(...rects[key]);
+                    this.ctx.strokeRect(...rects[key]);
+                }
             }
+            this.ctx.restore();
         }
-
-        this.ctx.restore();
     }
 
     private _horizontalZoom(
@@ -1329,10 +1337,10 @@ export default class ControlStage extends Stage {
 
     public resetDrawOprate() {
         this.clear();
-        const element = this.stageConfig.operateElement;
-        if (!element) return;
+        const elements = this.stageConfig.operateElements;
+        if (elements.length === 0) return;
         // this.drawElement(element);
-        this._drawOprate(element);
+        this._drawOprate(elements);
     }
 
     private _renderRange({ x, y, width, height }: any) {
