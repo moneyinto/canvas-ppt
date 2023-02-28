@@ -766,9 +766,9 @@ export default class Command {
     }
 
     // 元素更新及渲染
-    public executeUpdateRender(element: IPPTElement, addHistory?: boolean) {
-        this._stageConfig.setOperateElement(element);
-        this._stageConfig.updateElement(element);
+    public executeUpdateRender(elements: IPPTElement[], addHistory?: boolean) {
+        this._stageConfig.updateOperateElements(elements);
+        this._stageConfig.updateElements(elements);
 
         if (addHistory) {
             this.executeLogRender();
@@ -780,18 +780,17 @@ export default class Command {
     // 元素新增及渲染
     public executeAddRender(element: IPPTElement) {
         this._stageConfig.addElement(element);
-        this._stageConfig.setOperateElement(element);
+        this._stageConfig.setOperateElement(element, false);
 
         this.executeLogRender();
     }
 
     // 元素删除及渲染
-    public executeDeleteRender(element: IPPTElement) {
+    public executeDeleteRender(elements: IPPTElement[]) {
         const slide = this._stageConfig.getCurrentSlide();
-        const index = slide?.elements.findIndex((ele) => ele.id === element.id);
-        if (typeof index !== "undefined" && index > -1) {
-            slide?.elements.splice(index, 1);
-            this._stageConfig.setOperateElement(null);
+        if (slide && slide.elements) {
+            slide.elements = slide.elements.filter(ele => elements.findIndex(element =>  element.id === ele.id) === -1);
+            this._stageConfig.setOperateElement(null, false);
 
             this.executeLogRender();
         }

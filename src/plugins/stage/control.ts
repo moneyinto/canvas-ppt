@@ -33,7 +33,7 @@ export default class ControlStage extends Stage {
     private _canResizeElement: boolean;
     private _startPoint: [number, number];
     private _startOriginPoint: [number, number];
-    private _opreateCacheElement: IPPTElement | null;
+    private _opreateCacheElements: IPPTElement[];
     private _startAngle: number;
     private _storeAngle: number;
     private _menuDom: HTMLDivElement | null;
@@ -61,7 +61,7 @@ export default class ControlStage extends Stage {
         this._startOriginPoint = [0, 0];
         this._startAngle = 0;
         this._storeAngle = 0;
-        this._opreateCacheElement = null;
+        this._opreateCacheElements = [];
 
         this._menuDom = null;
 
@@ -118,12 +118,17 @@ export default class ControlStage extends Stage {
     }
 
     private _dblClick(evt: MouseEvent) {
-        const operateElement = this.stageConfig.operateElement;
+        const { left, top } = this._getMousePosition(evt);
+        const operateElement = this.stageConfig.getMouseInElement(
+            left,
+            top
+        );
         if (operateElement && operateElement.type === "text") {
             // 点击位置坐标
             const { left, top } = this._getMousePosition(evt);
             // 当元素被选中，且被双击时，开启编辑
             this.stageConfig.textFocus = true;
+            this.stageConfig.textFocusElementId = operateElement.id;
             this.container.style.cursor = "text";
 
             // 聚焦光标到点击位置
@@ -145,10 +150,10 @@ export default class ControlStage extends Stage {
     private _contextmenu(evt: MouseEvent) {
         this._mousedown(evt, true);
         const isMac = checkIsMac();
-        const operateElement = this.stageConfig.operateElement;
-        const selectedElement = !!operateElement;
+        const operateElements = this.stageConfig.operateElements;
+        const selectedElement = operateElements.length > 0;
         const isTextCutCopyDisabled = () => {
-            if (operateElement && operateElement.type === "text" && this.stageConfig.textFocus) {
+            if (operateElements.length > 0 && operateElements.filter(element => element.type === "text").length > 0 && this.stageConfig.textFocus) {
                 return !this.stageConfig.selectArea;
             }
             return false;
@@ -290,24 +295,28 @@ export default class ControlStage extends Stage {
         if (!this.stageConfig.insertElement && !this.stageConfig.canMove) {
             if (
                 this.stageConfig.opreateType &&
-                this.stageConfig.operateElement &&
+                this.stageConfig.operateElements.length > 0 &&
                 !this._canResizeElement
             ) {
                 // resize rotate操作
                 this._canResizeElement = true;
-                const element = this.stageConfig.operateElement;
-                if (
-                    element.type !== "line" &&
-                    this.stageConfig.opreateType === "ANGLE"
-                ) {
-                    // 旋转
-                    const cx = element.left + element.width / 2;
-                    const cy = element.top + element.height / 2;
-
-                    this._startAngle = Math.atan2(top - cy, left - cx);
-                    this._storeAngle = (element.rotate / 180) * Math.PI;
+                const elements = this.stageConfig.operateElements;
+                
+                for (const element of elements) {
+                    if (
+                        element.type !== "line" &&
+                        this.stageConfig.opreateType === "ANGLE"
+                    ) {
+                        // 旋转
+                        const cx = element.left + element.width / 2;
+                        const cy = element.top + element.height / 2;
+    
+                        this._startAngle = Math.atan2(top - cy, left - cx);
+                        this._storeAngle = (element.rotate / 180) * Math.PI;
+                    }
                 }
-                this._opreateCacheElement = deepClone(element);
+
+                this._opreateCacheElements = deepClone(elements);
                 this._cursor.hideCursor();
             } else {
                 const operateElement = this.stageConfig.getMouseInElement(
@@ -329,8 +338,8 @@ export default class ControlStage extends Stage {
                 // 存在已选中，重复选中不执行下面操作
                 if (
                     operateElement &&
-                    this.stageConfig.operateElement &&
-                    operateElement.id === this.stageConfig.operateElement.id
+                    this.stageConfig.operateElements.length > 0 &&
+                    this.stageConfig.operateElements.findIndex(element => element.id === operateElement.id) > -1
                 ) {
                     if (this.stageConfig.textFocus) {
                         if (!isContextmenu) this._cursor.hideCursor();
@@ -356,11 +365,12 @@ export default class ControlStage extends Stage {
                     return;
                 }
 
-                this.stageConfig.setOperateElement(operateElement || null);
+                this.stageConfig.setOperateElement(operateElement, evt.ctrlKey || evt.shiftKey || evt.metaKey);
                 this.stageConfig.resetCheckDrawView();
                 if (operateElement) {
                     this._cursor.hideCursor();
                     this.stageConfig.textFocus = false;
+                    this.stageConfig.textFocusElementId = "";
                     this.resetDrawOprate();
                     this._canMoveElement = true;
                 } else {
@@ -371,45 +381,29 @@ export default class ControlStage extends Stage {
         }
     }
 
-    private _mousemove(evt: MouseEvent) {
-        const operateElement = this.stageConfig.operateElement;
-        if (this.stageConfig.insertElement && this._canCreate) {
-            // 创建元素
-            if (operateElement) {
-                // 当存在选中的元素的时候，移除
-                this.stageConfig.setOperateElement(null);
-                this.stageConfig.resetCheckDrawView();
-            }
-            const newElement = this._createElement(evt);
-            if (newElement && newElement.type !== "text") {
-                this.drawElement(newElement);
-            }
+    private _moveElements(evt: MouseEvent, operateElements: IPPTElement[]) {
+        const zoom = this.stageConfig.zoom;
+        const moveX = (evt.pageX - this._startPoint[0]) / zoom;
+        const moveY = (evt.pageY - this._startPoint[1]) / zoom;
 
-            if (newElement && newElement.type === "text") {
-                this._drawOprate(newElement);
-            }
-        } else if (this._canMoveCanvas && this.stageConfig.canMove) {
-            // 移动画布
-            const scrollX = -(evt.pageX - this._startPoint[0]) + this.stageConfig.scrollX;
-            const scrollY = -(evt.pageY - this._startPoint[1]) + this.stageConfig.scrollY;
-            this._startPoint = [evt.pageX, evt.pageY];
-            this.stageConfig.setScroll(scrollX, scrollY);
-        } else if (this._canMoveElement && operateElement) {
-            // 移动元素
-            const zoom = this.stageConfig.zoom;
-            const moveX = (evt.pageX - this._startPoint[0]) / zoom;
-            const moveY = (evt.pageY - this._startPoint[1]) / zoom;
-
+        const elements: IPPTElement[] = [];
+        for (const operateElement of operateElements) {
             const newElement = {
                 ...operateElement,
                 left: operateElement.left + moveX,
                 top: operateElement.top + moveY
             };
+            
+            elements.push(newElement);
+        }
 
-            this._command.executeUpdateRender(newElement);
+        this._command.executeUpdateRender(elements);
+        this._startPoint = [evt.pageX, evt.pageY];
+    }
 
-            this._startPoint = [evt.pageX, evt.pageY];
-        } else if (this._canResizeElement && operateElement) {
+    private _resizeElements(evt: MouseEvent, opreateElements: IPPTElement[]) {
+        const elements: IPPTElement[] = [];
+        for (const operateElement of opreateElements) {
             if (operateElement.type !== "line") {
                 // 旋转缩放元素
                 if (this.stageConfig.opreateType === "ANGLE") {
@@ -418,7 +412,7 @@ export default class ControlStage extends Stage {
                     const isText = element.type === "text";
                     const cx = element.left + element.width / 2;
                     const cy = element.top + element.height / 2;
-
+    
                     const { left, top } = this._getMousePosition(evt);
                     const currentAngle = Math.atan2(top - cy, left - cx);
                     // 翻转后变化角度要取反
@@ -429,143 +423,145 @@ export default class ControlStage extends Stage {
                     const angle = normalizeAngle(
                         changeAngle + this._storeAngle
                     );
-
+    
                     const newElement = {
                         ...operateElement,
                         rotate: angle
                     };
-
-                    this._command.executeUpdateRender(newElement);
+    
+                    elements.push(newElement);
                 } else {
                     // 缩放
                     // const element = this.stageConfig.operateElement;
-                    const originElement = this._opreateCacheElement;
-                    if (originElement && originElement.type !== "line") {
-                        const { left, top } = this._getMousePosition(evt);
-                        const storeData = {
-                            ofx: 0,
-                            ofy: 0,
-                            width: originElement.width,
-                            height: originElement.height
-                        };
-
-                        const resizeBottom = /BOTTOM/.test(
-                            this.stageConfig.opreateType
-                        );
-                        const resizeTop = /TOP/.test(
-                            this.stageConfig.opreateType
-                        );
-                        const resizeLeft = /LEFT/.test(
-                            this.stageConfig.opreateType
-                        );
-                        const resizeRight = /RIGHT/.test(
-                            this.stageConfig.opreateType
-                        );
-
-                        const cx = originElement.left + originElement.width / 2;
-                        const cy = originElement.top + originElement.height / 2;
-
-                        let originLeft = originElement.left;
-                        let originTop = originElement.top;
-
-                        const startOriginX = this._startOriginPoint[0];
-                        const startOriginY = this._startOriginPoint[1];
-
-                        const isText = originElement.type === "text";
-                        // 矩形位置坐标点翻转
-                        if (!isText && originElement.flipH === -1) {
-                            originLeft = 2 * cx - originLeft;
-                        }
-                        if (!isText && originElement.flipV === -1) {
-                            originTop = 2 * cy - originTop;
-                        }
-
-                        // 矩形位置坐标点旋转
-                        const angle =
-                            (originElement.rotate / 180) *
-                            (isText ? 1 : originElement.flipV || 1) *
-                            (isText ? 1 : originElement.flipH || 1) *
-                            Math.PI;
-                        let [rx, ry] = this.stageConfig.rotate(
-                            originLeft,
-                            originTop,
-                            cx,
-                            cy,
-                            angle
-                        );
-
-                        if (resizeLeft || resizeRight) {
-                            const { ofx, ofy, width } = this._horizontalZoom(
-                                left,
-                                top,
-                                startOriginX,
-                                startOriginY,
-                                resizeLeft ? -1 : 1,
-                                originElement
-                            );
-
-                            storeData.width = width;
-                            storeData.ofx = storeData.ofx + ofx;
-                            storeData.ofy = storeData.ofy + ofy;
-
-                            if (resizeLeft) {
-                                rx = rx + ofx;
-                                ry = ry + ofy;
-                            }
-                        }
-
-                        if (resizeTop || resizeBottom) {
-                            const { ofx, ofy, height } = this._verticalZoom(
-                                left,
-                                top,
-                                startOriginX,
-                                startOriginY,
-                                resizeTop ? -1 : 1,
-                                originElement
-                            );
-
-                            storeData.height = height;
-                            storeData.ofx = storeData.ofx + ofx;
-                            storeData.ofy = storeData.ofy + ofy;
-
-                            if (resizeTop) {
-                                rx = rx + ofx;
-                                ry = ry + ofy;
-                            }
-                        }
-
-                        // 变化后的中心点
-                        const changeCX = cx + storeData.ofx / 2;
-                        const changeCY = cy + storeData.ofy / 2;
-
-                        // 矩形位置坐标点往回旋转
-                        let [ox, oy] = this.stageConfig.rotate(
-                            rx,
-                            ry,
-                            changeCX,
-                            changeCY,
-                            -angle
-                        );
-
-                        // 矩形位置坐标点往回翻转
-                        if (!isText && originElement.flipH === -1) {
-                            ox = 2 * changeCX - ox;
-                        }
-                        if (!isText && originElement.flipV === -1) {
-                            oy = 2 * changeCY - oy;
-                        }
-
-                        // 限制缩放的最小值
-                        if (storeData.width > 0 && storeData.height > 0) {
-                            const newElement = {
-                                ...originElement,
-                                width: storeData.width,
-                                height: storeData.height,
-                                left: ox,
-                                top: oy
+                    const originElements = this._opreateCacheElements;
+                    for (const originElement of originElements) {
+                        if (originElement && originElement.type !== "line") {
+                            const { left, top } = this._getMousePosition(evt);
+                            const storeData = {
+                                ofx: 0,
+                                ofy: 0,
+                                width: originElement.width,
+                                height: originElement.height
                             };
-
-                            this._command.executeUpdateRender(newElement);
+        
+                            const resizeBottom = /BOTTOM/.test(
+                                this.stageConfig.opreateType
+                            );
+                            const resizeTop = /TOP/.test(
+                                this.stageConfig.opreateType
+                            );
+                            const resizeLeft = /LEFT/.test(
+                                this.stageConfig.opreateType
+                            );
+                            const resizeRight = /RIGHT/.test(
+                                this.stageConfig.opreateType
+                            );
+        
+                            const cx = originElement.left + originElement.width / 2;
+                            const cy = originElement.top + originElement.height / 2;
+        
+                            let originLeft = originElement.left;
+                            let originTop = originElement.top;
+        
+                            const startOriginX = this._startOriginPoint[0];
+                            const startOriginY = this._startOriginPoint[1];
+        
+                            const isText = originElement.type === "text";
+                            // 矩形位置坐标点翻转
+                            if (!isText && originElement.flipH === -1) {
+                                originLeft = 2 * cx - originLeft;
+                            }
+                            if (!isText && originElement.flipV === -1) {
+                                originTop = 2 * cy - originTop;
+                            }
+        
+                            // 矩形位置坐标点旋转
+                            const angle =
+                                (originElement.rotate / 180) *
+                                (isText ? 1 : originElement.flipV || 1) *
+                                (isText ? 1 : originElement.flipH || 1) *
+                                Math.PI;
+                            let [rx, ry] = this.stageConfig.rotate(
+                                originLeft,
+                                originTop,
+                                cx,
+                                cy,
+                                angle
+                            );
+        
+                            if (resizeLeft || resizeRight) {
+                                const { ofx, ofy, width } = this._horizontalZoom(
+                                    left,
+                                    top,
+                                    startOriginX,
+                                    startOriginY,
+                                    resizeLeft ? -1 : 1,
+                                    originElement
+                                );
+        
+                                storeData.width = width;
+                                storeData.ofx = storeData.ofx + ofx;
+                                storeData.ofy = storeData.ofy + ofy;
+        
+                                if (resizeLeft) {
+                                    rx = rx + ofx;
+                                    ry = ry + ofy;
+                                }
+                            }
+        
+                            if (resizeTop || resizeBottom) {
+                                const { ofx, ofy, height } = this._verticalZoom(
+                                    left,
+                                    top,
+                                    startOriginX,
+                                    startOriginY,
+                                    resizeTop ? -1 : 1,
+                                    originElement
+                                );
+        
+                                storeData.height = height;
+                                storeData.ofx = storeData.ofx + ofx;
+                                storeData.ofy = storeData.ofy + ofy;
+        
+                                if (resizeTop) {
+                                    rx = rx + ofx;
+                                    ry = ry + ofy;
+                                }
+                            }
+        
+                            // 变化后的中心点
+                            const changeCX = cx + storeData.ofx / 2;
+                            const changeCY = cy + storeData.ofy / 2;
+        
+                            // 矩形位置坐标点往回旋转
+                            let [ox, oy] = this.stageConfig.rotate(
+                                rx,
+                                ry,
+                                changeCX,
+                                changeCY,
+                                -angle
+                            );
+        
+                            // 矩形位置坐标点往回翻转
+                            if (!isText && originElement.flipH === -1) {
+                                ox = 2 * changeCX - ox;
+                            }
+                            if (!isText && originElement.flipV === -1) {
+                                oy = 2 * changeCY - oy;
+                            }
+        
+                            // 限制缩放的最小值
+                            if (storeData.width > 0 && storeData.height > 0) {
+                                const newElement = {
+                                    ...originElement,
+                                    width: storeData.width,
+                                    height: storeData.height,
+                                    left: ox,
+                                    top: oy
+                                };
+                                
+                                elements.push(newElement);
+                            }
                         }
                     }
                 }
@@ -582,8 +578,8 @@ export default class ControlStage extends Stage {
                             operateElement.top - top + operateElement.end[1]
                         ]
                     };
-
-                    this._command.executeUpdateRender(newElement);
+    
+                    elements.push(newElement);
                 } else if (this.stageConfig.opreateType === "END") {
                     const newElement: IPPTElement = {
                         ...operateElement,
@@ -592,18 +588,20 @@ export default class ControlStage extends Stage {
                             top - operateElement.top
                         ]
                     };
-
-                    this._command.executeUpdateRender(newElement);
+    
+                    elements.push(newElement);
                 }
             }
-        } else if (
-            !this.stageConfig.insertElement &&
-            !this.stageConfig.canMove &&
-            !this._canMoveElement
-        ) {
-            // 悬浮到元素
-            const { left, top } = this._getMousePosition(evt);
+        }
 
+        if (elements.length > 0) this._command.executeUpdateRender(elements);
+    }
+
+    private _hoverCursor(evt: MouseEvent, operateElements: IPPTElement[]) {
+        const { left, top } = this._getMousePosition(evt);
+        this.stageConfig.setOperateType("");
+
+        for (const operateElement of operateElements) {
             if (operateElement) {
                 const zoom = this.stageConfig.zoom;
                 if (operateElement.type === "line") {
@@ -616,7 +614,6 @@ export default class ControlStage extends Stage {
                         dashWidth
                     );
 
-                    this.stageConfig.setOperateType("");
                     for (const key in rects) {
                         if (
                             this.stageConfig.checkPointInRect(
@@ -635,10 +632,11 @@ export default class ControlStage extends Stage {
                         }
                     }
 
-                    this.container.style.cursor =
-                        (ELEMENT_RESIZE as IElementOptions)[
+                    if (this.container.style.cursor === "default" && this.stageConfig.opreateType) {
+                        this.container.style.cursor = (ELEMENT_RESIZE as IElementOptions)[
                             this.stageConfig.opreateType
                         ] || "default";
+                    }
                 } else {
                     // 鼠标悬浮到操作区域展示形式
                     const margin = 1;
@@ -662,7 +660,6 @@ export default class ControlStage extends Stage {
                     const cx = operateElement.left + operateElement.width / 2;
                     const cy = operateElement.top + operateElement.height / 2;
 
-                    this.stageConfig.setOperateType("");
                     for (const key in rects) {
                         const rect: IRectParameter = [
                             rects[key][0] + cx,
@@ -688,14 +685,16 @@ export default class ControlStage extends Stage {
                     }
 
                     // 考虑结合旋转角度来改变优化cursor ？？？？？？？？？？？？？？？？？？？？
-                    this.container.style.cursor =
-                        (ELEMENT_RESIZE as IElementOptions)[
+                    if (this.container.style.cursor === "default" && this.stageConfig.opreateType) {
+                        this.container.style.cursor = (ELEMENT_RESIZE as IElementOptions)[
                             this.stageConfig.opreateType
                         ] || "default";
+                    }
                 }
 
                 if (
                     operateElement.type === "text" &&
+                    operateElement.id === this.stageConfig.textFocusElementId &&
                     this.stageConfig.textFocus
                 ) {
                     // 文本编辑状态
@@ -735,32 +734,75 @@ export default class ControlStage extends Stage {
                     }
                 }
             }
+        }
 
-            if (!this.stageConfig.opreateType) {
-                const hoverElement = this.stageConfig.getMouseInElement(
-                    left,
-                    top
-                );
+        if (!this.stageConfig.opreateType) {
+            const hoverElement = this.stageConfig.getMouseInElement(
+                left,
+                top
+            );
 
-                if (hoverElement) {
+            if (hoverElement) {
+                for (const operateElement of operateElements) {
                     if (
                         operateElement &&
                         hoverElement.type === "text" &&
                         hoverElement.id === operateElement.id &&
+                        hoverElement.id === this.stageConfig.textFocusElementId &&
                         this.stageConfig.textFocus
                     ) {
                         if (this.container.style.cursor !== "text") {
                             this.container.style.cursor = "text";
                         }
+                        break;
                     } else if (this.container.style.cursor !== "move") {
                         this.container.style.cursor = "move";
                     }
-                } else {
-                    if (this.container.style.cursor !== "default") {
-                        this.container.style.cursor = "default";
-                    }
+                }
+            } else {
+                if (this.container.style.cursor !== "default") {
+                    this.container.style.cursor = "default";
                 }
             }
+        }
+    }
+
+    private _mousemove(evt: MouseEvent) {
+        const operateElements = this.stageConfig.operateElements;
+        if (this.stageConfig.insertElement && this._canCreate) {
+            // 创建元素
+            if (operateElements.length > 0) {
+                // 当存在选中的元素的时候，移除
+                this.stageConfig.setOperateElement(null, false);
+                this.stageConfig.resetCheckDrawView();
+            }
+            const newElement = this._createElement(evt);
+            if (newElement && newElement.type !== "text") {
+                this.drawElement(newElement);
+            }
+
+            if (newElement && newElement.type === "text") {
+                this._drawOprate(newElement);
+            }
+        } else if (this._canMoveCanvas && this.stageConfig.canMove) {
+            // 移动画布
+            const scrollX = -(evt.pageX - this._startPoint[0]) + this.stageConfig.scrollX;
+            const scrollY = -(evt.pageY - this._startPoint[1]) + this.stageConfig.scrollY;
+            this._startPoint = [evt.pageX, evt.pageY];
+            this.stageConfig.setScroll(scrollX, scrollY);
+        } else if (this._canMoveElement && operateElements.length > 0) {
+            // 移动元素
+            this._moveElements(evt, operateElements);
+        } else if (this._canResizeElement && operateElements.length > 0) {
+            // 旋转缩放元素
+            this._resizeElements(evt, operateElements);
+        } else if (
+            !this.stageConfig.insertElement &&
+            !this.stageConfig.canMove &&
+            !this._canMoveElement
+        ) {
+            // 悬浮到元素
+            this._hoverCursor(evt, operateElements);
         }
     }
 

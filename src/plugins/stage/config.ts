@@ -15,7 +15,7 @@ export default class StageConfig {
     public zoom: number;
     public canMove: boolean;
     public insertElement: ICreatingElement | null; // 需要绘制插入的元素
-    public operateElement: IPPTElement | null; // 选中操作元素
+    public operateElements: IPPTElement[]; // 选中操作元素
     public opreateType: string; // 元素操作形式 拉伸方向 旋转
     public cacheImage: ICacheImage[];
 
@@ -24,6 +24,7 @@ export default class StageConfig {
 
     public fontConfig: IFontConfig = deepClone(baseFontConfig); // 富文本聚焦后前一个字体配置 或 默认配置
     public textFocus = false; // 富文本框是否聚焦 双击聚焦后才可以编辑
+    public textFocusElementId = ""; // 聚焦富文本框元素id
     // [开始字坐标，开始行坐标，结束字坐标，结束行坐标]
     public selectArea: [number, number, number, number] | null = null;
 
@@ -46,7 +47,7 @@ export default class StageConfig {
         this.zoom = this.getFitZoom();
         this.canMove = false;
         this.insertElement = null;
-        this.operateElement = null;
+        this.operateElements = [];
         this.opreateType = "";
         this.cacheImage = [];
 
@@ -174,14 +175,41 @@ export default class StageConfig {
         }
     }
 
-    public setOperateElement(element: IPPTElement | null) {
+    public updateElements(elements: IPPTElement[]) {
+        const slide = this.getCurrentSlide();
+        if (slide && slide.elements && elements.length > 0) {
+            for (const element of elements) {
+                const index = slide?.elements.findIndex(e => e.id === element.id);
+                if (index > -1) {
+                    slide.elements[index] = element;
+                }
+            }
+        }
+    }
+
+    public setOperateElement(element: IPPTElement | null, multiple: boolean) {
         const operateElement = deepClone(element);
-        this.operateElement = operateElement;
         if (!operateElement) {
+            this.operateElements = [];
             this.textFocus = false;
+            this.textFocusElementId = "";
             this.hideCursor && this.hideCursor();
+        } else {
+            if (multiple) {
+                // 多选
+                const index = this.operateElements.findIndex(element => element.id === operateElement.id);
+                if (index === -1) {
+                    this.operateElements.push(operateElement);
+                }
+            } else {
+                this.operateElements = [operateElement];
+            }
         }
         if (this._listener?.onSelectedChange) this._listener.onSelectedChange(operateElement);
+    }
+
+    public updateOperateElements(elements: IPPTElement[]) {
+        this.operateElements = elements;
     }
 
     public setOperateType(opreateType: string) {
