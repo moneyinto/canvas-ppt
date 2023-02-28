@@ -301,7 +301,7 @@ export default class ControlStage extends Stage {
                 // resize rotate操作
                 this._canResizeElement = true;
                 const elements = this.stageConfig.operateElements;
-                
+
                 for (const element of elements) {
                     if (
                         element.type !== "line" &&
@@ -310,7 +310,7 @@ export default class ControlStage extends Stage {
                         // 旋转
                         const cx = element.left + element.width / 2;
                         const cy = element.top + element.height / 2;
-    
+
                         this._startAngle = Math.atan2(top - cy, left - cx);
                         this._storeAngle = (element.rotate / 180) * Math.PI;
                     }
@@ -393,7 +393,7 @@ export default class ControlStage extends Stage {
                 left: operateElement.left + moveX,
                 top: operateElement.top + moveY
             };
-            
+
             elements.push(newElement);
         }
 
@@ -412,7 +412,7 @@ export default class ControlStage extends Stage {
                     const isText = element.type === "text";
                     const cx = element.left + element.width / 2;
                     const cy = element.top + element.height / 2;
-    
+
                     const { left, top } = this._getMousePosition(evt);
                     const currentAngle = Math.atan2(top - cy, left - cx);
                     // 翻转后变化角度要取反
@@ -423,12 +423,12 @@ export default class ControlStage extends Stage {
                     const angle = normalizeAngle(
                         changeAngle + this._storeAngle
                     );
-    
+
                     const newElement = {
                         ...operateElement,
                         rotate: angle
                     };
-    
+
                     elements.push(newElement);
                 } else {
                     // 缩放
@@ -443,7 +443,7 @@ export default class ControlStage extends Stage {
                                 width: originElement.width,
                                 height: originElement.height
                             };
-        
+
                             const resizeBottom = /BOTTOM/.test(
                                 this.stageConfig.opreateType
                             );
@@ -456,16 +456,16 @@ export default class ControlStage extends Stage {
                             const resizeRight = /RIGHT/.test(
                                 this.stageConfig.opreateType
                             );
-        
+
                             const cx = originElement.left + originElement.width / 2;
                             const cy = originElement.top + originElement.height / 2;
-        
+
                             let originLeft = originElement.left;
                             let originTop = originElement.top;
-        
+
                             const startOriginX = this._startOriginPoint[0];
                             const startOriginY = this._startOriginPoint[1];
-        
+
                             const isText = originElement.type === "text";
                             // 矩形位置坐标点翻转
                             if (!isText && originElement.flipH === -1) {
@@ -474,7 +474,7 @@ export default class ControlStage extends Stage {
                             if (!isText && originElement.flipV === -1) {
                                 originTop = 2 * cy - originTop;
                             }
-        
+
                             // 矩形位置坐标点旋转
                             const angle =
                                 (originElement.rotate / 180) *
@@ -488,7 +488,7 @@ export default class ControlStage extends Stage {
                                 cy,
                                 angle
                             );
-        
+
                             if (resizeLeft || resizeRight) {
                                 const { ofx, ofy, width } = this._horizontalZoom(
                                     left,
@@ -498,17 +498,17 @@ export default class ControlStage extends Stage {
                                     resizeLeft ? -1 : 1,
                                     originElement
                                 );
-        
+
                                 storeData.width = width;
                                 storeData.ofx = storeData.ofx + ofx;
                                 storeData.ofy = storeData.ofy + ofy;
-        
+
                                 if (resizeLeft) {
                                     rx = rx + ofx;
                                     ry = ry + ofy;
                                 }
                             }
-        
+
                             if (resizeTop || resizeBottom) {
                                 const { ofx, ofy, height } = this._verticalZoom(
                                     left,
@@ -518,21 +518,21 @@ export default class ControlStage extends Stage {
                                     resizeTop ? -1 : 1,
                                     originElement
                                 );
-        
+
                                 storeData.height = height;
                                 storeData.ofx = storeData.ofx + ofx;
                                 storeData.ofy = storeData.ofy + ofy;
-        
+
                                 if (resizeTop) {
                                     rx = rx + ofx;
                                     ry = ry + ofy;
                                 }
                             }
-        
+
                             // 变化后的中心点
                             const changeCX = cx + storeData.ofx / 2;
                             const changeCY = cy + storeData.ofy / 2;
-        
+
                             // 矩形位置坐标点往回旋转
                             let [ox, oy] = this.stageConfig.rotate(
                                 rx,
@@ -541,7 +541,7 @@ export default class ControlStage extends Stage {
                                 changeCY,
                                 -angle
                             );
-        
+
                             // 矩形位置坐标点往回翻转
                             if (!isText && originElement.flipH === -1) {
                                 ox = 2 * changeCX - ox;
@@ -549,7 +549,7 @@ export default class ControlStage extends Stage {
                             if (!isText && originElement.flipV === -1) {
                                 oy = 2 * changeCY - oy;
                             }
-        
+
                             // 限制缩放的最小值
                             if (storeData.width > 0 && storeData.height > 0) {
                                 const newElement = {
@@ -559,7 +559,7 @@ export default class ControlStage extends Stage {
                                     left: ox,
                                     top: oy
                                 };
-                                
+
                                 elements.push(newElement);
                             }
                         }
@@ -578,7 +578,7 @@ export default class ControlStage extends Stage {
                             operateElement.top - top + operateElement.end[1]
                         ]
                     };
-    
+
                     elements.push(newElement);
                 } else if (this.stageConfig.opreateType === "END") {
                     const newElement: IPPTElement = {
@@ -588,7 +588,7 @@ export default class ControlStage extends Stage {
                             top - operateElement.top
                         ]
                     };
-    
+
                     elements.push(newElement);
                 }
             }
@@ -1148,7 +1148,7 @@ export default class ControlStage extends Stage {
 
             if (element.type === "line") {
                 this.ctx.translate(x, y);
-    
+
                 this.ctx.fillStyle = "#ffffff";
                 this.ctx.strokeStyle = THEME_COLOR;
                 this.ctx.lineWidth = 1 / zoom;
@@ -1169,7 +1169,7 @@ export default class ControlStage extends Stage {
             } else {
                 const sx = x + element.left;
                 const sy = y + element.top;
-    
+
                 // 平移原点到元素起始点
                 this.ctx.translate(sx, sy);
                 const selectArea = this.stageConfig.selectArea;
@@ -1196,7 +1196,7 @@ export default class ControlStage extends Stage {
                         y = y + lineHeight;
                     });
                 }
-    
+
                 // 平移坐标原点到元素中心
                 this.ctx.translate(element.width / 2, element.height / 2);
                 // 水平垂直翻转
@@ -1207,7 +1207,7 @@ export default class ControlStage extends Stage {
                 );
                 // 旋转画布
                 this.ctx.rotate((element.rotate / 180) * Math.PI);
-    
+
                 this.ctx.strokeStyle = THEME_COLOR;
                 this.ctx.lineWidth = 1 / zoom;
                 // 增加选中框与元素的间隙距离
@@ -1220,10 +1220,10 @@ export default class ControlStage extends Stage {
                     element.width + margin * 2,
                     element.height + margin * 2
                 );
-    
+
                 const dashedLinePadding = 0 + margin / zoom;
                 const dashWidth = 8 / zoom;
-    
+
                 const rects: IRects = this._getElementResizePoints(
                     offsetX,
                     offsetY,

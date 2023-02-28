@@ -127,7 +127,7 @@ export default class Command {
                 ) {
                     // 已经处在底，无法继续移动
                     if (zIndex === 0) return;
-    
+
                     // 移动
                     const movedElement = slide.elements.splice(zIndex, 1)[0];
                     slide.elements.splice(zIndex - 1, 0, movedElement);
@@ -156,7 +156,7 @@ export default class Command {
                 ) {
                     // 已经处在顶层，无法继续移动
                     if (zIndex === slide.elements.length - 1) return;
-    
+
                     // 移动
                     const movedElement = slide.elements.splice(zIndex, 1)[0];
                     slide.elements.push(movedElement);
@@ -185,7 +185,7 @@ export default class Command {
                 ) {
                     // 已经处在底，无法继续移动
                     if (zIndex === 0) return;
-    
+
                     // 移动
                     const movedElement = slide.elements.splice(zIndex, 1)[0];
                     slide.elements.unshift(movedElement);
@@ -274,7 +274,7 @@ export default class Command {
                     ...operateElement,
                     outline
                 };
-    
+
                 if (!outline) delete newElement.outline;
 
                 newElements.push(newElement);
@@ -337,7 +337,7 @@ export default class Command {
             const elements = pasteCustomClipboardString(
                 resultText
             ) as IPPTElement[];
-            
+
             for (const element of elements) {
                 // 粘贴的内容为元素数据
                 element.id = createRandomCode();
@@ -486,7 +486,7 @@ export default class Command {
                     newElement.width = contentWidth;
                     newElement.height = this._getTextHeight(newElement);
                     this.executeAddRender([newElement]);
-                }                                                                                                                                                                 
+                }
             }
         }
     }
@@ -574,11 +574,11 @@ export default class Command {
                 );
                 operateElement.content.splice(startX, endX - startX);
                 operateElement.height = this._getTextHeight(operateElement);
-    
+
                 this._stageConfig.setSelectArea(null);
-    
+
                 this.executeUpdateRender(operateElements, true);
-    
+
                 this._updateCursor(startX - 1);
             }
         }
@@ -832,7 +832,7 @@ export default class Command {
     public executeDeleteRender(elements: IPPTElement[]) {
         const slide = this._stageConfig.getCurrentSlide();
         if (slide && slide.elements) {
-            slide.elements = slide.elements.filter(ele => elements.findIndex(element =>  element.id === ele.id) === -1);
+            slide.elements = slide.elements.filter(ele => elements.findIndex(element => element.id === ele.id) === -1);
             this._stageConfig.setOperateElement(null, false);
 
             this.executeLogRender();
@@ -975,7 +975,6 @@ export default class Command {
                 // 设置完后 文本框聚焦
                 this._cursor.setInputFocus();
             }
-            
         } else {
             for (const operateElement of operateElements) {
                 if (operateElement.type === "text") {
@@ -988,7 +987,7 @@ export default class Command {
                     operateElement.height = this._getTextHeight(operateElement);
                 }
             }
-            
+
             this.executeUpdateRender(operateElements);
 
             this._debounceLog();
@@ -1036,7 +1035,7 @@ export default class Command {
                     operateElement.height = this._getTextHeight(operateElement);
                 }
             }
-            
+
             this.executeUpdateRender(operateElements);
 
             this._debounceLog();
@@ -1322,7 +1321,7 @@ export default class Command {
             const element = this.setAlignElement(operateElement, align);
             elements.push(element);
         }
-        
+
         if (operateElements.length > 0) this.executeUpdateRender(elements, true);
     }
 
