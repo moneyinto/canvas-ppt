@@ -603,137 +603,135 @@ export default class ControlStage extends Stage {
         this.stageConfig.setOperateType("");
 
         for (const operateElement of operateElements) {
-            if (operateElement) {
-                const zoom = this.stageConfig.zoom;
-                if (operateElement.type === "line") {
-                    const dashWidth = 8 / zoom;
+            const zoom = this.stageConfig.zoom;
+            if (operateElement.type === "line") {
+                const dashWidth = 8 / zoom;
 
-                    const rects: IRects = this._getElementLinePoints(
-                        operateElement.left,
-                        operateElement.top,
-                        operateElement.end,
-                        dashWidth
-                    );
+                const rects: IRects = this._getElementLinePoints(
+                    operateElement.left,
+                    operateElement.top,
+                    operateElement.end,
+                    dashWidth
+                );
 
-                    for (const key in rects) {
-                        if (
-                            this.stageConfig.checkPointInRect(
-                                left,
-                                top,
-                                rects[key],
-                                left,
-                                top,
-                                0,
-                                1,
-                                1
-                            )
-                        ) {
-                            this.stageConfig.setOperateType(key);
-                            break;
-                        }
-                    }
-
-                    if (this.container.style.cursor === "default" && this.stageConfig.opreateType) {
-                        this.container.style.cursor = (ELEMENT_RESIZE as IElementOptions)[
-                            this.stageConfig.opreateType
-                        ] || "default";
-                    }
-                } else {
-                    // 鼠标悬浮到操作区域展示形式
-                    const margin = 1;
-                    const offsetX = -operateElement.width / 2 - margin;
-                    const offsetY = -operateElement.height / 2 - margin;
-
-                    const dashedLinePadding = 0 + margin / zoom;
-                    const dashWidth = 8 / zoom;
-
-                    const isText = operateElement.type === "text";
-
-                    const rects: IRects = this._getElementResizePoints(
-                        offsetX,
-                        offsetY,
-                        operateElement.width + margin * 2,
-                        operateElement.height + margin * 2,
-                        dashedLinePadding,
-                        dashWidth
-                    );
-
-                    const cx = operateElement.left + operateElement.width / 2;
-                    const cy = operateElement.top + operateElement.height / 2;
-
-                    for (const key in rects) {
-                        const rect: IRectParameter = [
-                            rects[key][0] + cx,
-                            rects[key][1] + cy,
-                            rects[key][2],
-                            rects[key][3]
-                        ];
-                        if (
-                            this.stageConfig.checkPointInRect(
-                                left,
-                                top,
-                                rect,
-                                cx,
-                                cy,
-                                (operateElement.rotate / 180) * Math.PI,
-                                isText ? 1 : operateElement.flipH || 1,
-                                isText ? 1 : operateElement.flipV || 1
-                            )
-                        ) {
-                            this._operateRisizeElementId = operateElement.id;
-                            this.stageConfig.setOperateType(key);
-                            break;
-                        }
-                    }
-
-                    // 考虑结合旋转角度来改变优化cursor ？？？？？？？？？？？？？？？？？？？？
-                    if (this.container.style.cursor === "default" && this.stageConfig.opreateType) {
-                        this.container.style.cursor = (ELEMENT_RESIZE as IElementOptions)[
-                            this.stageConfig.opreateType
-                        ] || "default";
+                for (const key in rects) {
+                    if (
+                        this.stageConfig.checkPointInRect(
+                            left,
+                            top,
+                            rects[key],
+                            left,
+                            top,
+                            0,
+                            1,
+                            1
+                        )
+                    ) {
+                        this.stageConfig.setOperateType(key);
+                        break;
                     }
                 }
 
-                if (
-                    operateElement.type === "text" &&
-                    operateElement.id === this.stageConfig.textFocusElementId &&
-                    this.stageConfig.textFocus
-                ) {
-                    // 文本编辑状态
-                    if (this._textClick) {
-                        const { left, top } = this._getMousePosition(evt);
-                        const x = left - operateElement.left;
-                        const y = top - operateElement.top;
-                        const renderContent = this.stageConfig.getRenderContent(
-                            operateElement as IPPTTextElement
-                        );
-                        const { textX, textY } = this._cursor.getCursorPosition(
-                            x,
-                            y,
-                            renderContent
-                        );
-                        let startX = this._textClick.textX;
-                        let startY = this._textClick.textY;
-                        let endX = textX + 1;
-                        let endY = textY;
-                        if (endY < startY) {
-                            endX = this._textClick.textX;
-                            endY = this._textClick.textY;
-                            startX = textX + 1;
-                            startY = textY;
-                        } else if (endY === startY && startX > endX) {
-                            endX = this._textClick.textX;
-                            startX = textX + 1;
-                        }
+                if (this.container.style.cursor === "default" && this.stageConfig.opreateType) {
+                    this.container.style.cursor = (ELEMENT_RESIZE as IElementOptions)[
+                        this.stageConfig.opreateType
+                    ] || "default";
+                }
+            } else {
+                // 鼠标悬浮到操作区域展示形式
+                const margin = 1;
+                const offsetX = -operateElement.width / 2 - margin;
+                const offsetY = -operateElement.height / 2 - margin;
 
-                        this.stageConfig.setSelectArea([
-                            startX,
-                            startY,
-                            endX,
-                            endY
-                        ]);
-                        this.resetDrawOprate();
+                const dashedLinePadding = 0 + margin / zoom;
+                const dashWidth = 8 / zoom;
+
+                const isText = operateElement.type === "text";
+
+                const rects: IRects = this._getElementResizePoints(
+                    offsetX,
+                    offsetY,
+                    operateElement.width + margin * 2,
+                    operateElement.height + margin * 2,
+                    dashedLinePadding,
+                    dashWidth
+                );
+
+                const cx = operateElement.left + operateElement.width / 2;
+                const cy = operateElement.top + operateElement.height / 2;
+
+                for (const key in rects) {
+                    const rect: IRectParameter = [
+                        rects[key][0] + cx,
+                        rects[key][1] + cy,
+                        rects[key][2],
+                        rects[key][3]
+                    ];
+                    if (
+                        this.stageConfig.checkPointInRect(
+                            left,
+                            top,
+                            rect,
+                            cx,
+                            cy,
+                            (operateElement.rotate / 180) * Math.PI,
+                            isText ? 1 : operateElement.flipH || 1,
+                            isText ? 1 : operateElement.flipV || 1
+                        )
+                    ) {
+                        this._operateRisizeElementId = operateElement.id;
+                        this.stageConfig.setOperateType(key);
+                        break;
                     }
+                }
+
+                // 考虑结合旋转角度来改变优化cursor ？？？？？？？？？？？？？？？？？？？？
+                if (this.container.style.cursor === "default" && this.stageConfig.opreateType) {
+                    this.container.style.cursor = (ELEMENT_RESIZE as IElementOptions)[
+                        this.stageConfig.opreateType
+                    ] || "default";
+                }
+            }
+
+            if (
+                operateElement.type === "text" &&
+                operateElement.id === this.stageConfig.textFocusElementId &&
+                this.stageConfig.textFocus
+            ) {
+                // 文本编辑状态
+                if (this._textClick) {
+                    const { left, top } = this._getMousePosition(evt);
+                    const x = left - operateElement.left;
+                    const y = top - operateElement.top;
+                    const renderContent = this.stageConfig.getRenderContent(
+                        operateElement as IPPTTextElement
+                    );
+                    const { textX, textY } = this._cursor.getCursorPosition(
+                        x,
+                        y,
+                        renderContent
+                    );
+                    let startX = this._textClick.textX;
+                    let startY = this._textClick.textY;
+                    let endX = textX + 1;
+                    let endY = textY;
+                    if (endY < startY) {
+                        endX = this._textClick.textX;
+                        endY = this._textClick.textY;
+                        startX = textX + 1;
+                        startY = textY;
+                    } else if (endY === startY && startX > endX) {
+                        endX = this._textClick.textX;
+                        startX = textX + 1;
+                    }
+
+                    this.stageConfig.setSelectArea([
+                        startX,
+                        startY,
+                        endX,
+                        endY
+                    ]);
+                    this.resetDrawOprate();
                 }
             }
         }
@@ -757,9 +755,11 @@ export default class ControlStage extends Stage {
                             this.container.style.cursor = "text";
                         }
                         break;
-                    } else if (this.container.style.cursor !== "move") {
-                        this.container.style.cursor = "move";
                     }
+                }
+
+                if (!this.stageConfig.textFocus && this.container.style.cursor !== "move") {
+                    this.container.style.cursor = "move";
                 }
             } else {
                 if (this.container.style.cursor !== "default") {
