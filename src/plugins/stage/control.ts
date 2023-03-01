@@ -33,7 +33,8 @@ export default class ControlStage extends Stage {
     private _canResizeElement: boolean;
     private _startPoint: [number, number];
     private _startOriginPoint: [number, number];
-    private _opreateCacheElements: IPPTElement[];
+    private _operateCacheElements: IPPTElement[];
+    private _operateRisizeElementId: string;
     private _startAngle: number;
     private _storeAngle: number;
     private _menuDom: HTMLDivElement | null;
@@ -61,7 +62,8 @@ export default class ControlStage extends Stage {
         this._startOriginPoint = [0, 0];
         this._startAngle = 0;
         this._storeAngle = 0;
-        this._opreateCacheElements = [];
+        this._operateCacheElements = [];
+        this._operateRisizeElementId = "";
 
         this._menuDom = null;
 
@@ -301,22 +303,21 @@ export default class ControlStage extends Stage {
                 // resize rotate操作
                 this._canResizeElement = true;
                 const elements = this.stageConfig.operateElements;
+                const element = elements.find(operateElement => operateElement.id === this._operateRisizeElementId);
+                if (
+                    element &&
+                    element.type !== "line" &&
+                    this.stageConfig.opreateType === "ANGLE"
+                ) {
+                    // 旋转
+                    const cx = element.left + element.width / 2;
+                    const cy = element.top + element.height / 2;
 
-                for (const element of elements) {
-                    if (
-                        element.type !== "line" &&
-                        this.stageConfig.opreateType === "ANGLE"
-                    ) {
-                        // 旋转
-                        const cx = element.left + element.width / 2;
-                        const cy = element.top + element.height / 2;
-
-                        this._startAngle = Math.atan2(top - cy, left - cx);
-                        this._storeAngle = (element.rotate / 180) * Math.PI;
-                    }
+                    this._startAngle = Math.atan2(top - cy, left - cx);
+                    this._storeAngle = (element.rotate / 180) * Math.PI;
                 }
 
-                this._opreateCacheElements = deepClone(elements);
+                this._operateCacheElements = deepClone(elements);
                 this._cursor.hideCursor();
             } else {
                 const operateElement = this.stageConfig.getMouseInElement(
@@ -408,32 +409,34 @@ export default class ControlStage extends Stage {
                 // 旋转缩放元素
                 if (this.stageConfig.opreateType === "ANGLE") {
                     // 旋转
-                    const element = operateElement;
-                    const isText = element.type === "text";
-                    const cx = element.left + element.width / 2;
-                    const cy = element.top + element.height / 2;
+                    const element = opreateElements.find(ele => ele.id === this._operateRisizeElementId) as Exclude<IPPTElement, IPPTLineElement> | undefined;
+                    if (element) {
+                        const isText = element.type === "text";
+                        const cx = element.left + element.width / 2;
+                        const cy = element.top + element.height / 2;
 
-                    const { left, top } = this._getMousePosition(evt);
-                    const currentAngle = Math.atan2(top - cy, left - cx);
-                    // 翻转后变化角度要取反
-                    const changeAngle =
-                        (currentAngle - this._startAngle) *
-                        (isText ? 1 : element.flipV || 1) *
-                        (isText ? 1 : element.flipH || 1);
-                    const angle = normalizeAngle(
-                        changeAngle + this._storeAngle
-                    );
+                        const { left, top } = this._getMousePosition(evt);
+                        const currentAngle = Math.atan2(top - cy, left - cx);
+                        // 翻转后变化角度要取反
+                        const changeAngle =
+                            (currentAngle - this._startAngle) *
+                            (isText ? 1 : element.flipV || 1) *
+                            (isText ? 1 : element.flipH || 1);
+                        const angle = normalizeAngle(
+                            changeAngle + this._storeAngle
+                        );
 
-                    const newElement = {
-                        ...operateElement,
-                        rotate: angle
-                    };
+                        const newElement = {
+                            ...operateElement,
+                            rotate: angle
+                        };
 
-                    elements.push(newElement);
+                        elements.push(newElement);
+                    }
                 } else {
                     // 缩放
                     // const element = this.stageConfig.operateElement;
-                    const originElement = this._opreateCacheElements.find(element => element.id === operateElement.id);
+                    const originElement = this._operateCacheElements.find(element => element.id === operateElement.id);
                     if (originElement && originElement.type !== "line") {
                         const { left, top } = this._getMousePosition(evt);
                         const storeData = {
@@ -677,6 +680,7 @@ export default class ControlStage extends Stage {
                                 isText ? 1 : operateElement.flipV || 1
                             )
                         ) {
+                            this._operateRisizeElementId = operateElement.id;
                             this.stageConfig.setOperateType(key);
                             break;
                         }
@@ -906,7 +910,8 @@ export default class ControlStage extends Stage {
         this._canMoveElement = false;
         this._canCreate = false;
         this._canResizeElement = false;
-        this._opreateCacheElements = [];
+        this._operateCacheElements = [];
+        this._operateRisizeElementId = "";
     }
 
     private _mouseLeave(evt: MouseEvent) {
