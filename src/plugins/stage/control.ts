@@ -632,7 +632,7 @@ export default class ControlStage extends Stage {
                     }
                 }
 
-                if (this.container.style.cursor === "default" && this.stageConfig.opreateType) {
+                if (this.stageConfig.opreateType) {
                     this.container.style.cursor = (ELEMENT_RESIZE as IElementOptions)[
                         this.stageConfig.opreateType
                     ] || "default";
@@ -686,7 +686,7 @@ export default class ControlStage extends Stage {
                 }
 
                 // 考虑结合旋转角度来改变优化cursor ？？？？？？？？？？？？？？？？？？？？
-                if (this.container.style.cursor === "default" && this.stageConfig.opreateType) {
+                if (this.stageConfig.opreateType) {
                     this.container.style.cursor = (ELEMENT_RESIZE as IElementOptions)[
                         this.stageConfig.opreateType
                     ] || "default";
