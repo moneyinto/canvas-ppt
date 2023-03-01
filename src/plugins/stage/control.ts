@@ -342,7 +342,7 @@ export default class ControlStage extends Stage {
                     this.stageConfig.operateElements.length > 0 &&
                     this.stageConfig.operateElements.findIndex(element => element.id === operateElement.id) > -1
                 ) {
-                    if (this.stageConfig.textFocus) {
+                    if (this.stageConfig.textFocus && operateElement.id === this.stageConfig.textFocusElementId) {
                         if (!isContextmenu) this._cursor.hideCursor();
                         const x = left - operateElement.left;
                         const y = top - operateElement.top;
@@ -362,6 +362,9 @@ export default class ControlStage extends Stage {
                         };
                         return;
                     }
+                    this.stageConfig.textFocus = false;
+                    this.stageConfig.textFocusElementId = "";
+                    this._cursor.hideCursor();
                     this._canMoveElement = true;
                     return;
                 }
@@ -698,7 +701,7 @@ export default class ControlStage extends Stage {
                 operateElement.id === this.stageConfig.textFocusElementId &&
                 this.stageConfig.textFocus
             ) {
-                // 文本编辑状态
+                // 文本选中状态
                 if (this._textClick) {
                     const { left, top } = this._getMousePosition(evt);
                     const x = left - operateElement.left;
@@ -755,12 +758,14 @@ export default class ControlStage extends Stage {
                             this.container.style.cursor = "text";
                         }
                         break;
+                    } else {
+                        this.container.style.cursor = "move";
                     }
                 }
 
-                if (!this.stageConfig.textFocus && this.container.style.cursor !== "move") {
-                    this.container.style.cursor = "move";
-                }
+                // if (!this.stageConfig.textFocus && this.container.style.cursor !== "move") {
+                //     this.container.style.cursor = "move";
+                // }
             } else {
                 if (this.container.style.cursor !== "default") {
                     this.container.style.cursor = "default";
