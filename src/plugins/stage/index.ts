@@ -237,28 +237,29 @@ export default class Stage {
         // 缩放画布
         this.ctx.scale(zoom, zoom);
 
-        const moveX = x + element.left;
-        const moveY = y + element.top;
+        const ox = x + element.left + element.width / 2;
+        const oy = y + element.top + element.height / 2;
 
-        this.ctx.translate(moveX, moveY);
+        // 平移坐标原点
+        this.ctx.translate(ox, oy);
+
+        // 旋转画布
+        this.ctx.rotate((element.rotate / 180) * Math.PI);
 
         if (element.outline) {
-            this.ctx.save();
-            this.ctx.translate(element.width / 2, element.height / 2);
             const path = this.getShapePath(SHAPE_TYPE.RECT, element.width, element.height);
             this._drawOutline(element.outline, path);
-            this.ctx.restore();
         }
 
         if (element.fill) {
-            this.ctx.save();
-            this.ctx.translate(element.width / 2, element.height / 2);
             this.ctx.fillStyle = element.fill || "transparent";
             this.ctx.globalAlpha = (100 - (element.opacity || 0)) / 100;
             const path = this.getShapePath(SHAPE_TYPE.RECT, element.width, element.height);
             this.ctx.fill(path);
-            this.ctx.restore();
         }
+
+        // 平移到矩形左上角点位
+        this.ctx.translate(-element.width / 2, -element.height / 2);
 
         // 绘制text
         const lineTexts = this.stageConfig.getRenderContent(element);
