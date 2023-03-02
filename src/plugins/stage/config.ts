@@ -187,6 +187,51 @@ export default class StageConfig {
         }
     }
 
+    public getElementBoundary(element: IPPTElement) {
+        const boundary = [0, 0, 0, 0];
+        if (element.type === "line") {
+            boundary[0] = Math.min(element.left + element.start[0], element.left + element.end[0]);
+            boundary[1] = Math.min(element.top + element.start[1], element.top + element.end[1]);
+            boundary[2] = Math.max(element.left + element.start[0], element.left + element.end[0]);
+            boundary[3] = Math.max(element.top + element.start[1], element.top + element.end[1]);
+        } else if (element.rotate === 0) {
+            boundary[0] = element.left;
+            boundary[1] = element.top;
+            boundary[2] = element.left + element.width;
+            boundary[3] = element.top + element.height;
+        } else {
+            const cx = element.left + element.width / 2;
+            const cy = element.top + element.height / 2;
+            const rect1 = this.rotate(element.left, element.top, cx, cy, element.rotate);
+            const rect2 = this.rotate(element.left + element.width, element.top, cx, cy, element.rotate);
+            const rect3 = this.rotate(element.left, element.top + element.height, cx, cy, element.rotate);
+            const rect4 = this.rotate(element.left + element.width, element.top + element.height, cx, cy, element.rotate);
+            boundary[0] = Math.min(rect1[0], rect2[0], rect3[0], rect4[0]);
+            boundary[1] = Math.min(rect1[1], rect2[1], rect3[1], rect4[1]);
+            boundary[2] = Math.max(rect1[0], rect2[0], rect3[0], rect4[0]);
+            boundary[3] = Math.max(rect1[1], rect2[1], rect3[1], rect4[1]);
+        }
+
+        return boundary;
+    }
+
+    public getOperateElementsBoundary(elements: IPPTElement[]) {
+        let boundary = [0, 0, 0, 0];
+        for (const [index, element] of elements.entries()) {
+            if (index === 0) {
+                boundary = this.getElementBoundary(element);
+            } else {
+                const boundary1 = this.getElementBoundary(element);
+                boundary[0] = Math.min(boundary[0], boundary1[0]);
+                boundary[1] = Math.min(boundary[1], boundary1[1]);
+                boundary[2] = Math.max(boundary[2], boundary1[2]);
+                boundary[3] = Math.max(boundary[3], boundary1[3]);
+            }
+        }
+
+        return boundary;
+    }
+
     public setOperateElement(element: IPPTElement | null | undefined, multiple: boolean) {
         const operateElement = deepClone(element);
         if (!operateElement) {

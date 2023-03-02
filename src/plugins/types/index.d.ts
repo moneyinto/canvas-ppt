@@ -19,12 +19,12 @@ export interface IMouseClick {
 }
 
 export type IElementAlignType =
-    | "canvasAlignLeft"
-    | "canvasAlignCenter"
-    | "canvasAlignRight"
-    | "canvasCenter"
-    | "canvasOneAlignCenter"
-    | "canvasOneVerticalCenter"
-    | "canvasVerticalTop"
-    | "canvasVerticalCenter"
-    | "canvasVerticalBottom";
+    | "alignLeft"
+    | "alignCenter"
+    | "alignRight"
+    | "center"
+    | "oneAlignCenter"
+    | "oneVerticalCenter"
+    | "verticalTop"
+    | "verticalCenter"
+    | "verticalBottom";

@@ -9,7 +9,7 @@
         <Insert />
 
         <a-divider class="ppt-tool-divider" v-if="showEvert || showAlign" type="vertical" />
-        <Align v-if="showAlign" />
+        <Align v-if="showAlign" :elements="elements" />
         <Evert v-if="showEvert" />
 
         <a-divider class="ppt-tool-divider" v-if="showTextEidt" type="vertical" />

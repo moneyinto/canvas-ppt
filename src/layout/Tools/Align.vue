@@ -7,7 +7,7 @@
                 @mouseleave="hoverAlign = false"
             >
                 <div class="ppt-tool-block" @click="setAlignType(alignType)">
-                    <PPTIcon :icon="alignType" :size="26" />
+                    <PPTIcon :icon="alignIcon" :size="26" />
                 </div>
 
                 <a-popover trigger="click" v-model:visible="showAlign">
@@ -26,21 +26,21 @@
                         >
                             <div
                                 class="ppt-align-item"
-                                @click="setAlignType('canvasAlignLeft')"
+                                @click="setAlignType('alignLeft')"
                             >
                                 <PPTIcon icon="canvasAlignLeft" :size="28" />
                                 <div class="ppt-align-text">水平居左</div>
                             </div>
                             <div
                                 class="ppt-align-item"
-                                @click="setAlignType('canvasAlignCenter')"
+                                @click="setAlignType('alignCenter')"
                             >
                                 <PPTIcon icon="canvasAlignCenter" :size="28" />
                                 <div class="ppt-align-text">水平居中</div>
                             </div>
                             <div
                                 class="ppt-align-item"
-                                @click="setAlignType('canvasAlignRight')"
+                                @click="setAlignType('alignRight')"
                             >
                                 <PPTIcon icon="canvasAlignRight" :size="28" />
                                 <div class="ppt-align-text">水平居右</div>
@@ -49,14 +49,14 @@
                             <a-divider class="ppt-tool-divider" />
                             <div
                                 class="ppt-align-item"
-                                @click="setAlignType('canvasVerticalTop')"
+                                @click="setAlignType('verticalTop')"
                             >
                                 <PPTIcon icon="canvasVerticalTop" :size="28" />
                                 <div class="ppt-align-text">垂直居上</div>
                             </div>
                             <div
                                 class="ppt-align-item"
-                                @click="setAlignType('canvasVerticalCenter')"
+                                @click="setAlignType('verticalCenter')"
                             >
                                 <PPTIcon
                                     icon="canvasVerticalCenter"
@@ -66,7 +66,7 @@
                             </div>
                             <div
                                 class="ppt-align-item"
-                                @click="setAlignType('canvasVerticalBottom')"
+                                @click="setAlignType('verticalBottom')"
                             >
                                 <PPTIcon
                                     icon="canvasVerticalBottom"
@@ -78,7 +78,8 @@
                             <a-divider class="ppt-tool-divider" />
                             <div
                                 class="ppt-align-item"
-                                @click="setAlignType('canvasOneAlignCenter')"
+                                :class="elements.length > 1 && 'disabled'"
+                                @click="setAlignType('oneAlignCenter', elements.length > 1)"
                             >
                                 <PPTIcon
                                     icon="canvasOneAlignCenter"
@@ -88,7 +89,8 @@
                             </div>
                             <div
                                 class="ppt-align-item"
-                                @click="setAlignType('canvasOneVerticalCenter')"
+                                :class="elements.length > 1 && 'disabled'"
+                                @click="setAlignType('oneVerticalCenter', elements.length > 1)"
                             >
                                 <PPTIcon
                                     icon="canvasOneVerticalCenter"
@@ -100,7 +102,8 @@
                             <a-divider class="ppt-tool-divider" />
                             <div
                                 class="ppt-align-item"
-                                @click="setAlignType('canvasCenter')"
+                                :class="elements.length > 1 && 'disabled'"
+                                @click="setAlignType('center', elements.length > 1)"
                             >
                                 <PPTIcon icon="canvasCenter" :size="28" />
                                 <div class="ppt-align-text">中央对齐</div>
@@ -114,24 +117,48 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, ref, Ref } from "vue";
+import { computed, inject, PropType, ref, Ref, toRefs } from "vue";
 import Editor from "@/plugins/editor";
 import { IElementAlignType } from "@/plugins/types";
+import { IPPTElement } from "@/plugins/types/element";
+
+const props = defineProps({
+    elements: {
+        type: Object as PropType<IPPTElement[]>,
+        required: true
+    }
+});
+
+const { elements } = toRefs(props);
 
 const instance = inject<Ref<Editor>>("instance");
 
-const alignType = ref<IElementAlignType>("canvasAlignLeft");
+const alignType = ref<IElementAlignType>("alignLeft");
 const title = computed(() => {
     return {
-        canvasAlignCenter: "水平居中",
-        canvasAlignLeft: "水平居左",
-        canvasAlignRight: "水平居右",
-        canvasCenter: "中央对齐",
-        canvasOneAlignCenter: "水平分布",
-        canvasOneVerticalCenter: "垂直分布",
-        canvasVerticalBottom: "垂直居下",
-        canvasVerticalCenter: "垂直居中",
-        canvasVerticalTop: "垂直居上"
+        alignCenter: "水平居中",
+        alignLeft: "水平居左",
+        alignRight: "水平居右",
+        center: "中央对齐",
+        oneAlignCenter: "水平分布",
+        oneVerticalCenter: "垂直分布",
+        verticalBottom: "垂直居下",
+        verticalCenter: "垂直居中",
+        verticalTop: "垂直居上"
+    }[alignType.value];
+});
+
+const alignIcon = computed(() => {
+    return {
+        alignCenter: "canvasAlignCenter",
+        alignLeft: "canvasAlignLeft",
+        alignRight: "canvasAlignRight",
+        center: "canvasCenter",
+        oneAlignCenter: "canvasOneAlignCenter",
+        oneVerticalCenter: "canvasOneVerticalCenter",
+        verticalBottom: "canvasVerticalBottom",
+        verticalCenter: "canvasVerticalCenter",
+        verticalTop: "canvasVerticalTop"
     }[alignType.value];
 });
 
@@ -139,8 +166,10 @@ const showAlign = ref(false);
 const hoverAlign = ref(false);
 
 const setAlignType = (
-    align: IElementAlignType
+    align: IElementAlignType,
+    disabled?: boolean
 ) => {
+    if (disabled) return;
     alignType.value = align;
     instance?.value.command.executeSetElementAlign(align);
     showAlign.value = false;
@@ -173,6 +202,10 @@ const setAlignType = (
     height: 32px;
     margin: 0 -16px;
     padding: 0 20px 0 16px;
+    &.disabled {
+        opacity: .5;
+        cursor: not-allowed;
+    }
     &:hover {
         background-color: #41464b0d;
     }

@@ -1268,48 +1268,96 @@ export default class Command {
         if (operateElements.length > 0) this.executeUpdateRender(operateElements, true);
     }
 
-    private setAlignElement(
+    private _setElementAlign(
         operateElement: IPPTElement,
         align: IElementAlignType
     ) {
         const width = operateElement.type === "line" ? operateElement.end[0] - operateElement.start[0] : operateElement.width;
         const height = operateElement.type === "line" ? operateElement.end[1] - operateElement.start[1] : operateElement.height;
         switch (align) {
-            case "canvasAlignLeft": {
+            case "alignLeft": {
                 operateElement.left = 0;
+                if (operateElement.type === "line" && operateElement.end[0] < 0) operateElement.left = -width;
                 break;
             }
-            case "canvasAlignCenter": {
+            case "alignCenter": {
                 operateElement.left = (VIEWPORT_SIZE - width) / 2;
                 break;
             }
-            case "canvasAlignRight": {
+            case "alignRight": {
                 operateElement.left = VIEWPORT_SIZE - width;
                 break;
             }
-            case "canvasCenter": {
+            case "center": {
                 operateElement.left = (VIEWPORT_SIZE - width) / 2;
                 operateElement.top = (VIEWPORT_SIZE * VIEWRATIO - height) / 2;
                 break;
             }
-            case "canvasOneAlignCenter": {
+            case "oneAlignCenter": {
                 operateElement.left = (VIEWPORT_SIZE - width) / 2;
                 break;
             }
-            case "canvasOneVerticalCenter": {
+            case "oneVerticalCenter": {
                 operateElement.top = (VIEWPORT_SIZE * VIEWRATIO - height) / 2;
                 break;
             }
-            case "canvasVerticalTop": {
+            case "verticalTop": {
                 operateElement.top = 0;
+                if (operateElement.type === "line" && operateElement.end[1] < 0) operateElement.top = -height;
                 break;
             }
-            case "canvasVerticalCenter": {
+            case "verticalCenter": {
                 operateElement.top = (VIEWPORT_SIZE * VIEWRATIO - height) / 2;
                 break;
             }
-            case "canvasVerticalBottom": {
+            case "verticalBottom": {
                 operateElement.top = VIEWPORT_SIZE * VIEWRATIO - height;
+                break;
+            }
+        }
+        return operateElement;
+    }
+
+    private _setElementAlignByElement(
+        operateElement: IPPTElement,
+        align: IElementAlignType,
+        boundary: number[]
+    ) {
+        const width = operateElement.type === "line" ? operateElement.end[0] - operateElement.start[0] : operateElement.width;
+        const height = operateElement.type === "line" ? operateElement.end[1] - operateElement.start[1] : operateElement.height;
+        const viewSizeWight = boundary[2] - boundary[0];
+        const viewSizeHeight = boundary[3] - boundary[1];
+        const elementBoundary = this._stageConfig.getElementBoundary(operateElement);
+        switch (align) {
+            case "alignLeft": {
+                const offsetX = elementBoundary[0] - boundary[0];
+                operateElement.left = operateElement.left - offsetX;
+                break;
+            }
+            case "alignCenter": {
+                operateElement.left = boundary[0] + (viewSizeWight - width) / 2;
+                break;
+            }
+            case "alignRight": {
+                operateElement.left = boundary[0] + viewSizeWight - width;
+                break;
+            }
+            case "center": {
+                operateElement.left = boundary[0] + (viewSizeWight - width) / 2;
+                operateElement.top = boundary[1] + (viewSizeHeight - height) / 2;
+                break;
+            }
+            case "verticalTop": {
+                const offsetY = elementBoundary[1] - boundary[1];
+                operateElement.top = operateElement.top - offsetY;
+                break;
+            }
+            case "verticalCenter": {
+                operateElement.top = boundary[1] + (viewSizeHeight - height) / 2;
+                break;
+            }
+            case "verticalBottom": {
+                operateElement.top = boundary[1] + viewSizeHeight - height;
                 break;
             }
         }
@@ -1321,11 +1369,20 @@ export default class Command {
         align: IElementAlignType
     ) {
         const operateElements = this._stageConfig.operateElements;
-
         const elements: IPPTElement[] = [];
-        for (const operateElement of operateElements) {
-            const element = this.setAlignElement(operateElement, align);
-            elements.push(element);
+        if (operateElements.length > 1) {
+            // 相对于元素对齐
+            const boundary = this._stageConfig.getOperateElementsBoundary(operateElements);
+            console.log(boundary);
+            for (const operateElement of operateElements) {
+                const element = this._setElementAlignByElement(operateElement, align, boundary);
+                elements.push(element);
+            }
+        } else {
+            for (const operateElement of operateElements) {
+                const element = this._setElementAlign(operateElement, align);
+                elements.push(element);
+            }
         }
 
         if (operateElements.length > 0) this.executeUpdateRender(elements, true);
