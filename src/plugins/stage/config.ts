@@ -200,6 +200,9 @@ export default class StageConfig {
                 const index = this.operateElements.findIndex(element => element.id === operateElement.id);
                 if (index === -1) {
                     this.operateElements.push(operateElement);
+                } else {
+                    // 当多选存在时进行取消
+                    this.operateElements.splice(index, 1);
                 }
             } else {
                 this.operateElements = [operateElement];

@@ -113,7 +113,7 @@ export default (
         );
         selectedSlideId.value = id;
         instance.value?.stageConfig.setSlideId(selectedSlideId.value);
-        instance.value?.stageConfig.setOperateElement(null);
+        instance.value?.stageConfig.updateOperateElements([]);
         instance.value?.command.executeRender();
     };
 

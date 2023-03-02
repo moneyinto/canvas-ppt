@@ -366,7 +366,7 @@ export default class ControlStage extends Stage {
                     this.stageConfig.textFocusElementId = "";
                     this._cursor.hideCursor();
                     this._canMoveElement = true;
-                    return;
+                    if (!(evt.ctrlKey || evt.shiftKey || evt.metaKey)) return;
                 }
 
                 this.stageConfig.setOperateElement(operateElement, evt.ctrlKey || evt.shiftKey || evt.metaKey);
