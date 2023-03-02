@@ -763,9 +763,9 @@ export default class ControlStage extends Stage {
                     }
                 }
 
-                // if (!this.stageConfig.textFocus && this.container.style.cursor !== "move") {
-                //     this.container.style.cursor = "move";
-                // }
+                if (this.container.style.cursor !== "text" && this.container.style.cursor !== "move") {
+                    this.container.style.cursor = "move";
+                }
             } else {
                 if (this.container.style.cursor !== "default") {
                     this.container.style.cursor = "default";
