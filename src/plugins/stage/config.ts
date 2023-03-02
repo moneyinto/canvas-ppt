@@ -205,11 +205,12 @@ export default class StageConfig {
                 this.operateElements = [operateElement];
             }
         }
-        if (this._listener?.onSelectedChange) this._listener.onSelectedChange(operateElement);
+        if (this._listener?.onSelectedChange) this._listener.onSelectedChange(this.operateElements);
     }
 
     public updateOperateElements(elements: IPPTElement[]) {
         this.operateElements = elements;
+        if (this._listener?.onSelectedChange) this._listener.onSelectedChange(this.operateElements);
     }
 
     public setOperateType(opreateType: string) {

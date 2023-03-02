@@ -76,13 +76,14 @@
 import { THEME_COLOR } from "@/plugins/config/stage";
 import { inject, PropType, Ref, ref, watch } from "vue";
 import ColorBoard from "@/components/ColorBoard.vue";
-import { IPPTElement } from "@/plugins/types/element";
+import { IPPTElement, IPPTShapeElement, IPPTTextElement } from "@/plugins/types/element";
 import { STORAGE_FILL_COLOR } from "@/utils/storage";
 import Editor from "@/plugins/editor";
 
 const props = defineProps({
-    element: {
-        type: Object as PropType<IPPTElement>
+    elements: {
+        type: Object as PropType<IPPTElement[]>,
+        required: true
     }
 });
 
@@ -98,17 +99,32 @@ const noFill = ref(true);
 const opacity = ref(0);
 
 const init = () => {
-    if (props.element && (props.element.type === "shape" || props.element.type === "text")) {
-        const operateElement = props.element;
-        currentColor.value = operateElement.fill || "transprent";
-        noFill.value = !operateElement.fill;
-        opacity.value = operateElement.opacity || 0;
+    const operateElements = props.elements.filter(element => element.type !== "line" && element.type !== "image") as (IPPTShapeElement | IPPTTextElement)[];
+    const allHasFill = operateElements.filter(element => !!element.fill).length === operateElements.length;
+    let fill = "#000000";
+    let opacityNum = 0;
+    for (const [index, operateElement] of operateElements.entries()) {
+        if (index === 0) {
+            fill = operateElement.fill || "#000000";
+            opacityNum = operateElement.opacity || 0;
+        } else {
+            if (fill !== operateElement.fill) {
+                fill = "#000000";
+            }
+
+            if (opacityNum !== operateElement.opacity) {
+                opacityNum = 0;
+            }
+        }
     }
+    currentColor.value = fill;
+    noFill.value = !allHasFill;
+    opacity.value = opacityNum;
 };
 
 init();
 
-watch(() => props.element, init);
+watch(() => props.elements, init);
 
 const setFillColor = (color?: string, noClose?: boolean) => {
     instance?.value.command.executeFillColor(color || "");

@@ -246,16 +246,16 @@ export default class Stage {
         // 旋转画布
         this.ctx.rotate((element.rotate / 180) * Math.PI);
 
-        if (element.outline) {
-            const path = this.getShapePath(SHAPE_TYPE.RECT, element.width, element.height);
-            this._drawOutline(element.outline, path);
-        }
-
         if (element.fill) {
             this.ctx.fillStyle = element.fill || "transparent";
             this.ctx.globalAlpha = (100 - (element.opacity || 0)) / 100;
             const path = this.getShapePath(SHAPE_TYPE.RECT, element.width, element.height);
             this.ctx.fill(path);
+        }
+
+        if (element.outline) {
+            const path = this.getShapePath(SHAPE_TYPE.RECT, element.width, element.height);
+            this._drawOutline(element.outline, path);
         }
 
         // 平移到矩形左上角点位

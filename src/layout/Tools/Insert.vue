@@ -149,7 +149,7 @@ const insertImage = (files: File[]) => {
                     image.height,
                     reader.result as string
                 );
-                instance?.value.command.executeAddRender(element);
+                instance?.value.command.executeAddRender([element]);
             };
             image.src = reader.result as string;
         },

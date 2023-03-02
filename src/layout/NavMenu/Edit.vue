@@ -65,15 +65,16 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
-    element: {
-        type: Object as PropType<IPPTElement>
+    elements: {
+        type: Object as PropType<IPPTElement[]>,
+        required: true
     }
 });
 
-const { slideFocus, element } = toRefs(props);
+const { slideFocus, elements } = toRefs(props);
 
 const disabledCut = computed(() => {
-    return !slideFocus.value && !element?.value;
+    return !slideFocus.value && elements.value.length === 0;
 });
 
 const instance = inject<Ref<Editor>>("instance");
@@ -81,7 +82,7 @@ const instance = inject<Ref<Editor>>("instance");
 const cut = () => {
     if (slideFocus.value) {
         emitter.emit(EmitterEvents.CUT_SLIDE);
-    } else if (element?.value) {
+    } else if (elements.value.length > 0) {
         instance?.value.command.executeCut();
     }
 };
@@ -89,7 +90,7 @@ const cut = () => {
 const copy = () => {
     if (slideFocus.value) {
         emitter.emit(EmitterEvents.COPY_SLIDE);
-    } else if (element?.value) {
+    } else if (elements.value.length > 0) {
         instance?.value.command.executeCopy();
     }
 };

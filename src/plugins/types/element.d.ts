@@ -237,6 +237,8 @@ export interface ImageElementClip {
  * flipH?: 水平翻转
  *
  * flipV?: 垂直翻转
+ *
+ * outline?: 边框
  */
 export interface IPPTImageElement extends IPPTBaseElement {
     type: "image";
@@ -248,6 +250,7 @@ export interface IPPTImageElement extends IPPTBaseElement {
     clip?: ImageElementClip;
     flipH?: 1 | -1;
     flipV?: 1 | -1;
+    outline?: IPPTElementOutline;
 }
 
 export interface IPPTTextElement extends IPPTBaseElement {

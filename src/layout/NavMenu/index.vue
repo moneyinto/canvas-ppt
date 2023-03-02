@@ -1,6 +1,6 @@
 <template>
     <div class="ppt-nav-menu" @keydown.stop="" tabindex="0">
-        <Edit :element="element" :slideFocus="slideFocus" />
+        <Edit :elements="elements" :slideFocus="slideFocus" />
     </div>
 </template>
 
@@ -13,12 +13,13 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
-    element: {
-        type: Object as PropType<IPPTElement>
+    elements: {
+        type: Object as PropType<IPPTElement[]>,
+        required: true
     }
 });
 
-const { slideFocus, element } = toRefs(props);
+const { slideFocus, elements } = toRefs(props);
 </script>
 
 <style lang="scss">

@@ -1,8 +1,8 @@
 <template>
     <div class="ppt-container">
         <div class="ppt-toolbar">
-            <NavMenu :element="currentElement" :slideFocus="slideFocus" />
-            <Tools :element="currentElement" />
+            <NavMenu :elements="currentElements" :slideFocus="slideFocus" />
+            <Tools :elements="currentElements" />
         </div>
         <div class="ppt-body">
             <div
@@ -144,7 +144,7 @@ const onCanvasFocus = () => {
     slideFocus.value = false;
 };
 
-const currentElement = ref<IPPTElement | undefined>(undefined);
+const currentElements = ref<IPPTElement[]>([]);
 
 nextTick(() => {
     if (pptRef.value) {
@@ -176,9 +176,9 @@ nextTick(() => {
         };
 
         instance.value.listener.onSelectedChange = (
-            element: IPPTElement | undefined
+            elements: IPPTElement[]
         ) => {
-            currentElement.value = element;
+            currentElements.value = elements;
         };
 
         emitter.on(EmitterEvents.ADD_EMPTY_SLIDE, addPPT);

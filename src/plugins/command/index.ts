@@ -20,6 +20,7 @@ import { Cursor } from "../stage/cursor";
 import {
     IPPTElement,
     IPPTElementOutline,
+    IPPTLineElement,
     IPPTTextElement
 } from "../types/element";
 import { IFontData } from "../types/font";
@@ -269,10 +270,13 @@ export default class Command {
         const operateElements = this._stageConfig.operateElements;
         const newElements: IPPTElement[] = [];
         for (const operateElement of operateElements) {
-            if (operateElement) {
-                const newElement = {
+            if (operateElement && operateElement.type !== "line") {
+                const newElement: Exclude<IPPTElement, IPPTLineElement> = {
                     ...operateElement,
-                    outline
+                    outline: {
+                        ...(operateElement.outline || {}),
+                        ...outline
+                    }
                 };
 
                 if (!outline) delete newElement.outline;

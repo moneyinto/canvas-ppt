@@ -1,22 +1,22 @@
 <template>
-    <FontFamily :element="element" />
-    <FontSize :element="element" />
+    <FontFamily :elements="elements" />
+    <FontSize :elements="elements" />
     <a-divider class="ppt-tool-divider" type="vertical" />
 
-    <Bold :element="element" />
+    <Bold :elements="elements" />
 
-    <Italic :element="element" />
+    <Italic :elements="elements" />
 
-    <Underline :element="element" />
+    <Underline :elements="elements" />
 
-    <Strikout :element="element" />
+    <Strikout :elements="elements" />
 
     <FontColor />
     <a-divider class="ppt-tool-divider" type="vertical" />
 
-    <Align :element="element" />
+    <Align :elements="elements" />
 
-    <LineHeight :element="element" />
+    <LineHeight :elements="elements" />
 </template>
 
 <script lang="ts" setup>
@@ -36,12 +36,13 @@ import LineHeight from "./LineHeight.vue";
 // const instance = inject<Ref<Editor>>("instance");
 
 const props = defineProps({
-    element: {
-        type: Object as PropType<IPPTElement>
+    elements: {
+        type: Object as PropType<IPPTElement[]>,
+        required: true
     }
 });
 
-const { element } = toRefs(props);
+const { elements } = toRefs(props);
 </script>
 
 <style lang="scss" scoped>

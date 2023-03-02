@@ -13,11 +13,11 @@
         <Evert v-if="showEvert" />
 
         <a-divider class="ppt-tool-divider" v-if="showTextEidt" type="vertical" />
-        <TextEdit v-if="showTextEidt" :element="element" />
+        <TextEdit v-if="showTextEidt" :elements="elements" />
 
         <a-divider class="ppt-tool-divider" v-if="showFillColor || showBorder" type="vertical" />
-        <Border v-if="showBorder || showTextEidt" :element="element" />
-        <FillColor v-if="showFillColor || showTextEidt" :element="element" />
+        <Border v-if="showBorder || showTextEidt" :elements="elements" />
+        <FillColor v-if="showFillColor || showTextEidt" :elements="elements" />
     </div>
 </template>
 
@@ -34,8 +34,9 @@ import TextEdit from "./TextEdit/index.vue";
 import Align from "./Align.vue";
 
 const props = defineProps({
-    element: {
-        type: Object as PropType<IPPTElement>
+    elements: {
+        type: Object as PropType<IPPTElement[]>,
+        required: true
     }
 });
 
@@ -45,14 +46,14 @@ const showEvert = ref(false);
 const showAlign = ref(false);
 const showTextEidt = ref(false);
 
-const { element } = toRefs(props);
+const { elements } = toRefs(props);
 
-watch(() => props.element, () => {
-    if (props.element) {
-        showFillColor.value = props.element.type === "shape";
-        showBorder.value = props.element.type === "shape";
-        showEvert.value = props.element.type === "shape";
-        showTextEidt.value = props.element.type === "text";
+watch(elements, () => {
+    if (elements.value.length > 0) {
+        showFillColor.value = elements.value.filter(element => element.type === "shape").length > 0;
+        showBorder.value = elements.value.filter(element => element.type === "shape").length > 0;
+        showEvert.value = elements.value.filter(element => element.type === "shape").length > 0;
+        showTextEidt.value = elements.value.filter(element => element.type === "text").length > 0;
         showAlign.value = true;
     } else {
         showFillColor.value = false;

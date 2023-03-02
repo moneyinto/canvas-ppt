@@ -150,13 +150,14 @@
 import { THEME_COLOR } from "@/plugins/config/stage";
 import { inject, PropType, Ref, ref, watch } from "vue";
 import ColorBoard from "@/components/ColorBoard.vue";
-import { IPPTElement, IPPTShapeElement } from "@/plugins/types/element";
+import { IPPTElement, IPPTElementOutline, IPPTLineElement } from "@/plugins/types/element";
 import { STORAGE_BORDER_COLOR } from "@/utils/storage";
 import Editor from "@/plugins/editor";
 
 const props = defineProps({
-    element: {
-        type: Object as PropType<IPPTElement>
+    elements: {
+        type: Object as PropType<IPPTElement[]>,
+        required: true
     }
 });
 
@@ -178,25 +179,56 @@ const borderWidthList = ref(
 );
 
 const init = () => {
-    if (props.element) {
-        const operateElement = props.element as IPPTShapeElement;
-        currentColor.value = operateElement.outline?.color || THEME_COLOR;
-        noBorder.value = !operateElement.outline;
-        opacity.value = operateElement.outline?.opacity || 0;
-        borderStyle.value = operateElement.outline?.style || "solid";
-        borderWidth.value = operateElement.outline?.width || 2;
+    const operateElements = props.elements.filter(element => element.type !== "line") as Exclude<IPPTElement, IPPTLineElement>[];
+    const allHasOutline = operateElements.filter(element => !!element.outline).length === operateElements.length;
+    let outline: Required<IPPTElementOutline> = {
+        color: THEME_COLOR,
+        opacity: 0,
+        style: "solid",
+        width: 2
+    };
+    if (allHasOutline) {
+        for (const [index, operateElement] of operateElements.entries()) {
+            if (operateElement.outline) {
+                if (index === 0) {
+                    outline = {
+                        ...outline,
+                        ...operateElement.outline
+                    };
+                } else {
+                    if (outline.color !== operateElement.outline.color) {
+                        outline.color = THEME_COLOR;
+                    }
+
+                    if (outline.opacity !== operateElement.outline.opacity) {
+                        outline.opacity = 0;
+                    }
+
+                    if (outline.style !== operateElement.outline.style) {
+                        outline.style = "solid";
+                    }
+
+                    if (outline.width !== operateElement.outline.width) {
+                        outline.width = 2;
+                    }
+                }
+            }
+        }
     }
+    currentColor.value = outline.color;
+    noBorder.value = !allHasOutline;
+    opacity.value = outline.opacity;
+    borderStyle.value = outline.style;
+    borderWidth.value = outline.width;
 };
 
 init();
 
-watch(() => props.element, init);
+watch(() => props.elements, init);
 
 const setBorderColor = (color?: string, noClose?: boolean) => {
-    if (props.element) {
-        const operateElement = props.element as IPPTShapeElement;
+    if (props.elements.length > 0) {
         instance?.value.command.executeOutline({
-            ...(operateElement.outline || {}),
             color
         });
     }
@@ -220,20 +252,16 @@ const onChangeColor = (
 };
 
 const onOpacityChange = (value: number) => {
-    if (props.element) {
-        const operateElement = props.element as IPPTShapeElement;
+    if (props.elements.length > 0) {
         instance?.value.command.executeOutline({
-            ...(operateElement.outline || {}),
             opacity: value
         });
     }
 };
 
 const updateStyle = (style: "dashed" | "solid") => {
-    if (props.element) {
-        const operateElement = props.element as IPPTShapeElement;
+    if (props.elements.length > 0) {
         instance?.value.command.executeOutline({
-            ...(operateElement.outline || {}),
             style
         });
     }
@@ -241,10 +269,8 @@ const updateStyle = (style: "dashed" | "solid") => {
 };
 
 const updateWidth = (width: number) => {
-    if (props.element) {
-        const operateElement = props.element as IPPTShapeElement;
+    if (props.elements.length > 0) {
         instance?.value.command.executeOutline({
-            ...(operateElement.outline || {}),
             width
         });
     }

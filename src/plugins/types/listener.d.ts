@@ -4,7 +4,7 @@ export type IOnZoomChange = (zoom: number) => void;
 
 export type IOnEditChange = (cursor: number, length: number, slideId: string) => void;
 
-export type IOnSelectedChange = (element: IPPTElement | undefined) => void;
+export type IOnSelectedChange = (elements: IPPTElement[]) => void;
 
 export type IOnInsertElementChange = (element: ICreatingElement | null) => void;
 

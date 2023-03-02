@@ -15,7 +15,7 @@
 <script lang="ts" setup>
 import { inject, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
-import { IPPTElement } from "@/plugins/types/element";
+import { IPPTElement, IPPTTextElement } from "@/plugins/types/element";
 import { IFontData } from "@/plugins/types/font";
 
 const instance = inject<Ref<Editor>>("instance");
@@ -27,8 +27,9 @@ if (instance?.value) {
 }
 
 const props = defineProps({
-    element: {
-        type: Object as PropType<IPPTElement>
+    elements: {
+        type: Object as PropType<IPPTElement[]>,
+        required: true
     }
 });
 
@@ -47,15 +48,24 @@ const getContentBold = (texts: IFontData[]) => {
 };
 
 const init = () => {
-    if (props.element && props.element.type === "text") {
-        const operateElement = props.element;
-        isBold.value = getContentBold(operateElement.content);
+    const operateElements = props.elements.filter(element => element.type === "text") as IPPTTextElement[];
+    if (operateElements.length > 0) {
+        for (const [index, operateElement] of operateElements.entries()) {
+            if (index === 0) {
+                isBold.value = getContentBold(operateElement.content);
+            } else {
+                if (isBold.value !== getContentBold(operateElement.content)) {
+                    isBold.value = false;
+                    break;
+                }
+            }
+        }
     }
 };
 
 init();
 
-watch(() => props.element, init);
+watch(() => props.elements, init);
 
 const setFontWeight = () => {
     isBold.value = !isBold.value;

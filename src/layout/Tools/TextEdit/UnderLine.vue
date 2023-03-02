@@ -15,7 +15,7 @@
 <script lang="ts" setup>
 import { inject, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
-import { IPPTElement } from "@/plugins/types/element";
+import { IPPTElement, IPPTTextElement } from "@/plugins/types/element";
 import { IFontData } from "@/plugins/types/font";
 
 const instance = inject<Ref<Editor>>("instance");
@@ -27,8 +27,9 @@ if (instance?.value) {
 }
 
 const props = defineProps({
-    element: {
-        type: Object as PropType<IPPTElement>
+    elements: {
+        type: Object as PropType<IPPTElement[]>,
+        required: true
     }
 });
 
@@ -46,15 +47,24 @@ const getContentUnderLine = (texts: IFontData[]) => {
 };
 
 const init = () => {
-    if (props.element && props.element.type === "text") {
-        const operateElement = props.element;
-        isUnderLine.value = getContentUnderLine(operateElement.content);
+    const operateElements = props.elements.filter(element => element.type === "text") as IPPTTextElement[];
+    if (operateElements.length > 0) {
+        for (const [index, operateElement] of operateElements.entries()) {
+            if (index === 0) {
+                isUnderLine.value = getContentUnderLine(operateElement.content);
+            } else {
+                if (isUnderLine.value !== getContentUnderLine(operateElement.content)) {
+                    isUnderLine.value = false;
+                    break;
+                }
+            }
+        }
     }
 };
 
 init();
 
-watch(() => props.element, init);
+watch(() => props.elements, init);
 
 const setFontUnderLine = () => {
     isUnderLine.value = !isUnderLine.value;
