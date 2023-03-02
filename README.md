@@ -56,9 +56,7 @@ npm run dev
 - [x] 元素层级调整
 - [x] 元素对齐到画布
 - [ ] 元素对齐到其他元素
-- [ ] 多元素均匀分布
 - [x] 粘贴外部图片
-- [ ] 元素坐标、尺寸和旋转角度设置
 
 #### 文字
 - [x] [研究canvas文本编辑器](https://github.com/moneyinto/canvas-editor)

@@ -38,7 +38,7 @@ const isStrikout = ref(false);
 const getContentStrikout = (texts: IFontData[]) => {
     let isStrikout = true;
     for (const text of texts) {
-        if (!text.strikout) {
+        if (!text.strikout && text.value !== "\n") {
             isStrikout = false;
             break;
         }
@@ -49,15 +49,10 @@ const getContentStrikout = (texts: IFontData[]) => {
 const init = () => {
     const operateElements = props.elements.filter(element => element.type === "text") as IPPTTextElement[];
     if (operateElements.length > 0) {
-        for (const [index, operateElement] of operateElements.entries()) {
-            if (index === 0) {
-                isStrikout.value = getContentStrikout(operateElement.content);
-            } else {
-                if (isStrikout.value !== getContentStrikout(operateElement.content)) {
-                    isStrikout.value = false;
-                    break;
-                }
-            }
+        isStrikout.value = true;
+        for (const operateElement of operateElements) {
+            isStrikout.value = getContentStrikout(operateElement.content);
+            if (!isStrikout.value) break;
         }
     }
 };

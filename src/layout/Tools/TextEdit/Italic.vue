@@ -38,7 +38,7 @@ const isItalic = ref(false);
 const getContentItalic = (texts: IFontData[]) => {
     let isItalic = true;
     for (const text of texts) {
-        if (text.fontStyle === "normal") {
+        if (text.fontStyle === "normal" && text.value !== "\n") {
             isItalic = false;
             break;
         }
@@ -49,15 +49,10 @@ const getContentItalic = (texts: IFontData[]) => {
 const init = () => {
     const operateElements = props.elements.filter(element => element.type === "text") as IPPTTextElement[];
     if (operateElements.length > 0) {
-        for (const [index, operateElement] of operateElements.entries()) {
-            if (index === 0) {
-                isItalic.value = getContentItalic(operateElement.content);
-            } else {
-                if (isItalic.value !== getContentItalic(operateElement.content)) {
-                    isItalic.value = false;
-                    break;
-                }
-            }
+        isItalic.value = true;
+        for (const operateElement of operateElements) {
+            isItalic.value = getContentItalic(operateElement.content);
+            if (!isItalic.value) break;
         }
     }
 };

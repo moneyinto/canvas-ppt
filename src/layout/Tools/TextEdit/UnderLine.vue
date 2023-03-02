@@ -38,7 +38,7 @@ const isUnderLine = ref(false);
 const getContentUnderLine = (texts: IFontData[]) => {
     let isUnderLine = true;
     for (const text of texts) {
-        if (!text.underline) {
+        if (!text.underline && text.value !== "\n") {
             isUnderLine = false;
             break;
         }
@@ -49,15 +49,10 @@ const getContentUnderLine = (texts: IFontData[]) => {
 const init = () => {
     const operateElements = props.elements.filter(element => element.type === "text") as IPPTTextElement[];
     if (operateElements.length > 0) {
-        for (const [index, operateElement] of operateElements.entries()) {
-            if (index === 0) {
-                isUnderLine.value = getContentUnderLine(operateElement.content);
-            } else {
-                if (isUnderLine.value !== getContentUnderLine(operateElement.content)) {
-                    isUnderLine.value = false;
-                    break;
-                }
-            }
+        isUnderLine.value = true;
+        for (const operateElement of operateElements) {
+            isUnderLine.value = getContentUnderLine(operateElement.content);
+            if (!isUnderLine.value) break;
         }
     }
 };

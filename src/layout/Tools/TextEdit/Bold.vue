@@ -38,7 +38,7 @@ const isBold = ref(false);
 const getContentBold = (texts: IFontData[]) => {
     let isBold = true;
     for (const text of texts) {
-        if (text.fontWeight === "normal") {
+        if (text.fontWeight === "normal" && text.value !== "\n") {
             // 存在没加粗的 结束循环
             isBold = false;
             break;
@@ -50,15 +50,10 @@ const getContentBold = (texts: IFontData[]) => {
 const init = () => {
     const operateElements = props.elements.filter(element => element.type === "text") as IPPTTextElement[];
     if (operateElements.length > 0) {
-        for (const [index, operateElement] of operateElements.entries()) {
-            if (index === 0) {
-                isBold.value = getContentBold(operateElement.content);
-            } else {
-                if (isBold.value !== getContentBold(operateElement.content)) {
-                    isBold.value = false;
-                    break;
-                }
-            }
+        isBold.value = true;
+        for (const operateElement of operateElements) {
+            isBold.value = getContentBold(operateElement.content);
+            if (!isBold.value) break;
         }
     }
 };
