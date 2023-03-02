@@ -253,6 +253,77 @@ export default class ControlStage extends Stage {
                     }
                 ]
             },
+            {
+                text: "对齐方式",
+                children: [
+                    {
+                        text: "水平居左",
+                        icon: "canvasAlignLeft",
+                        handler: () => {
+                            this._command.executeSetElementAlign("alignLeft");
+                        }
+                    },
+                    {
+                        text: "水平居中",
+                        icon: "canvasAlignCenter",
+                        handler: () => {
+                            this._command.executeSetElementAlign("alignCenter");
+                        }
+                    },
+                    {
+                        text: "水平居右",
+                        icon: "canvasAlignRight",
+                        handler: () => {
+                            this._command.executeSetElementAlign("alignLeft");
+                        }
+                    },
+                    { divider: true },
+                    {
+                        text: "垂直居上",
+                        icon: "canvasVerticalTop",
+                        handler: () => {
+                            this._command.executeSetElementAlign("verticalTop");
+                        }
+                    },
+                    {
+                        text: "垂直居中",
+                        icon: "canvasVerticalCenter",
+                        handler: () => {
+                            this._command.executeSetElementAlign("verticalCenter");
+                        }
+                    },
+                    {
+                        text: "垂直居下",
+                        icon: "canvasVerticalBottom",
+                        handler: () => {
+                            this._command.executeSetElementAlign("verticalBottom");
+                        }
+                    },
+                    { divider: true },
+                    {
+                        text: "水平分布",
+                        icon: "canvasOneAlignCenter",
+                        handler: () => {
+                            this._command.executeSetElementAlign("oneAlignCenter");
+                        }
+                    },
+                    {
+                        text: "垂直分布",
+                        icon: "canvasOneVerticalCenter",
+                        handler: () => {
+                            this._command.executeSetElementAlign("oneVerticalCenter");
+                        }
+                    },
+                    { divider: true },
+                    {
+                        text: "中央对齐",
+                        icon: "canvasCenter",
+                        handler: () => {
+                            this._command.executeSetElementAlign("center");
+                        }
+                    }
+                ]
+            },
             { divider: true, hide: !selectedElement },
             {
                 text: "删除",
