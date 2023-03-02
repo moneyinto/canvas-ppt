@@ -333,9 +333,7 @@ export default class StageConfig {
                     rect,
                     cx,
                     cy,
-                    (element.rotate / 180) * Math.PI,
-                    element.type === "text" ? 1 : element.flipH || 1,
-                    element.type === "text" ? 1 : element.flipV || 1
+                    (element.rotate / 180) * Math.PI
                 );
             }
         });
@@ -366,13 +364,9 @@ export default class StageConfig {
         rect: IRectParameter,
         cx: number,
         cy: number,
-        angle: number,
-        flipH: number,
-        flipV: number
+        angle: number
     ) {
-        const nx = flipH === 1 ? x : (2 * cx - x);
-        const ny = flipV === 1 ? y : (2 * cy - y);
-        const translatePoint = this.rotate(nx, ny, cx, cy, -angle);
+        const translatePoint = this.rotate(x, y, cx, cy, -angle);
         const minX = rect[0];
         const maxX = rect[0] + rect[2];
         const minY = rect[1];

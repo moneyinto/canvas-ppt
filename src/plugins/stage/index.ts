@@ -320,10 +320,10 @@ export default class Stage {
 
         // 平移坐标原点
         this.ctx.translate(ox, oy);
-        // 水平垂直翻转
-        this.ctx.scale(element.flipH || 1, element.flipV || 1);
         // 旋转画布
         this.ctx.rotate((element.rotate / 180) * Math.PI);
+        // 水平垂直翻转
+        this.ctx.scale(element.flipH || 1, element.flipV || 1);
 
         this.ctx.fillStyle = element.fill || "transparent";
         this.ctx.globalAlpha = (100 - (element.opacity || 0)) / 100;
