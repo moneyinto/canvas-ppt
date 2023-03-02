@@ -1247,8 +1247,10 @@ export default class Command {
         if (operateElements.length > 0) {
             this.executeUpdateRender(operateElements, true);
 
-            const position = this._cursor.getDataPosition();
-            this._updateCursor(position);
+            if (this._stageConfig.textFocus) {
+                const position = this._cursor.getDataPosition();
+                this._updateCursor(position);
+            }
         }
     }
 
