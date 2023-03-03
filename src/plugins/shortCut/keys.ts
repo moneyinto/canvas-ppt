@@ -65,6 +65,14 @@ export const ShortcutKeys: IRegisterShortcut[] = [
     },
 
     {
+        key: KeyMap.A,
+        ctrl: true,
+        callback: (command: Command) => {
+            command.executeSelectAll();
+        }
+    },
+
+    {
         key: KeyMap.Up,
         callback: (command: Command) => {
             command.executeMove(KeyMap.Up);

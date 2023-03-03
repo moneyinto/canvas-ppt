@@ -512,6 +512,13 @@ export default class Command {
         }
     }
 
+    // 全选
+    public executeSelectAll() {
+        const slide = this._stageConfig.getCurrentSlide();
+        this._stageConfig.updateOperateElements(slide?.elements || []);
+        this.executeRender();
+    }
+
     // 删除元素 或 删除文本
     public executeDelete(direction = 0) {
         if (this._stageConfig.textFocus) {
