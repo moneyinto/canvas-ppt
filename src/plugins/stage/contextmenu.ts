@@ -205,6 +205,26 @@ export class Contextmenu {
                     }
                 ]
             },
+            {
+                text: "翻转",
+                hide: !selectedElement,
+                children: [
+                    {
+                        text: "水平翻转",
+                        icon: "flipH",
+                        handler: () => {
+                            this._command.executeFlipH();
+                        }
+                    },
+                    {
+                        text: "垂直翻转",
+                        icon: "flipV",
+                        handler: () => {
+                            this._command.executeFlipV();
+                        }
+                    }
+                ]
+            },
             { divider: true, hide: !selectedElement },
             {
                 text: "删除",
