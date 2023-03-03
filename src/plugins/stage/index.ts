@@ -541,6 +541,8 @@ export default class Stage {
             this.ctx.translate(ox, oy);
             // 旋转画布
             this.ctx.rotate((element.rotate / 180) * Math.PI);
+            // 设置透明度
+            this.ctx.globalAlpha = (100 - (element.opacity || 0)) / 100;
 
             if (element.streach === 1) {
                 // 拉伸

@@ -18,6 +18,9 @@
         <a-divider class="ppt-tool-divider" v-if="showFillColor || showBorder" type="vertical" />
         <Border v-if="showBorder || showTextEidt" :elements="elements" />
         <FillColor v-if="showFillColor || showTextEidt" :elements="elements" />
+
+        <a-divider class="ppt-tool-divider" v-if="showImageEdit" type="vertical" />
+        <ImageEdit :elements="elements" v-if="showImageEdit" />
     </div>
 </template>
 
@@ -32,6 +35,7 @@ import Evert from "./Evert.vue";
 import Border from "./Border.vue";
 import TextEdit from "./TextEdit/index.vue";
 import Align from "./Align.vue";
+import ImageEdit from "./ImageEdit.vue";
 
 const props = defineProps({
     elements: {
@@ -45,6 +49,7 @@ const showBorder = ref(false);
 const showEvert = ref(false);
 const showAlign = ref(false);
 const showTextEidt = ref(false);
+const showImageEdit = ref(false);
 
 const { elements } = toRefs(props);
 
@@ -54,6 +59,7 @@ watch(elements, () => {
         showBorder.value = elements.value.filter(element => element.type === "shape").length > 0;
         showEvert.value = elements.value.filter(element => element.type === "shape").length > 0;
         showTextEidt.value = elements.value.filter(element => element.type === "text").length > 0;
+        showImageEdit.value = elements.value.filter(element => element.type === "image").length > 0;
         showAlign.value = true;
     } else {
         showFillColor.value = false;
@@ -61,6 +67,7 @@ watch(elements, () => {
         showEvert.value = false;
         showTextEidt.value = false;
         showAlign.value = false;
+        showImageEdit.value = false;
     }
 });
 </script>

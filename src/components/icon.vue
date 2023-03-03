@@ -65,7 +65,8 @@ const icons: { [key: string]: string } = {
     canvasOneVerticalCenter: new URL("@/assets/icons/canvasOneVerticalCenter.svg", import.meta.url).href,
     canvasVerticalBottom: new URL("@/assets/icons/canvasVerticalBottom.svg", import.meta.url).href,
     canvasVerticalCenter: new URL("@/assets/icons/canvasVerticalCenter.svg", import.meta.url).href,
-    canvasVerticalTop: new URL("@/assets/icons/canvasVerticalTop.svg", import.meta.url).href
+    canvasVerticalTop: new URL("@/assets/icons/canvasVerticalTop.svg", import.meta.url).href,
+    opacity: new URL("@/assets/icons/opacity.svg", import.meta.url).href
 };
 
 const iconUrl = computed(() => icons[icon.value]);

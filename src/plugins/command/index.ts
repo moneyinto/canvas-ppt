@@ -265,6 +265,23 @@ export default class Command {
         this.executeUpdateRender(newElements, true);
     }
 
+    // 填充透明度设置
+    public executeImageOpacity(value: number) {
+        const operateElements = this._stageConfig.operateElements;
+        const newElements: IPPTElement[] = [];
+        for (const operateElement of operateElements) {
+            if (operateElement && operateElement.type === "image") {
+                const newElement = {
+                    ...operateElement,
+                    opacity: value
+                };
+
+                newElements.push(newElement);
+            }
+        }
+        this.executeUpdateRender(newElements, true);
+    }
+
     // 修改边框
     public executeOutline(outline?: IPPTElementOutline) {
         const operateElements = this._stageConfig.operateElements;

@@ -239,6 +239,8 @@ export interface ImageElementClip {
  * flipV?: 垂直翻转
  *
  * outline?: 边框
+ *
+ * opacity?: 不透明度，默认100（%）
  */
 export interface IPPTImageElement extends IPPTBaseElement {
     type: "image";
@@ -251,6 +253,7 @@ export interface IPPTImageElement extends IPPTBaseElement {
     flipH?: 1 | -1;
     flipV?: 1 | -1;
     outline?: IPPTElementOutline;
+    opacity?: number;
 }
 
 export interface IPPTTextElement extends IPPTBaseElement {
