@@ -261,6 +261,11 @@ export class Shape {
                 path = `M ${cx} ${rect.minY} L ${rect.maxX} ${rect.minY} L ${rect.maxX} ${cy} A ${rx} ${ry} 0 0 1 ${cx} ${rect.maxY} A ${rx} ${ry} 0 0 1 ${rect.minX} ${cy} A ${rx} ${ry} 0 0 1 ${cx} ${rect.minY} Z`;
                 break;
             }
+            case SHAPE_TYPE.FRAME_SHAPE: {
+                const bw = width * 0.15;
+                path = `M ${rect.minX} ${rect.minY} L ${rect.maxX} ${rect.minY} L ${rect.maxX} ${rect.maxY} L ${rect.minX} ${rect.maxY} Z M ${rect.minX + bw} ${rect.minY + bw} L ${rect.minX + bw} ${rect.maxY - bw} L ${rect.maxX - bw} ${rect.maxY - bw} L ${rect.maxX - bw} ${rect.minY + bw} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);

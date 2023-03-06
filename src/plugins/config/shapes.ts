@@ -25,6 +25,7 @@ export enum SHAPE_TYPE {
     PIE_SHAPE = "pieShape", // 饼形
     CHORD_SHAPE = "chordShape", // 弦形
     TEARDROP_SHAPE = "teardropShape", // 泪珠形
+    FRAME_SHAPE = "frameShape", // 框架
 }
 
 export enum LINE_TYPE {
@@ -243,6 +244,12 @@ export const SHAPE_LIST: IShapePoolItem[] = [
                 name: "泪珠形",
                 path: "M 9 2 L 16 2 L 16 9 A 7 7 90 0 1 9 16 A 7 7 90 0 1 2 9 A 7 7 90 0 1 9 2Z",
                 type: SHAPE_TYPE.TEARDROP_SHAPE
+            },
+            {
+                viewBox: 18,
+                name: "框架",
+                path: "M 2 2 L 16 2 L 16 16 L 2 16 Z M 5 5 L 13 5 L 13 13 L 5 13 Z",
+                type: SHAPE_TYPE.FRAME_SHAPE
             }
         ]
     }
