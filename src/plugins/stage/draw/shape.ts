@@ -273,6 +273,11 @@ export class Shape {
                 path = `M ${rect.minX} ${rect.minY} L ${rect.maxX} ${rect.minY} L ${rect.maxX - iw} ${rect.minY + bw} L ${rect.minX + bw} ${rect.minY + bw} L ${rect.minX + bw} ${rect.maxY - ih} L ${rect.minX} ${rect.maxY} Z`;
                 break;
             }
+            case SHAPE_TYPE.HORN: {
+                const bw = Math.min(width, height) * 0.4;
+                path = `M ${rect.minX} ${rect.minY} L ${rect.minX + bw} ${rect.minY} L ${rect.minX + bw} ${rect.maxY - bw} L ${rect.maxX} ${rect.maxY - bw} L ${rect.maxX} ${rect.maxY} L ${rect.minX} ${rect.maxY} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);

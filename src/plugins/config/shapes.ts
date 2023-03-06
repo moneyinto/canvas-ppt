@@ -27,6 +27,7 @@ export enum SHAPE_TYPE {
     TEARDROP_SHAPE = "teardropShape", // 泪珠形
     FRAME_SHAPE = "frameShape", // 框架
     HALF_CLOSED_FRAME_SHAPE = "halfClosedFrameShape", // 半闭框
+    HORN = "horn", // 角
 }
 
 export enum LINE_TYPE {
@@ -255,8 +256,14 @@ export const SHAPE_LIST: IShapePoolItem[] = [
             {
                 viewBox: 18,
                 name: "半闭框",
-                path: "M2.5 3v9.793l-2 2V.5h14.293l-2 2H2.5V3Z",
+                path: "M 2 2 L 16 2 L 12 6 L 6 6 L 6 12 L 2 16 Z",
                 type: SHAPE_TYPE.HALF_CLOSED_FRAME_SHAPE
+            },
+            {
+                viewBox: 18,
+                name: "角",
+                path: "M 2 2 L 7 2 L 7 11 L 16 11 L 16 16 L 2 16 Z",
+                type: SHAPE_TYPE.HORN
             }
         ]
     }
