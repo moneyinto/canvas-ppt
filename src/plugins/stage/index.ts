@@ -506,6 +506,12 @@ export default class Stage {
                 path = `M ${ax + rect.minX} ${ay + rect.minY} L ${cx} ${rect.minY} L ${rect.maxX - ax} ${ay + rect.minY} L ${rect.maxX} ${by + rect.minY} L ${rect.maxX - dx} ${rect.maxY} L ${rect.minX + dx} ${rect.maxY} L ${rect.minX} ${by + rect.minY} Z`;
                 break;
             }
+            case SHAPE_TYPE.OCTAGON: {
+                const x = 0.295 * width;
+                const y = 0.295 * height;
+                path = `M ${x + rect.minX} ${rect.minY} L ${rect.maxX - x} ${rect.minY} L ${rect.maxX} ${rect.minY + y} L ${rect.maxX} ${rect.maxX - y} L ${rect.maxX - x} ${rect.maxY} L ${rect.minX + x} ${rect.maxY} L ${rect.minX} ${rect.maxY - y} L ${rect.minX} ${rect.minY + y} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);
