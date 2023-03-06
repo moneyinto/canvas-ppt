@@ -22,8 +22,9 @@ export enum SHAPE_TYPE {
     OCTAGON = "octagon", // 八边形
     DECAGON = "decagon", // 十边形
     DODECAGON = "dodecagon", // 十二边形
-    PIESHAPE = "pieShape", // 饼形
-    CHORDSHAPE = "chordShape", // 弦形
+    PIE_SHAPE = "pieShape", // 饼形
+    CHORD_SHAPE = "chordShape", // 弦形
+    TEARDROP_SHAPE = "teardropShape", // 泪珠形
 }
 
 export enum LINE_TYPE {
@@ -229,13 +230,19 @@ export const SHAPE_LIST: IShapePoolItem[] = [
                 viewBox: 18,
                 name: "饼形",
                 path: "M 9 2 L 9 9 L 16 9 A 7 7 90 0 1 9 16 A 7 7 90 0 1 2 9 A 7 7 90 0 1 9 2Z",
-                type: SHAPE_TYPE.PIESHAPE
+                type: SHAPE_TYPE.PIE_SHAPE
             },
             {
                 viewBox: 18,
                 name: "弦形",
                 path: "M 9 2 L 16 9 A 7 7 90 0 1 9 16 A 7 7 90 0 1 2 9 A 7 7 90 0 1 9 2Z",
-                type: SHAPE_TYPE.CHORDSHAPE
+                type: SHAPE_TYPE.CHORD_SHAPE
+            },
+            {
+                viewBox: 18,
+                name: "泪珠形",
+                path: "M 9 2 L 16 2 L 16 9 A 7 7 90 0 1 9 16 A 7 7 90 0 1 2 9 A 7 7 90 0 1 9 2Z",
+                type: SHAPE_TYPE.TEARDROP_SHAPE
             }
         ]
     }

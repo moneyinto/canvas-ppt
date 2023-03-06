@@ -237,7 +237,7 @@ export class Shape {
                 path = `M ${x + rect.minX} ${y + rect.minY} L ${tx} ${rect.minY} L ${tx + lw} ${rect.minY} L ${rect.maxX - x} ${rect.minY + y} L ${rect.maxX} ${ty} L ${rect.maxX} ${ty + lh} L ${rect.maxX - x} ${rect.maxY - y} L ${tx + lw} ${rect.maxY} L ${tx} ${rect.maxY} L ${rect.minX + x} ${rect.maxY - y} L ${rect.minX} ${ty + lh} L ${rect.minX} ${ty} Z`;
                 break;
             }
-            case SHAPE_TYPE.PIESHAPE: {
+            case SHAPE_TYPE.PIE_SHAPE: {
                 const cx = (rect.minX + rect.maxX) / 2;
                 const cy = (rect.minY + rect.maxY) / 2;
                 const rx = width / 2;
@@ -245,12 +245,20 @@ export class Shape {
                 path = `M ${cx} ${rect.minY} L ${cx} ${cy} L ${rect.maxX} ${cy} A ${rx} ${ry} 0 0 1 ${cx} ${rect.maxY} A ${rx} ${ry} 0 0 1 ${rect.minX} ${cy} A ${rx} ${ry} 0 0 1 ${cx} ${rect.minY} Z`;
                 break;
             }
-            case SHAPE_TYPE.CHORDSHAPE: {
+            case SHAPE_TYPE.CHORD_SHAPE: {
                 const cx = (rect.minX + rect.maxX) / 2;
                 const cy = (rect.minY + rect.maxY) / 2;
                 const rx = width / 2;
                 const ry = height / 2;
                 path = `M ${cx} ${rect.minY} L ${rect.maxX} ${cy} A ${rx} ${ry} 0 0 1 ${cx} ${rect.maxY} A ${rx} ${ry} 0 0 1 ${rect.minX} ${cy} A ${rx} ${ry} 0 0 1 ${cx} ${rect.minY} Z`;
+                break;
+            }
+            case SHAPE_TYPE.TEARDROP_SHAPE: {
+                const cx = (rect.minX + rect.maxX) / 2;
+                const cy = (rect.minY + rect.maxY) / 2;
+                const rx = width / 2;
+                const ry = height / 2;
+                path = `M ${cx} ${rect.minY} L ${rect.maxX} ${rect.minY} L ${rect.maxX} ${cy} A ${rx} ${ry} 0 0 1 ${cx} ${rect.maxY} A ${rx} ${ry} 0 0 1 ${rect.minX} ${cy} A ${rx} ${ry} 0 0 1 ${cx} ${rect.minY} Z`;
                 break;
             }
         }
