@@ -512,6 +512,14 @@ export default class Stage {
                 path = `M ${x + rect.minX} ${rect.minY} L ${rect.maxX - x} ${rect.minY} L ${rect.maxX} ${rect.minY + y} L ${rect.maxX} ${rect.maxX - y} L ${rect.maxX - x} ${rect.maxY} L ${rect.minX + x} ${rect.maxY} L ${rect.minX} ${rect.maxY - y} L ${rect.minX} ${rect.minY + y} Z`;
                 break;
             }
+            case SHAPE_TYPE.DECAGON: {
+                const x = 0.096 * width;
+                const y = 0.182 * height;
+                const lw = 0.31 * width;
+                const tx = ((rect.maxX - rect.minX) - lw) / 2 + rect.minX;
+                path = `M ${x + rect.minX} ${y + rect.minY} L ${tx} ${rect.minY} L ${tx + lw} ${rect.minY} L ${rect.maxX - x} ${rect.minY + y} L ${rect.maxX} ${(rect.maxY + rect.minY) / 2} L ${rect.maxX - x} ${rect.maxY - y} L ${tx + lw} ${rect.maxY} L ${tx} ${rect.maxY} L ${rect.minX + x} ${rect.maxY - y} L ${rect.minX} ${(rect.maxY + rect.minY) / 2} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);
