@@ -520,6 +520,16 @@ export default class Stage {
                 path = `M ${x + rect.minX} ${y + rect.minY} L ${tx} ${rect.minY} L ${tx + lw} ${rect.minY} L ${rect.maxX - x} ${rect.minY + y} L ${rect.maxX} ${(rect.maxY + rect.minY) / 2} L ${rect.maxX - x} ${rect.maxY - y} L ${tx + lw} ${rect.maxY} L ${tx} ${rect.maxY} L ${rect.minX + x} ${rect.maxY - y} L ${rect.minX} ${(rect.maxY + rect.minY) / 2} Z`;
                 break;
             }
+            case SHAPE_TYPE.DODECAGON: {
+                const x = 0.134 * width;
+                const y = 0.134 * height;
+                const lw = 0.268 * width;
+                const lh = 0.268 * height;
+                const tx = ((rect.maxX - rect.minX) - lw) / 2 + rect.minX;
+                const ty = ((rect.maxY - rect.minY) - lh) / 2 + rect.minY;
+                path = `M ${x + rect.minX} ${y + rect.minY} L ${tx} ${rect.minY} L ${tx + lw} ${rect.minY} L ${rect.maxX - x} ${rect.minY + y} L ${rect.maxX} ${ty} L ${rect.maxX} ${ty + lh} L ${rect.maxX - x} ${rect.maxY - y} L ${tx + lw} ${rect.maxY} L ${tx} ${rect.maxY} L ${rect.minX + x} ${rect.maxY - y} L ${rect.minX} ${ty + lh} L ${rect.minX} ${ty} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);

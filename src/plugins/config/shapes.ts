@@ -20,7 +20,8 @@ export enum SHAPE_TYPE {
     HEXAGON = "hexagon", // 六边形
     HEPTAGON = "heptagon", // 七边形
     OCTAGON = "octagon", // 八边形
-    DECAGON = "decagon" // 十边形
+    DECAGON = "decagon", // 十边形
+    DODECAGON = "dodecagon" // 十二边形
 }
 
 export enum LINE_TYPE {
@@ -215,6 +216,12 @@ export const SHAPE_LIST: IShapePoolItem[] = [
                 name: "十边形",
                 path: "M3.34 4.55 L 6.83 2 L 11.17 2 L 14.66 4.55 L 16 9 L 14.66 13.45 L 11.17 16 L 6.83 16 L 3.34 13.45 L 2 9 Z",
                 type: SHAPE_TYPE.DECAGON
+            },
+            {
+                viewBox: 18,
+                name: "十二边形",
+                path: "M 3.876 3.876 L 7.124 2 L 10.876 2 L 14.124 3.876 L 16 7.124 L 16 10.876 L 14.124 14.124 L 10.876 16 L 7.124 16 L 3.876 14.124 L 2 10.876 L 2 7.124 Z",
+                type: SHAPE_TYPE.DODECAGON
             }
         ]
     }
