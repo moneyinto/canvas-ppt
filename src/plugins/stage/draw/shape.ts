@@ -245,6 +245,14 @@ export class Shape {
                 path = `M ${cx} ${rect.minY} L ${cx} ${cy} L ${rect.maxX} ${cy} A ${rx} ${ry} 0 0 1 ${cx} ${rect.maxY} A ${rx} ${ry} 0 0 1 ${rect.minX} ${cy} A ${rx} ${ry} 0 0 1 ${cx} ${rect.minY} Z`;
                 break;
             }
+            case SHAPE_TYPE.CHORDSHAPE: {
+                const cx = (rect.minX + rect.maxX) / 2;
+                const cy = (rect.minY + rect.maxY) / 2;
+                const rx = width / 2;
+                const ry = height / 2;
+                path = `M ${cx} ${rect.minY} L ${rect.maxX} ${cy} A ${rx} ${ry} 0 0 1 ${cx} ${rect.maxY} A ${rx} ${ry} 0 0 1 ${rect.minX} ${cy} A ${rx} ${ry} 0 0 1 ${cx} ${rect.minY} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);
