@@ -266,6 +266,13 @@ export class Shape {
                 path = `M ${rect.minX} ${rect.minY} L ${rect.maxX} ${rect.minY} L ${rect.maxX} ${rect.maxY} L ${rect.minX} ${rect.maxY} Z M ${rect.minX + bw} ${rect.minY + bw} L ${rect.minX + bw} ${rect.maxY - bw} L ${rect.maxX - bw} ${rect.maxY - bw} L ${rect.maxX - bw} ${rect.minY + bw} Z`;
                 break;
             }
+            case SHAPE_TYPE.HALF_CLOSED_FRAME_SHAPE: {
+                const bw = Math.min(width, height) * 0.2;
+                const iw = width * 0.2;
+                const ih = height * 0.2;
+                path = `M ${rect.minX} ${rect.minY} L ${rect.maxX} ${rect.minY} L ${rect.maxX - iw} ${rect.minY + bw} L ${rect.minX + bw} ${rect.minY + bw} L ${rect.minX + bw} ${rect.maxY - ih} L ${rect.minX} ${rect.maxY} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);
