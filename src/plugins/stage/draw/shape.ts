@@ -289,6 +289,11 @@ export class Shape {
                 path = `M ${rect.minX + a} ${rect.minY} L ${rect.maxX - a} ${rect.minY} L ${rect.maxX - a} ${rect.minY + a} L ${rect.maxX} ${rect.minY + a} L ${rect.maxX} ${rect.maxY - a} L ${rect.maxX - a} ${rect.maxY - a} L ${rect.maxX - a} ${rect.maxY} L ${rect.minX + a} ${rect.maxY} L ${rect.minX + a} ${rect.maxY - a} L ${rect.minX} ${rect.maxY - a} L ${rect.minX} ${rect.minY + a} L ${rect.minX + a} ${rect.minY + a} Z`;
                 break;
             }
+            case SHAPE_TYPE.CUTAWAY_RECTANGLE: {
+                const r = Math.min(width, height) * 0.2;
+                path = `M ${rect.minX + r} ${rect.minY} L ${rect.maxX - r} ${rect.minY} A ${r} ${r} 90 0 0 ${rect.maxX} ${rect.minY + r} L ${rect.maxX} ${rect.minY + r} L ${rect.maxX} ${rect.maxY - r} A ${r} ${r} 90 0 0 ${rect.maxX - r} ${rect.maxY} L ${rect.minX + r} ${rect.maxY} A ${r} ${r} 90 0 0 ${rect.minX} ${rect.maxY - r} L ${rect.minX} ${rect.minY + r} A ${r} ${r} 90 0 0 ${rect.minX + r} ${rect.minY} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);

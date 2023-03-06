@@ -30,6 +30,7 @@ export enum SHAPE_TYPE {
     HORN = "horn", // 角
     TWILL = "twill", // 斜纹
     CROSS = "cross", // 十字形
+    CUTAWAY_RECTANGLE = "cutawayRectangle", // 缺角矩形
 }
 
 export enum LINE_TYPE {
@@ -278,6 +279,12 @@ export const SHAPE_LIST: IShapePoolItem[] = [
                 name: "十字形",
                 path: "M 7 2 L 11 2 L 11 7 L 16 7 L 16 11 L 11 11 L 11 16 L 7 16 L 7 11 L 2 11 L 2 7 L 7 7 Z",
                 type: SHAPE_TYPE.CROSS
+            },
+            {
+                viewBox: 18,
+                name: "缺角矩形",
+                path: "M 5 2 L 13 2 A 3 3 90 0 0 16 5 L 16 13 A 3 3 90 0 0 13 16 L 5 16 A 3 3 90 0 0 2 13 L 2 5 A 3 3 90 0 0 5 2 Z",
+                type: SHAPE_TYPE.CUTAWAY_RECTANGLE
             }
         ]
     }
