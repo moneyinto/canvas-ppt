@@ -278,6 +278,12 @@ export class Shape {
                 path = `M ${rect.minX} ${rect.minY} L ${rect.minX + bw} ${rect.minY} L ${rect.minX + bw} ${rect.maxY - bw} L ${rect.maxX} ${rect.maxY - bw} L ${rect.maxX} ${rect.maxY} L ${rect.minX} ${rect.maxY} Z`;
                 break;
             }
+            case SHAPE_TYPE.TWILL: {
+                const wx = width * 0.5;
+                const hy = height * 0.5;
+                path = `M ${rect.minX + wx} ${rect.minY} L ${rect.maxX} ${rect.minY} L ${rect.minX} ${rect.maxY} L ${rect.minX} ${rect.maxY - hy} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);
