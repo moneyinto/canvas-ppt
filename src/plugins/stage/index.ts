@@ -497,6 +497,15 @@ export default class Stage {
                 path = `M ${rect.minX + offsetX} ${rect.minY} L ${rect.maxX - offsetX} ${rect.minY} L ${rect.maxX} ${sy} L ${rect.maxX - offsetX} ${rect.maxY} L ${rect.minX + offsetX} ${rect.maxY} L ${rect.minX} ${sy} Z`;
                 break;
             }
+            case SHAPE_TYPE.HEPTAGON: {
+                const cx = (rect.minX + rect.maxX) / 2;
+                const ax = 0.11 * width;
+                const ay = 0.195 * height;
+                const by = 0.645 * height;
+                const dx = 0.275 * width;
+                path = `M ${ax + rect.minX} ${ay + rect.minY} L ${cx} ${rect.minY} L ${rect.maxX - ax} ${ay + rect.minY} L ${rect.maxX} ${by + rect.minY} L ${rect.maxX - dx} ${rect.maxY} L ${rect.minX + dx} ${rect.maxY} L ${rect.minX} ${by + rect.minY} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);
