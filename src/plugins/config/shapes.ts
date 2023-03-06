@@ -29,6 +29,7 @@ export enum SHAPE_TYPE {
     HALF_CLOSED_FRAME_SHAPE = "halfClosedFrameShape", // 半闭框
     HORN = "horn", // 角
     TWILL = "twill", // 斜纹
+    CROSS = "cross", // 十字形
 }
 
 export enum LINE_TYPE {
@@ -271,6 +272,12 @@ export const SHAPE_LIST: IShapePoolItem[] = [
                 name: "斜纹",
                 path: "M 9 2 L 16 2 L 2 16 L 2 9 Z",
                 type: SHAPE_TYPE.TWILL
+            },
+            {
+                viewBox: 18,
+                name: "十字形",
+                path: "M 7 2 L 11 2 L 11 7 L 16 7 L 16 11 L 11 11 L 11 16 L 7 16 L 7 11 L 2 11 L 2 7 L 7 7 Z",
+                type: SHAPE_TYPE.CROSS
             }
         ]
     }

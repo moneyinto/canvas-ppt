@@ -284,6 +284,11 @@ export class Shape {
                 path = `M ${rect.minX + wx} ${rect.minY} L ${rect.maxX} ${rect.minY} L ${rect.minX} ${rect.maxY} L ${rect.minX} ${rect.maxY - hy} Z`;
                 break;
             }
+            case SHAPE_TYPE.CROSS: {
+                const a = Math.min(width, height) * 0.25;
+                path = `M ${rect.minX + a} ${rect.minY} L ${rect.maxX - a} ${rect.minY} L ${rect.maxX - a} ${rect.minY + a} L ${rect.maxX} ${rect.minY + a} L ${rect.maxX} ${rect.maxY - a} L ${rect.maxX - a} ${rect.maxY - a} L ${rect.maxX - a} ${rect.maxY} L ${rect.minX + a} ${rect.maxY} L ${rect.minX + a} ${rect.maxY - a} L ${rect.minX} ${rect.maxY - a} L ${rect.minX} ${rect.minY + a} L ${rect.minX + a} ${rect.minY + a} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);
