@@ -1,3 +1,6 @@
+import { OPTION_TYPE } from "../config/options";
+import { ISlide } from "./slide";
+
 export type IBoundsCoords = [number, number, number, number];
 
 export type IRectParameter = IBoundsCoords;
@@ -16,6 +19,13 @@ export interface IMouseClick {
     y: number;
     textX: number;
     textY: number;
+}
+
+export interface IHistory {
+    id: number;
+    optionType?: OPTION_TYPE;
+    slideId: string;
+    slides: ISlide[];
 }
 
 export type IElementAlignType =

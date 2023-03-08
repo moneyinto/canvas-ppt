@@ -149,6 +149,8 @@
                 />
             </div>
         </div>
+
+        <a-button class="ppt-apply-btn" @click="applyAll()">应用到全部</a-button>
     </div>
 </template>
 
@@ -290,6 +292,10 @@ const onGradientRotateChange = () => {
     setGradient();
 };
 
+const applyAll = () => {
+    instance?.value.command.executeApplyBackgroundAll();
+};
+
 const closePanel = () => {
     emitter.emit(EmitterEvents.SHOW_PANELS, false);
     setTimeout(() => {
@@ -301,6 +307,8 @@ const closePanel = () => {
 <style lang="scss" scoped>
 .ppt-background-panel {
     height: 100%;
+    display: flex;
+    flex-direction: column;
     .ppt-panel-header {
         height: 44px;
         display: flex;
@@ -321,6 +329,7 @@ const closePanel = () => {
 
     .ppt-panel-content {
         padding: 10px 15px;
+        flex: 1;
     }
 
     .ppt-panel-label {
@@ -379,6 +388,10 @@ const closePanel = () => {
 
     .ppt-rotate-slider {
         flex: 1;
+    }
+
+    .ppt-apply-btn {
+        margin: 20px;
     }
 }
 </style>

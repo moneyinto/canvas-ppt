@@ -1,8 +1,11 @@
 import { ICreatingElement, IPPTElement } from "./element";
+import { ISlide } from "./slide";
 
 export type IOnZoomChange = (zoom: number) => void;
 
 export type IOnEditChange = (cursor: number, length: number, slideId: string) => void;
+
+export type IOnUpdateThumbnailSlide = (slide: ISlide) => void;
 
 export type IOnSelectedChange = (elements: IPPTElement[]) => void;
 

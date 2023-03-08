@@ -27,6 +27,7 @@ import { IFontData } from "../types/font";
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import { IElementAlignType } from "../types";
 import { ISlideBackground } from "../types/slide";
+import { OPTION_TYPE } from "../config/options";
 
 export default class Command {
     private _stageConfig: StageConfig;
@@ -63,6 +64,13 @@ export default class Command {
         this._stageConfig.setBackground(background);
 
         this.executeLogRender();
+    }
+
+    // 设置背景到全部
+    public executeApplyBackgroundAll() {
+        this._stageConfig.applyBackgroundAll();
+
+        this._history.add(OPTION_TYPE.APPLY_BACKGROUND_ALL);
     }
 
     // 缩小

@@ -277,6 +277,16 @@ export default class StageConfig {
         }
     }
 
+    public applyBackgroundAll() {
+        const currentSlide = this.getCurrentSlide();
+        if (currentSlide?.background) {
+            this.slides.forEach(slide => {
+                slide.background = currentSlide.background;
+                this._listener?.onUpdateThumbnailSlide && this._listener.onUpdateThumbnailSlide(slide);
+            });
+        }
+    }
+
     public setOperateType(opreateType: string) {
         this.opreateType = opreateType;
     }

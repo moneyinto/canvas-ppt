@@ -1,5 +1,7 @@
 import { ISlide } from "../types/slide";
 import { IDBPDatabase, openDB } from "idb";
+import { OPTION_TYPE } from "../config/options";
+import { IHistory } from "../types";
 
 const DB_NAME = "CANVAS_PPT_DB";
 
@@ -32,7 +34,7 @@ export default class DB {
 
     async getData(key: number) {
         if (!this.db) await this.init();
-        return await this.db!.transaction("history").objectStore("history").get(key);
+        return await this.db!.transaction("history").objectStore("history").get(key) as IHistory;
     }
 
     async getAllKeys() {
@@ -40,10 +42,10 @@ export default class DB {
         return await this.db!.transaction("history").objectStore("history").getAllKeys();
     }
 
-    async setData(slideId: string, slides: ISlide[]) {
+    async setData(slideId: string, slides: ISlide[], optionType?: OPTION_TYPE) {
         if (!this.db) await this.init();
         this.db!.transaction("history", "readwrite")
             .objectStore("history")
-            .add({ slideId, slides: JSON.parse(JSON.stringify(slides)) });
+            .add({ optionType, slideId, slides: JSON.parse(JSON.stringify(slides)) });
     }
 }

@@ -2,6 +2,7 @@ import Listener from "../listener";
 import StageConfig from "../stage/config";
 import DB from "./db";
 import { ISlide } from "../types/slide";
+import { OPTION_TYPE } from "../config/options";
 
 interface IStorage {
     slideId: string;
@@ -32,7 +33,7 @@ export class History {
         return history.slides as ISlide[];
     }
 
-    public async add() {
+    public async add(optionType?: OPTION_TYPE) {
         const data = this._stageConfig.slides;
         const history = await this._db.getData(this._snapshotKeys.length === 0 ? -1 : this._snapshotKeys[this.cursor]);
         // 存储值与当前操作变化值相等，则没变化，阻断操作
@@ -46,7 +47,7 @@ export class History {
         // 获取当前编辑页，存储历史记录时，存入变化的页ID
         const currentSlide = this._stageConfig.getCurrentSlide();
 
-        await this._db.setData(currentSlide!.id, data);
+        await this._db.setData(currentSlide!.id, data, optionType);
 
         this._snapshotKeys = (await this._db.getAllKeys() || []) as number[];
         this.cursor++;
@@ -64,19 +65,33 @@ export class History {
         this.cursor = -1;
     }
 
+    public async updateThumbnailSlide(cursor: number) {
+        const history = await this._db.getData(this._snapshotKeys[cursor]);
+        // 更新缩略图 （由于缩略图不一定要更新所有的页面，但是存在需要更新所有的情况，这里为了降低操作性能消耗，后面history中记录当前具体操作类型，根据类型来判断是否要更新所有缩略图）
+        if (history.optionType === OPTION_TYPE.APPLY_BACKGROUND_ALL) {
+            this._stageConfig.slides.forEach(slide => {
+                this._listener.onUpdateThumbnailSlide && this._listener.onUpdateThumbnailSlide(slide);
+            });
+        }
+    }
+
     // 恢复
-    public redo() {
+    public async redo() {
         if (this.cursor < this.length - 1) {
             this.cursor++;
             this._setSlides();
+
+            this.updateThumbnailSlide(this.cursor);
         }
     }
 
     // 撤销
-    public undo() {
+    public async undo() {
         if (this.cursor > 0) {
             this.cursor--;
             this._setSlides();
+
+            this.updateThumbnailSlide(this.cursor + 1);
         }
     }
 

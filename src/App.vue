@@ -185,6 +185,10 @@ nextTick(() => {
             }
         };
 
+        instance.value.listener.onUpdateThumbnailSlide = (slide) => {
+            emitter.emit(EmitterEvents.UPDATE_THUMBNAIL, slide);
+        };
+
         instance.value.listener.onSelectedChange = (
             elements: IPPTElement[]
         ) => {

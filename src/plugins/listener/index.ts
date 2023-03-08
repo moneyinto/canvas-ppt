@@ -1,6 +1,7 @@
 import {
     IOnZoomChange,
     IOnEditChange,
+    IOnUpdateThumbnailSlide,
     IOnSelectedChange,
     IOnInsertElementChange,
     IOnFontSizeChange,
@@ -14,6 +15,7 @@ import {
 export default class Listener {
     public onZoomChange: IOnZoomChange | null;
     public onEditChange: IOnEditChange | null;
+    public onUpdateThumbnailSlide: IOnUpdateThumbnailSlide | null;
     public onSelectedChange: IOnSelectedChange | null;
     public onInsertElementChange: IOnInsertElementChange | null;
     public onFontSizeChange: IOnFontSizeChange | null;
@@ -25,6 +27,7 @@ export default class Listener {
     constructor() {
         this.onZoomChange = null;
         this.onEditChange = null;
+        this.onUpdateThumbnailSlide = null;
         this.onSelectedChange = null;
         this.onInsertElementChange = null;
         this.onFontSizeChange = null;
