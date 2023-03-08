@@ -12,7 +12,7 @@ export class Picture {
 
     private _getCacheImage(element: IPPTImageElement): Promise<ICacheImage> {
         return new Promise(resolve => {
-            const cacheImage = this._stageConfig.cacheImage.find(image => image.id === element.id);
+            const cacheImage = this._stageConfig.cacheImages.find(image => image.id === element.id);
             if (cacheImage) {
                 resolve(cacheImage);
             } else {

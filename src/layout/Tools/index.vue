@@ -21,6 +21,9 @@
 
         <a-divider class="ppt-tool-divider" v-if="showImageEdit" type="vertical" />
         <ImageEdit :elements="elements" v-if="showImageEdit" />
+
+        <a-divider class="ppt-tool-divider" type="vertical" />
+        <Background />
     </div>
 </template>
 
@@ -36,6 +39,7 @@ import Border from "./Border.vue";
 import TextEdit from "./TextEdit/index.vue";
 import Align from "./Align.vue";
 import ImageEdit from "./ImageEdit.vue";
+import Background from "./Background.vue";
 
 const props = defineProps({
     elements: {

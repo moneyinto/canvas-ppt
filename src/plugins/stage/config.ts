@@ -5,7 +5,7 @@ import Listener from "../listener";
 import { ICacheImage, IRectParameter } from "../types";
 import { ICreatingElement, IPPTElement, IPPTTextElement } from "../types/element";
 import { IFontConfig, IFontData, ILineData } from "../types/font";
-import { ISlide } from "../types/slide";
+import { ISlide, ISlideBackground } from "../types/slide";
 
 export const TEXT_MARGIN = 5;
 
@@ -17,7 +17,8 @@ export default class StageConfig {
     public insertElement: ICreatingElement | null; // 需要绘制插入的元素
     public operateElements: IPPTElement[]; // 选中操作元素
     public opreateType: string; // 元素操作形式 拉伸方向 旋转
-    public cacheImage: ICacheImage[];
+    public cacheImages: ICacheImage[];
+    public cacheBackgroundImage: HTMLImageElement | undefined;
 
     public slides: ISlide[] = [];
     public slideId = "";
@@ -49,7 +50,8 @@ export default class StageConfig {
         this.insertElement = null;
         this.operateElements = [];
         this.opreateType = "";
-        this.cacheImage = [];
+        this.cacheImages = [];
+        this.cacheBackgroundImage = undefined;
 
         this.resetDrawView = null;
         this.resetDrawOprate = null;
@@ -261,6 +263,20 @@ export default class StageConfig {
         if (this._listener?.onSelectedChange) this._listener.onSelectedChange(this.operateElements);
     }
 
+    public setBackground(background: ISlideBackground | undefined) {
+        const currentSlide = this.getCurrentSlide();
+        if (currentSlide) {
+            if (background) {
+                currentSlide.background = background;
+            } else {
+                delete currentSlide.background;
+            }
+
+            const index = this.slides.findIndex(slide => slide.id === currentSlide.id);
+            this.slides[index] = currentSlide;
+        }
+    }
+
     public setOperateType(opreateType: string) {
         this.opreateType = opreateType;
     }
@@ -283,7 +299,11 @@ export default class StageConfig {
     }
 
     public addCacheImage(cacheImage: ICacheImage) {
-        this.cacheImage.push(cacheImage);
+        this.cacheImages.push(cacheImage);
+    }
+
+    public updateBackgroundImage(cacheImage?: HTMLImageElement) {
+        this.cacheBackgroundImage = cacheImage;
     }
 
     public setSelectArea(selectArea: [number, number, number, number] | null) {

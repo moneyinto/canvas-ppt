@@ -39,6 +39,10 @@ export default class Stage {
                 "resize",
                 throttleRAF(this._resetStage.bind(this))
             );
+
+            const resizeObserver = new ResizeObserver(throttleRAF(this._resetStage.bind(this)));
+
+            resizeObserver.observe(this.container);
         }
     }
 

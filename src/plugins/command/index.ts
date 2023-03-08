@@ -26,6 +26,7 @@ import {
 import { IFontData } from "../types/font";
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import { IElementAlignType } from "../types";
+import { ISlideBackground } from "../types/slide";
 
 export default class Command {
     private _stageConfig: StageConfig;
@@ -55,6 +56,13 @@ export default class Command {
     // 适配
     public executeFitZoom() {
         this._stageConfig.resetBaseZoom();
+    }
+
+    // 设置背景
+    public executeSetBackground(background: ISlideBackground | undefined) {
+        this._stageConfig.setBackground(background);
+
+        this.executeLogRender();
     }
 
     // 缩小
@@ -1397,7 +1405,6 @@ export default class Command {
         if (operateElements.length > 1) {
             // 相对于元素对齐
             const boundary = this._stageConfig.getOperateElementsBoundary(operateElements);
-            console.log(boundary);
             for (const operateElement of operateElements) {
                 const element = this._setElementAlignByElement(operateElement, align, boundary);
                 elements.push(element);

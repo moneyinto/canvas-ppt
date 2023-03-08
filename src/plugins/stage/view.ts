@@ -1,15 +1,20 @@
 import Stage from ".";
 import StageConfig from "./config";
+import Background from "./draw/background";
 
 export default class ViewStage extends Stage {
+    private _background: Background;
     constructor(container: HTMLDivElement, stageConfig: StageConfig, resize?: boolean) {
         super(container, stageConfig, resize);
 
+        this._background = new Background(stageConfig, this.ctx);
         this._drawPage();
     }
 
-    private _drawPage() {
+    private async _drawPage() {
         const { x, y, stageWidth, stageHeight } = this.stageConfig.getStageArea();
+        const currentSlide = this.stageConfig.getCurrentSlide();
+
         // 设置阴影
         this.ctx.shadowColor = "#eee";
         this.ctx.shadowBlur = 12;
@@ -17,11 +22,13 @@ export default class ViewStage extends Stage {
         this.ctx.fillStyle = "white";
         this.ctx.fillRect(x, y, stageWidth, stageHeight);
 
+        // 绘制背景
+        await this._background.draw(currentSlide?.background);
+
         // 移除阴影设置
         this.ctx.shadowColor = "";
         this.ctx.shadowBlur = 0;
 
-        const currentSlide = this.stageConfig.getCurrentSlide();
         const elements = currentSlide?.elements || [];
         this.drawElements(elements);
     }

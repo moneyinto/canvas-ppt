@@ -21,7 +21,7 @@ export interface ISlideBackground {
     type: "solid" | "image" | "gradient";
     color?: string;
     image?: string;
-    imageSize?: "cover" | "contain" | "repeat";
+    imageSize?: "cover" | "repeat";
     gradientType?: "linear" | "radial";
     gradientColor?: [string, string];
     gradientRotate?: number;

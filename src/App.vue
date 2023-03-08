@@ -73,6 +73,9 @@
                     </div>
                 </div>
             </div>
+            <div class="ppt-panel-box" :class="showPanel && 'active'">
+                <Panels :visible="showPanel" />
+            </div>
         </div>
         <div class="ppt-footer">
             <Footer
@@ -90,6 +93,7 @@ import NavMenu from "./layout/NavMenu/index.vue";
 import Tools from "./layout/Tools/index.vue";
 import ThumbnailSlide from "./layout/ThumbnailSlide.vue";
 import Footer from "./layout/Footer.vue";
+import Panels from "./layout/Panels/index.vue";
 import Editor from "./plugins/editor";
 import { slides } from "./mock";
 import emitter, { EmitterEvents } from "./utils/emitter";
@@ -100,13 +104,15 @@ import useSlideSort from "@/hooks/useSlideSort";
 import { ISlide } from "./plugins/types/slide";
 import { IPPTElement } from "./plugins/types/element";
 
-const pptRef = ref();
+const pptRef = ref<HTMLDivElement>();
 const zoom = ref(1);
 const instance = ref<Editor>();
 const viewSlides = ref<ISlide[]>([]);
 
 const historyCursor = ref(0);
 const historyLength = ref(0);
+
+const showPanel = ref(false);
 
 provide("instance", instance);
 provide("historyCursor", historyCursor);
@@ -145,6 +151,10 @@ const onCanvasFocus = () => {
 };
 
 const currentElements = ref<IPPTElement[]>([]);
+
+const openPanel = (show: boolean) => {
+    showPanel.value = show;
+};
 
 nextTick(() => {
     if (pptRef.value) {
@@ -186,6 +196,8 @@ nextTick(() => {
         emitter.on(EmitterEvents.CUT_SLIDE, cutSlide);
         emitter.on(EmitterEvents.PASTE_SLIDE, pasteSlide);
     }
+
+    emitter.on(EmitterEvents.SHOW_PANELS, openPanel);
 });
 
 const resize = (scale: number) => {
@@ -271,6 +283,7 @@ onUnmounted(() => {
     emitter.off(EmitterEvents.COPY_SLIDE, copySlide);
     emitter.off(EmitterEvents.CUT_SLIDE, cutSlide);
     emitter.off(EmitterEvents.PASTE_SLIDE, pasteSlide);
+    emitter.off(EmitterEvents.SHOW_PANELS, openPanel);
 });
 </script>
 
@@ -385,6 +398,15 @@ onUnmounted(() => {
         flex: 1;
         min-width: 0;
         position: relative;
+    }
+
+    .ppt-panel-box {
+        width: 0;
+        transition: all .3s;
+        position: relative;
+        &.active {
+            width: 280px;
+        }
     }
 }
 

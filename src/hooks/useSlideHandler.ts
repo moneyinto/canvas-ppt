@@ -9,6 +9,7 @@ import {
     readClipboard
 } from "@/utils/clipboard";
 import { encrypt } from "@/utils/crypto";
+import emitter, { EmitterEvents } from "@/utils/emitter";
 
 export default (
     instance: Ref<Editor | undefined>,
@@ -115,6 +116,11 @@ export default (
         instance.value?.stageConfig.setSlideId(selectedSlideId.value);
         instance.value?.stageConfig.updateOperateElements([]);
         instance.value?.command.executeRender();
+
+        emitter.emit(EmitterEvents.SHOW_PANELS, false);
+        setTimeout(() => {
+            emitter.emit(EmitterEvents.PANELS_TYPE, "");
+        }, 300);
     };
 
     const switchSlide = () => {
