@@ -294,6 +294,14 @@ export class Shape {
                 path = `M ${rect.minX + r} ${rect.minY} L ${rect.maxX - r} ${rect.minY} A ${r} ${r} 90 0 0 ${rect.maxX} ${rect.minY + r} L ${rect.maxX} ${rect.minY + r} L ${rect.maxX} ${rect.maxY - r} A ${r} ${r} 90 0 0 ${rect.maxX - r} ${rect.maxY} L ${rect.minX + r} ${rect.maxY} A ${r} ${r} 90 0 0 ${rect.minX} ${rect.maxY - r} L ${rect.minX} ${rect.minY + r} A ${r} ${r} 90 0 0 ${rect.minX + r} ${rect.minY} Z`;
                 break;
             }
+            case SHAPE_TYPE.RING: {
+                const rx = width * 0.5;
+                const ry = height * 0.5;
+                const rb = Math.min(width, height) * 0.25;
+                const cx = (rect.minX + rect.maxX) / 2;
+                path = `M ${cx} ${rect.minY} A ${rx} ${ry} 180 0 0 ${cx} ${rect.maxY} A ${rx} ${ry} 180 0 0 ${cx} ${rect.minY} M ${cx} ${rect.minY + rb} A ${rx - rb} ${ry - rb} 180 0 1 ${cx} ${rect.maxY - rb} A ${rx - rb} ${ry - rb} 180 0 1 ${cx} ${rect.minY + rb} Z`;
+                break;
+            }
         }
 
         return new Path2D(path);
