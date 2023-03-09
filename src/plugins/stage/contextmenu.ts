@@ -75,6 +75,7 @@ export class Contextmenu {
             { divider: true, hide: selectedElement },
             {
                 text: "新建页面",
+                hide: selectedElement,
                 subText: `${isMac ? "⌘" : "Ctrl"} + M`,
                 handler: () => {
                     emitter.emit(EmitterEvents.ADD_EMPTY_SLIDE);
@@ -82,6 +83,7 @@ export class Contextmenu {
             },
             {
                 text: "复制页面",
+                hide: selectedElement,
                 subText: `${isMac ? "⌘" : "Ctrl"} + D`,
                 handler: () => {
                     emitter.emit(EmitterEvents.COPY_SLIDE);
@@ -90,6 +92,7 @@ export class Contextmenu {
             },
             {
                 text: "删除页面",
+                hide: selectedElement,
                 subText: "⌫",
                 handler: () => {
                     emitter.emit(EmitterEvents.DELETE_SLIDE);
@@ -98,6 +101,7 @@ export class Contextmenu {
             { divider: true, hide: selectedElement },
             {
                 text: "背景设置",
+                hide: selectedElement,
                 icon: "background",
                 handler: () => {
                     emitter.emit(EmitterEvents.SHOW_PANELS, true);
