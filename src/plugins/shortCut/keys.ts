@@ -1,3 +1,4 @@
+import emitter, { EmitterEvents } from "@/utils/emitter";
 import Command from "../command";
 import { IRegisterShortcut } from "../types/shortcut";
 import { KeyMap } from "./keyMap";
@@ -97,6 +98,25 @@ export const ShortcutKeys: IRegisterShortcut[] = [
         key: KeyMap.Right,
         callback: (command: Command) => {
             command.executeMove(KeyMap.Right);
+        }
+    },
+
+    // 新建页面
+    {
+        key: KeyMap.M,
+        ctrl: true,
+        callback: () => {
+            emitter.emit(EmitterEvents.ADD_EMPTY_SLIDE);
+        }
+    },
+
+    // 复制页面
+    {
+        key: KeyMap.D,
+        ctrl: true,
+        callback: () => {
+            emitter.emit(EmitterEvents.COPY_SLIDE);
+            emitter.emit(EmitterEvents.PASTE_SLIDE);
         }
     }
 ];

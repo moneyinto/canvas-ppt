@@ -10,6 +10,7 @@ import {
 } from "@/utils/clipboard";
 import { encrypt } from "@/utils/crypto";
 import emitter, { EmitterEvents } from "@/utils/emitter";
+import { OPTION_TYPE } from "@/plugins/config/options";
 
 export default (
     instance: Ref<Editor | undefined>,
@@ -55,6 +56,8 @@ export default (
         }
         const slideId = viewSlides.value[slideIndex.value].id;
         if (slideId) onSelectedSlide(slideId);
+
+        instance.value?.history.add(OPTION_TYPE.DELETE_SLIDE);
     };
 
     const getCurrentSlide = () => {
@@ -87,7 +90,7 @@ export default (
             const resultText = content.replace(CLIPBOARD_STRING_TYPE.SLIDE, "");
             const slide = pasteCustomClipboardString(resultText) as ISlide;
 
-            addPPT(slide);
+            addPPT(slide, true);
 
             // 再次写入剪切板，为了下一次粘贴能够在上一次的基础上进行偏移
             await copyText(
@@ -95,17 +98,19 @@ export default (
                     `${CLIPBOARD_STRING_TYPE.SLIDE}${JSON.stringify(slide)}`
                 )
             );
+
+            instance.value?.history.add(OPTION_TYPE.PASTE_SLIDE);
         }
     };
 
-    const addPPT = (slide?: ISlide) => {
+    const addPPT = (slide?: ISlide, noHistory?: boolean) => {
         slideIndex.value++;
         const id = createRandomCode();
         const newSlide = slide ? { ...slide, id } : { id, elements: [] };
         viewSlides.value.splice(slideIndex.value, 0, newSlide);
         onSelectedSlide(id);
         instance.value?.stageConfig.setSildes(viewSlides.value);
-        instance.value?.history.add();
+        if (!noHistory) instance.value?.history.add(OPTION_TYPE.ADD_EMPTY_SLIDE);
     };
 
     const onSelectedSlide = (id: string) => {

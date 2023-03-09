@@ -26,7 +26,7 @@ export class History {
     public async getHistorySnapshot() {
         this._snapshotKeys = (await this._db.getAllKeys() || []) as number[];
         if (!this._snapshotKeys || this._snapshotKeys.length === 0) {
-            await this.add();
+            await this.add(OPTION_TYPE.INIT_DB_SLIDE);
         }
         const history = await this._db.getData(this._snapshotKeys[this._snapshotKeys.length - 1] as number);
         this.cursor = this._snapshotKeys.length - 1;

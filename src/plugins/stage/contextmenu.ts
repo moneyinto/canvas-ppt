@@ -74,6 +74,29 @@ export class Contextmenu {
             },
             { divider: true, hide: selectedElement },
             {
+                text: "新建页面",
+                subText: `${isMac ? "⌘" : "Ctrl"} + M`,
+                handler: () => {
+                    emitter.emit(EmitterEvents.ADD_EMPTY_SLIDE);
+                }
+            },
+            {
+                text: "复制页面",
+                subText: `${isMac ? "⌘" : "Ctrl"} + D`,
+                handler: () => {
+                    emitter.emit(EmitterEvents.COPY_SLIDE);
+                    emitter.emit(EmitterEvents.PASTE_SLIDE);
+                }
+            },
+            {
+                text: "删除页面",
+                subText: "⌫",
+                handler: () => {
+                    emitter.emit(EmitterEvents.DELETE_SLIDE);
+                }
+            },
+            { divider: true, hide: selectedElement },
+            {
                 text: "背景设置",
                 icon: "background",
                 handler: () => {

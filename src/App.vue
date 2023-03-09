@@ -198,6 +198,7 @@ nextTick(() => {
         emitter.on(EmitterEvents.ADD_EMPTY_SLIDE, addPPT);
         emitter.on(EmitterEvents.COPY_SLIDE, copySlide);
         emitter.on(EmitterEvents.CUT_SLIDE, cutSlide);
+        emitter.on(EmitterEvents.DELETE_SLIDE, deleteSlide);
         emitter.on(EmitterEvents.PASTE_SLIDE, pasteSlide);
     }
 
@@ -286,6 +287,7 @@ onUnmounted(() => {
     emitter.off(EmitterEvents.ADD_EMPTY_SLIDE, addPPT);
     emitter.off(EmitterEvents.COPY_SLIDE, copySlide);
     emitter.off(EmitterEvents.CUT_SLIDE, cutSlide);
+    emitter.off(EmitterEvents.DELETE_SLIDE, deleteSlide);
     emitter.off(EmitterEvents.PASTE_SLIDE, pasteSlide);
     emitter.off(EmitterEvents.SHOW_PANELS, openPanel);
 });
