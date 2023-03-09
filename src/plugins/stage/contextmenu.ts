@@ -4,6 +4,8 @@ import { createVNode, render } from "vue";
 import { IContextmenuItem } from "../types/contextmenu";
 import Command from "../command";
 import StageConfig from "./config";
+import emitter, { EmitterEvents } from "@/utils/emitter";
+import { PANELS } from "@/utils/panel";
 
 export class Contextmenu {
     private _command: Command;
@@ -68,6 +70,15 @@ export class Contextmenu {
                 subText: `${isMac ? "⌘" : "Ctrl"} + A`,
                 handler: () => {
                     this._command.executeSelectAll();
+                }
+            },
+            { divider: true, hide: selectedElement },
+            {
+                text: "背景设置",
+                icon: "background",
+                handler: () => {
+                    emitter.emit(EmitterEvents.SHOW_PANELS, true);
+                    emitter.emit(EmitterEvents.PANELS_TYPE, PANELS.BACKGROUND);
                 }
             },
             { divider: true, hide: !selectedElement },
