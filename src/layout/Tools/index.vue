@@ -15,9 +15,10 @@
         <a-divider class="ppt-tool-divider" v-if="showTextEidt" type="vertical" />
         <TextEdit v-if="showTextEidt" :elements="elements" />
 
-        <a-divider class="ppt-tool-divider" v-if="showFillColor || showBorder" type="vertical" />
+        <a-divider class="ppt-tool-divider" type="vertical" />
         <Border v-if="showBorder || showTextEidt" :elements="elements" />
         <FillColor v-if="showFillColor || showTextEidt" :elements="elements" />
+        <Shadow :elements="elements" />
 
         <a-divider class="ppt-tool-divider" v-if="showImageEdit" type="vertical" />
         <ImageEdit :elements="elements" v-if="showImageEdit" />
@@ -34,6 +35,7 @@ import AddPPT from "./AddPPT.vue";
 import Edit from "./Edit.vue";
 import Insert from "./Insert.vue";
 import FillColor from "./FillColor.vue";
+import Shadow from "./Shadow.vue";
 import Evert from "./Evert.vue";
 import Border from "./Border.vue";
 import TextEdit from "./TextEdit/index.vue";

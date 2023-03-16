@@ -20,6 +20,7 @@ import { Cursor } from "../stage/cursor";
 import {
     IPPTElement,
     IPPTElementOutline,
+    IPPTElementShadow,
     IPPTLineElement,
     IPPTTextElement
 } from "../types/element";
@@ -245,6 +246,25 @@ export default class Command {
             }
         }
         this.executeUpdateRender(newElements, true);
+    }
+
+    // 设置阴影
+    public executeShadow(shadow: IPPTElementShadow | undefined) {
+        const operateElements = this._stageConfig.operateElements;
+        const newElements: IPPTElement[] = [];
+        for (const operateElement of operateElements) {
+            if (operateElement) {
+                const newElement = {
+                    ...operateElement,
+                    shadow
+                };
+                newElements.push(newElement);
+            }
+        }
+
+        this.executeUpdateRender(newElements);
+
+        this._debounceLog();
     }
 
     // 设置填充色

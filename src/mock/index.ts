@@ -16,6 +16,12 @@ export const slides: ISlide[] = [
                 height: 242.39713774597493,
                 fill: "#5b9bd5",
                 fixedRatio: false,
+                shadow: {
+                    h: 2,
+                    v: 2,
+                    blur: 5,
+                    color: "#000000"
+                },
                 rotate: 0,
                 flipV: -1
             },

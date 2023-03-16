@@ -2,15 +2,18 @@ import { SHAPE_TYPE } from "@/plugins/config/shapes";
 import { IPPTShapeElement } from "@/plugins/types/element";
 import StageConfig from "../config";
 import { OutLine } from "./outline";
+import { Shadow } from "./shadow";
 
 export class Shape {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
     private _outline: OutLine;
+    private _shadow: Shadow;
     constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
         this._outline = new OutLine(this._ctx);
+        this._shadow = new Shadow(this._ctx);
     }
 
     public draw(element: IPPTShapeElement) {
@@ -32,9 +35,13 @@ export class Shape {
         // 水平垂直翻转
         this._ctx.scale(element.flipH || 1, element.flipV || 1);
 
-        this._ctx.fillStyle = element.fill || "transparent";
-        this._ctx.globalAlpha = (100 - (element.opacity || 0)) / 100;
         const path = this.getPath(element.shape, element.width, element.height);
+
+        if (element.shadow) {
+            this._shadow.draw(element.shadow);
+        }
+
+        this._ctx.fillStyle = element.fill || "transparent";
         this._ctx.fill(path);
 
         if (element.outline) {

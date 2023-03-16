@@ -254,6 +254,7 @@ export interface IPPTImageElement extends IPPTBaseElement {
     flipV?: 1 | -1;
     outline?: IPPTElementOutline;
     opacity?: number;
+    shadow?: IPPTElementShadow;
 }
 
 export interface IPPTTextElement extends IPPTBaseElement {
@@ -266,6 +267,7 @@ export interface IPPTTextElement extends IPPTBaseElement {
     fill?: string;
     outline?: IPPTElementOutline;
     opacity?: number;
+    shadow?: IPPTElementShadow;
 }
 
 export type IPPTElement = IPPTShapeElement | IPPTLineElement | IPPTImageElement | IPPTTextElement;

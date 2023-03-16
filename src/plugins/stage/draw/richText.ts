@@ -3,17 +3,20 @@ import { IPPTTextElement } from "@/plugins/types/element";
 import { IFontData } from "@/plugins/types/font";
 import StageConfig, { TEXT_MARGIN } from "../config";
 import { OutLine } from "./outline";
+import { Shadow } from "./shadow";
 import { Shape } from "./shape";
 
 export class RichText {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
     private _outline: OutLine;
+    private _shadow: Shadow;
     private _shape: Shape;
     constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
         this._outline = new OutLine(this._ctx);
+        this._shadow = new Shadow(this._ctx);
         this._shape = new Shape(this._stageConfig, this._ctx);
     }
 
@@ -85,6 +88,10 @@ export class RichText {
         if (element.outline) {
             const path = this._shape.getPath(SHAPE_TYPE.RECT, element.width, element.height);
             this._outline.draw(element.outline, path);
+        }
+
+        if (element.shadow) {
+            this._shadow.draw(element.shadow);
         }
 
         // 平移到矩形左上角点位

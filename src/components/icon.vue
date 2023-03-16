@@ -69,7 +69,8 @@ const icons: { [key: string]: string } = {
     opacity: new URL("@/assets/icons/opacity.svg", import.meta.url).href,
     allSelect: new URL("@/assets/icons/allSelect.svg", import.meta.url).href,
     background: new URL("@/assets/icons/background.svg", import.meta.url).href,
-    close: new URL("@/assets/icons/close.svg", import.meta.url).href
+    close: new URL("@/assets/icons/close.svg", import.meta.url).href,
+    shadow: new URL("@/assets/icons/shadow.svg", import.meta.url).href
 };
 
 const iconUrl = computed(() => icons[icon.value]);

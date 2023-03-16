@@ -8,6 +8,7 @@ export class OutLine {
 
     public draw(outline: IPPTElementOutline, path: Path2D) {
         if (outline) {
+            this._ctx.save();
             this._ctx.globalAlpha = (100 - (outline.opacity || 0)) / 100;
             const lineWidth = outline.width || 2;
             this._ctx.lineWidth = lineWidth;
@@ -19,6 +20,7 @@ export class OutLine {
                 ]);
             }
             this._ctx.stroke(path);
+            this._ctx.restore();
         }
     }
 }

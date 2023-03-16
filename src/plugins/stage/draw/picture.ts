@@ -1,13 +1,16 @@
 import { ICacheImage } from "@/plugins/types";
 import { IPPTImageElement } from "@/plugins/types/element";
 import StageConfig from "../config";
+import { Shadow } from "./shadow";
 
 export class Picture {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
+    private _shadow: Shadow;
     constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
+        this._shadow = new Shadow(this._ctx);
     }
 
     private _getCacheImage(element: IPPTImageElement): Promise<ICacheImage> {
@@ -49,6 +52,11 @@ export class Picture {
             this._ctx.translate(ox, oy);
             // 旋转画布
             this._ctx.rotate((element.rotate / 180) * Math.PI);
+
+            if (element.shadow) {
+                this._shadow.draw(element.shadow);
+            }
+
             // 设置透明度
             this._ctx.globalAlpha = (100 - (element.opacity || 0)) / 100;
 
@@ -65,6 +73,7 @@ export class Picture {
                 }
                 this._ctx.drawImage(image, -viewWidth / 2, -viewHeight / 2, viewWidth, viewHeight);
             }
+
             this._ctx.restore();
         }
     }
