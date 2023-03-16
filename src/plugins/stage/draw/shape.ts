@@ -38,7 +38,7 @@ export class Shape {
         const path = this.getPath(element.shape, element.width, element.height);
 
         if (element.shadow) {
-            this._shadow.draw(element.shadow);
+            this._shadow.draw(element.shadow, zoom);
         }
 
         this._ctx.fillStyle = element.fill || "transparent";

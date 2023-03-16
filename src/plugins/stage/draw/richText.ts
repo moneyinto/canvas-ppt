@@ -91,7 +91,7 @@ export class RichText {
         }
 
         if (element.shadow) {
-            this._shadow.draw(element.shadow);
+            this._shadow.draw(element.shadow, zoom);
         }
 
         // 平移到矩形左上角点位

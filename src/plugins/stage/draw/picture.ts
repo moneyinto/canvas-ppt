@@ -54,7 +54,7 @@ export class Picture {
             this._ctx.rotate((element.rotate / 180) * Math.PI);
 
             if (element.shadow) {
-                this._shadow.draw(element.shadow);
+                this._shadow.draw(element.shadow, zoom);
             }
 
             // 设置透明度

@@ -6,11 +6,11 @@ export class Shadow {
         this._ctx = ctx;
     }
 
-    public draw(shadow: IPPTElementShadow) {
+    public draw(shadow: IPPTElementShadow, zoom: number) {
         if (shadow) {
-            this._ctx.shadowOffsetX = shadow.h;
-            this._ctx.shadowOffsetY = shadow.v;
-            this._ctx.shadowBlur = shadow.blur;
+            this._ctx.shadowOffsetX = shadow.h * zoom;
+            this._ctx.shadowOffsetY = shadow.v * zoom;
+            this._ctx.shadowBlur = shadow.blur * zoom;
             this._ctx.shadowColor = shadow.color;
         }
     }
