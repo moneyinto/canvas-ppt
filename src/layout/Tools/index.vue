@@ -15,10 +15,10 @@
         <a-divider class="ppt-tool-divider" v-if="showTextEidt" type="vertical" />
         <TextEdit v-if="showTextEidt" :elements="elements" />
 
-        <a-divider class="ppt-tool-divider" type="vertical" />
+        <a-divider class="ppt-tool-divider" v-if="showBorder || showTextEidt || showShadowColor" type="vertical" />
         <Border v-if="showBorder || showTextEidt" :elements="elements" />
         <FillColor v-if="showFillColor || showTextEidt" :elements="elements" />
-        <Shadow :elements="elements" />
+        <Shadow v-if="showShadowColor" :elements="elements" />
 
         <a-divider class="ppt-tool-divider" v-if="showImageEdit" type="vertical" />
         <ImageEdit :elements="elements" v-if="showImageEdit" />
@@ -52,6 +52,7 @@ const props = defineProps({
 
 const showFillColor = ref(false);
 const showBorder = ref(false);
+const showShadowColor = ref(false);
 const showEvert = ref(false);
 const showAlign = ref(false);
 const showTextEidt = ref(false);
@@ -63,6 +64,7 @@ watch(elements, () => {
     if (elements.value.length > 0) {
         showFillColor.value = elements.value.filter(element => element.type === "shape").length > 0;
         showBorder.value = elements.value.filter(element => element.type === "shape").length > 0;
+        showShadowColor.value = elements.value.filter(element => element.type !== "line").length > 0;
         showEvert.value = elements.value.filter(element => element.type === "shape").length > 0;
         showTextEidt.value = elements.value.filter(element => element.type === "text").length > 0;
         showImageEdit.value = elements.value.filter(element => element.type === "image").length > 0;
@@ -70,6 +72,7 @@ watch(elements, () => {
     } else {
         showFillColor.value = false;
         showBorder.value = false;
+        showShadowColor.value = false;
         showEvert.value = false;
         showTextEidt.value = false;
         showAlign.value = false;
