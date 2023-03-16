@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="/public/favicon-192x192.png" />
+    <img src="./public/favicon-192x192.png" />
 </p>
 
 <p align="center">
@@ -19,6 +19,9 @@
 
 # CANVAS-PPT
 > 一个基于Vue3.x + Typescript + canvas实现的在线演示文稿。
+
+# 项目展示
+![](./public/demo.jpeg)
 
 # 项目运行
 ```
