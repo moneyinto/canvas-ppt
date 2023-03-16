@@ -103,6 +103,7 @@ npm run dev
 #### 表格
 
 #### 视频
+- [x] [研究canvas播放视频](https://github.com/moneyinto/canvas-video)
 
 #### 音频
 
