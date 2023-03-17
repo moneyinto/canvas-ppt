@@ -1,23 +1,21 @@
 import { SHAPE_TYPE } from "@/plugins/config/shapes";
 import { IPPTTextElement } from "@/plugins/types/element";
 import { IFontData } from "@/plugins/types/font";
+import { getShapePath } from "@/utils/shape";
 import StageConfig, { TEXT_MARGIN } from "../config";
 import { OutLine } from "./outline";
 import { Shadow } from "./shadow";
-import { Shape } from "./shape";
 
 export class RichText {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
     private _outline: OutLine;
     private _shadow: Shadow;
-    private _shape: Shape;
     constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
         this._outline = new OutLine(this._ctx);
         this._shadow = new Shadow(this._ctx);
-        this._shape = new Shape(this._stageConfig, this._ctx);
     }
 
     private _drawStrikout(text: IFontData, x: number, y: number, fontHeight: number, lineHeight: number, wordSpace: number) {
@@ -81,12 +79,12 @@ export class RichText {
         if (element.fill) {
             this._ctx.fillStyle = element.fill || "transparent";
             this._ctx.globalAlpha = (100 - (element.opacity || 0)) / 100;
-            const path = this._shape.getPath(SHAPE_TYPE.RECT, element.width, element.height);
+            const path = getShapePath(SHAPE_TYPE.RECT, element.width, element.height);
             this._ctx.fill(path);
         }
 
         if (element.outline) {
-            const path = this._shape.getPath(SHAPE_TYPE.RECT, element.width, element.height);
+            const path = getShapePath(SHAPE_TYPE.RECT, element.width, element.height);
             this._outline.draw(element.outline, path);
         }
 
