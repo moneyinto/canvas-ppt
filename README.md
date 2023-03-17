@@ -111,6 +111,7 @@ npm run dev
 #### 音频
 
 #### 公式
+- [x] [研究公式](https://github.com/moneyinto/vue-mathJax)
 
 ### 幻灯片放映
 
