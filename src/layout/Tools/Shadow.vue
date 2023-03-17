@@ -164,7 +164,6 @@ const setShadow = () => {
 
 const setShadowColor = (color?: string, noClose?: boolean) => {
     if (color) {
-        console.log(color);
         currentColor.value = color;
         setShadow();
     } else {

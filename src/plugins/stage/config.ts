@@ -1,4 +1,5 @@
 import { deepClone } from "@/utils";
+import { getShapePath } from "@/utils/shape";
 import { baseFontConfig } from "../config/font";
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import Listener from "../listener";
@@ -340,7 +341,7 @@ export default class StageConfig {
     }
 
     // 获取鼠标位置的元素
-    public getMouseInElement(left: number, top: number) {
+    public getMouseInElement(left: number, top: number, ctx: CanvasRenderingContext2D) {
         // 当存在操作选中元素是时，因为选中元素处于层级最高，优先判断选中元素
         // if (this.operateElement) {
         //     const element = this.operateElement;
@@ -406,7 +407,7 @@ export default class StageConfig {
                     element.width,
                     element.height
                 ];
-                return this.checkPointInRect(
+                const isInRect = this.checkPointInRect(
                     left,
                     top,
                     rect,
@@ -414,6 +415,28 @@ export default class StageConfig {
                     cy,
                     (element.rotate / 180) * Math.PI
                 );
+
+                if (element.type === "shape" && isInRect) {
+                    const path = getShapePath(element.shape, element.width, element.height);
+                    ctx.save();
+                    // 缩放画布
+                    // ctx.scale(this.zoom, this.zoom);
+                    const { x, y } = this.getStageOrigin();
+                    const ox = x + element.left + element.width / 2;
+                    const oy = y + element.top + element.height / 2;
+
+                    // 平移坐标原点
+                    ctx.translate(ox, oy);
+                    // // 旋转画布
+                    ctx.rotate((element.rotate / 180) * Math.PI);
+                    // // 水平垂直翻转
+                    ctx.scale(element.flipH || 1, element.flipV || 1);
+                    const isPointInPath = ctx.isPointInPath(path, left + x, top + y);
+                    ctx.restore();
+                    return isPointInPath;
+                }
+
+                return isInRect;
             }
         });
     }

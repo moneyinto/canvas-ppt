@@ -122,7 +122,8 @@ export default class ControlStage extends Stage {
         const { left, top } = this._getMousePosition(evt);
         const operateElement = this.stageConfig.getMouseInElement(
             left,
-            top
+            top,
+            this.ctx
         );
         if (operateElement && operateElement.type === "text") {
             // 点击位置坐标
@@ -190,7 +191,8 @@ export default class ControlStage extends Stage {
             } else {
                 const operateElement = this.stageConfig.getMouseInElement(
                     left,
-                    top
+                    top,
+                    this.ctx
                 );
 
                 // 右击菜单会触发mousedown事件，这里延迟取消文本选中
@@ -579,7 +581,8 @@ export default class ControlStage extends Stage {
         if (!this.stageConfig.opreateType) {
             const hoverElement = this.stageConfig.getMouseInElement(
                 left,
-                top
+                top,
+                this.ctx
             );
 
             if (hoverElement) {
