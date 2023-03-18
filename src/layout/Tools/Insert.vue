@@ -1,8 +1,22 @@
 <template>
     <div class="ppt-edit-tools">
         <a-tooltip title="插入图片">
-            <FileInput class="ppt-tool-btn" @change="insertImage">
+            <FileInput
+                class="ppt-tool-btn"
+                accept="image/*"
+                @change="insertImage"
+            >
                 <PPTIcon icon="image" :size="28" />
+            </FileInput>
+        </a-tooltip>
+
+        <a-tooltip title="插入视频">
+            <FileInput
+                class="ppt-tool-btn"
+                accept="video/*"
+                @change="insertVideo"
+            >
+                <PPTIcon icon="video" :size="28" />
             </FileInput>
         </a-tooltip>
 
@@ -92,7 +106,7 @@ import { SHAPE_LIST } from "@/plugins/config/shapes";
 import { ILineItem, IShapeItem } from "@/plugins/types/shape";
 import { inject, ref, Ref, watch } from "vue";
 import { ICreatingType } from "@/plugins/types/element";
-import { createImageElement } from "@/utils/create";
+import { createImageElement, createVideoElement } from "@/utils/create";
 
 const showShapePool = ref(false);
 const hoverShapePool = ref(false);
@@ -156,6 +170,25 @@ const insertImage = (files: File[]) => {
         false
     );
     reader.readAsDataURL(imageFile);
+};
+
+const insertVideo = (files: File[]) => {
+    const videoFile = files[0];
+    if (!videoFile) return;
+    const reader = new FileReader();
+    reader.addEventListener(
+        "load",
+        () => {
+            const element = createVideoElement(
+                300,
+                200,
+                window.URL.createObjectURL(new Blob([reader.result as ArrayBuffer]))
+            );
+            instance?.value.command.executeAddRender([element]);
+        },
+        false
+    );
+    reader.readAsArrayBuffer(videoFile);
 };
 </script>
 

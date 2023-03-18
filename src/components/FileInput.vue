@@ -1,12 +1,21 @@
 <template>
     <div class="file-input-container" @click="openFileInput">
-        <input type="file" class="file-input" ref="inputRef" @change="onInputChange" />
+        <input type="file" :accept="accept" class="file-input" ref="inputRef" @change="onInputChange" />
         <slot />
     </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, toRefs } from "vue";
+
+const props = defineProps({
+    accept: {
+        type: String,
+        default: ""
+    }
+});
+
+const { accept } = toRefs(props);
 
 const emit = defineEmits(["change"]);
 

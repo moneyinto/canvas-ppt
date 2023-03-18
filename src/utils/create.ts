@@ -5,7 +5,8 @@ import {
     IPPTImageElement,
     IPPTLineElement,
     IPPTShapeElement,
-    IPPTTextElement
+    IPPTTextElement,
+    IPPTVideoElement
 } from "../plugins/types/element";
 import { baseFontConfig } from "@/plugins/config/font";
 
@@ -131,6 +132,24 @@ export const createImageElement = (width: number, height: number, src: string) =
         streach: 0,
         width: resultWidth,
         height: resultHeight,
+        src
+    };
+
+    return newElement;
+};
+
+export const createVideoElement = (width: number, height: number, src: string) => {
+    const id = createRandomCode();
+    const name = "视频";
+    const newElement: IPPTVideoElement = {
+        name,
+        type: "video",
+        id,
+        left: 0,
+        top: 0,
+        rotate: 0,
+        width,
+        height,
         src
     };
 

@@ -27,7 +27,7 @@ export interface IElementPosition {
  */
 interface IPPTBaseElement {
     id: string;
-    name: string,
+    name: string;
     left: number;
     top: number;
     groupId?: string;
@@ -117,7 +117,7 @@ export interface IShapeText {
  * fill: 填充，不存在渐变时生效
  *
  * rotate: 旋转角度
- * 
+ *
  * gradient?: 渐变，该属性存在时将优先作为填充
  *
  * outline?: 边框
@@ -167,7 +167,8 @@ export interface IPPTShapeElement extends IPPTBaseElement {
  * borderWidth: 线粗
  */
 
-export interface IPPTLineElement extends Omit<IPPTBaseElement, "height" | "width"> {
+export interface IPPTLineElement
+    extends Omit<IPPTBaseElement, "height" | "width"> {
     type: "line";
     start: [number, number];
     end: [number, number];
@@ -257,11 +258,34 @@ export interface IPPTImageElement extends IPPTBaseElement {
     shadow?: IPPTElementShadow;
 }
 
+/**
+ * 文本元素
+ *
+ * type: 元素类型 (text)
+ *
+ * content: 文本内容 
+ *
+ * wordSpace: 间距
+ *
+ * lineHeight: 行高
+ *
+ * rotate: 旋转角度
+ *
+ * align: 对齐方式
+ *
+ * fill?: 填充色
+ *
+ * outline?: 边框
+ *
+ * opacity?: 不透明度，默认100（%）
+ *
+ * shadow?: 阴影
+ */
 export interface IPPTTextElement extends IPPTBaseElement {
     type: "text";
     content: IFontData[];
-    wordSpace: number,
-    lineHeight: number,
+    wordSpace: number;
+    lineHeight: number;
     rotate: number;
     align: "left" | "center" | "right";
     fill?: string;
@@ -270,7 +294,28 @@ export interface IPPTTextElement extends IPPTBaseElement {
     shadow?: IPPTElementShadow;
 }
 
-export type IPPTElement = IPPTShapeElement | IPPTLineElement | IPPTImageElement | IPPTTextElement;
+/**
+ * 视频元素
+ *
+ * type: 元素类型 (video)
+ *
+ * src: 视频地址
+ *
+ * rotate: 旋转角度
+ *
+ */
+export interface IPPTVideoElement extends IPPTBaseElement {
+    type: "video";
+    src: string;
+    rotate: number;
+}
+
+export type IPPTElement =
+    | IPPTShapeElement
+    | IPPTLineElement
+    | IPPTImageElement
+    | IPPTTextElement
+    | IPPTVideoElement;
 
 export interface ICreatingTextElement {
     type: "text";
@@ -288,4 +333,7 @@ export interface ICreatingLineElement {
 
 export type ICreatingType = "text" | "shape" | "line";
 
-export type ICreatingElement = ICreatingTextElement | ICreatingShapeElement | ICreatingLineElement;
+export type ICreatingElement =
+    | ICreatingTextElement
+    | ICreatingShapeElement
+    | ICreatingLineElement;
