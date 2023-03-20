@@ -29,3 +29,14 @@ body {
         opacity: 0;
     }
 }
+
+.full-screen-video {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000000;
+    z-index: 10000 !important;
+    visibility: visible !important;
+}

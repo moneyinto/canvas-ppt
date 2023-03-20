@@ -129,7 +129,7 @@ export default class Video {
             this._renderPauseBtn(video, element.height);
             this._renderProgress(video, element.width, element.height);
             this._renderTime(video, element.height);
-            // this._renderFullScreen(element.width, element.height);
+            this._renderFullScreen(element.width, element.height);
         }
 
         this._ctx.restore();

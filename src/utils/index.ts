@@ -133,3 +133,29 @@ export const fomatTime = (time: number) => {
         .toString()
         .padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 };
+
+export const enterFullScreen = () => {
+    const docElm: any = document.documentElement;
+    if (docElm.requestFullscreen) {
+        docElm.requestFullscreen();
+    } else if (docElm.mozRequestFullScreen) {
+        docElm.mozRequestFullScreen();
+    } else if (docElm.webkitRequestFullscreen) {
+        docElm.webkitRequestFullScreen();
+    } else if (docElm.msRequestFullscreen) {
+        docElm.msRequestFullscreen();
+    }
+};
+
+export const exitFullScreen = () => {
+    const dom: any = document;
+    if (dom.exitFullscreen) dom.exitFullscreen();
+    else if (dom.mozCancelFullScreen) dom.mozCancelFullScreen();
+    else if (dom.webkitCancelFullScreen) dom.webkitCancelFullScreen();
+    else if (dom.msExitFullscreen) dom.msExitFullscreen();
+};
+
+export const isFullScreen = () => {
+    const dom: any = document;
+    return !!(dom.mozFullScreen || dom.webkitIsFullScreen || dom.webkitFullScreen || dom.msFullScreen);
+};

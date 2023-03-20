@@ -1,6 +1,6 @@
 import Stage from ".";
 import StageConfig, { TEXT_MARGIN } from "./config";
-import { throttleRAF, deepClone, normalizeAngle } from "@/utils";
+import { throttleRAF, deepClone, normalizeAngle, exitFullScreen, isFullScreen } from "@/utils";
 import Command from "../command";
 import {
     createLineElement,
@@ -43,6 +43,7 @@ export default class ControlStage extends Stage {
     private _textClick: IMouseClick | null;
     private _debounceSelectArea: null | number;
     private _videoControlType = "";
+    private _videoElement: IPPTVideoElement | null = null;
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
@@ -118,6 +119,11 @@ export default class ControlStage extends Stage {
             this._mouseLeave.bind(this),
             false
         );
+        window.addEventListener("resize", () => {
+            if (!isFullScreen()) {
+                this._exitFullScreen();
+            }
+        });
     }
 
     private _dblClick(evt: MouseEvent) {
@@ -159,6 +165,22 @@ export default class ControlStage extends Stage {
         }
     }
 
+    private _enterFullScreen(element: IPPTVideoElement) {
+        this._videoElement = element;
+        const video = document.getElementById(element.id) as HTMLVideoElement;
+        video.classList.add("full-screen-video");
+        video.requestFullscreen();
+        video.controls = true;
+    }
+
+    private _exitFullScreen() {
+        const element = this._videoElement!;
+        this._videoElement = null;
+        const video = document.getElementById(element.id) as HTMLVideoElement;
+        video.classList.remove("full-screen-video");
+        video.controls = false;
+    }
+
     private _mousedown(evt: MouseEvent, isContextmenu?: boolean) {
         this._canMoveCanvas = !this.stageConfig.insertElement;
         this._canCreate = !!this.stageConfig.insertElement;
@@ -195,7 +217,7 @@ export default class ControlStage extends Stage {
                     }, 100);
                 } else if (this._videoControlType === "FULLSCREEN_BTN") {
                     // 全屏
-                    // this._enterFullScreen(hoverElement);
+                    this._enterFullScreen(hoverElement);
                 }
             }
             return;
@@ -996,8 +1018,8 @@ export default class ControlStage extends Stage {
 
         return {
             PLAY_PAUSE_BTN,
-            PROGRESS_LINE
-            // FULLSCREEN_BTN
+            PROGRESS_LINE,
+            FULLSCREEN_BTN
         };
     }
 

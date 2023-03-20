@@ -107,6 +107,10 @@ npm run dev
 
 #### 视频
 - [x] [研究canvas播放视频](https://github.com/moneyinto/canvas-video)
+- [x] 视频渲染
+- [x] 视频播放暂停
+- [x] 视频进度点击调整
+- [x] 简单的视频全屏播放（直接使用video自带的全屏）
 
 #### 音频
 
