@@ -28,7 +28,7 @@ export class Contextmenu {
         const isMac = checkIsMac();
         const operateElements = this._stageConfig.operateElements;
         const selectedElement = operateElements.length > 0;
-        const canFlip = operateElements.filter(element => (element.type === "line" || element.type === "video")).length === 0;
+        const canFlip = operateElements.filter(element => (element.type === "line" || element.type === "video" || element.type === "text")).length === 0;
         const isTextCutCopyDisabled = () => {
             if (operateElements.length > 0 && operateElements.filter(element => element.type === "text").length > 0 && this._stageConfig.textFocus) {
                 return !this._stageConfig.selectArea;
