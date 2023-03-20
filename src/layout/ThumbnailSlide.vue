@@ -15,6 +15,7 @@ import { VIEWRATIO } from "@/plugins/config/stage";
 import { ISlide } from "@/plugins/types/slide";
 import Thumbnail from "@/plugins/screen/thumbnail";
 import emitter, { EmitterEvents } from "@/utils/emitter";
+import { sleep } from "@/utils";
 
 const props = defineProps({
     size: {
@@ -23,6 +24,10 @@ const props = defineProps({
     },
     slide: {
         type: Object as PropType<ISlide>,
+        required: true
+    },
+    index: {
+        type: Number,
         required: true
     }
 });
@@ -40,8 +45,13 @@ const updateSlide = (updateSlide: ISlide) => {
     }
 };
 
-nextTick(() => {
+nextTick(async () => {
     if (thumbnail.value) {
+        // 缩略图存在第一位置，且有视频，初始化存在问题！！
+        // 索引值如果为0，且存在视频元素，这里缩略进行延缓加载处理
+        if (props.index === 0 && slide.value.elements.filter(element => element.type === "video").length > 0) {
+            await sleep(500);
+        }
         instance = new Thumbnail(thumbnail.value, slide.value);
 
         emitter.on(EmitterEvents.UPDATE_THUMBNAIL, updateSlide);

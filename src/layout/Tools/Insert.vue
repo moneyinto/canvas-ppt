@@ -182,13 +182,15 @@ const insertVideo = (files: File[]) => {
             const element = createVideoElement(
                 300,
                 200,
-                window.URL.createObjectURL(new Blob([reader.result as ArrayBuffer]))
+                reader.result as string
+                // window.URL.createObjectURL(new Blob([reader.result as ArrayBuffer]))
             );
             instance?.value.command.executeAddRender([element]);
         },
         false
     );
-    reader.readAsArrayBuffer(videoFile);
+    reader.readAsDataURL(videoFile);
+    // reader.readAsArrayBuffer(videoFile);
 };
 </script>
 

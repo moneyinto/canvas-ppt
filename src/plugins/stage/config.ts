@@ -20,6 +20,10 @@ export default class StageConfig {
     public opreateType: string; // 元素操作形式 拉伸方向 旋转
     public cacheImages: ICacheImage[];
     public cacheBackgroundImage: HTMLImageElement | undefined;
+    public cacheVideo: Map<string, HTMLVideoElement>;
+
+    public isFullScreen = false;
+    public autoVideoRender = false;
 
     public slides: ISlide[] = [];
     public slideId = "";
@@ -53,6 +57,7 @@ export default class StageConfig {
         this.opreateType = "";
         this.cacheImages = [];
         this.cacheBackgroundImage = undefined;
+        this.cacheVideo = new Map();
 
         this.resetDrawView = null;
         this.resetDrawOprate = null;
@@ -616,5 +621,20 @@ export default class StageConfig {
             };
         }
         return undefined;
+    }
+
+    startVideoRender() {
+        this.autoVideoRender = true;
+        window.requestAnimationFrame(() => {
+            if (this.autoVideoRender) {
+                this.resetCheckDrawView();
+                this.startVideoRender();
+            }
+        });
+    }
+
+    stopVideoRender() {
+        this.autoVideoRender = false;
+        this.resetCheckDrawView();
     }
 }

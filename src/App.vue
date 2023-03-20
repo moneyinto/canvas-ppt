@@ -25,6 +25,7 @@
                         draggable="true"
                         :size="150"
                         :slide="slide"
+                        :index="index"
                     />
 
                     <div

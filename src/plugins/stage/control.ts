@@ -10,7 +10,8 @@ import {
 import {
     IPPTElement,
     IPPTLineElement,
-    IPPTTextElement
+    IPPTTextElement,
+    IPPTVideoElement
 } from "../types/element";
 import { ELEMENT_RESIZE, THEME_COLOR } from "../config/stage";
 import { IElementOptions, IMouseClick, IRectParameter, IRects } from "../types";
@@ -41,6 +42,7 @@ export default class ControlStage extends Stage {
     private _contextmenu: Contextmenu;
     private _textClick: IMouseClick | null;
     private _debounceSelectArea: null | number;
+    private _videoControlType = "";
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
@@ -163,6 +165,42 @@ export default class ControlStage extends Stage {
         this._startPoint = [evt.pageX, evt.pageY];
         const { left, top } = this._getMousePosition(evt);
         this._startOriginPoint = [left, top];
+
+        if (this._videoControlType) {
+            const hoverElement = this.stageConfig.getMouseInElement(
+                left,
+                top,
+                this.ctx
+            ) as IPPTVideoElement;
+            if (hoverElement) {
+                const video = document.getElementById(hoverElement.id) as HTMLVideoElement;
+                // 视频实际操作
+                if (this._videoControlType === "PLAY_PAUSE_BTN") {
+                    // 播放与暂停
+                    if (video.paused) {
+                        video.play();
+                        video.onended = () => this.stageConfig.stopVideoRender();
+                        video.onpause = () => this.stageConfig.stopVideoRender();
+                        this.stageConfig.startVideoRender();
+                    } else {
+                        video.pause();
+                        this.stageConfig.stopVideoRender();
+                    }
+                } else if (this._videoControlType === "PROGRESS_LINE") {
+                    // 进度条
+                    const progress = (left - hoverElement.left - 15) / (hoverElement.width - 30);
+                    video.currentTime = video.duration * progress;
+                    setTimeout(() => {
+                        if (video.paused) this.stageConfig.resetCheckDrawView();
+                    }, 100);
+                } else if (this._videoControlType === "FULLSCREEN_BTN") {
+                    // 全屏
+                    // this._enterFullScreen(hoverElement);
+                }
+            }
+            return;
+        }
+
         if (!this.stageConfig.insertElement && !this.stageConfig.canMove) {
             if (
                 this.stageConfig.opreateType &&
@@ -449,6 +487,7 @@ export default class ControlStage extends Stage {
     private _hoverCursor(evt: MouseEvent, operateElements: IPPTElement[]) {
         const { left, top } = this._getMousePosition(evt);
         this.stageConfig.setOperateType("");
+        this._videoControlType = "";
 
         for (const operateElement of operateElements) {
             const zoom = this.stageConfig.zoom;
@@ -605,6 +644,36 @@ export default class ControlStage extends Stage {
 
                 if (this.container.style.cursor !== "text" && this.container.style.cursor !== "move") {
                     this.container.style.cursor = "move";
+                }
+
+                if (hoverElement.type === "video") {
+                    // 当元素是视频时，区分播放按钮 全屏按钮 进度条 悬浮状态
+                    const rects: IRects = this._getVideoElementControlPoints(
+                        hoverElement.left,
+                        hoverElement.top,
+                        hoverElement.width,
+                        hoverElement.height
+                    );
+
+                    const cx = hoverElement.left + hoverElement.width / 2;
+                    const cy = hoverElement.top + hoverElement.height / 2;
+
+                    for (const key in rects) {
+                        if (
+                            this.stageConfig.checkPointInRect(
+                                left,
+                                top,
+                                rects[key],
+                                cx,
+                                cy,
+                                (hoverElement.rotate / 180) * Math.PI
+                            )
+                        ) {
+                            this.container.style.cursor = "pointer";
+                            this._videoControlType = key;
+                            break;
+                        }
+                    }
                 }
             } else {
                 if (this.container.style.cursor !== "default") {
@@ -894,6 +963,41 @@ export default class ControlStage extends Stage {
         return {
             START,
             END
+        };
+    }
+
+    private _getVideoElementControlPoints(
+        x: number,
+        y: number,
+        elementWidth: number,
+        elementHeight: number
+    ) {
+        // 增加模糊值，来扩大选中区域
+        const PLAY_PAUSE_BTN: IRectParameter = [
+            x + 20 - 1,
+            y + elementHeight - 30 - 1,
+            11 + 2,
+            12 + 2
+        ];
+
+        const PROGRESS_LINE: IRectParameter = [
+            x + 15 - 1,
+            y + elementHeight - 45 - 1,
+            elementWidth - 30 + 2,
+            4 + 2
+        ];
+
+        const FULLSCREEN_BTN: IRectParameter = [
+            x + elementWidth - 32 - 1,
+            y + elementHeight - 30 - 1,
+            12 + 2,
+            12 + 2
+        ];
+
+        return {
+            PLAY_PAUSE_BTN,
+            PROGRESS_LINE
+            // FULLSCREEN_BTN
         };
     }
 

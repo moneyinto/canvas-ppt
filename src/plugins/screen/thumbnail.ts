@@ -25,8 +25,7 @@ export default class Thumbnail {
 
     private async _drawPage() {
         await this._background.draw(this._slide.background);
-
-        this._stage.drawElements(this._slide.elements);
+        this._stage.drawElements(this._slide.elements, true);
     }
 
     public updateSlide(slide: ISlide) {

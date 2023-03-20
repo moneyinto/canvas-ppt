@@ -6,4 +6,5 @@ export enum OPTION_TYPE {
     ADD_EMPTY_SLIDE = "ADD_EMPTY_SLIDE", // 新增页面
     PASTE_SLIDE = "PASTE_SLIDE", // 粘贴页面
     DELETE_SLIDE = "DELETE_SLIDE", // 删除页面
+    SORT_SLIDE = "SORT_SLIDE", // 页面排序
 }

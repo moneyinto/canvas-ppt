@@ -5,6 +5,7 @@ import { Line } from "./draw/line";
 import { RichText } from "./draw/richText";
 import { Shape } from "./draw/shape";
 import { Picture } from "./draw/picture";
+import Video from "./draw/video";
 
 export default class Stage {
     public canvas: HTMLCanvasElement;
@@ -12,10 +13,11 @@ export default class Stage {
     public stageConfig: StageConfig;
     public container: HTMLDivElement;
 
-    private _line: Line;
-    private _richText: RichText;
-    private _shape: Shape;
-    private _picture: Picture;
+    private _line: Line | null;
+    private _richText: RichText | null;
+    private _shape: Shape | null;
+    private _picture: Picture | null;
+    private _video: Video | null;
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
@@ -29,10 +31,11 @@ export default class Stage {
         this.ctx = ctx;
         this.canvas = canvas;
 
-        this._line = new Line(this.stageConfig, this.ctx);
-        this._richText = new RichText(this.stageConfig, this.ctx);
-        this._shape = new Shape(this.stageConfig, this.ctx);
-        this._picture = new Picture(this.stageConfig, this.ctx);
+        this._line = null;
+        this._richText = null;
+        this._shape = null;
+        this._picture = null;
+        this._video = null;
 
         if (resize) {
             window.addEventListener(
@@ -85,33 +88,42 @@ export default class Stage {
         this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     }
 
-    public drawElement(element: IPPTElement) {
+    public async drawElement(element: IPPTElement, isThumbnail?: boolean) {
         switch (element.type) {
             case "shape": {
+                if (!this._shape) this._shape = new Shape(this.stageConfig, this.ctx);
                 this._shape.draw(element);
                 break;
             }
             case "line": {
+                if (!this._line) this._line = new Line(this.stageConfig, this.ctx);
                 this._line.draw(element);
                 break;
             }
             case "image": {
+                if (!this._picture) this._picture = new Picture(this.stageConfig, this.ctx);
                 this._picture.draw(element);
                 break;
             }
             case "text": {
+                if (!this._richText) this._richText = new RichText(this.stageConfig, this.ctx);
                 this._richText.draw(element);
+                break;
+            }
+            case "video": {
+                if (!this._video) this._video = new Video(this.stageConfig, this.ctx);
+                await this._video.draw(element, !!isThumbnail);
                 break;
             }
         }
     }
 
-    public drawElements(elements: IPPTElement[]) {
-        elements.forEach(element => {
+    public drawElements(elements: IPPTElement[], isThumbnail?: boolean) {
+        elements.forEach(async element => {
             // if (!this.stageConfig.operateElement || this.stageConfig.operateElement.id !== element.id) {
             //     this.drawElement(element);
             // }
-            this.drawElement(element);
+            await this.drawElement(element, isThumbnail);
         });
     }
 }

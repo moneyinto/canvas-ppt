@@ -1,5 +1,6 @@
 import Editor from "@/plugins/editor";
 import { ISlide } from "@/plugins/types/slide";
+import { OPTION_TYPE } from "@/plugins/config/options";
 import { ref, Ref } from "vue";
 
 export default (
@@ -41,6 +42,7 @@ export default (
                     : sortIndex.value;
             viewSlides.value.splice(spliceIndex, 0, targetSlide);
             instance.value?.stageConfig.setSildes(viewSlides.value);
+            instance.value?.history.add(OPTION_TYPE.SORT_SLIDE);
             onDragEnd();
         }
     };
