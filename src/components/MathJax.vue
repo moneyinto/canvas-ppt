@@ -14,6 +14,10 @@ const props = defineProps({
     latex: {
         type: String,
         default: ""
+    },
+    previewLatex: {
+        type: String,
+        default: ""
     }
 });
 
@@ -22,6 +26,7 @@ let targetSvg: Node | null = null;
 const renderMathJax = () => {
     initMathJax({}, async () => {
         try {
+            if (!props.latex) return;
             const node = await window.MathJax.tex2svg(props.latex, {});
             const elsvg = node.firstElementChild;
             elsvg.removeAttribute("style");

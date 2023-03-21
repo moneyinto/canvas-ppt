@@ -5,7 +5,7 @@
                 <textarea v-model="latex" placeholder="请输入您的LaTeX表达式" ref="textareaRef"></textarea>
             </div>
             <div class="latex-preview" :class="!latex && 'empty'">
-                <MathJax ref="mathJaxRef" :latex="previewLatex" />
+                <MathJax ref="mathJaxRef" :latex="latex" :previewLatex="previewLatex" />
             </div>
         </div>
         <div class="latex-editor-panel">
