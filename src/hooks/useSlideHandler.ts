@@ -1,6 +1,6 @@
 import { ref, Ref } from "vue";
 import Editor from "@/plugins/editor";
-import { ISlide } from "@/plugins/types/slide";
+import { ISlide } from "@/types/slide";
 import { createRandomCode } from "@/utils/create";
 import {
     CLIPBOARD_STRING_TYPE,

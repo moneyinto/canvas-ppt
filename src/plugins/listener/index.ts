@@ -10,7 +10,7 @@ import {
     IOnFontUnderLineChange,
     IOnFontStrikoutChange,
     IOnFontFamilyChange
-} from "../types/listener";
+} from "@/types/listener";
 
 export default class Listener {
     public onZoomChange: IOnZoomChange | null;

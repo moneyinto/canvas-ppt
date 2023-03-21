@@ -102,8 +102,8 @@ import { KeyMap } from "./plugins/shortCut/keyMap";
 import { checkIsMac } from "./utils";
 import useSlideHandler from "@/hooks/useSlideHandler";
 import useSlideSort from "@/hooks/useSlideSort";
-import { ISlide } from "./plugins/types/slide";
-import { IPPTElement } from "./plugins/types/element";
+import { ISlide } from "./types/slide";
+import { IPPTElement } from "./types/element";
 
 const pptRef = ref<HTMLDivElement>();
 const zoom = ref(1);

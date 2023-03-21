@@ -1,7 +1,7 @@
 import Listener from "../listener";
 import StageConfig from "../stage/config";
 import DB from "./db";
-import { ISlide } from "../types/slide";
+import { ISlide } from "@/types/slide";
 import { OPTION_TYPE } from "../config/options";
 
 interface IStorage {

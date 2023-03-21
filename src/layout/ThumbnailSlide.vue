@@ -12,7 +12,7 @@
 <script lang="ts" setup>
 import { computed, nextTick, onUnmounted, PropType, ref } from "vue";
 import { VIEWRATIO } from "@/plugins/config/stage";
-import { ISlide } from "@/plugins/types/slide";
+import { ISlide } from "@/types/slide";
 import Thumbnail from "@/plugins/screen/thumbnail";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 import { sleep } from "@/utils";

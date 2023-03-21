@@ -76,7 +76,7 @@
 import { THEME_COLOR } from "@/plugins/config/stage";
 import { inject, PropType, Ref, ref, watch } from "vue";
 import ColorBoard from "@/components/ColorBoard.vue";
-import { IPPTElement, IPPTShapeElement, IPPTTextElement } from "@/plugins/types/element";
+import { IPPTElement, IPPTShapeElement, IPPTTextElement } from "@/types/element";
 import { STORAGE_FILL_COLOR } from "@/utils/storage";
 import Editor from "@/plugins/editor";
 

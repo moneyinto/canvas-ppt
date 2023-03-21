@@ -1,7 +1,7 @@
 import { checkIsMac } from "@/utils";
 import Command from "../command";
 import StageConfig from "../stage/config";
-import { IRegisterShortcut } from "../types/shortcut";
+import { IRegisterShortcut } from "@/types/shortcut";
 import { KeyMap } from "./keyMap";
 import { ShortcutKeys } from "./keys";
 

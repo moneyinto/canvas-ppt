@@ -1,6 +1,6 @@
 import StageConfig from "./config";
 import { throttleRAF } from "@/utils";
-import { IPPTElement } from "../types/element";
+import { IPPTElement } from "@/types/element";
 import { Line } from "./draw/line";
 import { RichText } from "./draw/richText";
 import { Shape } from "./draw/shape";
@@ -114,6 +114,10 @@ export default class Stage {
                 if (!this._video) this._video = new Video(this.stageConfig, this.ctx);
                 await this._video.draw(element, !!isThumbnail);
                 break;
+            }
+            case "latex": {
+                if (!this._picture) this._picture = new Picture(this.stageConfig, this.ctx);
+                this._picture.draw(element);
             }
         }
     }

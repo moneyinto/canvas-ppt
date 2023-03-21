@@ -1,4 +1,4 @@
-import { IPPTElementShadow } from "@/plugins/types/element";
+import { IPPTElementShadow } from "@/types/element";
 
 export class Shadow {
     private _ctx: CanvasRenderingContext2D;

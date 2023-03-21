@@ -1,13 +1,14 @@
 import { THEME_COLOR, VIEWPORT_SIZE, VIEWRATIO } from "../plugins/config/stage";
-import { IShape } from "../plugins/types/shape";
+import { IShape } from "@/types/shape";
 import {
     IElementPosition,
     IPPTImageElement,
     IPPTLineElement,
     IPPTShapeElement,
     IPPTTextElement,
-    IPPTVideoElement
-} from "../plugins/types/element";
+    IPPTVideoElement,
+    IPPTLatexElement
+} from "@/types/element";
 import { baseFontConfig } from "@/plugins/config/font";
 
 /**
@@ -107,16 +108,20 @@ export const createLineElement = (
     return newElement;
 };
 
-export const createImageElement = (width: number, height: number, src: string) => {
+export const createImageElement = (
+    width: number,
+    height: number,
+    src: string
+) => {
     const VIEW_HEIGHT = VIEWPORT_SIZE * VIEWRATIO;
     let resultWidth = width;
     let resultHeight = height;
     if (resultWidth > VIEWPORT_SIZE) {
-        resultHeight = resultHeight / resultWidth * VIEWPORT_SIZE;
+        resultHeight = (resultHeight / resultWidth) * VIEWPORT_SIZE;
         resultWidth = VIEWPORT_SIZE;
     }
     if (resultHeight > VIEW_HEIGHT) {
-        resultWidth = resultWidth / resultHeight * VIEW_HEIGHT;
+        resultWidth = (resultWidth / resultHeight) * VIEW_HEIGHT;
         resultHeight = VIEW_HEIGHT;
     }
     const id = createRandomCode();
@@ -138,7 +143,11 @@ export const createImageElement = (width: number, height: number, src: string) =
     return newElement;
 };
 
-export const createVideoElement = (width: number, height: number, src: string) => {
+export const createVideoElement = (
+    width: number,
+    height: number,
+    src: string
+) => {
     const id = createRandomCode();
     const name = "视频";
     const newElement: IPPTVideoElement = {
@@ -151,6 +160,42 @@ export const createVideoElement = (width: number, height: number, src: string) =
         width,
         height,
         src
+    };
+
+    return newElement;
+};
+
+export const createLatexElement = (
+    width: number,
+    height: number,
+    src: string,
+    text: string
+) => {
+    const VIEW_HEIGHT = VIEWPORT_SIZE * VIEWRATIO;
+    let resultWidth = width;
+    let resultHeight = height;
+    if (resultWidth > VIEWPORT_SIZE) {
+        resultHeight = (resultHeight / resultWidth) * VIEWPORT_SIZE;
+        resultWidth = VIEWPORT_SIZE;
+    }
+    if (resultHeight > VIEW_HEIGHT) {
+        resultWidth = (resultWidth / resultHeight) * VIEW_HEIGHT;
+        resultHeight = VIEW_HEIGHT;
+    }
+    const id = createRandomCode();
+    const name = "公式";
+    const newElement: IPPTLatexElement = {
+        name,
+        type: "latex",
+        id,
+        left: 0,
+        top: 0,
+        rotate: 0,
+        streach: 0,
+        width,
+        height,
+        src,
+        text
     };
 
     return newElement;

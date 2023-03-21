@@ -95,6 +95,17 @@
                 <PPTIcon icon="text" :size="28" />
             </div>
         </a-tooltip>
+
+        <a-tooltip title="插入公式">
+            <div
+                class="ppt-tool-btn"
+                @click="openLatex"
+            >
+                <PPTIcon icon="latex" :size="28" />
+            </div>
+        </a-tooltip>
+
+        <Latex v-model:visible="showLatex" @ok="insertLatex" />
     </div>
 </template>
 
@@ -102,14 +113,16 @@
 import SvgWrapper from "@/components/SvgWrapper.vue";
 import Editor from "@/plugins/editor";
 import FileInput from "@/components/FileInput.vue";
+import Latex from "./Latex/index.vue";
 import { SHAPE_LIST } from "@/plugins/config/shapes";
-import { ILineItem, IShapeItem } from "@/plugins/types/shape";
+import { ILineItem, IShapeItem } from "@/types/shape";
 import { inject, ref, Ref, watch } from "vue";
-import { ICreatingType } from "@/plugins/types/element";
-import { createImageElement, createVideoElement } from "@/utils/create";
+import { ICreatingType } from "@/types/element";
+import { createImageElement, createLatexElement, createVideoElement } from "@/utils/create";
 
 const showShapePool = ref(false);
 const hoverShapePool = ref(false);
+const showLatex = ref(false);
 
 const instance = inject<Ref<Editor>>("instance");
 
@@ -191,6 +204,25 @@ const insertVideo = (files: File[]) => {
     );
     reader.readAsDataURL(videoFile);
     // reader.readAsArrayBuffer(videoFile);
+};
+
+const openLatex = () => {
+    showLatex.value = true;
+};
+
+const insertLatex = ({ latex, src }: { latex: string; src: string; }) => {
+    showLatex.value = false;
+    const image = new Image();
+    image.onload = () => {
+        const element = createLatexElement(
+            image.width,
+            image.height,
+            src,
+            latex
+        );
+        instance?.value.command.executeAddRender([element]);
+    };
+    image.src = src;
 };
 </script>
 

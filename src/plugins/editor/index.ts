@@ -6,7 +6,7 @@ import ControlStage from "../stage/control";
 import { Cursor } from "../stage/cursor";
 import { Textarea } from "../stage/textarea";
 import ViewStage from "../stage/view";
-import { ISlide } from "../types/slide";
+import { ISlide } from "@/types/slide";
 import { History } from "./history";
 
 export default class Editor {

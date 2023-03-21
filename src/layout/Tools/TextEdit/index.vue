@@ -21,7 +21,7 @@
 
 <script lang="ts" setup>
 import { PropType, toRefs } from "vue";
-import { IPPTElement } from "@/plugins/types/element";
+import { IPPTElement } from "@/types/element";
 import FontSize from "./FontSize.vue";
 import Bold from "./Bold.vue";
 import Italic from "./italic.vue";

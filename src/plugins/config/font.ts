@@ -1,4 +1,4 @@
-import { IFontConfig } from "../types/font";
+import { IFontConfig } from "@/types/font";
 
 export const baseFontConfig: IFontConfig = {
     fontSize: 24,

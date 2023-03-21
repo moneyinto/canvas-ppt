@@ -1,6 +1,6 @@
 import emitter, { EmitterEvents } from "@/utils/emitter";
 import Command from "../command";
-import { IRegisterShortcut } from "../types/shortcut";
+import { IRegisterShortcut } from "@/types/shortcut";
 import { KeyMap } from "./keyMap";
 
 export const ShortcutKeys: IRegisterShortcut[] = [

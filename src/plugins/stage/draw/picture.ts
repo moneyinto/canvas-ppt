@@ -1,5 +1,5 @@
-import { ICacheImage } from "@/plugins/types";
-import { IPPTImageElement } from "@/plugins/types/element";
+import { ICacheImage } from "@/types";
+import { IPPTImageElement, IPPTLatexElement } from "@/types/element";
 import StageConfig from "../config";
 import { Shadow } from "./shadow";
 
@@ -13,7 +13,7 @@ export class Picture {
         this._shadow = new Shadow(this._ctx);
     }
 
-    private _getCacheImage(element: IPPTImageElement): Promise<ICacheImage> {
+    private _getCacheImage(element: IPPTImageElement | IPPTLatexElement): Promise<ICacheImage> {
         return new Promise(resolve => {
             const cacheImage = this._stageConfig.cacheImages.find(image => image.id === element.id);
             if (cacheImage) {
@@ -33,7 +33,7 @@ export class Picture {
         });
     }
 
-    public async draw(element: IPPTImageElement) {
+    public async draw(element: IPPTImageElement | IPPTLatexElement) {
         const cacheImage = await this._getCacheImage(element);
         if (cacheImage) {
             const image = cacheImage.image;

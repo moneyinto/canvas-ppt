@@ -1,4 +1,4 @@
-import { IPPTElementOutline } from "@/plugins/types/element";
+import { IPPTElementOutline } from "@/types/element";
 
 export class OutLine {
     private _ctx: CanvasRenderingContext2D;

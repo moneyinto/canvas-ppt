@@ -1,6 +1,6 @@
 import { SHAPE_TYPE } from "@/plugins/config/shapes";
-import { IPPTTextElement } from "@/plugins/types/element";
-import { IFontData } from "@/plugins/types/font";
+import { IPPTTextElement } from "@/types/element";
+import { IFontData } from "@/types/font";
 import { getShapePath } from "@/utils/shape";
 import StageConfig, { TEXT_MARGIN } from "../config";
 import { OutLine } from "./outline";

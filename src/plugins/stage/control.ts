@@ -1,6 +1,6 @@
 import Stage from ".";
 import StageConfig, { TEXT_MARGIN } from "./config";
-import { throttleRAF, deepClone, normalizeAngle, exitFullScreen, isFullScreen } from "@/utils";
+import { throttleRAF, deepClone, normalizeAngle, isFullScreen } from "@/utils";
 import Command from "../command";
 import {
     createLineElement,
@@ -12,15 +12,15 @@ import {
     IPPTLineElement,
     IPPTTextElement,
     IPPTVideoElement
-} from "../types/element";
+} from "@/types/element";
 import { ELEMENT_RESIZE, THEME_COLOR } from "../config/stage";
-import { IElementOptions, IMouseClick, IRectParameter, IRects } from "../types";
+import { IElementOptions, IMouseClick, IRectParameter, IRects } from "@/types";
 import { LINE_TYPE } from "../config/shapes";
 import Listener from "../listener";
 import { Text } from "./text";
 import { Cursor } from "./cursor";
 import { Textarea } from "./textarea";
-import { IFontData } from "../types/font";
+import { IFontData } from "@/types/font";
 import { Contextmenu } from "./contextmenu";
 
 export default class ControlStage extends Stage {
@@ -174,9 +174,11 @@ export default class ControlStage extends Stage {
     }
 
     private _exitFullScreen() {
-        const element = this._videoElement!;
+        if (!this._videoElement) return;
+        const element = this._videoElement;
         this._videoElement = null;
         const video = document.getElementById(element.id) as HTMLVideoElement;
+        if (!video) return;
         video.classList.remove("full-screen-video");
         video.controls = false;
     }
@@ -928,7 +930,7 @@ export default class ControlStage extends Stage {
                         [LINE_TYPE.DOUBLE_ARROW]: "arrow",
                         [LINE_TYPE.DOT]: "dot",
                         [LINE_TYPE.DOUBLE_DOT]: "dot"
-                    };
+                    } as { [key: string]: string; };
 
                     let startStyle: "" | "arrow" | "dot" = "";
                     if (
@@ -937,13 +939,9 @@ export default class ControlStage extends Stage {
                         this.stageConfig.insertElement.data.type ===
                             LINE_TYPE.DOUBLE_DOT
                     ) {
-                        startStyle = style[
-                            this.stageConfig.insertElement.data.type
-                        ] as "" | "arrow" | "dot";
+                        startStyle = style[this.stageConfig.insertElement.data.type] as "" | "arrow" | "dot";
                     }
-                    const endStyle = style[
-                        this.stageConfig.insertElement.data.type
-                    ] as "" | "arrow" | "dot";
+                    const endStyle = style[this.stageConfig.insertElement.data.type] as "" | "arrow" | "dot";
 
                     newElement = createLineElement(
                         this._startOriginPoint[0],

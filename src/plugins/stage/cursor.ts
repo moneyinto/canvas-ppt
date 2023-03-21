@@ -1,5 +1,5 @@
-import { IFontData, ILineData } from "@/plugins/types/font";
-import { IPPTTextElement } from "../types/element";
+import { IFontData, ILineData } from "@/types/font";
+import { IPPTTextElement } from "@/types/element";
 import StageConfig, { TEXT_MARGIN } from "./config";
 import { Textarea } from "./textarea";
 

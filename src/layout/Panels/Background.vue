@@ -160,7 +160,7 @@ import ColorBoard from "@/components/ColorBoard.vue";
 import FileInput from "@/components/FileInput.vue";
 import Editor from "@/plugins/editor";
 import emitter, { EmitterEvents } from "@/utils/emitter";
-import { ISlideBackground } from "@/plugins/types/slide";
+import { ISlideBackground } from "@/types/slide";
 
 const backgroundType = ref("");
 const currentColor = ref("#ffffff");

@@ -3,10 +3,10 @@ import { getShapePath } from "@/utils/shape";
 import { baseFontConfig } from "../config/font";
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import Listener from "../listener";
-import { ICacheImage, IRectParameter } from "../types";
-import { ICreatingElement, IPPTElement, IPPTTextElement } from "../types/element";
-import { IFontConfig, IFontData, ILineData } from "../types/font";
-import { ISlide, ISlideBackground } from "../types/slide";
+import { ICacheImage, IRectParameter } from "@/types";
+import { ICreatingElement, IPPTElement, IPPTTextElement } from "@/types/element";
+import { IFontConfig, IFontData, ILineData } from "@/types/font";
+import { ISlide, ISlideBackground } from "@/types/slide";
 
 export const TEXT_MARGIN = 5;
 

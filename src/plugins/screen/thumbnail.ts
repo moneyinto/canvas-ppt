@@ -1,6 +1,6 @@
 import Stage from "../stage";
 import StageConfig from "../stage/config";
-import { ISlide } from "../types/slide";
+import { ISlide } from "@/types/slide";
 import Background from "../stage/draw/background";
 
 export default class Thumbnail {

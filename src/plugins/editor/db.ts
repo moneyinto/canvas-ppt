@@ -1,7 +1,7 @@
-import { ISlide } from "../types/slide";
+import { ISlide } from "@/types/slide";
 import { IDBPDatabase, openDB } from "idb";
 import { OPTION_TYPE } from "../config/options";
-import { IHistory } from "../types";
+import { IHistory } from "@/types";
 
 const DB_NAME = "CANVAS_PPT_DB";
 

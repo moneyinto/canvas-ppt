@@ -1,4 +1,4 @@
-import { IPPTLineElement } from "@/plugins/types/element";
+import { IPPTLineElement } from "@/types/element";
 import StageConfig from "../config";
 
 export class Line {

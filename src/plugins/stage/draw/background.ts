@@ -1,5 +1,5 @@
 import { VIEWPORT_SIZE, VIEWRATIO } from "@/plugins/config/stage";
-import { ISlideBackground } from "@/plugins/types/slide";
+import { ISlideBackground } from "@/types/slide";
 import StageConfig from "../config";
 
 export default class Background {

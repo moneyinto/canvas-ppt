@@ -1,4 +1,4 @@
-import { IShapePoolItem } from "../types/shape";
+import { IShapePoolItem } from "@/types/shape";
 
 export enum SHAPE_TYPE {
     RECT = "rect",

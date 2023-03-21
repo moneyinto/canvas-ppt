@@ -43,8 +43,8 @@
 <script lang="ts" setup>
 import { computed, inject, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
-import { IPPTElement, IPPTTextElement } from "@/plugins/types/element";
-import { IFontData } from "@/plugins/types/font";
+import { IPPTElement, IPPTTextElement } from "@/types/element";
+import { IFontData } from "@/types/font";
 import { isSupportFont } from "@/utils";
 
 const instance = inject<Ref<Editor>>("instance");

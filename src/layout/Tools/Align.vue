@@ -119,8 +119,8 @@
 <script lang="ts" setup>
 import { computed, inject, PropType, ref, Ref, toRefs } from "vue";
 import Editor from "@/plugins/editor";
-import { IElementAlignType } from "@/plugins/types";
-import { IPPTElement } from "@/plugins/types/element";
+import { IElementAlignType } from "@/types";
+import { IPPTElement } from "@/types/element";
 
 const props = defineProps({
     elements: {

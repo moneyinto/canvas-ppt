@@ -22,12 +22,13 @@ import {
     IPPTElementOutline,
     IPPTElementShadow,
     IPPTLineElement,
-    IPPTTextElement
-} from "../types/element";
-import { IFontData } from "../types/font";
+    IPPTTextElement,
+    IPPTVideoElement
+} from "@/types/element";
+import { IFontData } from "@/types/font";
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
-import { IElementAlignType } from "../types";
-import { ISlideBackground } from "../types/slide";
+import { IElementAlignType } from "@/types";
+import { ISlideBackground } from "@/types/slide";
 import { OPTION_TYPE } from "../config/options";
 
 export default class Command {
@@ -323,8 +324,8 @@ export default class Command {
         const operateElements = this._stageConfig.operateElements;
         const newElements: IPPTElement[] = [];
         for (const operateElement of operateElements) {
-            if (operateElement && operateElement.type !== "line") {
-                const newElement: Exclude<IPPTElement, IPPTLineElement> = {
+            if (operateElement && operateElement.type !== "line" && operateElement.type !== "video") {
+                const newElement: Exclude<IPPTElement, IPPTLineElement | IPPTVideoElement> = {
                     ...operateElement,
                     outline: {
                         ...(operateElement.outline || {}),

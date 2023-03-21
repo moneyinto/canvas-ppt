@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts" setup>
-import { IAxis, IContextmenuItem } from "@/plugins/types/contextmenu";
+import { IAxis, IContextmenuItem } from "@/types/contextmenu";
 import { computed, PropType } from "vue";
 import MenuContent from "./MenuContent.vue";
 

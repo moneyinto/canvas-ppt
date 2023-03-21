@@ -44,7 +44,7 @@
 
 <script lang="ts" setup>
 import { inject, PropType, Ref, ref, watch } from "vue";
-import { IPPTElement, IPPTImageElement } from "@/plugins/types/element";
+import { IPPTElement, IPPTImageElement } from "@/types/element";
 import Editor from "@/plugins/editor";
 
 const props = defineProps({

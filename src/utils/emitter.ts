@@ -1,5 +1,5 @@
 import mitt, { Emitter } from "mitt";
-import { ISlide } from "@/plugins/types/slide";
+import { ISlide } from "@/types/slide";
 import { PANELS } from "./panel";
 
 export const enum EmitterEvents {

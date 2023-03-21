@@ -75,8 +75,8 @@
 import { inject, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
 import { throttleRAF } from "@/utils";
-import { IPPTElement, IPPTTextElement } from "@/plugins/types/element";
-import { IFontData } from "@/plugins/types/font";
+import { IPPTElement, IPPTTextElement } from "@/types/element";
+import { IFontData } from "@/types/font";
 
 const instance = inject<Ref<Editor>>("instance");
 

@@ -57,7 +57,7 @@
 import Editor from "@/plugins/editor";
 import { inject, Ref, computed, toRefs, PropType } from "vue";
 import { throttleRAF } from "@/utils";
-import { IPPTElement } from "@/plugins/types/element";
+import { IPPTElement } from "@/types/element";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const props = defineProps({

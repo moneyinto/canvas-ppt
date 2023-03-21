@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-import { IPPTElement } from "@/plugins/types/element";
+import { IPPTElement } from "@/types/element";
 import { PropType, toRefs } from "vue";
 import Edit from "./Edit.vue";
 const props = defineProps({

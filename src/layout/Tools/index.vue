@@ -30,7 +30,7 @@
 
 <script lang="ts" setup>
 import { PropType, ref, watch, toRefs } from "vue";
-import { IPPTElement } from "@/plugins/types/element";
+import { IPPTElement } from "@/types/element";
 import AddPPT from "./AddPPT.vue";
 import Edit from "./Edit.vue";
 import Insert from "./Insert.vue";

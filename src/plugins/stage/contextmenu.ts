@@ -1,7 +1,7 @@
 import { checkIsMac } from "@/utils";
 import ContextmenuComponent from "@/components/Contextmenu/index.vue";
 import { createVNode, render } from "vue";
-import { IContextmenuItem } from "../types/contextmenu";
+import { IContextmenuItem } from "@/types/contextmenu";
 import Command from "../command";
 import StageConfig from "./config";
 import emitter, { EmitterEvents } from "@/utils/emitter";

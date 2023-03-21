@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts" setup>
-import { IContextmenuItem } from "@/plugins/types/contextmenu";
+import { IContextmenuItem } from "@/types/contextmenu";
 import { PropType, toRefs } from "vue";
 import PPTIcon from "@/components/icon.vue";
 
