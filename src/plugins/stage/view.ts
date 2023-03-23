@@ -1,18 +1,25 @@
 import Stage from ".";
+import { History } from "../editor/history";
 import StageConfig from "./config";
 import Background from "./draw/background";
 
 export default class ViewStage extends Stage {
     private _background: Background;
-    constructor(container: HTMLDivElement, stageConfig: StageConfig, resize?: boolean) {
-        super(container, stageConfig, resize);
+    constructor(
+        container: HTMLDivElement,
+        stageConfig: StageConfig,
+        history: History,
+        resize?: boolean
+    ) {
+        super(container, stageConfig, history, resize);
 
         this._background = new Background(stageConfig, this.ctx);
         this._drawPage();
     }
 
     private async _drawPage() {
-        const { x, y, stageWidth, stageHeight } = this.stageConfig.getStageArea();
+        const { x, y, stageWidth, stageHeight } =
+            this.stageConfig.getStageArea();
         const currentSlide = this.stageConfig.getCurrentSlide();
 
         // 设置阴影

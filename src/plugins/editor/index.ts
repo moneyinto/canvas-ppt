@@ -56,12 +56,13 @@ export default class Editor {
         this.command = new Command(this.stageConfig, this.listener, this.history, this._cursor);
 
         // 创建展示画板
-        this._viewStage = new ViewStage(container, this.stageConfig, true);
+        this._viewStage = new ViewStage(container, this.stageConfig, this.history, true);
 
         // 创建操作画板
         this._controlStage = new ControlStage(
             container,
             this.stageConfig,
+            this.history,
             this.command,
             this._cursor,
             this._textarea,

@@ -1,3 +1,4 @@
+import { History } from "@/plugins/editor/history";
 import { IPPTVideoElement } from "@/types/element";
 import { sleep, fomatTime } from "@/utils";
 import StageConfig from "../config";
@@ -5,15 +6,21 @@ import StageConfig from "../config";
 export default class Video {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
-    constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D) {
+    private _history: History;
+    constructor(
+        stageConfig: StageConfig,
+        ctx: CanvasRenderingContext2D,
+        history: History
+    ) {
         this._ctx = ctx;
         this._stageConfig = stageConfig;
+        this._history = history;
     }
 
-    public createVideo(id: string, src: string) {
+    public createVideo(id: string, file: string) {
         const video = document.createElement("video");
         video.id = id;
-        video.src = src;
+        video.src = file;
         video.style.visibility = "hidden";
         video.style.position = "absolute";
         video.style.zIndex = "-1000";
@@ -25,12 +32,14 @@ export default class Video {
         return new Promise(resolve => {
             let video = document.getElementById(id);
             if (video) return resolve(video as HTMLVideoElement);
-            video = this.createVideo(id, src);
-            video.oncanplay = async () => {
-                // 延缓处理主图视频无法初始化问题
-                await sleep(200);
-                resolve(video as HTMLVideoElement);
-            };
+            this._history.getFile(src).then(file => {
+                video = this.createVideo(id, file);
+                video.oncanplay = async () => {
+                    // 延缓处理主图视频无法初始化问题
+                    await sleep(200);
+                    resolve(video as HTMLVideoElement);
+                };
+            });
         });
     }
 

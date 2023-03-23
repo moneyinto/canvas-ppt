@@ -122,6 +122,7 @@ import { SHAPE_LIST } from "@/plugins/config/shapes";
 import { ILineItem, IShapeItem } from "@/types/shape";
 import { inject, onMounted, onUnmounted, ref, Ref, watch } from "vue";
 import { ICreatingType, IPPTLatexElement } from "@/types/element";
+import { fileMd5, dataURLtoFile } from "@/utils";
 import { createImageElement, createLatexElement, createVideoElement } from "@/utils/create";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 
@@ -177,48 +178,56 @@ const insertText = () => {
     }
 };
 
-const insertImage = (files: File[]) => {
+const insertImage = async (files: File[]) => {
     const imageFile = files[0];
     if (!imageFile) return;
-    const reader = new FileReader();
-    reader.addEventListener(
-        "load",
-        () => {
-            const image = new Image();
-            image.onload = () => {
-                const element = createImageElement(
-                    image.width,
-                    image.height,
-                    reader.result as string
-                );
-                instance?.value.command.executeAddRender([element]);
-            };
-            image.src = reader.result as string;
-        },
-        false
-    );
-    reader.readAsDataURL(imageFile);
+    const md5 = await fileMd5(imageFile);
+    if (md5) {
+        const reader = new FileReader();
+        reader.addEventListener(
+            "load",
+            async () => {
+                await instance?.value.history.saveFile(md5, reader.result as string);
+                const image = new Image();
+                image.onload = () => {
+                    const element = createImageElement(
+                        image.width,
+                        image.height,
+                        md5
+                    );
+                    instance?.value.command.executeAddRender([element]);
+                };
+                image.src = reader.result as string;
+            },
+            false
+        );
+        reader.readAsDataURL(imageFile);
+    }
 };
 
-const insertVideo = (files: File[]) => {
+const insertVideo = async (files: File[]) => {
     const videoFile = files[0];
     if (!videoFile) return;
-    const reader = new FileReader();
-    reader.addEventListener(
-        "load",
-        () => {
-            const element = createVideoElement(
-                300,
-                200,
-                reader.result as string
-                // window.URL.createObjectURL(new Blob([reader.result as ArrayBuffer]))
-            );
-            instance?.value.command.executeAddRender([element]);
-        },
-        false
-    );
-    reader.readAsDataURL(videoFile);
-    // reader.readAsArrayBuffer(videoFile);
+    const md5 = await fileMd5(videoFile);
+    if (md5) {
+        const reader = new FileReader();
+        reader.addEventListener(
+            "load",
+            async () => {
+                await instance?.value.history.saveFile(md5, reader.result as string);
+                const element = createVideoElement(
+                    300,
+                    200,
+                    md5
+                    // window.URL.createObjectURL(new Blob([reader.result as ArrayBuffer]))
+                );
+                instance?.value.command.executeAddRender([element]);
+            },
+            false
+        );
+        reader.readAsDataURL(videoFile);
+        // reader.readAsArrayBuffer(videoFile);
+    }
 };
 
 const openLatex = (element?: IPPTLatexElement) => {
@@ -226,34 +235,39 @@ const openLatex = (element?: IPPTLatexElement) => {
     showLatex.value = true;
 };
 
-const insertOrUpdateLatex = ({ latex, src }: { latex: string; src: string; }) => {
+const insertOrUpdateLatex = async ({ latex, src }: { latex: string; src: string; }) => {
     showLatex.value = false;
-    if (latexElement.value) {
-        if (latexElement.value.text !== latex) {
+    const file = dataURLtoFile(src, "latex.svg", "image/svg+xml");
+    const md5 = await fileMd5(file);
+    if (md5) {
+        await instance?.value.history.saveFile(md5, src);
+        if (latexElement.value) {
+            if (latexElement.value.text !== latex) {
+                const image = new Image();
+                image.onload = () => {
+                    latexElement.value!.src = md5;
+                    latexElement.value!.text = latex;
+                    latexElement.value!.width = image.width;
+                    latexElement.value!.height = image.height;
+                    instance?.value.command.executeUpdateRender([JSON.parse(JSON.stringify(latexElement.value))], true);
+
+                    latexElement.value = undefined;
+                };
+                image.src = src;
+            }
+        } else {
             const image = new Image();
             image.onload = () => {
-                latexElement.value!.src = src;
-                latexElement.value!.text = latex;
-                latexElement.value!.width = image.width;
-                latexElement.value!.height = image.height;
-                instance?.value.command.executeUpdateRender([JSON.parse(JSON.stringify(latexElement.value))], true);
-
-                latexElement.value = undefined;
+                const element = createLatexElement(
+                    image.width,
+                    image.height,
+                    md5,
+                    latex
+                );
+                instance?.value.command.executeAddRender([element]);
             };
             image.src = src;
         }
-    } else {
-        const image = new Image();
-        image.onload = () => {
-            const element = createLatexElement(
-                image.width,
-                image.height,
-                src,
-                latex
-            );
-            instance?.value.command.executeAddRender([element]);
-        };
-        image.src = src;
     }
 };
 </script>

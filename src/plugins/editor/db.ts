@@ -12,12 +12,13 @@ export default class DB {
             this.db = await openDB(DB_NAME, 1, {
                 upgrade(db) {
                     if (!db.objectStoreNames.contains("history")) {
-                        const objectStore = db.createObjectStore("history", {
+                        db.createObjectStore("history", {
                             keyPath: "id",
                             autoIncrement: true
                         });
-                        objectStore.createIndex("id", "id", {
-                            unique: true
+
+                        db.createObjectStore("file", {
+                            keyPath: "fileId"
                         });
                     }
                 }
@@ -47,5 +48,25 @@ export default class DB {
         this.db!.transaction("history", "readwrite")
             .objectStore("history")
             .add({ optionType, slideId, slides: JSON.parse(JSON.stringify(slides)) });
+    }
+
+    async getFile(fileId: string): Promise<string> {
+        if (!this.db) await this.init();
+        const result = await this.db!.transaction("file").objectStore("file").get(fileId);
+        return result ? result.file : "";
+    }
+
+    async saveFile(fileId: string, file: string) {
+        if (!this.db) await this.init();
+        const result = await this.getFile(fileId);
+        if (result) {
+            this.db!.transaction("file", "readwrite")
+                .objectStore("file")
+                .put({ fileId, file });
+        } else {
+            this.db!.transaction("file", "readwrite")
+                .objectStore("file")
+                .add({ fileId, file });
+        }
     }
 }

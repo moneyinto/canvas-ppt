@@ -1,3 +1,5 @@
+import SparkMD5 from "spark-md5";
+
 // throttle callback to execute once per animation frame
 export const throttleRAF = <T extends unknown[]>(fn: (...args: T) => void) => {
     let handle: number | null = null;
@@ -66,7 +68,10 @@ export const checkIsMac = () => {
     return /macintosh|mac os x/i.test(navigator.userAgent);
 };
 
-export const debounce = <T extends unknown[]>(fn: (...args: T) => void, delay: number) => {
+export const debounce = <T extends unknown[]>(
+    fn: (...args: T) => void,
+    delay: number
+) => {
     let timerId: number | null = null; // 使用闭包的特性，存储timerId
     return function(...args: T) {
         // 当timerId有值时，说明有正在准备执行的函数，需要将它清除
@@ -119,7 +124,7 @@ export const isSupportFont = (fontName: string) => {
 };
 
 export const sleep = (time: number) => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         setTimeout(resolve, time);
     });
 };
@@ -157,5 +162,69 @@ export const exitFullScreen = () => {
 
 export const isFullScreen = () => {
     const dom: any = document;
-    return !!(dom.mozFullScreen || dom.webkitIsFullScreen || dom.webkitFullScreen || dom.msFullScreen);
+    return !!(
+        dom.mozFullScreen ||
+        dom.webkitIsFullScreen ||
+        dom.webkitFullScreen ||
+        dom.msFullScreen
+    );
+};
+
+/**
+ * 文件md5
+ * @param file
+ * @returns
+ */
+export const fileMd5 = (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+        const blobSlice = File.prototype.slice;
+        const chunkSize = 2097152; // 2MB
+        const chunks = Math.ceil(file.size / chunkSize);
+        let currentChunk = 0;
+        const spark = new SparkMD5.ArrayBuffer();
+        const fileReader = new FileReader();
+
+        fileReader.onload = () => {
+            spark.append(fileReader.result as ArrayBuffer); // Append array buffer
+            currentChunk++;
+
+            if (currentChunk < chunks) {
+                loadNext();
+            } else {
+                const md5 = spark.end(); // 得到md5
+                spark.destroy(); // 释放缓存
+                resolve(md5);
+            }
+        };
+
+        fileReader.onerror = () => {
+            console.error("文件md5失败");
+        };
+
+        const loadNext = () => {
+            const start = currentChunk * chunkSize;
+            const end =
+                start + chunkSize >= file.size ? file.size : start + chunkSize;
+            fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
+        };
+
+        loadNext();
+    });
+};
+
+export const dataURLtoFile = (
+    dataurl: string,
+    filename: string,
+    type: string
+) => {
+    // 获取到base64编码
+    const arr = dataurl.split(",");
+    // 将base64编码转为字符串
+    const bstr = window.atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n); // 创建初始化为0的，包含length个元素的无符号整型数组
+    while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type });
 };

@@ -1,3 +1,4 @@
+import { History } from "@/plugins/editor/history";
 import { ICacheImage } from "@/types";
 import { IPPTImageElement, IPPTLatexElement } from "@/types/element";
 import StageConfig from "../config";
@@ -6,29 +7,41 @@ import { Shadow } from "./shadow";
 export class Picture {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
+    private _history: History;
     private _shadow: Shadow;
-    constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D) {
+    constructor(
+        stageConfig: StageConfig,
+        ctx: CanvasRenderingContext2D,
+        history: History
+    ) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
+        this._history = history;
         this._shadow = new Shadow(this._ctx);
     }
 
-    private _getCacheImage(element: IPPTImageElement | IPPTLatexElement): Promise<ICacheImage> {
+    private async _getCacheImage(element: IPPTImageElement | IPPTLatexElement): Promise<ICacheImage> {
         return new Promise(resolve => {
-            const cacheImage = this._stageConfig.cacheImages.find(image => image.id === element.id);
+            const cacheImage = this._stageConfig.cacheImages.find(image => image.id === element.src);
             if (cacheImage) {
                 resolve(cacheImage);
             } else {
                 const image = new Image();
                 image.onload = () => {
                     const cacheImage = {
-                        id: element.id,
+                        id: element.src,
                         image
                     };
                     this._stageConfig.addCacheImage(cacheImage);
                     resolve(cacheImage);
                 };
-                image.src = element.src;
+                try {
+                    this._history.getFile(element.src).then(file => {
+                        image.src = file;
+                    });
+                } catch {
+                    image.src = "";
+                }
             }
         });
     }

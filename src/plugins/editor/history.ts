@@ -75,6 +75,16 @@ export class History {
         }
     }
 
+    // 获取文件
+    public getFile(fileId: string) {
+        return this._db.getFile(fileId);
+    }
+
+    // 存储文件
+    public async saveFile(fileId: string, file: string) {
+        await this._db.saveFile(fileId, file);
+    }
+
     // 恢复
     public async redo() {
         if (this.cursor < this.length - 1) {

@@ -23,6 +23,7 @@ import { Textarea } from "./textarea";
 import { IFontData } from "@/types/font";
 import { Contextmenu } from "./contextmenu";
 import emitter, { EmitterEvents } from "@/utils/emitter";
+import { History } from "../editor/history";
 
 export default class ControlStage extends Stage {
     private _command: Command;
@@ -48,13 +49,14 @@ export default class ControlStage extends Stage {
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
+        history: History,
         command: Command,
         cursor: Cursor,
         textarea: Textarea,
         listener: Listener,
         resize?: boolean
     ) {
-        super(container, stageConfig, resize);
+        super(container, stageConfig, history, resize);
 
         this._canMoveCanvas = false;
         this._canCreate = false;
