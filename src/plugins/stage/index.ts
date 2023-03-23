@@ -13,7 +13,7 @@ export default class Stage {
     public ctx: CanvasRenderingContext2D;
     public stageConfig: StageConfig;
     public container: HTMLDivElement;
-    public history: History;
+    public history: History | undefined;
 
     private _line: Line | null;
     private _richText: RichText | null;
@@ -23,7 +23,7 @@ export default class Stage {
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
-        history: History,
+        history?: History,
         resize?: boolean
     ) {
         this.container = container;
@@ -105,23 +105,23 @@ export default class Stage {
                 break;
             }
             case "image": {
-                if (!this._picture) this._picture = new Picture(this.stageConfig, this.ctx, this.history);
-                this._picture.draw(element);
+                if (!this._picture && this.history) this._picture = new Picture(this.stageConfig, this.ctx, this.history);
+                this._picture?.draw(element);
                 break;
             }
             case "text": {
                 if (!this._richText) this._richText = new RichText(this.stageConfig, this.ctx);
-                this._richText.draw(element);
+                this._richText!.draw(element);
                 break;
             }
             case "video": {
-                if (!this._video) this._video = new Video(this.stageConfig, this.ctx, this.history);
-                await this._video.draw(element, !!isThumbnail);
+                if (!this._video && this.history) this._video = new Video(this.stageConfig, this.ctx, this.history);
+                await this._video?.draw(element, !!isThumbnail);
                 break;
             }
             case "latex": {
-                if (!this._picture) this._picture = new Picture(this.stageConfig, this.ctx, this.history);
-                this._picture.draw(element);
+                if (!this._picture && this.history) this._picture = new Picture(this.stageConfig, this.ctx, this.history);
+                this._picture?.draw(element);
             }
         }
     }
