@@ -91,7 +91,7 @@
         </a-popover>
 
         <a-tooltip title="插入文字">
-            <div class="ppt-tool-btn" :class="insertTextActive && 'active'" @click="insertText">
+            <div class="ppt-tool-btn" :class="insertTextActive && 'active'" @click="insertText()">
                 <PPTIcon icon="text" :size="28" />
             </div>
         </a-tooltip>
@@ -99,13 +99,17 @@
         <a-tooltip title="插入公式">
             <div
                 class="ppt-tool-btn"
-                @click="openLatex"
+                @click="openLatex()"
             >
                 <PPTIcon icon="latex" :size="28" />
             </div>
         </a-tooltip>
 
-        <Latex v-model:visible="showLatex" @ok="insertLatex" />
+        <Latex
+            v-model:visible="showLatex"
+            :element="latexElement"
+            @ok="insertOrUpdateLatex"
+        />
     </div>
 </template>
 
@@ -116,13 +120,16 @@ import FileInput from "@/components/FileInput.vue";
 import Latex from "./Latex/index.vue";
 import { SHAPE_LIST } from "@/plugins/config/shapes";
 import { ILineItem, IShapeItem } from "@/types/shape";
-import { inject, ref, Ref, watch } from "vue";
-import { ICreatingType } from "@/types/element";
+import { inject, onMounted, onUnmounted, ref, Ref, watch } from "vue";
+import { ICreatingType, IPPTLatexElement } from "@/types/element";
 import { createImageElement, createLatexElement, createVideoElement } from "@/utils/create";
+import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const showShapePool = ref(false);
 const hoverShapePool = ref(false);
 const showLatex = ref(false);
+
+const latexElement = ref<IPPTLatexElement>();
 
 const instance = inject<Ref<Editor>>("instance");
 
@@ -136,6 +143,14 @@ watch(instance!, () => {
             }
         };
     }
+});
+
+onMounted(() => {
+    emitter.on(EmitterEvents.OPEN_LATEX, openLatex);
+});
+
+onUnmounted(() => {
+    emitter.off(EmitterEvents.OPEN_LATEX, openLatex);
 });
 
 const selectShape = (type: ICreatingType, shape: IShapeItem | ILineItem) => {
@@ -206,23 +221,40 @@ const insertVideo = (files: File[]) => {
     // reader.readAsArrayBuffer(videoFile);
 };
 
-const openLatex = () => {
+const openLatex = (element?: IPPTLatexElement) => {
+    latexElement.value = element;
     showLatex.value = true;
 };
 
-const insertLatex = ({ latex, src }: { latex: string; src: string; }) => {
+const insertOrUpdateLatex = ({ latex, src }: { latex: string; src: string; }) => {
     showLatex.value = false;
-    const image = new Image();
-    image.onload = () => {
-        const element = createLatexElement(
-            image.width,
-            image.height,
-            src,
-            latex
-        );
-        instance?.value.command.executeAddRender([element]);
-    };
-    image.src = src;
+    if (latexElement.value) {
+        if (latexElement.value.text !== latex) {
+            const image = new Image();
+            image.onload = () => {
+                latexElement.value!.src = src;
+                latexElement.value!.text = latex;
+                latexElement.value!.width = image.width;
+                latexElement.value!.height = image.height;
+                instance?.value.command.executeUpdateRender([JSON.parse(JSON.stringify(latexElement.value))], true);
+
+                latexElement.value = undefined;
+            };
+            image.src = src;
+        }
+    } else {
+        const image = new Image();
+        image.onload = () => {
+            const element = createLatexElement(
+                image.width,
+                image.height,
+                src,
+                latex
+            );
+            instance?.value.command.executeAddRender([element]);
+        };
+        image.src = src;
+    }
 };
 </script>
 

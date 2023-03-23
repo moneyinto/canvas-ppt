@@ -26,19 +26,21 @@ let targetSvg: Node | null = null;
 const renderMathJax = () => {
     initMathJax({}, async () => {
         try {
-            if (!props.latex) return;
-            const node = await window.MathJax.tex2svg(props.latex, {});
-            const elsvg = node.firstElementChild;
-            elsvg.removeAttribute("style");
-            elsvg.removeAttribute("focusable");
-            elsvg.removeAttribute("role");
-            targetSvg = elsvg;
             if (mathjaxRef.value) {
                 mathjaxRef.value.innerHTML = "";
+                if (!props.latex) return;
+                const node = await window.MathJax.tex2svg(props.latex, {});
+                const elsvg = node.firstElementChild;
+                elsvg.removeAttribute("style");
+                elsvg.removeAttribute("focusable");
+                elsvg.removeAttribute("role");
+                targetSvg = elsvg;
                 mathjaxRef.value.appendChild(elsvg);
             }
         } catch (err) {
             console.log("渲染内容非法");
+            // 渲染失败 延迟再渲染，目前初次渲染必失败，延迟再渲染一次
+            setTimeout(() => renderMathJax(), 200);
         }
     });
 };

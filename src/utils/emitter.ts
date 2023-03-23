@@ -1,6 +1,7 @@
 import mitt, { Emitter } from "mitt";
 import { ISlide } from "@/types/slide";
 import { PANELS } from "./panel";
+import { IPPTLatexElement } from "@/types/element";
 
 export const enum EmitterEvents {
     UPDATE_THUMBNAIL = "UPDATE_THUMBNAIL",
@@ -10,7 +11,8 @@ export const enum EmitterEvents {
     DELETE_SLIDE = "DELETE_SLIDE",
     PASTE_SLIDE = "PASTE_SLIDE",
     SHOW_PANELS = "SHOW_PANELS",
-    PANELS_TYPE = "PANELS_TYPE"
+    PANELS_TYPE = "PANELS_TYPE",
+    OPEN_LATEX = "OPEN_LATEX"
 }
 
 type Events = {
@@ -22,6 +24,7 @@ type Events = {
     [EmitterEvents.PASTE_SLIDE]: void;
     [EmitterEvents.SHOW_PANELS]: boolean;
     [EmitterEvents.PANELS_TYPE]: PANELS | "";
+    [EmitterEvents.OPEN_LATEX]: IPPTLatexElement;
 };
 
 const emitter: Emitter<Events> = mitt<Events>();

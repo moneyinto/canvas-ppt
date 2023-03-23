@@ -22,6 +22,7 @@ import { Cursor } from "./cursor";
 import { Textarea } from "./textarea";
 import { IFontData } from "@/types/font";
 import { Contextmenu } from "./contextmenu";
+import emitter, { EmitterEvents } from "@/utils/emitter";
 
 export default class ControlStage extends Stage {
     private _command: Command;
@@ -133,20 +134,26 @@ export default class ControlStage extends Stage {
             top,
             this.ctx
         );
-        if (operateElement && operateElement.type === "text") {
-            // 点击位置坐标
-            const { left, top } = this._getMousePosition(evt);
-            // 当元素被选中，且被双击时，开启编辑
-            this.stageConfig.textFocus = true;
-            this.stageConfig.textFocusElementId = operateElement.id;
-            this.container.style.cursor = "text";
+        if (operateElement) {
+            if (operateElement.type === "text") {
+                // 点击位置坐标
+                const { left, top } = this._getMousePosition(evt);
+                // 当元素被选中，且被双击时，开启编辑
+                this.stageConfig.textFocus = true;
+                this.stageConfig.textFocusElementId = operateElement.id;
+                this.container.style.cursor = "text";
 
-            // 聚焦光标到点击位置
-            this._cursor.focus(
-                left - operateElement.left,
-                top - operateElement.top
-            );
-            this._command.executeUpdateFontConfig();
+                // 聚焦光标到点击位置
+                this._cursor.focus(
+                    left - operateElement.left,
+                    top - operateElement.top
+                );
+                this._command.executeUpdateFontConfig();
+            }
+
+            if (operateElement.type === "latex") {
+                emitter.emit(EmitterEvents.OPEN_LATEX, operateElement);
+            }
         }
     }
 

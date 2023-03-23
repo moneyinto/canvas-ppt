@@ -57,7 +57,8 @@ import MathJax from "@/components/MathJax.vue";
 import StylePanel from "./StylePanel.vue";
 import CustomPanel from "./CustomPanel.vue";
 import PresetPanel from "./PresetPanel.vue";
-import { ref, computed } from "vue";
+import { ref, computed, PropType, watch } from "vue";
+import { IPPTLatexElement } from "@/types/element";
 
 const tab = ref("style");
 const latex = ref("");
@@ -65,6 +66,26 @@ const color = ref("#444444");
 const fontSize = ref("Large");
 const fontStyle = ref("mathrm");
 const textareaRef = ref<HTMLTextAreaElement>();
+
+const props = defineProps({
+    element: {
+        type: Object as PropType<IPPTLatexElement>
+    }
+});
+
+const element = computed(() => props.element);
+
+const init = () => {
+    if (element.value) {
+        latex.value = element.value.text;
+    } else {
+        latex.value = "";
+    }
+};
+
+watch(element, init);
+
+init();
 
 const previewLatex = computed(() => {
     return `\\${fontSize.value} { \\${fontStyle.value} { { \\color{${color.value}} ${latex.value} } } }`;
