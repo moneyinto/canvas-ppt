@@ -118,7 +118,7 @@ npm run dev
 #### 公式
 - [x] [研究公式](https://github.com/moneyinto/vue-mathJax)
 - [x] 插入公式
-- [ ] 编辑公式
+- [x] 编辑公式
 
 ### 幻灯片放映
 
