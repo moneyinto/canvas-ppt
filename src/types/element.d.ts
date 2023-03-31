@@ -302,10 +302,24 @@ export interface IPPTTextElement extends IPPTBaseElement {
  * src: 视频地址
  *
  * rotate: 旋转角度
- *
  */
 export interface IPPTVideoElement extends IPPTBaseElement {
     type: "video";
+    src: string;
+    rotate: number;
+}
+
+/**
+ * 音频元素
+ *
+ * type: 元素类型 (audio)
+ *
+ * src: 音频地址
+ *
+ * rotate: 旋转角度
+ */
+export interface IPPTAudioElement extends IPPTBaseElement {
+    type: "audio";
     src: string;
     rotate: number;
 }
@@ -340,6 +354,7 @@ export type IPPTElement =
     | IPPTImageElement
     | IPPTTextElement
     | IPPTVideoElement
+    | IPPTAudioElement
     | IPPTLatexElement;
 
 export interface ICreatingTextElement {

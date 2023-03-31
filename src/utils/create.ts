@@ -7,7 +7,8 @@ import {
     IPPTShapeElement,
     IPPTTextElement,
     IPPTVideoElement,
-    IPPTLatexElement
+    IPPTLatexElement,
+    IPPTAudioElement
 } from "@/types/element";
 import { baseFontConfig } from "@/plugins/config/font";
 
@@ -153,6 +154,28 @@ export const createVideoElement = (
     const newElement: IPPTVideoElement = {
         name,
         type: "video",
+        id,
+        left: 0,
+        top: 0,
+        rotate: 0,
+        width,
+        height,
+        src
+    };
+
+    return newElement;
+};
+
+export const createAudioElement = (
+    width: number,
+    height: number,
+    src: string
+) => {
+    const id = createRandomCode();
+    const name = "音频";
+    const newElement: IPPTAudioElement = {
+        name,
+        type: "audio",
         id,
         left: 0,
         top: 0,

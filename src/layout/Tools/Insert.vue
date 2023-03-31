@@ -20,6 +20,17 @@
             </FileInput>
         </a-tooltip>
 
+        <a-tooltip title="插入音频">
+            <FileInput
+                class="ppt-tool-btn"
+                style="padding: 0 8px"
+                accept="audio/*"
+                @change="insertAudio"
+            >
+                <PPTIcon icon="audio" :size="16" />
+            </FileInput>
+        </a-tooltip>
+
         <a-popover trigger="click" v-model:visible="showShapePool">
             <a-tooltip
                 title="插入形状"
@@ -91,16 +102,17 @@
         </a-popover>
 
         <a-tooltip title="插入文字">
-            <div class="ppt-tool-btn" :class="insertTextActive && 'active'" @click="insertText()">
+            <div
+                class="ppt-tool-btn"
+                :class="insertTextActive && 'active'"
+                @click="insertText()"
+            >
                 <PPTIcon icon="text" :size="28" />
             </div>
         </a-tooltip>
 
         <a-tooltip title="插入公式">
-            <div
-                class="ppt-tool-btn"
-                @click="openLatex()"
-            >
+            <div class="ppt-tool-btn" @click="openLatex()">
                 <PPTIcon icon="latex" :size="28" />
             </div>
         </a-tooltip>
@@ -123,7 +135,12 @@ import { ILineItem, IShapeItem } from "@/types/shape";
 import { inject, onMounted, onUnmounted, ref, Ref, watch } from "vue";
 import { ICreatingType, IPPTLatexElement } from "@/types/element";
 import { fileMd5, dataURLtoFile } from "@/utils";
-import { createImageElement, createLatexElement, createVideoElement } from "@/utils/create";
+import {
+    createImageElement,
+    createLatexElement,
+    createVideoElement,
+    createAudioElement
+} from "@/utils/create";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const showShapePool = ref(false);
@@ -187,7 +204,10 @@ const insertImage = async (files: File[]) => {
         reader.addEventListener(
             "load",
             async () => {
-                await instance?.value.history.saveFile(md5, reader.result as string);
+                await instance?.value.history.saveFile(
+                    md5,
+                    reader.result as string
+                );
                 const image = new Image();
                 image.onload = () => {
                     const element = createImageElement(
@@ -214,7 +234,10 @@ const insertVideo = async (files: File[]) => {
         reader.addEventListener(
             "load",
             async () => {
-                await instance?.value.history.saveFile(md5, reader.result as string);
+                await instance?.value.history.saveFile(
+                    md5,
+                    reader.result as string
+                );
                 const element = createVideoElement(
                     300,
                     200,
@@ -235,7 +258,13 @@ const openLatex = (element?: IPPTLatexElement) => {
     showLatex.value = true;
 };
 
-const insertOrUpdateLatex = async ({ latex, src }: { latex: string; src: string; }) => {
+const insertOrUpdateLatex = async ({
+    latex,
+    src
+}: {
+    latex: string;
+    src: string;
+}) => {
     showLatex.value = false;
     const file = dataURLtoFile(src, "latex.svg", "image/svg+xml");
     const md5 = await fileMd5(file);
@@ -249,7 +278,10 @@ const insertOrUpdateLatex = async ({ latex, src }: { latex: string; src: string;
                     latexElement.value!.text = latex;
                     latexElement.value!.width = image.width;
                     latexElement.value!.height = image.height;
-                    instance?.value.command.executeUpdateRender([JSON.parse(JSON.stringify(latexElement.value))], true);
+                    instance?.value.command.executeUpdateRender(
+                        [JSON.parse(JSON.stringify(latexElement.value))],
+                        true
+                    );
 
                     latexElement.value = undefined;
                 };
@@ -268,6 +300,28 @@ const insertOrUpdateLatex = async ({ latex, src }: { latex: string; src: string;
             };
             image.src = src;
         }
+    }
+};
+
+const insertAudio = async (files: File[]) => {
+    const audioFile = files[0];
+    if (!audioFile) return;
+    const md5 = await fileMd5(audioFile);
+    if (md5) {
+        const reader = new FileReader();
+        reader.addEventListener(
+            "load",
+            async () => {
+                await instance?.value.history.saveFile(
+                    md5,
+                    reader.result as string
+                );
+                const element = createAudioElement(100, 100, md5);
+                instance?.value.command.executeAddRender([element]);
+            },
+            false
+        );
+        reader.readAsDataURL(audioFile);
     }
 };
 </script>

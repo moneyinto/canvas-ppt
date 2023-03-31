@@ -7,6 +7,7 @@ import { Shape } from "./draw/shape";
 import { Picture } from "./draw/picture";
 import Video from "./draw/video";
 import { History } from "../editor/history";
+import { Music } from "./draw/music";
 
 export default class Stage {
     public canvas: HTMLCanvasElement;
@@ -20,6 +21,7 @@ export default class Stage {
     private _shape: Shape | null;
     private _picture: Picture | null;
     private _video: Video | null;
+    private _music: Music | null;
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
@@ -40,6 +42,7 @@ export default class Stage {
         this._shape = null;
         this._picture = null;
         this._video = null;
+        this._music = null;
 
         if (resize) {
             window.addEventListener(
@@ -122,6 +125,12 @@ export default class Stage {
             case "latex": {
                 if (!this._picture && this.history) this._picture = new Picture(this.stageConfig, this.ctx, this.history);
                 this._picture?.draw(element);
+                break;
+            }
+            case "audio": {
+                if (!this._music && this.history) this._music = new Music(this.stageConfig, this.ctx);
+                this._music?.draw(element);
+                break;
             }
         }
     }
