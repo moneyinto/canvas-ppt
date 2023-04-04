@@ -1,5 +1,6 @@
 import { IFontData } from "./font";
 import { ILineItem, IShape, IShapeItem } from "./shape";
+import { BarChartOptions, LineChartOptions, PieChartOptions } from "chartist";
 
 export interface IElementPosition {
     top: number;
@@ -263,7 +264,7 @@ export interface IPPTImageElement extends IPPTBaseElement {
  *
  * type: 元素类型 (text)
  *
- * content: 文本内容 
+ * content: 文本内容
  *
  * wordSpace: 间距
  *
@@ -348,6 +349,47 @@ export interface IPPTLatexElement extends IPPTBaseElement {
     shadow?: IPPTElementShadow;
 }
 
+export type ChartType = "bar" | "line" | "pie";
+export type ChartOptions = LineChartOptions & BarChartOptions & PieChartOptions;
+export interface ChartData {
+    labels: string[];
+    legends: string[];
+    series: number[][];
+}
+
+/**
+ * 图表元素
+ *
+ * type: 元素类型（chart）
+ *
+ * fill?: 填充色
+ *
+ * chartType: 图表基础类型 bar line pie
+ *
+ * data: 图表数据
+ *
+ * options?: 图表配置项
+ *
+ * outline?: 边框
+ *
+ * themeColor: 主题色
+ *
+ * gridColor?: 网格&坐标颜色
+ *
+ * legend?: 图例/位置
+ */
+export interface IPPTChartElement extends IPPTBaseElement {
+    type: "chart";
+    fill?: string;
+    chartType: ChartType;
+    data: ChartData;
+    options?: ChartOptions;
+    outline?: IPPTElementOutline;
+    themeColor: string[];
+    gridColor?: string;
+    legend?: "" | "top" | "bottom";
+}
+
 export type IPPTElement =
     | IPPTShapeElement
     | IPPTLineElement
@@ -355,7 +397,8 @@ export type IPPTElement =
     | IPPTTextElement
     | IPPTVideoElement
     | IPPTAudioElement
-    | IPPTLatexElement;
+    | IPPTLatexElement
+    | IPPTChartElement;
 
 export interface ICreatingTextElement {
     type: "text";

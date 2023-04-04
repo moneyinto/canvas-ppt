@@ -36,6 +36,7 @@
     "type": "module",
     "dependencies": {
         "ant-design-vue": "^3.2.15",
+        "chartist": "^1.3.0",
         "clipboard": "^2.0.11",
         "crypto-js": "^4.1.1",
         "idb": "^7.1.1",
