@@ -73,7 +73,13 @@ const icons: { [key: string]: string } = {
     shadow: new URL("@/assets/icons/shadow.svg", import.meta.url).href,
     video: new URL("@/assets/icons/video.svg", import.meta.url).href,
     latex: new URL("@/assets/icons/latex.svg", import.meta.url).href,
-    audio: new URL("@/assets/icons/audio.svg", import.meta.url).href
+    audio: new URL("@/assets/icons/audio.svg", import.meta.url).href,
+    chart: new URL("@/assets/icons/chart.svg", import.meta.url).href,
+    bar_v: new URL("@/assets/icons/bar_v.svg", import.meta.url).href,
+    bar_h: new URL("@/assets/icons/bar_h.svg", import.meta.url).href,
+    line: new URL("@/assets/icons/line.svg", import.meta.url).href,
+    pie: new URL("@/assets/icons/pie.svg", import.meta.url).href,
+    funnel: new URL("@/assets/icons/funnel.svg", import.meta.url).href
 };
 
 const iconUrl = computed(() => icons[icon.value]);

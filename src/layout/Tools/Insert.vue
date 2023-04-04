@@ -111,6 +111,49 @@
             </div>
         </a-tooltip>
 
+        <a-popover trigger="click" v-model:visible="showChartPool">
+            <a-tooltip
+                title="插入图表"
+                :visible="!showChartPool && hoverChartPool"
+            >
+                <div
+                    class="ppt-tool-btn"
+                    @mouseover="hoverChartPool = true"
+                    @mouseleave="hoverChartPool = false"
+                >
+                    <PPTIcon icon="chart" :size="28" />
+                    &nbsp;
+                    <PPTIcon icon="down" :size="6" />
+                    &nbsp;
+                </div>
+            </a-tooltip>
+
+            <template #content>
+                <div class="ppt-chart-content" @keydown.stop="" tabindex="0">
+                    <div class="ppt-chart-item">
+                        <PPTIcon icon="bar_h" :size="28" />
+                        <div class="ppt-chart-text">条形图</div>
+                    </div>
+                    <div class="ppt-chart-item">
+                        <PPTIcon icon="bar_h" :size="28" />
+                        <div class="ppt-chart-text">柱状图</div>
+                    </div>
+                    <div class="ppt-chart-item">
+                        <PPTIcon icon="line" :size="28" />
+                        <div class="ppt-chart-text">折线图</div>
+                    </div>
+                    <div class="ppt-chart-item">
+                        <PPTIcon icon="pie" :size="28" />
+                        <div class="ppt-chart-text">饼状图</div>
+                    </div>
+                    <div class="ppt-chart-item">
+                        <PPTIcon icon="funnel" :size="28" />
+                        <div class="ppt-chart-text">漏斗图</div>
+                    </div>
+                </div>
+            </template>
+        </a-popover>
+
         <a-tooltip title="插入公式">
             <div class="ppt-tool-btn" @click="openLatex()">
                 <PPTIcon icon="latex" :size="28" />
@@ -145,6 +188,8 @@ import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const showShapePool = ref(false);
 const hoverShapePool = ref(false);
+const showChartPool = ref(false);
+const hoverChartPool = ref(false);
 const showLatex = ref(false);
 
 const latexElement = ref<IPPTLatexElement>();
@@ -358,5 +403,29 @@ const insertAudio = async (files: File[]) => {
             background-color: #f6f6f6;
         }
     }
+}
+
+.ppt-chart-item {
+    display: flex;
+    align-items: center;
+    width: 120px;
+    font-size: 12px;
+    color: #555555;
+    cursor: pointer;
+    height: 32px;
+    margin: 0 -16px;
+    padding: 0 16px 0 12px;
+    &:hover {
+        background-color: #41464b0d;
+    }
+    .ppt-chart-text {
+        margin-top: 2px;
+    }
+}
+
+.ppt-chart-content {
+    padding: 12px 16px;
+    margin: -12px -16px;
+    outline: 0;
 }
 </style>
