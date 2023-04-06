@@ -130,23 +130,23 @@
 
             <template #content>
                 <div class="ppt-chart-content" @keydown.stop="" tabindex="0">
-                    <div class="ppt-chart-item">
+                    <div class="ppt-chart-item" @click="openChart('bar_h')">
                         <PPTIcon icon="bar_h" :size="28" />
                         <div class="ppt-chart-text">条形图</div>
                     </div>
-                    <div class="ppt-chart-item">
-                        <PPTIcon icon="bar_h" :size="28" />
+                    <div class="ppt-chart-item" @click="openChart('bar_v')">
+                        <PPTIcon icon="bar_v" :size="28" />
                         <div class="ppt-chart-text">柱状图</div>
                     </div>
-                    <div class="ppt-chart-item">
+                    <div class="ppt-chart-item" @click="openChart('line')">
                         <PPTIcon icon="line" :size="28" />
                         <div class="ppt-chart-text">折线图</div>
                     </div>
-                    <div class="ppt-chart-item">
+                    <div class="ppt-chart-item" @click="openChart('pie')">
                         <PPTIcon icon="pie" :size="28" />
                         <div class="ppt-chart-text">饼状图</div>
                     </div>
-                    <div class="ppt-chart-item">
+                    <div class="ppt-chart-item" @click="openChart('funnel')">
                         <PPTIcon icon="funnel" :size="28" />
                         <div class="ppt-chart-text">漏斗图</div>
                     </div>
@@ -165,6 +165,12 @@
             :element="latexElement"
             @ok="insertOrUpdateLatex"
         />
+
+        <Chart
+            v-model:visible="showChart"
+            :element="chartElement"
+            @ok="insertOrUpdateChart"
+        />
     </div>
 </template>
 
@@ -173,10 +179,11 @@ import SvgWrapper from "@/components/SvgWrapper.vue";
 import Editor from "@/plugins/editor";
 import FileInput from "@/components/FileInput.vue";
 import Latex from "./Latex/index.vue";
+import Chart from "./Chart/index.vue";
 import { SHAPE_LIST } from "@/plugins/config/shapes";
 import { ILineItem, IShapeItem } from "@/types/shape";
 import { inject, onMounted, onUnmounted, ref, Ref, watch } from "vue";
-import { ICreatingType, IPPTLatexElement } from "@/types/element";
+import { ICreatingType, IPPTChartElement, IPPTLatexElement, ChartType } from "@/types/element";
 import { fileMd5, dataURLtoFile } from "@/utils";
 import {
     createImageElement,
@@ -191,8 +198,10 @@ const hoverShapePool = ref(false);
 const showChartPool = ref(false);
 const hoverChartPool = ref(false);
 const showLatex = ref(false);
+const showChart = ref(false);
 
 const latexElement = ref<IPPTLatexElement>();
+const chartElement = ref<IPPTChartElement>();
 
 const instance = inject<Ref<Editor>>("instance");
 
@@ -210,10 +219,12 @@ watch(instance!, () => {
 
 onMounted(() => {
     emitter.on(EmitterEvents.OPEN_LATEX, openLatex);
+    emitter.on(EmitterEvents.OPEN_CHART, openChart);
 });
 
 onUnmounted(() => {
     emitter.off(EmitterEvents.OPEN_LATEX, openLatex);
+    emitter.off(EmitterEvents.OPEN_CHART, openChart);
 });
 
 const selectShape = (type: ICreatingType, shape: IShapeItem | ILineItem) => {
@@ -368,6 +379,58 @@ const insertAudio = async (files: File[]) => {
         );
         reader.readAsDataURL(audioFile);
     }
+};
+
+const openChart = (arg: ChartType | IPPTChartElement) => {
+    if (typeof arg === "string") {
+        const type = arg as ChartType;
+        chartElement.value = undefined;
+        console.log(type);
+    } else {
+        chartElement.value = arg as IPPTChartElement;
+    }
+
+    showChart.value = true;
+    showChartPool.value = false;
+};
+
+const insertOrUpdateChart = async () => {
+    showLatex.value = false;
+    // const file = dataURLtoFile(src, "latex.svg", "image/svg+xml");
+    // const md5 = await fileMd5(file);
+    // if (md5) {
+    //     await instance?.value.history.saveFile(md5, src);
+    //     if (latexElement.value) {
+    //         if (latexElement.value.text !== latex) {
+    //             const image = new Image();
+    //             image.onload = () => {
+    //                 latexElement.value!.src = md5;
+    //                 latexElement.value!.text = latex;
+    //                 latexElement.value!.width = image.width;
+    //                 latexElement.value!.height = image.height;
+    //                 instance?.value.command.executeUpdateRender(
+    //                     [JSON.parse(JSON.stringify(latexElement.value))],
+    //                     true
+    //                 );
+
+    //                 latexElement.value = undefined;
+    //             };
+    //             image.src = src;
+    //         }
+    //     } else {
+    //         const image = new Image();
+    //         image.onload = () => {
+    //             const element = createLatexElement(
+    //                 image.width,
+    //                 image.height,
+    //                 md5,
+    //                 latex
+    //             );
+    //             instance?.value.command.executeAddRender([element]);
+    //         };
+    //         image.src = src;
+    //     }
+    // }
 };
 </script>
 

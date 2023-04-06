@@ -349,7 +349,7 @@ export interface IPPTLatexElement extends IPPTBaseElement {
     shadow?: IPPTElementShadow;
 }
 
-export type ChartType = "bar" | "line" | "pie";
+export type ChartType = "bar_h" | "bar_v" | "line" | "pie" | "funnel";
 export type ChartOptions = LineChartOptions & BarChartOptions & PieChartOptions;
 export interface ChartData {
     labels: string[];
