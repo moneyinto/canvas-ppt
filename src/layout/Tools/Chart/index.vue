@@ -35,6 +35,7 @@
                             >
                                 <input
                                     :class="['item']"
+                                    :type="rowIndex > 2 && colIndex > 2 ? 'number' : 'text'"
                                     v-if="rowIndex > 1 && colIndex > 1"
                                     :disabled="rowIndex === 2 && colIndex === 2"
                                     :id="`cell-${rowIndex - 1}-${colIndex - 1}`"
@@ -42,6 +43,7 @@
                                     @focus="
                                         focusCell = [rowIndex - 2, colIndex - 2]
                                     "
+                                    @change="($event) => inputChange($event, rowIndex, colIndex)"
                                 />
                                 <div
                                     class="chart-table-td"
@@ -96,12 +98,11 @@ const props = defineProps({
 const { visible } = toRefs(props);
 
 const focusCell = ref<[number, number] | null>(null);
+const { labels, legends, series } = props.element?.data || baseChartData;
 
 const initData = () => {
     const _data: string[][] = [];
 
-    const { labels, legends, series } = props.element?.data || baseChartData;
-    console.log(legends);
     const rowCount = labels.length;
     const colCount = series.length;
 
@@ -114,17 +115,25 @@ const initData = () => {
         _data.push(row);
     }
 
-    console.log(_data);
-
     for (let rowIndex = 0; rowIndex < rowCount + 1; rowIndex++) {
         for (let colIndex = 0; colIndex < colCount + 1; colIndex++) {
             const inputRef = document.querySelector(
                 `#cell-${rowIndex + 1}-${colIndex + 1}`
             ) as HTMLInputElement;
-            console.log(inputRef);
             if (!inputRef) continue;
             inputRef.value = _data[rowIndex][colIndex] + "";
         }
+    }
+};
+
+const inputChange = (event: Event, rowIndex: number, colIndex: number) => {
+    const value = (event.target as any).value;
+    if (rowIndex === 2) {
+        legends[colIndex - 3] = value;
+    } else if (colIndex === 2) {
+        labels[rowIndex - 3] = value;
+    } else {
+        series[colIndex - 3][rowIndex - 3] = Number(value);
     }
 };
 
@@ -144,6 +153,7 @@ const close = () => {
 };
 
 const sure = () => {
+    console.log(labels, legends, series);
     emit("ok");
 };
 </script>
@@ -214,6 +224,13 @@ const sure = () => {
         td.no-left-border {
             border-left: 0;
         }
+    }
+    input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type=number] {
+        appearance: textfield;
     }
 }
 
