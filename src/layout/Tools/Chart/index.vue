@@ -69,13 +69,25 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="chart-render-box">
+                <ChartRender
+                    :type="type"
+                    :width="chartSet.width"
+                    :height="chartSet.height"
+                    :labels="chartSet.labels"
+                    :legends="chartSet.legends"
+                    :series="chartSet.series"
+                />
+            </div>
         </div>
     </a-modal>
 </template>
 
 <script lang="ts" setup>
-import { ChartData, IPPTChartElement } from "@/types/element";
+import { ChartData, ChartType, IPPTChartElement } from "@/types/element";
 import { PropType, nextTick, ref, toRefs, watch } from "vue";
+import ChartRender from "./ChartRender.vue";
 
 const emit = defineEmits(["ok", "update:visible"]);
 
@@ -86,6 +98,10 @@ const baseChartData: ChartData = {
 };
 
 const props = defineProps({
+    type: {
+        type: String as PropType<ChartType>,
+        required: true
+    },
     element: {
         type: Object as PropType<IPPTChartElement>
     },
@@ -98,7 +114,14 @@ const props = defineProps({
 const { visible } = toRefs(props);
 
 const focusCell = ref<[number, number] | null>(null);
-const { labels, legends, series } = props.element?.data || baseChartData;
+const { labels, legends, series } = baseChartData;
+const chartSet = ref({
+    labels,
+    legends,
+    series,
+    width: 400,
+    height: 280
+});
 
 const initData = () => {
     const _data: string[][] = [];
@@ -141,6 +164,11 @@ watch(
     () => props.visible,
     () => {
         if (props.visible) {
+            if (props.element) {
+                chartSet.value.labels = props.element.data.labels;
+                chartSet.value.legends = props.element.data.legends;
+                chartSet.value.series = props.element.data.series;
+            }
             nextTick(initData);
         } else {
             // clear
@@ -160,8 +188,8 @@ const sure = () => {
 
 <style lang="scss">
 .ppt-chart-dialog {
-    padding-bottom: 0;
-    top: 10%;
+    padding-bottom: 0 !important;
+    top: 10% !important;
     .ant-modal-content {
         height: 100%;
         display: flex;
@@ -264,5 +292,14 @@ const sure = () => {
 .table-fixed-left {
     position: sticky;
     left: 0;
+}
+
+.chart-render-box {
+    position: absolute;
+    top: 100px;
+    left: 400px;
+    background-color: #ffffff;
+    z-index: 100;
+    border: 1px solid #000;
 }
 </style>

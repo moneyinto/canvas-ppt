@@ -1,6 +1,5 @@
 import { IFontData } from "./font";
 import { ILineItem, IShape, IShapeItem } from "./shape";
-import { BarChartOptions, LineChartOptions, PieChartOptions } from "chartist";
 
 export interface IElementPosition {
     top: number;
@@ -350,7 +349,7 @@ export interface IPPTLatexElement extends IPPTBaseElement {
 }
 
 export type ChartType = "bar_h" | "bar_v" | "line" | "pie" | "funnel";
-export type ChartOptions = LineChartOptions & BarChartOptions & PieChartOptions;
+export type ChartOptions = any;
 export interface ChartData {
     labels: string[];
     legends: string[];

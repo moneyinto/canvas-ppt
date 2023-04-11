@@ -169,6 +169,7 @@
         <Chart
             v-model:visible="showChart"
             :element="chartElement"
+            :type="chartType"
             @ok="insertOrUpdateChart"
         />
     </div>
@@ -381,11 +382,12 @@ const insertAudio = async (files: File[]) => {
     }
 };
 
+const chartType = ref<ChartType>("bar_h");
 const openChart = (arg: ChartType | IPPTChartElement) => {
     if (typeof arg === "string") {
         const type = arg as ChartType;
         chartElement.value = undefined;
-        console.log(type);
+        chartType.value = type;
     } else {
         chartElement.value = arg as IPPTChartElement;
     }
