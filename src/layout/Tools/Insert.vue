@@ -130,11 +130,11 @@
 
             <template #content>
                 <div class="ppt-chart-content" @keydown.stop="" tabindex="0">
-                    <div class="ppt-chart-item" @click="openChart('bar_h')">
+                    <div class="ppt-chart-item" @click="openChart('bar', true)">
                         <PPTIcon icon="bar_h" :size="28" />
                         <div class="ppt-chart-text">条形图</div>
                     </div>
-                    <div class="ppt-chart-item" @click="openChart('bar_v')">
+                    <div class="ppt-chart-item" @click="openChart('bar')">
                         <PPTIcon icon="bar_v" :size="28" />
                         <div class="ppt-chart-text">柱状图</div>
                     </div>
@@ -170,6 +170,7 @@
             v-model:visible="showChart"
             :element="chartElement"
             :type="chartType"
+            :axisTransformation="axisTransformation"
             @ok="insertOrUpdateChart"
         />
     </div>
@@ -382,14 +383,17 @@ const insertAudio = async (files: File[]) => {
     }
 };
 
-const chartType = ref<ChartType>("bar_h");
-const openChart = (arg: ChartType | IPPTChartElement) => {
+const chartType = ref<ChartType>("bar");
+const axisTransformation = ref<boolean>(false);
+const openChart = (arg: ChartType | IPPTChartElement, transformation?: boolean) => {
     if (typeof arg === "string") {
         const type = arg as ChartType;
         chartElement.value = undefined;
         chartType.value = type;
+        axisTransformation.value = !!transformation;
     } else {
         chartElement.value = arg as IPPTChartElement;
+        axisTransformation.value = chartElement.value.axisTransformation;
     }
 
     showChart.value = true;

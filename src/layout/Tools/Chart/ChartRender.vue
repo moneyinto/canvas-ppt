@@ -12,7 +12,10 @@
 <script lang="ts" setup>
 import { ChartType } from "@/types/element";
 import * as echarts from "echarts";
-import { PropType, computed, onMounted, ref } from "vue";
+import { PropType, computed, onMounted, ref, watch } from "vue";
+type EChartsOption = echarts.EChartsOption;
+type ECXAXis = echarts.XAXisComponentOption;
+type ECXYXis = echarts.YAXisComponentOption;
 
 const props = defineProps({
     width: {
@@ -25,6 +28,10 @@ const props = defineProps({
     },
     type: {
         type: String as PropType<ChartType>,
+        required: true
+    },
+    axisTransformation: {
+        type: Boolean,
         required: true
     },
     labels: {
@@ -52,26 +59,38 @@ const chartHeight = computed(() => {
 });
 
 const chartRef = ref<HTMLElement>();
-let chart;
+let chart: echarts.ECharts | undefined;
 
 const getOptions = () => {
     // const propsOptopns = props.options || {};
-    const options = {
-        xAxis: {
-            type: "category",
-            data: props.labels
+    const xAxis: ECXAXis & ECXYXis = {
+        type: "category",
+        data: props.labels
+    };
+
+    const yAxis: ECXAXis & ECXYXis = {
+        type: "value",
+        splitLine: {
+            show: true,
+            lineStyle: {
+                type: "dashed"
+            }
+        }
+    };
+
+    const options: EChartsOption = {
+        grid: {
+            left: 50,
+            right: 50,
+            top: 50,
+            bottom: 50
         },
-        yAxis: {
-            type: "value"
-        },
+        xAxis: props.axisTransformation ? yAxis : xAxis,
+        yAxis: props.axisTransformation ? xAxis : yAxis,
         series: [
             {
                 data: props.series[0],
-                type: "bar",
-                showBackground: true,
-                backgroundStyle: {
-                    color: "rgba(180, 180, 180, 0.2)"
-                }
+                type: props.type
             }
         ]
     };
@@ -87,6 +106,31 @@ const renderChart = () => {
 };
 
 onMounted(renderChart);
+
+const updateChart = () => {
+    if (!chart) {
+        renderChart();
+        return;
+    }
+    const options = getOptions();
+    chart.setOption(options);
+};
+
+watch(
+    [
+        () => props.width,
+        () => props.height,
+        () => props.type,
+        () => props.axisTransformation,
+        () => props.labels,
+        () => props.legends,
+        () => props.series
+    ],
+    updateChart,
+    {
+        deep: true
+    }
+);
 </script>
 
 <style lang="scss" scoped>

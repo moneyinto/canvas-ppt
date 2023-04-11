@@ -348,8 +348,8 @@ export interface IPPTLatexElement extends IPPTBaseElement {
     shadow?: IPPTElementShadow;
 }
 
-export type ChartType = "bar_h" | "bar_v" | "line" | "pie" | "funnel";
-export type ChartOptions = any;
+export type ChartType = "bar" | "line" | "pie" | "funnel";
+
 export interface ChartData {
     labels: string[];
     legends: string[];
@@ -363,17 +363,11 @@ export interface ChartData {
  *
  * fill?: 填充色
  *
- * chartType: 图表基础类型 bar line pie
+ * chartType: 图表基础类型 bar line pie funnel
  *
  * data: 图表数据
  *
- * options?: 图表配置项
- *
- * outline?: 边框
- *
- * themeColor: 主题色
- *
- * gridColor?: 网格&坐标颜色
+ * axisTransformation: 坐标轴转换
  *
  * legend?: 图例/位置
  */
@@ -382,10 +376,7 @@ export interface IPPTChartElement extends IPPTBaseElement {
     fill?: string;
     chartType: ChartType;
     data: ChartData;
-    options?: ChartOptions;
-    outline?: IPPTElementOutline;
-    themeColor: string[];
-    gridColor?: string;
+    axisTransformation: boolean;
     legend?: "" | "top" | "bottom";
 }
 

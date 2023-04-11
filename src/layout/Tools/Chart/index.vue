@@ -73,6 +73,7 @@
             <div class="chart-render-box">
                 <ChartRender
                     :type="type"
+                    :axisTransformation="axisTransformation"
                     :width="chartSet.width"
                     :height="chartSet.height"
                     :labels="chartSet.labels"
@@ -106,6 +107,10 @@ const props = defineProps({
         type: Object as PropType<IPPTChartElement>
     },
     visible: {
+        type: Boolean,
+        required: true
+    },
+    axisTransformation: {
         type: Boolean,
         required: true
     }
@@ -152,11 +157,11 @@ const initData = () => {
 const inputChange = (event: Event, rowIndex: number, colIndex: number) => {
     const value = (event.target as any).value;
     if (rowIndex === 2) {
-        legends[colIndex - 3] = value;
+        chartSet.value.legends[colIndex - 3] = value;
     } else if (colIndex === 2) {
-        labels[rowIndex - 3] = value;
+        chartSet.value.labels[rowIndex - 3] = value;
     } else {
-        series[colIndex - 3][rowIndex - 3] = Number(value);
+        chartSet.value.series[colIndex - 3][rowIndex - 3] = Number(value);
     }
 };
 
