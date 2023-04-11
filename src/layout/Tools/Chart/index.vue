@@ -70,12 +70,25 @@
                 </table>
             </div>
 
-            <div class="chart-render-box">
+            <div
+                class="chart-render-box"
+                :style="{
+                    top: top + 'px',
+                    left: left + 'px'
+                }"
+                @mousedown="onMousedown"
+            >
+                <ResizePointer
+                    v-for="pointer in resizePointers"
+                    :key="pointer.direction"
+                    :style="pointer.style"
+                    @mousedown.stop="$event => resize($event, pointer.direction)"
+                />
                 <ChartRender
                     :type="type"
                     :axisTransformation="axisTransformation"
-                    :width="chartSet.width"
-                    :height="chartSet.height"
+                    :width="chartWidth"
+                    :height="chartHeight"
                     :labels="chartSet.labels"
                     :legends="chartSet.legends"
                     :series="chartSet.series"
@@ -89,6 +102,9 @@
 import { ChartData, ChartType, IPPTChartElement } from "@/types/element";
 import { PropType, nextTick, ref, toRefs, watch } from "vue";
 import ChartRender from "./ChartRender.vue";
+import ResizePointer from "@/components/ResizePointer.vue";
+import useResizeHandler from "@/hooks/useResizeHandler";
+import { throttleRAF } from "@/utils";
 
 const emit = defineEmits(["ok", "update:visible"]);
 
@@ -123,10 +139,10 @@ const { labels, legends, series } = baseChartData;
 const chartSet = ref({
     labels,
     legends,
-    series,
-    width: 400,
-    height: 280
+    series
 });
+const chartWidth = ref(400);
+const chartHeight = ref(280);
 
 const initData = () => {
     const _data: string[][] = [];
@@ -174,6 +190,8 @@ watch(
                 chartSet.value.legends = props.element.data.legends;
                 chartSet.value.series = props.element.data.series;
             }
+            top.value = initTop;
+            left.value = initLeft;
             nextTick(initData);
         } else {
             // clear
@@ -189,6 +207,34 @@ const sure = () => {
     console.log(labels, legends, series);
     emit("ok");
 };
+
+const startPoint = {
+    x: 0,
+    y: 0
+};
+const initTop = window.innerHeight * 0.8 * 0.5 - 140;
+const initLeft = window.innerWidth * 0.8 * 0.5 - 100;
+const top = ref(initTop);
+const left = ref(initLeft);
+const onMousedown = (event: MouseEvent) => {
+    startPoint.x = event.pageX;
+    startPoint.y = event.pageY;
+    document.onmousemove = throttleRAF((event: MouseEvent) => {
+        const moveX = event.pageX - startPoint.x;
+        const moveY = event.pageY - startPoint.y;
+        startPoint.x = event.pageX;
+        startPoint.y = event.pageY;
+        left.value += moveX;
+        top.value += moveY;
+    });
+
+    document.onmouseup = () => {
+        document.onmousemove = null;
+        document.onmouseup = null;
+    };
+};
+
+const { resizePointers, resize } = useResizeHandler(left, top, chartWidth, chartHeight);
 </script>
 
 <style lang="scss">
@@ -301,8 +347,6 @@ const sure = () => {
 
 .chart-render-box {
     position: absolute;
-    top: 100px;
-    left: 400px;
     background-color: #ffffff;
     z-index: 100;
     border: 1px solid #000;

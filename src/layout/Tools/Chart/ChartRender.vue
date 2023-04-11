@@ -119,7 +119,15 @@ const updateChart = () => {
 watch(
     [
         () => props.width,
-        () => props.height,
+        () => props.height
+    ],
+    () => {
+        if (chart) chart.resize();
+    }
+);
+
+watch(
+    [
         () => props.type,
         () => props.axisTransformation,
         () => props.labels,
