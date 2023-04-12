@@ -16,6 +16,8 @@ import { PropType, computed, onMounted, ref, watch } from "vue";
 type EChartsOption = echarts.EChartsOption;
 type ECXAXis = echarts.XAXisComponentOption;
 type ECXYXis = echarts.YAXisComponentOption;
+type ECPieData = { value: number; name: string; };
+type ECData = number[] | ECPieData[];
 
 const props = defineProps({
     width: {
@@ -78,6 +80,19 @@ const getOptions = () => {
         }
     };
 
+    let data: ECData = props.series[0];
+    if (props.type === "pie" || props.type === "funnel") {
+        const pieData: ECPieData[] = [];
+        props.labels.forEach((label, index) => {
+            pieData.push({
+                name: label,
+                value: data[index] as number
+            });
+        });
+
+        data = pieData;
+    }
+
     const options: EChartsOption = {
         grid: {
             left: 50,
@@ -85,16 +100,22 @@ const getOptions = () => {
             top: 50,
             bottom: 50
         },
-        xAxis: props.axisTransformation ? yAxis : xAxis,
-        yAxis: props.axisTransformation ? xAxis : yAxis,
         series: [
             {
-                data: props.series[0],
+                data,
                 type: props.type
             }
         ]
     };
-    return options;
+    return {
+        ...options,
+        ...(props.type === "pie" || props.type === "funnel"
+            ? {}
+            : {
+                  xAxis: props.axisTransformation ? yAxis : xAxis,
+                  yAxis: props.axisTransformation ? xAxis : yAxis
+              })
+    };
 };
 
 const renderChart = () => {
@@ -116,15 +137,9 @@ const updateChart = () => {
     chart.setOption(options);
 };
 
-watch(
-    [
-        () => props.width,
-        () => props.height
-    ],
-    () => {
-        if (chart) chart.resize();
-    }
-);
+watch([() => props.width, () => props.height], () => {
+    if (chart) chart.resize();
+});
 
 watch(
     [
