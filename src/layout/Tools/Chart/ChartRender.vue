@@ -53,8 +53,6 @@ const props = defineProps({
     }
 });
 
-console.log(props.type);
-
 const chartHeight = computed(() => {
     if (props.legend) return props.height - 20;
     return props.height;
@@ -154,6 +152,12 @@ watch(
         deep: true
     }
 );
+
+const getChartImage = () => {
+    return chart?.getDataURL();
+};
+
+defineExpose({ getChartImage });
 </script>
 
 <style lang="scss" scoped>

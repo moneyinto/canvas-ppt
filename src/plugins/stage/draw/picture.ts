@@ -1,6 +1,6 @@
 import { History } from "@/plugins/editor/history";
 import { ICacheImage } from "@/types";
-import { IPPTImageElement, IPPTLatexElement } from "@/types/element";
+import { IPPTChartElement, IPPTImageElement, IPPTLatexElement } from "@/types/element";
 import StageConfig from "../config";
 import { Shadow } from "./shadow";
 
@@ -20,7 +20,7 @@ export class Picture {
         this._shadow = new Shadow(this._ctx);
     }
 
-    private async _getCacheImage(element: IPPTImageElement | IPPTLatexElement): Promise<ICacheImage> {
+    private async _getCacheImage(element: IPPTImageElement | IPPTLatexElement | IPPTChartElement): Promise<ICacheImage> {
         return new Promise(resolve => {
             const cacheImage = this._stageConfig.cacheImages.find(image => image.id === element.src);
             if (cacheImage) {
@@ -46,7 +46,7 @@ export class Picture {
         });
     }
 
-    public async draw(element: IPPTImageElement | IPPTLatexElement) {
+    public async draw(element: IPPTImageElement | IPPTLatexElement | IPPTChartElement) {
         const cacheImage = await this._getCacheImage(element);
         if (cacheImage) {
             const image = cacheImage.image;

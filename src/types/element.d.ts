@@ -369,6 +369,8 @@ export interface ChartData {
  *
  * axisTransformation: 坐标轴转换
  *
+ * src: 图表图片
+ *
  * legend?: 图例/位置
  */
 export interface IPPTChartElement extends IPPTBaseElement {
@@ -377,7 +379,15 @@ export interface IPPTChartElement extends IPPTBaseElement {
     chartType: ChartType;
     data: ChartData;
     axisTransformation: boolean;
+    src: string;
     legend?: "" | "top" | "bottom";
+    rotate: number;
+    streach: number;
+    flipH?: 1 | -1;
+    flipV?: 1 | -1;
+    outline?: IPPTElementOutline;
+    opacity?: number;
+    shadow?: IPPTElementShadow;
 }
 
 export type IPPTElement =

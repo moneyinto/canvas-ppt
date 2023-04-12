@@ -132,6 +132,11 @@ export default class Stage {
                 this._music?.draw(element);
                 break;
             }
+            case "chart": {
+                if (!this._picture && this.history) this._picture = new Picture(this.stageConfig, this.ctx, this.history);
+                this._picture?.draw(element);
+                break;
+            }
         }
     }
 

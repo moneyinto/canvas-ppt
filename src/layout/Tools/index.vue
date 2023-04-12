@@ -64,10 +64,10 @@ watch(elements, () => {
     if (elements.value.length > 0) {
         showFillColor.value = elements.value.filter(element => element.type === "shape").length > 0;
         showBorder.value = elements.value.filter(element => element.type === "shape").length > 0;
-        showShadowColor.value = elements.value.filter(element => element.type !== "line").length > 0;
+        showShadowColor.value = elements.value.filter(element => element.type !== "line" && element.type !== "video" && element.type !== "audio").length > 0;
         showEvert.value = elements.value.filter(element => element.type === "shape").length > 0;
         showTextEidt.value = elements.value.filter(element => element.type === "text").length > 0;
-        showImageEdit.value = elements.value.filter(element => element.type === "image").length > 0;
+        showImageEdit.value = elements.value.filter(element => element.type === "image" || element.type === "latex" || element.type === "chart").length > 0;
         showAlign.value = true;
     } else {
         showFillColor.value = false;

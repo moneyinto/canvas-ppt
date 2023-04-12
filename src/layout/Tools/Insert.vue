@@ -185,13 +185,20 @@ import Chart from "./Chart/index.vue";
 import { SHAPE_LIST } from "@/plugins/config/shapes";
 import { ILineItem, IShapeItem } from "@/types/shape";
 import { inject, onMounted, onUnmounted, ref, Ref, watch } from "vue";
-import { ICreatingType, IPPTChartElement, IPPTLatexElement, ChartType } from "@/types/element";
+import {
+    ICreatingType,
+    IPPTChartElement,
+    IPPTLatexElement,
+    ChartType,
+    ChartData
+} from "@/types/element";
 import { fileMd5, dataURLtoFile } from "@/utils";
 import {
     createImageElement,
     createLatexElement,
     createVideoElement,
-    createAudioElement
+    createAudioElement,
+    createChartElement
 } from "@/utils/create";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 
@@ -385,7 +392,10 @@ const insertAudio = async (files: File[]) => {
 
 const chartType = ref<ChartType>("bar");
 const axisTransformation = ref<boolean>(false);
-const openChart = (arg: ChartType | IPPTChartElement, transformation?: boolean) => {
+const openChart = (
+    arg: ChartType | IPPTChartElement,
+    transformation?: boolean
+) => {
     if (typeof arg === "string") {
         const type = arg as ChartType;
         chartElement.value = undefined;
@@ -400,43 +410,52 @@ const openChart = (arg: ChartType | IPPTChartElement, transformation?: boolean) 
     showChartPool.value = false;
 };
 
-const insertOrUpdateChart = async () => {
-    showLatex.value = false;
-    // const file = dataURLtoFile(src, "latex.svg", "image/svg+xml");
-    // const md5 = await fileMd5(file);
-    // if (md5) {
-    //     await instance?.value.history.saveFile(md5, src);
-    //     if (latexElement.value) {
-    //         if (latexElement.value.text !== latex) {
-    //             const image = new Image();
-    //             image.onload = () => {
-    //                 latexElement.value!.src = md5;
-    //                 latexElement.value!.text = latex;
-    //                 latexElement.value!.width = image.width;
-    //                 latexElement.value!.height = image.height;
-    //                 instance?.value.command.executeUpdateRender(
-    //                     [JSON.parse(JSON.stringify(latexElement.value))],
-    //                     true
-    //                 );
+const insertOrUpdateChart = async ({
+    data,
+    axisTransformation,
+    src
+}: {
+    data: ChartData;
+    axisTransformation: boolean;
+    src: string;
+}) => {
+    showChart.value = false;
+    const file = dataURLtoFile(src, "chart.png", "image/png");
+    const md5 = await fileMd5(file);
+    if (md5) {
+        await instance?.value.history.saveFile(md5, src);
+        if (chartElement.value) {
+            const image = new Image();
+            image.onload = () => {
+                chartElement.value!.data = data;
+                chartElement.value!.src = md5;
+                chartElement.value!.axisTransformation = axisTransformation;
+                chartElement.value!.width = image.width;
+                chartElement.value!.height = image.height;
+                instance?.value.command.executeUpdateRender(
+                    [JSON.parse(JSON.stringify(chartElement.value))],
+                    true
+                );
 
-    //                 latexElement.value = undefined;
-    //             };
-    //             image.src = src;
-    //         }
-    //     } else {
-    //         const image = new Image();
-    //         image.onload = () => {
-    //             const element = createLatexElement(
-    //                 image.width,
-    //                 image.height,
-    //                 md5,
-    //                 latex
-    //             );
-    //             instance?.value.command.executeAddRender([element]);
-    //         };
-    //         image.src = src;
-    //     }
-    // }
+                chartElement.value = undefined;
+            };
+            image.src = src;
+        } else {
+            const image = new Image();
+            image.onload = () => {
+                const element = createChartElement(
+                    chartType.value,
+                    image.width,
+                    image.height,
+                    md5,
+                    data,
+                    axisTransformation
+                );
+                instance?.value.command.executeAddRender([element]);
+            };
+            image.src = src;
+        }
+    }
 };
 </script>
 

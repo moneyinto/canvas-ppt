@@ -18,6 +18,7 @@ import { KeyMap } from "../shortCut/keyMap";
 import StageConfig, { TEXT_MARGIN } from "../stage/config";
 import { Cursor } from "../stage/cursor";
 import {
+    IPPTAudioElement,
     IPPTElement,
     IPPTElementOutline,
     IPPTElementShadow,
@@ -102,7 +103,15 @@ export default class Command {
             const slide = this._stageConfig.getCurrentSlide();
             // 对多选元素先进行排序
             // 不然相邻的元素会出现不变化的现象
-            const sortElements = slide?.elements.filter(element => operateElements.findIndex(ele => ele.id === element.id) > -1).reverse() || [];
+            const sortElements =
+                slide?.elements
+                    .filter(
+                        (element) =>
+                            operateElements.findIndex(
+                                (ele) => ele.id === element.id
+                            ) > -1
+                    )
+                    .reverse() || [];
             let isChange = false;
             for (const operateElement of sortElements) {
                 const zIndex = slide?.elements.findIndex(
@@ -133,7 +142,15 @@ export default class Command {
         if (operateElements.length > 0) {
             const slide = this._stageConfig.getCurrentSlide();
             let isChange = false;
-            const sortElements = slide?.elements.filter(element => operateElements.findIndex(ele => ele.id === element.id) > -1).reverse() || [];
+            const sortElements =
+                slide?.elements
+                    .filter(
+                        (element) =>
+                            operateElements.findIndex(
+                                (ele) => ele.id === element.id
+                            ) > -1
+                    )
+                    .reverse() || [];
             for (const operateElement of sortElements) {
                 const zIndex = slide?.elements.findIndex(
                     (element) => element.id === operateElement.id
@@ -220,7 +237,10 @@ export default class Command {
         const operateElements = this._stageConfig.operateElements;
         const newElements: IPPTElement[] = [];
         for (const operateElement of operateElements) {
-            if (operateElement.type === "shape" || operateElement.type === "image") {
+            if (
+                operateElement.type === "shape" ||
+                operateElement.type === "image"
+            ) {
                 const newElement: IPPTElement = {
                     ...operateElement,
                     flipH: operateElement.flipH === -1 ? 1 : -1
@@ -237,7 +257,10 @@ export default class Command {
         const operateElements = this._stageConfig.operateElements;
         const newElements: IPPTElement[] = [];
         for (const operateElement of operateElements) {
-            if (operateElement.type === "shape" || operateElement.type === "image") {
+            if (
+                operateElement.type === "shape" ||
+                operateElement.type === "image"
+            ) {
                 const newElement: IPPTElement = {
                     ...operateElement,
                     flipV: operateElement.flipV === -1 ? 1 : -1
@@ -307,7 +330,12 @@ export default class Command {
         const operateElements = this._stageConfig.operateElements;
         const newElements: IPPTElement[] = [];
         for (const operateElement of operateElements) {
-            if (operateElement && operateElement.type === "image") {
+            if (
+                operateElement &&
+                (operateElement.type === "image" ||
+                    operateElement.type === "chart" ||
+                    operateElement.type === "latex")
+            ) {
                 const newElement = {
                     ...operateElement,
                     opacity: value
@@ -324,8 +352,16 @@ export default class Command {
         const operateElements = this._stageConfig.operateElements;
         const newElements: IPPTElement[] = [];
         for (const operateElement of operateElements) {
-            if (operateElement && operateElement.type !== "line" && operateElement.type !== "video") {
-                const newElement: Exclude<IPPTElement, IPPTLineElement | IPPTVideoElement> = {
+            if (
+                operateElement &&
+                operateElement.type !== "line" &&
+                operateElement.type !== "video" &&
+                operateElement.type !== "audio"
+            ) {
+                const newElement: Exclude<
+                    IPPTElement,
+                    IPPTLineElement | IPPTVideoElement | IPPTAudioElement
+                > = {
                     ...operateElement,
                     outline: {
                         ...(operateElement.outline || {}),
@@ -348,7 +384,9 @@ export default class Command {
         if (this._stageConfig.textFocus) {
             const selectArea = this._stageConfig.selectArea;
             if (selectArea) {
-                const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+                const operateElement = operateElements.find(
+                    (element) => element.id === this._stageConfig.textFocusElementId
+                );
                 const { startX, endX } = this._stageConfig.getSelectArea(
                     selectArea,
                     operateElement as IPPTTextElement
@@ -409,7 +447,9 @@ export default class Command {
             // 再次写入剪切板，为了下一次粘贴能够在上一次的基础上进行偏移
             await copyText(
                 encrypt(
-                    `${CLIPBOARD_STRING_TYPE.ELEMENT}${JSON.stringify(elements)}`
+                    `${CLIPBOARD_STRING_TYPE.ELEMENT}${JSON.stringify(
+                        elements
+                    )}`
                 )
             );
         } else if (content.indexOf(CLIPBOARD_STRING_TYPE.IMAGE) > -1) {
@@ -431,7 +471,9 @@ export default class Command {
             ) as IFontData[];
             if (this._stageConfig.textFocus) {
                 const operateElements = this._stageConfig.operateElements;
-                const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+                const operateElement = operateElements.find(
+                    (element) => element.id === this._stageConfig.textFocusElementId
+                );
 
                 if (operateElement && operateElement.type === "text") {
                     const selectArea = this._stageConfig.selectArea;
@@ -474,7 +516,9 @@ export default class Command {
             if (content) {
                 if (this._stageConfig.textFocus) {
                     const operateElements = this._stageConfig.operateElements;
-                    const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+                    const operateElement = operateElements.find(
+                        (element) => element.id === this._stageConfig.textFocusElementId
+                    );
                     if (operateElement && operateElement.type === "text") {
                         const selectArea = this._stageConfig.selectArea;
                         if (selectArea) {
@@ -508,7 +552,8 @@ export default class Command {
                             0,
                             ...elementContent
                         );
-                        operateElement.height = this._getTextHeight(operateElement);
+                        operateElement.height =
+                            this._getTextHeight(operateElement);
                         const cursorPosition = position + elementContent.length;
                         this.executeUpdateRender(operateElements, true);
                         this._updateCursor(cursorPosition);
@@ -584,15 +629,14 @@ export default class Command {
         // 获取前一个字的样式，设置config
         if (this._stageConfig.textFocus) {
             const operateElements = this._stageConfig.operateElements;
-            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            const operateElement = operateElements.find(
+                (element) => element.id === this._stageConfig.textFocusElementId
+            );
             if (operateElement && operateElement.type === "text") {
                 const currentDataPosition = this._cursor.getDataPosition();
                 const content = operateElement.content;
                 // 前面一个字没有，获取后面一个回车符的字样
-                const text =
-                    currentDataPosition === -1
-                        ? content[0]
-                        : content[currentDataPosition];
+                const text = currentDataPosition === -1 ? content[0] : content[currentDataPosition];
 
                 const config = {
                     fontSize: text.fontSize,
@@ -605,20 +649,29 @@ export default class Command {
                 };
                 this._stageConfig.setFontConfig(config);
 
-                this._listener.onFontSizeChange && this._listener.onFontSizeChange(config.fontSize);
-                this._listener.onFontWeightChange && this._listener.onFontWeightChange(config.fontWeight === "bold");
-                this._listener.onFontStyleChange && this._listener.onFontStyleChange(config.fontStyle === "italic");
-                this._listener.onFontUnderLineChange && this._listener.onFontUnderLineChange(config.underline);
-                this._listener.onFontStrikoutChange && this._listener.onFontStrikoutChange(config.strikout);
-                this._listener.onFontFamilyChange && this._listener.onFontFamilyChange(config.fontFamily);
+                this._listener.onFontSizeChange &&
+                    this._listener.onFontSizeChange(config.fontSize);
+                this._listener.onFontWeightChange &&
+                    this._listener.onFontWeightChange(
+                        config.fontWeight === "bold"
+                    );
+                this._listener.onFontStyleChange &&
+                    this._listener.onFontStyleChange(
+                        config.fontStyle === "italic"
+                    );
+                this._listener.onFontUnderLineChange &&
+                    this._listener.onFontUnderLineChange(config.underline);
+                this._listener.onFontStrikoutChange &&
+                    this._listener.onFontStrikoutChange(config.strikout);
+                this._listener.onFontFamilyChange &&
+                    this._listener.onFontFamilyChange(config.fontFamily);
             }
         }
     }
 
     // 获取文本变更后文本框高度
     private _getTextHeight(operateElement: IPPTTextElement) {
-        const renderContent =
-            this._stageConfig.getRenderContent(operateElement);
+        const renderContent = this._stageConfig.getRenderContent(operateElement);
         let height = TEXT_MARGIN * 2;
         renderContent.forEach((line) => {
             height += line.height * operateElement.lineHeight;
@@ -631,7 +684,9 @@ export default class Command {
         const selectArea = this._stageConfig.selectArea;
         if (selectArea) {
             const operateElements = this._stageConfig.operateElements;
-            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            const operateElement = operateElements.find(
+                (element) => element.id === this._stageConfig.textFocusElementId
+            );
             if (operateElement && operateElement.type === "text") {
                 const { startX, endX } = this._stageConfig.getSelectArea(
                     selectArea,
@@ -652,7 +707,9 @@ export default class Command {
     // 删除文本内容
     private _deleteText(position: number) {
         const operateElements = this._stageConfig.operateElements;
-        const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+        const operateElement = operateElements.find(
+            (element) => element.id === this._stageConfig.textFocusElementId
+        );
         if (operateElement && operateElement.type === "text") {
             if (
                 position >= operateElement.content.length - 1 ||
@@ -673,22 +730,21 @@ export default class Command {
     public executeMove(direction: string) {
         const operateElements = this._stageConfig.operateElements;
         if (this._stageConfig.textFocus) {
-            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            const operateElement = operateElements.find(
+                (element) => element.id === this._stageConfig.textFocusElementId
+            );
             if (operateElement && operateElement.type === "text") {
                 // 光标移动
                 switch (direction) {
                     case KeyMap.Up: {
                         const position = this._cursor.getDataPosition();
-                        const renderPosition =
-                            this._cursor.getRenderDataPosition();
+                        const renderPosition = this._cursor.getRenderDataPosition();
                         if (renderPosition[0] > 0) {
-                            const renderContent =
-                                this._stageConfig.getRenderContent(
-                                    operateElement as IPPTTextElement
-                                );
+                            const renderContent = this._stageConfig.getRenderContent(
+                                operateElement as IPPTTextElement
+                            );
 
-                            const currentLineData =
-                                renderContent[renderPosition[0]];
+                            const currentLineData = renderContent[renderPosition[0]];
                             let currentLeft = this._stageConfig.getAlignOffsetX(
                                 currentLineData,
                                 operateElement as IPPTTextElement
@@ -702,8 +758,7 @@ export default class Command {
                                 }
                             }
 
-                            const upLineData =
-                                renderContent[renderPosition[0] - 1];
+                            const upLineData = renderContent[renderPosition[0] - 1];
                             let upLineX = -1;
                             let upLeft = this._stageConfig.getAlignOffsetX(
                                 upLineData,
@@ -722,26 +777,19 @@ export default class Command {
                             if (upLineX === -1) upLineX = 0;
 
                             this._updateCursor(
-                                position -
-                                    (renderPosition[1] +
-                                        1 +
-                                        upLineData.texts.length -
-                                        upLineX)
+                                position - (renderPosition[1] + 1 + upLineData.texts.length - upLineX)
                             );
                         }
                         break;
                     }
                     case KeyMap.Down: {
                         const position = this._cursor.getDataPosition();
-                        const renderPosition =
-                            this._cursor.getRenderDataPosition();
-                        const renderContent =
-                            this._stageConfig.getRenderContent(
-                                operateElement as IPPTTextElement
-                            );
+                        const renderPosition = this._cursor.getRenderDataPosition();
+                        const renderContent = this._stageConfig.getRenderContent(
+                            operateElement as IPPTTextElement
+                        );
                         if (renderPosition[0] < renderContent.length - 1) {
-                            const currentLineData =
-                                renderContent[renderPosition[0]];
+                            const currentLineData = renderContent[renderPosition[0]];
                             let currentLeft = this._stageConfig.getAlignOffsetX(
                                 currentLineData,
                                 operateElement as IPPTTextElement
@@ -755,8 +803,7 @@ export default class Command {
                                 }
                             }
 
-                            const downLineData =
-                                renderContent[renderPosition[0] + 1];
+                            const downLineData = renderContent[renderPosition[0] + 1];
                             let downLineX = -1;
                             let downLeft = this._stageConfig.getAlignOffsetX(
                                 downLineData,
@@ -775,10 +822,7 @@ export default class Command {
                             if (downLineX === -1) downLineX = 0;
 
                             this._updateCursor(
-                                position +
-                                    (currentLineData.texts.length -
-                                        (renderPosition[1] + 1) +
-                                        downLineX)
+                                position + (currentLineData.texts.length - (renderPosition[1] + 1) + downLineX)
                             );
                         }
                         break;
@@ -834,7 +878,9 @@ export default class Command {
         // 文本框编辑时回车
         if (this._stageConfig.textFocus) {
             const operateElements = this._stageConfig.operateElements;
-            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            const operateElement = operateElements.find(
+                (element) => element.id === this._stageConfig.textFocusElementId
+            );
             if (operateElement && operateElement.type === "text") {
                 if (this._cursor.getTextareaText()) return;
                 const config = this._stageConfig.fontConfig;
@@ -897,7 +943,9 @@ export default class Command {
     public executeDeleteRender(elements: IPPTElement[]) {
         const slide = this._stageConfig.getCurrentSlide();
         if (slide && slide.elements) {
-            slide.elements = slide.elements.filter(ele => elements.findIndex(element => element.id === ele.id) === -1);
+            slide.elements = slide.elements.filter(
+                (ele) => elements.findIndex((element) => element.id === ele.id) === -1
+            );
             this._stageConfig.setOperateElement(null, false);
 
             this.executeLogRender();
@@ -907,7 +955,9 @@ export default class Command {
     // 文本输入
     public executeAddText(text: IFontData, position: number) {
         const operateElements = this._stageConfig.operateElements;
-        const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+        const operateElement = operateElements.find(
+            (element) => element.id === this._stageConfig.textFocusElementId
+        );
         if (operateElement && operateElement.type === "text") {
             operateElement.content.splice(position, 0, text);
             operateElement.height = this._getTextHeight(operateElement);
@@ -955,7 +1005,9 @@ export default class Command {
     public executeSetFontSize(fontSize: number, type?: "plus" | "minus") {
         const operateElements = this._stageConfig.operateElements;
         if (this._stageConfig.textFocus) {
-            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            const operateElement = operateElements.find(
+                (element) => element.id === this._stageConfig.textFocusElementId
+            );
             if (operateElement && operateElement.type === "text") {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
@@ -1015,7 +1067,9 @@ export default class Command {
     public executeSetFontWeight(bold: boolean) {
         const operateElements = this._stageConfig.operateElements;
         if (this._stageConfig.textFocus) {
-            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            const operateElement = operateElements.find(
+                (element) => element.id === this._stageConfig.textFocusElementId
+            );
             if (operateElement && operateElement.type === "text") {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
@@ -1063,7 +1117,9 @@ export default class Command {
     public executeSetFontStyle(italic: boolean) {
         const operateElements = this._stageConfig.operateElements;
         if (this._stageConfig.textFocus) {
-            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            const operateElement = operateElements.find(
+                (element) => element.id === this._stageConfig.textFocusElementId
+            );
             if (operateElement && operateElement.type === "text") {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
@@ -1111,7 +1167,9 @@ export default class Command {
     public executeSetFontUnderLine(underline: boolean) {
         const operateElements = this._stageConfig.operateElements;
         if (this._stageConfig.textFocus) {
-            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            const operateElement = operateElements.find(
+                (element) => element.id === this._stageConfig.textFocusElementId
+            );
             if (operateElement && operateElement.type === "text") {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
@@ -1159,7 +1217,9 @@ export default class Command {
     public executeSetFontStrikout(strikout: boolean) {
         const operateElements = this._stageConfig.operateElements;
         if (this._stageConfig.textFocus) {
-            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            const operateElement = operateElements.find(
+                (element) => element.id === this._stageConfig.textFocusElementId
+            );
             if (operateElement && operateElement.type === "text") {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
@@ -1207,7 +1267,9 @@ export default class Command {
     public executeSetFontColor(fontColor: string) {
         const operateElements = this._stageConfig.operateElements;
         if (this._stageConfig.textFocus) {
-            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            const operateElement = operateElements.find(
+                (element) => element.id === this._stageConfig.textFocusElementId
+            );
             if (operateElement && operateElement.type === "text") {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
@@ -1253,7 +1315,9 @@ export default class Command {
     public executeSetFontFamily(fontFamily: string) {
         const operateElements = this._stageConfig.operateElements;
         if (this._stageConfig.textFocus) {
-            const operateElement = operateElements.find(element => element.id === this._stageConfig.textFocusElementId);
+            const operateElement = operateElements.find(
+                (element) => element.id === this._stageConfig.textFocusElementId
+            );
             if (operateElement && operateElement.type === "text") {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
@@ -1333,8 +1397,14 @@ export default class Command {
         operateElement: IPPTElement,
         align: IElementAlignType
     ) {
-        const width = operateElement.type === "line" ? operateElement.end[0] - operateElement.start[0] : operateElement.width;
-        const height = operateElement.type === "line" ? operateElement.end[1] - operateElement.start[1] : operateElement.height;
+        const width =
+            operateElement.type === "line"
+                ? operateElement.end[0] - operateElement.start[0]
+                : operateElement.width;
+        const height =
+            operateElement.type === "line"
+                ? operateElement.end[1] - operateElement.start[1]
+                : operateElement.height;
         switch (align) {
             case "alignLeft": {
                 operateElement.left = 0;
@@ -1426,16 +1496,18 @@ export default class Command {
     }
 
     // 设置元素对齐
-    public executeSetElementAlign(
-        align: IElementAlignType
-    ) {
+    public executeSetElementAlign(align: IElementAlignType) {
         const operateElements = this._stageConfig.operateElements;
         const elements: IPPTElement[] = [];
         if (operateElements.length > 1) {
             // 相对于元素对齐
             const boundary = this._stageConfig.getOperateElementsBoundary(operateElements);
             for (const operateElement of operateElements) {
-                const element = this._setElementAlignByElement(operateElement, align, boundary);
+                const element = this._setElementAlignByElement(
+                    operateElement,
+                    align,
+                    boundary
+                );
                 elements.push(element);
             }
         } else {

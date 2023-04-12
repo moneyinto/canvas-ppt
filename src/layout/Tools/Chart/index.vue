@@ -85,6 +85,7 @@
                     @mousedown.stop="$event => resize($event, pointer.direction)"
                 />
                 <ChartRender
+                    ref="chartRenderRef"
                     :type="type"
                     :axisTransformation="axisTransformation"
                     :width="chartWidth"
@@ -132,7 +133,7 @@ const props = defineProps({
     }
 });
 
-const { visible } = toRefs(props);
+const { visible, axisTransformation } = toRefs(props);
 
 const focusCell = ref<[number, number] | null>(null);
 const { labels, legends, series } = baseChartData;
@@ -143,6 +144,7 @@ const chartSet = ref({
 });
 const chartWidth = ref(400);
 const chartHeight = ref(280);
+const chartRenderRef = ref();
 
 const initData = () => {
     const _data: string[][] = [];
@@ -204,8 +206,8 @@ const close = () => {
 };
 
 const sure = () => {
-    console.log(labels, legends, series);
-    emit("ok");
+    const src = chartRenderRef.value.getChartImage();
+    emit("ok", { data: { labels, legends, series }, axisTransformation, src });
 };
 
 const startPoint = {

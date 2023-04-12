@@ -8,7 +8,10 @@ import {
     IPPTTextElement,
     IPPTVideoElement,
     IPPTLatexElement,
-    IPPTAudioElement
+    IPPTAudioElement,
+    ChartType,
+    ChartData,
+    IPPTChartElement
 } from "@/types/element";
 import { baseFontConfig } from "@/plugins/config/font";
 
@@ -194,17 +197,6 @@ export const createLatexElement = (
     src: string,
     text: string
 ) => {
-    const VIEW_HEIGHT = VIEWPORT_SIZE * VIEWRATIO;
-    let resultWidth = width;
-    let resultHeight = height;
-    if (resultWidth > VIEWPORT_SIZE) {
-        resultHeight = (resultHeight / resultWidth) * VIEWPORT_SIZE;
-        resultWidth = VIEWPORT_SIZE;
-    }
-    if (resultHeight > VIEW_HEIGHT) {
-        resultWidth = (resultWidth / resultHeight) * VIEW_HEIGHT;
-        resultHeight = VIEW_HEIGHT;
-    }
     const id = createRandomCode();
     const name = "公式";
     const newElement: IPPTLatexElement = {
@@ -219,6 +211,35 @@ export const createLatexElement = (
         height,
         src,
         text
+    };
+
+    return newElement;
+};
+
+export const createChartElement = (
+    chartType: ChartType,
+    width: number,
+    height: number,
+    src: string,
+    data: ChartData,
+    axisTransformation: boolean
+) => {
+    const id = createRandomCode();
+    const name = "图表";
+    const newElement: IPPTChartElement = {
+        name,
+        type: "chart",
+        id,
+        left: 0,
+        top: 0,
+        rotate: 0,
+        streach: 0,
+        width,
+        height,
+        src,
+        chartType,
+        data,
+        axisTransformation
     };
 
     return newElement;

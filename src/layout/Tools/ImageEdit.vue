@@ -1,7 +1,10 @@
 <template>
     <div class="ppt-edit-tools">
         <a-popover trigger="click" v-model:visible="showOpacity">
-            <a-tooltip title="图片透明度" :visible="!showOpacity && hoverOpacity">
+            <a-tooltip
+                title="图片透明度"
+                :visible="!showOpacity && hoverOpacity"
+            >
                 <div
                     class="ppt-tool-btn"
                     @mouseover="hoverOpacity = true"
@@ -44,7 +47,12 @@
 
 <script lang="ts" setup>
 import { inject, PropType, Ref, ref, watch } from "vue";
-import { IPPTElement, IPPTImageElement } from "@/types/element";
+import {
+    IPPTChartElement,
+    IPPTElement,
+    IPPTImageElement,
+    IPPTLatexElement
+} from "@/types/element";
 import Editor from "@/plugins/editor";
 
 const props = defineProps({
@@ -61,7 +69,12 @@ const hoverOpacity = ref(false);
 const opacity = ref(0);
 
 const init = () => {
-    const operateElements = props.elements.filter(element => element.type === "image") as IPPTImageElement[];
+    const operateElements = props.elements.filter(
+        (element) =>
+            element.type === "image" ||
+            element.type === "latex" ||
+            element.type === "chart"
+    ) as (IPPTImageElement | IPPTLatexElement | IPPTChartElement)[];
     let opacityNum = 0;
     for (const [index, operateElement] of operateElements.entries()) {
         if (index === 0) {
