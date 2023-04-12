@@ -403,7 +403,8 @@ const openChart = (
         axisTransformation.value = !!transformation;
     } else {
         chartElement.value = arg as IPPTChartElement;
-        axisTransformation.value = chartElement.value.axisTransformation;
+        chartType.value = chartElement.value.chartType;
+        axisTransformation.value = !!chartElement.value.axisTransformation;
     }
 
     showChart.value = true;

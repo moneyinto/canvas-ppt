@@ -156,6 +156,10 @@ export default class ControlStage extends Stage {
             if (operateElement.type === "latex") {
                 emitter.emit(EmitterEvents.OPEN_LATEX, operateElement);
             }
+
+            if (operateElement.type === "chart") {
+                emitter.emit(EmitterEvents.OPEN_CHART, operateElement);
+            }
         }
     }
 

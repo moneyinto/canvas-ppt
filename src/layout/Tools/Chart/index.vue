@@ -85,6 +85,7 @@
                     @mousedown.stop="$event => resize($event, pointer.direction)"
                 />
                 <ChartRender
+                    v-if="visible"
                     ref="chartRenderRef"
                     :type="type"
                     :axisTransformation="axisTransformation"
@@ -149,14 +150,14 @@ const chartRenderRef = ref();
 const initData = () => {
     const _data: string[][] = [];
 
-    const rowCount = labels.length;
-    const colCount = series.length;
+    const rowCount = chartSet.value.labels.length;
+    const colCount = chartSet.value.series.length;
 
-    _data.push(["", ...legends]);
+    _data.push(["", ...chartSet.value.legends]);
     for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-        const row = [labels[rowIndex]];
+        const row = [chartSet.value.labels[rowIndex]];
         for (let colIndex = 0; colIndex < colCount; colIndex++) {
-            row.push(series[colIndex][rowIndex] + "");
+            row.push(chartSet.value.series[colIndex][rowIndex] + "");
         }
         _data.push(row);
     }
@@ -191,6 +192,8 @@ watch(
                 chartSet.value.labels = props.element.data.labels;
                 chartSet.value.legends = props.element.data.legends;
                 chartSet.value.series = props.element.data.series;
+                chartWidth.value = props.element.width;
+                chartHeight.value = props.element.height;
             }
             top.value = initTop;
             left.value = initLeft;

@@ -133,6 +133,7 @@ const updateChart = () => {
     }
     const options = getOptions();
     chart.setOption(options);
+    chart.resize();
 };
 
 watch([() => props.width, () => props.height], () => {
