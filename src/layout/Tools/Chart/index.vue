@@ -82,7 +82,7 @@
                     v-for="pointer in resizePointers"
                     :key="pointer.direction"
                     :style="pointer.style"
-                    @mousedown.stop="$event => resize($event, pointer.direction)"
+                    @mousedown.stop="($event: MouseEvent) => resize($event, pointer.direction)"
                 />
                 <ChartRender
                     v-if="visible"

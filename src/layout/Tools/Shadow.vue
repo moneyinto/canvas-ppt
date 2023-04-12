@@ -87,7 +87,7 @@
 <script lang="ts" setup>
 import { inject, PropType, Ref, ref, watch } from "vue";
 import ColorBoard from "@/components/ColorBoard.vue";
-import { IPPTElement, IPPTLineElement, IPPTVideoElement } from "@/types/element";
+import { IPPTAudioElement, IPPTElement, IPPTLineElement, IPPTVideoElement } from "@/types/element";
 import { STORAGE_SHADOW_COLOR } from "@/utils/storage";
 import Editor from "@/plugins/editor";
 
@@ -112,7 +112,7 @@ const offsetX = ref(0);
 const offsetY = ref(0);
 
 const init = () => {
-    const operateElements = props.elements.filter(element => element.type !== "line" && element.type !== "video") as (Exclude<IPPTElement, IPPTLineElement | IPPTVideoElement>)[];
+    const operateElements = props.elements.filter(element => element.type !== "line" && element.type !== "video" && element.type !== "audio") as (Exclude<IPPTElement, IPPTLineElement | IPPTVideoElement | IPPTAudioElement>)[];
     const allHasShadow = operateElements.filter(element => !!element.shadow).length === operateElements.length;
     let shadowColor = "#000000";
     let blurNum = 10;

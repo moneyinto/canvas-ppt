@@ -150,7 +150,7 @@
 import { THEME_COLOR } from "@/plugins/config/stage";
 import { inject, PropType, Ref, ref, watch } from "vue";
 import ColorBoard from "@/components/ColorBoard.vue";
-import { IPPTElement, IPPTElementOutline, IPPTLineElement, IPPTVideoElement } from "@/types/element";
+import { IPPTAudioElement, IPPTElement, IPPTElementOutline, IPPTLineElement, IPPTVideoElement } from "@/types/element";
 import { STORAGE_BORDER_COLOR } from "@/utils/storage";
 import Editor from "@/plugins/editor";
 
@@ -179,7 +179,7 @@ const borderWidthList = ref(
 );
 
 const init = () => {
-    const operateElements = props.elements.filter(element => element.type !== "line" && element.type !== "video") as Exclude<IPPTElement, IPPTLineElement | IPPTVideoElement>[];
+    const operateElements = props.elements.filter(element => element.type !== "line" && element.type !== "video" && element.type !== "audio") as Exclude<IPPTElement, IPPTLineElement | IPPTVideoElement | IPPTAudioElement>[];
     const allHasOutline = operateElements.filter(element => !!element.outline).length === operateElements.length;
     let outline: Required<IPPTElementOutline> = {
         color: THEME_COLOR,
