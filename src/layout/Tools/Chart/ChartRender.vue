@@ -4,7 +4,7 @@
         ref="chartRef"
         :style="{
             width: width + 'px',
-            height: chartHeight + 'px'
+            height: height + 'px'
         }"
     ></div>
 </template>
@@ -12,12 +12,11 @@
 <script lang="ts" setup>
 import { ChartType } from "@/types/element";
 import * as echarts from "echarts";
-import { PropType, computed, onMounted, ref, watch } from "vue";
+import { PropType, onMounted, ref, watch } from "vue";
 type EChartsOption = echarts.EChartsOption;
 type ECXAXis = echarts.XAXisComponentOption;
 type ECXYXis = echarts.YAXisComponentOption;
-type ECPieData = { value: number; name: string; };
-type ECData = number[] | ECPieData[];
+type ECPieData = { value: number; name: string };
 
 const props = defineProps({
     width: {
@@ -53,16 +52,10 @@ const props = defineProps({
     }
 });
 
-const chartHeight = computed(() => {
-    if (props.legend) return props.height - 20;
-    return props.height;
-});
-
 const chartRef = ref<HTMLElement>();
 let chart: echarts.ECharts | undefined;
 
 const getOptions = () => {
-    // const propsOptopns = props.options || {};
     const xAxis: ECXAXis & ECXYXis = {
         type: "category",
         data: props.labels
@@ -78,35 +71,52 @@ const getOptions = () => {
         }
     };
 
-    let data: ECData = props.series[0];
-    if (props.type === "pie" || props.type === "funnel") {
-        const pieData: ECPieData[] = [];
-        props.labels.forEach((label, index) => {
-            pieData.push({
-                name: label,
-                value: data[index] as number
+    const series: echarts.SeriesOption[] = [];
+    if (props.series.length > 0) {
+        if (props.type === "pie" || props.type === "funnel") {
+            const pieData: ECPieData[] = [];
+            props.labels.forEach((label, index) => {
+                pieData.push({
+                    name: label,
+                    value: props.series[0][index] as number
+                });
             });
-        });
 
-        data = pieData;
+            series.push({
+                data: pieData,
+                type: props.type
+            });
+        } else {
+            props.series.forEach((data, index) => {
+                const name = props.legends[index];
+                series.push({
+                    name,
+                    data,
+                    type: props.type
+                });
+            });
+        }
     }
 
     const options: EChartsOption = {
         grid: {
-            left: 50,
-            right: 50,
-            top: 50,
-            bottom: 50
+            left: 20,
+            right: 20,
+            top: props.legend === "top" ? 40 : 20,
+            bottom: props.legend === "bottom" ? 40 : 20,
+            containLabel: true
         },
-        series: [
-            {
-                data,
-                type: props.type
-            }
-        ]
-    };
-    return {
-        ...options,
+        series,
+        ...(props.legend
+            ? {
+                  legend: {
+                      ...(props.type === "pie" || props.type === "funnel"
+                          ? {}
+                          : { data: props.legends }),
+                      top: props.legend
+                  }
+              }
+            : {}),
         ...(props.type === "pie" || props.type === "funnel"
             ? {}
             : {
@@ -114,6 +124,7 @@ const getOptions = () => {
                   yAxis: props.axisTransformation ? xAxis : yAxis
               })
     };
+    return options;
 };
 
 const renderChart = () => {
@@ -146,7 +157,8 @@ watch(
         () => props.axisTransformation,
         () => props.labels,
         () => props.legends,
-        () => props.series
+        () => props.series,
+        () => props.legend
     ],
     updateChart,
     {

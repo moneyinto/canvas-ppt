@@ -1,8 +1,8 @@
 <template>
     <a-modal
         title="公式"
-        width="80%"
-        height="80%"
+        width="90%"
+        height="90%"
         okText="确认"
         cancelText="取消"
         class="ppt-latex-dialog"
@@ -42,8 +42,8 @@ const sure = () => {
 
 <style lang="scss">
 .ppt-latex-dialog {
-    padding-bottom: 0;
-    top: 10%;
+    padding-bottom: 0 !important;
+    top: 5% !important;
     .ant-modal-content {
         height: 100%;
         display: flex;

@@ -1,8 +1,8 @@
 <template>
     <a-modal
         title="图表"
-        width="80%"
-        height="80%"
+        width="90%"
+        height="90%"
         okText="确认"
         cancelText="取消"
         class="ppt-chart-dialog"
@@ -10,91 +10,107 @@
         @cancel="close"
         @ok="sure"
     >
-        <div class="chart-hidden-box">
-            <div class="chart-editor-content" tabindex="1" onkeydown.stop="">
-                <table>
-                    <tbody>
-                        <tr
-                            v-for="rowIndex in 31"
-                            :key="rowIndex"
-                            :class="{
-                                'table-fixed-top': rowIndex === 1
-                            }"
-                        >
-                            <td
-                                v-for="colIndex in 27"
-                                :key="colIndex"
+        <div class="ppt-chart-box">
+            <div class="chart-hidden-box">
+                <div class="chart-editor-content" tabindex="1" onkeydown.stop="">
+                    <table>
+                        <tbody>
+                            <tr
+                                v-for="rowIndex in 31"
+                                :key="rowIndex"
                                 :class="{
-                                    'chart-table-blue': rowIndex === 2 || colIndex === 2,
-                                    'no-top-border': rowIndex < 3,
-                                    'no-left-border': colIndex < 3,
-                                    'no-right-border': colIndex === 1 || colIndex === 27,
-                                    'no-bottom-border': rowIndex === 1 || rowIndex === 31,
-                                    'table-fixed-left': colIndex === 1
+                                    'table-fixed-top': rowIndex === 1
                                 }"
                             >
-                                <input
-                                    :class="['item']"
-                                    :type="rowIndex > 2 && colIndex > 2 ? 'number' : 'text'"
-                                    v-if="rowIndex > 1 && colIndex > 1"
-                                    :disabled="rowIndex === 2 && colIndex === 2"
-                                    :id="`cell-${rowIndex - 1}-${colIndex - 1}`"
-                                    autocomplete="off"
-                                    @focus="
-                                        focusCell = [rowIndex - 2, colIndex - 2]
-                                    "
-                                    @change="($event) => inputChange($event, rowIndex, colIndex)"
-                                />
-                                <div
-                                    class="chart-table-td"
+                                <td
+                                    v-for="colIndex in 27"
+                                    :key="colIndex"
                                     :class="{
-                                        'border-bottom': rowIndex === 1,
-                                        'border-right': colIndex === 1
+                                        'chart-table-blue': rowIndex === 2 || colIndex === 2,
+                                        'no-top-border': rowIndex < 3,
+                                        'no-left-border': colIndex < 3,
+                                        'no-right-border': colIndex === 1 || colIndex === 27,
+                                        'no-bottom-border': rowIndex === 1 || rowIndex === 31,
+                                        'table-fixed-left': colIndex === 1
                                     }"
-                                    v-else
                                 >
-                                    <span v-if="colIndex === 1 && rowIndex > 1">
-                                        {{ rowIndex - 1 }}
-                                    </span>
-                                    <span
-                                        v-else-if="
-                                            colIndex > 1 && rowIndex === 1
+                                    <input
+                                        :class="['item']"
+                                        :type="rowIndex > 2 && colIndex > 2 ? 'number' : 'text'"
+                                        v-if="rowIndex > 1 && colIndex > 1"
+                                        :disabled="rowIndex === 2 && colIndex === 2"
+                                        :id="`cell-${rowIndex - 1}-${colIndex - 1}`"
+                                        autocomplete="off"
+                                        @focus="
+                                            focusCell = [rowIndex - 2, colIndex - 2]
                                         "
+                                        @change="($event) => inputChange($event, rowIndex, colIndex)"
+                                    />
+                                    <div
+                                        class="chart-table-td"
+                                        :class="{
+                                            'border-bottom': rowIndex === 1,
+                                            'border-right': colIndex === 1
+                                        }"
+                                        v-else
                                     >
-                                        {{ String.fromCharCode(colIndex + 63) }}
-                                    </span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                                        <span v-if="colIndex === 1 && rowIndex > 1">
+                                            {{ rowIndex - 1 }}
+                                        </span>
+                                        <span
+                                            v-else-if="
+                                                colIndex > 1 && rowIndex === 1
+                                            "
+                                        >
+                                            {{ String.fromCharCode(colIndex + 63) }}
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-            <div
-                class="chart-render-box"
-                :style="{
-                    top: top + 'px',
-                    left: left + 'px'
-                }"
-                @mousedown="onMousedown"
-            >
-                <ResizePointer
-                    v-for="pointer in resizePointers"
-                    :key="pointer.direction"
-                    :style="pointer.style"
-                    @mousedown.stop="($event: MouseEvent) => resize($event, pointer.direction)"
-                />
-                <ChartRender
-                    v-if="visible"
-                    ref="chartRenderRef"
-                    :type="type"
-                    :axisTransformation="axisTransformation"
-                    :width="chartWidth"
-                    :height="chartHeight"
-                    :labels="chartSet.labels"
-                    :legends="chartSet.legends"
-                    :series="chartSet.series"
-                />
+                <div
+                    class="chart-render-box"
+                    :style="{
+                        top: top + 'px',
+                        left: left + 'px'
+                    }"
+                    @mousedown="onMousedown"
+                >
+                    <ResizePointer
+                        v-for="pointer in resizePointers"
+                        :key="pointer.direction"
+                        :style="pointer.style"
+                        @mousedown.stop="($event: MouseEvent) => resize($event, pointer.direction)"
+                    />
+                    <ChartRender
+                        v-if="visible"
+                        ref="chartRenderRef"
+                        :type="type"
+                        :axisTransformation="axisTransformation"
+                        :width="chartWidth"
+                        :height="chartHeight"
+                        :labels="chartSet.labels"
+                        :legends="chartSet.legends"
+                        :series="chartSet.series"
+                        :legend="legend"
+                    />
+                </div>
+            </div>
+            <div class="chart-setting">
+                <a-form>
+                    <a-form-item label="图例：">
+                        <a-select
+                            v-model:value="legend"
+                        >
+                            <a-select-option value="">不显示</a-select-option>
+                            <a-select-option value="top">显示在上方</a-select-option>
+                            <a-select-option value="bottom">显示在下方</a-select-option>
+                        </a-select>
+                    </a-form-item>
+                </a-form>
             </div>
         </div>
     </a-modal>
@@ -106,7 +122,7 @@ import { PropType, nextTick, ref, toRefs, watch } from "vue";
 import ChartRender from "./ChartRender.vue";
 import ResizePointer from "@/components/ResizePointer.vue";
 import useResizeHandler from "@/hooks/useResizeHandler";
-import { throttleRAF } from "@/utils";
+import { deepClone, throttleRAF } from "@/utils";
 
 const emit = defineEmits(["ok", "update:visible"]);
 
@@ -137,7 +153,7 @@ const props = defineProps({
 const { visible, axisTransformation } = toRefs(props);
 
 const focusCell = ref<[number, number] | null>(null);
-const { labels, legends, series } = baseChartData;
+const { labels, legends, series } = deepClone(baseChartData);
 const chartSet = ref({
     labels,
     legends,
@@ -146,6 +162,7 @@ const chartSet = ref({
 const chartWidth = ref(400);
 const chartHeight = ref(280);
 const chartRenderRef = ref();
+const legend = ref<"" | "top" | "bottom">("");
 
 const initData = () => {
     const _data: string[][] = [];
@@ -173,6 +190,18 @@ const initData = () => {
     }
 };
 
+const clearData = () => {
+    for (let rowIndex = 0; rowIndex < 31; rowIndex++) {
+        for (let colIndex = 0; colIndex < 27; colIndex++) {
+            const inputRef = document.querySelector(
+                `#cell-${rowIndex + 1}-${colIndex + 1}`
+            ) as HTMLInputElement;
+            if (!inputRef) continue;
+            inputRef.value = "";
+        }
+    }
+};
+
 const inputChange = (event: Event, rowIndex: number, colIndex: number) => {
     const value = (event.target as any).value;
     if (rowIndex === 2) {
@@ -180,6 +209,7 @@ const inputChange = (event: Event, rowIndex: number, colIndex: number) => {
     } else if (colIndex === 2) {
         chartSet.value.labels[rowIndex - 3] = value;
     } else {
+        if (!chartSet.value.series[colIndex - 3]) chartSet.value.series[colIndex - 3] = [];
         chartSet.value.series[colIndex - 3][rowIndex - 3] = Number(value);
     }
 };
@@ -194,12 +224,22 @@ watch(
                 chartSet.value.series = props.element.data.series;
                 chartWidth.value = props.element.width;
                 chartHeight.value = props.element.height;
+                legend.value = props.element.legend || "";
+            } else {
+                const { labels, legends, series } = deepClone(baseChartData);
+                chartSet.value.labels = labels;
+                chartSet.value.legends = legends;
+                chartSet.value.series = series;
+                chartWidth.value = 400;
+                chartHeight.value = 280;
+                legend.value = "";
             }
             top.value = initTop;
             left.value = initLeft;
             nextTick(initData);
         } else {
             // clear
+            clearData();
         }
     }
 );
@@ -245,7 +285,7 @@ const { resizePointers, resize } = useResizeHandler(left, top, chartWidth, chart
 <style lang="scss">
 .ppt-chart-dialog {
     padding-bottom: 0 !important;
-    top: 10% !important;
+    top: 5% !important;
     .ant-modal-content {
         height: 100%;
         display: flex;
@@ -361,5 +401,17 @@ const { resizePointers, resize } = useResizeHandler(left, top, chartWidth, chart
     background-color: #ffffff;
     z-index: 100;
     border: 1px solid #000;
+}
+
+.ppt-chart-box {
+    display: flex;
+    height: 100%;
+}
+
+.chart-setting {
+    width: 300px;
+    margin-left: 15px;
+    border: 1px solid #ccc;
+    padding: 15px;
 }
 </style>
