@@ -286,6 +286,7 @@ const { resizePointers, resize } = useResizeHandler(left, top, chartWidth, chart
             height: 32px;
             overflow: hidden;
             padding: 0;
+            box-sizing: content-box;
         }
         .item {
             width: 100%;
@@ -327,6 +328,8 @@ const { resizePointers, resize } = useResizeHandler(left, top, chartWidth, chart
     color: #666;
     font-size: 13px;
     // margin: -2px -1px 0;
+    box-sizing: content-box;
+    padding-top: 1px;
     &.border-bottom {
         border-bottom: 1px solid #ccc;
     }
@@ -343,6 +346,9 @@ const { resizePointers, resize } = useResizeHandler(left, top, chartWidth, chart
     position: sticky;
     top: 0;
     z-index: 1;
+    .chart-table-td {
+        box-sizing: border-box;
+    }
 }
 
 .table-fixed-left {
