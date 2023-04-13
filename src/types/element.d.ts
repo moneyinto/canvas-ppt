@@ -372,6 +372,10 @@ export interface ChartData {
  * src: 图表图片
  *
  * legend?: 图例/位置
+ *
+ * title?: 标题
+ *
+ * stack?: 柱状图堆叠显示
  */
 export interface IPPTChartElement extends IPPTBaseElement {
     type: "chart";
@@ -382,6 +386,7 @@ export interface IPPTChartElement extends IPPTBaseElement {
     src: string;
     legend?: "" | "top" | "bottom";
     title?: string;
+    stack?: boolean;
     rotate: number;
     streach: number;
     flipH?: 1 | -1;

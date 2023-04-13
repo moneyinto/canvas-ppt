@@ -414,11 +414,15 @@ const openChart = (
 const insertOrUpdateChart = async ({
     data,
     axisTransformation,
-    src
+    src,
+    title,
+    stack
 }: {
     data: ChartData;
     axisTransformation: boolean;
     src: string;
+    title: string;
+    stack: boolean;
 }) => {
     showChart.value = false;
     const file = dataURLtoFile(src, "chart.png", "image/png");
@@ -431,8 +435,10 @@ const insertOrUpdateChart = async ({
                 chartElement.value!.data = data;
                 chartElement.value!.src = md5;
                 chartElement.value!.axisTransformation = axisTransformation;
-                chartElement.value!.width = image.width;
-                chartElement.value!.height = image.height;
+                chartElement.value!.width = image.width / 3;
+                chartElement.value!.height = image.height / 3;
+                chartElement.value!.title = title;
+                chartElement.value!.stack = stack;
                 instance?.value.command.executeUpdateRender(
                     [JSON.parse(JSON.stringify(chartElement.value))],
                     true
@@ -450,7 +456,9 @@ const insertOrUpdateChart = async ({
                     image.height / 3,
                     md5,
                     data,
-                    axisTransformation
+                    axisTransformation,
+                    title,
+                    stack
                 );
                 instance?.value.command.executeAddRender([element]);
             };

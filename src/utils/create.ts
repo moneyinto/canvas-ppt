@@ -222,7 +222,9 @@ export const createChartElement = (
     height: number,
     src: string,
     data: ChartData,
-    axisTransformation: boolean
+    axisTransformation: boolean,
+    title: string,
+    stack: boolean
 ) => {
     const id = createRandomCode();
     const name = "图表";
@@ -239,7 +241,9 @@ export const createChartElement = (
         src,
         chartType,
         data,
-        axisTransformation
+        axisTransformation,
+        title,
+        stack
     };
 
     return newElement;

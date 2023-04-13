@@ -130,6 +130,7 @@
                         :series="chartSet.series"
                         :legend="legend"
                         :title="title"
+                        :stack="stack"
                     />
                 </div>
             </div>
@@ -151,6 +152,9 @@
                                 显示在下方
                             </a-select-option>
                         </a-select>
+                    </a-form-item>
+                    <a-form-item label="堆叠显示：" v-if="type === 'bar'">
+                        <a-switch v-model:checked="stack" />
                     </a-form-item>
                 </a-form>
             </div>
@@ -206,6 +210,7 @@ const chartHeight = ref(280);
 const chartRenderRef = ref();
 const legend = ref<"" | "top" | "bottom">("");
 const title = ref("");
+const stack = ref(false);
 
 const initData = () => {
     const _data: string[][] = [];
@@ -270,6 +275,7 @@ watch(
                 legend.value = props.element.legend || "";
                 title.value = props.element.title || "";
                 axisTransformation.value = props.element.axisTransformation;
+                stack.value = !!props.element.stack;
             } else {
                 const { labels, legends, series } = deepClone(baseChartData);
                 chartSet.value.labels = labels;
@@ -279,6 +285,7 @@ watch(
                 chartHeight.value = 280;
                 legend.value = "";
                 title.value = "";
+                stack.value = false;
             }
             top.value = initTop;
             left.value = initLeft;
@@ -303,7 +310,9 @@ const sure = () => {
             series: chartSet.value.series
         },
         axisTransformation: axisTransformation.value,
-        src
+        src,
+        title: title.value,
+        stack: stack.value
     });
 };
 

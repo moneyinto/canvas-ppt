@@ -52,6 +52,9 @@ const props = defineProps({
     },
     title: {
         type: String
+    },
+    stack: {
+        type: Boolean
     }
 });
 
@@ -95,7 +98,8 @@ const getOptions = () => {
                 series.push({
                     name,
                     data,
-                    type: props.type
+                    type: props.type,
+                    ...props.stack && props.type === "bar" ? { stack: "total" } : {}
                 });
             });
         }
@@ -163,7 +167,8 @@ watch(
         () => props.legends,
         () => props.series,
         () => props.legend,
-        () => props.title
+        () => props.title,
+        () => props.stack
     ],
     updateChart,
     {
