@@ -32,7 +32,7 @@ export const slides: ISlide[] = [
                 fixedRatio: false,
                 rotate: 0,
                 flipV: 1,
-                opacity: 30
+                fillOpacity: 30
             },
             {
                 name: "文本",

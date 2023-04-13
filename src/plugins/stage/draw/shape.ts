@@ -41,7 +41,7 @@ export class Shape {
             this._shadow.draw(element.shadow, zoom);
         }
 
-        this._ctx.globalAlpha = (100 - (element.opacity || 0)) / 100;
+        this._ctx.globalAlpha = (100 - (element.fillOpacity || 0)) / 100;
         this._ctx.fillStyle = element.fill || "transparent";
         this._ctx.fill(path);
 

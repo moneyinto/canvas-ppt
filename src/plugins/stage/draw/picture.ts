@@ -3,12 +3,14 @@ import { ICacheImage } from "@/types";
 import { IPPTChartElement, IPPTImageElement, IPPTLatexElement } from "@/types/element";
 import StageConfig from "../config";
 import { Shadow } from "./shadow";
+import { Fill } from "./fill";
 
 export class Picture {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
     private _history: History;
     private _shadow: Shadow;
+    private _fill: Fill;
     constructor(
         stageConfig: StageConfig,
         ctx: CanvasRenderingContext2D,
@@ -18,6 +20,7 @@ export class Picture {
         this._ctx = ctx;
         this._history = history;
         this._shadow = new Shadow(this._ctx);
+        this._fill = new Fill(this._ctx);
     }
 
     private async _getCacheImage(element: IPPTImageElement | IPPTLatexElement | IPPTChartElement): Promise<ICacheImage> {
@@ -65,6 +68,10 @@ export class Picture {
             this._ctx.translate(ox, oy);
             // 旋转画布
             this._ctx.rotate((element.rotate / 180) * Math.PI);
+
+            if (element.fill) {
+                this._fill.draw(element.fill || "transparent", element.fillOpacity || 0, element.width, element.height);
+            }
 
             if (element.shadow) {
                 this._shadow.draw(element.shadow, zoom);

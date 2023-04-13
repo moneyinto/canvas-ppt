@@ -316,7 +316,7 @@ export default class Command {
             if (operateElement) {
                 const newElement = {
                     ...operateElement,
-                    opacity: value
+                    fillOpacity: value
                 };
 
                 newElements.push(newElement);

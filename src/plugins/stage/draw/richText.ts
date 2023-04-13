@@ -5,17 +5,20 @@ import { getShapePath } from "@/utils/shape";
 import StageConfig, { TEXT_MARGIN } from "../config";
 import { OutLine } from "./outline";
 import { Shadow } from "./shadow";
+import { Fill } from "./fill";
 
 export class RichText {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
     private _outline: OutLine;
     private _shadow: Shadow;
+    private _fill: Fill;
     constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
         this._outline = new OutLine(this._ctx);
         this._shadow = new Shadow(this._ctx);
+        this._fill = new Fill(this._ctx);
     }
 
     private _drawStrikout(text: IFontData, x: number, y: number, fontHeight: number, lineHeight: number, wordSpace: number) {
@@ -77,10 +80,7 @@ export class RichText {
         this._ctx.rotate((element.rotate / 180) * Math.PI);
 
         if (element.fill) {
-            this._ctx.fillStyle = element.fill || "transparent";
-            this._ctx.globalAlpha = (100 - (element.opacity || 0)) / 100;
-            const path = getShapePath(SHAPE_TYPE.RECT, element.width, element.height);
-            this._ctx.fill(path);
+            this._fill.draw(element.fill || "transparent", element.fillOpacity || 0, element.width, element.height);
         }
 
         if (element.outline) {

@@ -122,7 +122,7 @@ export interface IShapeText {
  *
  * outline?: 边框
  *
- * opacity?: 不透明度
+ * fillOpacity?: 不透明度
  *
  * flipH?: 水平翻转
  *
@@ -140,7 +140,7 @@ export interface IPPTShapeElement extends IPPTBaseElement {
     rotate: number;
     gradient?: IShapeGradient;
     outline?: IPPTElementOutline;
-    opacity?: number;
+    fillOpacity?: number;
     flipH?: 1 | -1;
     flipV?: 1 | -1;
     shadow?: IPPTElementShadow;
@@ -251,6 +251,8 @@ export interface IPPTImageElement extends IPPTBaseElement {
     src: string;
     filters?: ImageElementFilters;
     clip?: ImageElementClip;
+    fill?: string;
+    fillOpacity?: number;
     flipH?: 1 | -1;
     flipV?: 1 | -1;
     outline?: IPPTElementOutline;
@@ -277,7 +279,7 @@ export interface IPPTImageElement extends IPPTBaseElement {
  *
  * outline?: 边框
  *
- * opacity?: 不透明度，默认100（%）
+ * fillOpacity?: 不透明度，默认100（%）
  *
  * shadow?: 阴影
  */
@@ -289,8 +291,8 @@ export interface IPPTTextElement extends IPPTBaseElement {
     rotate: number;
     align: "left" | "center" | "right";
     fill?: string;
+    fillOpacity?: number;
     outline?: IPPTElementOutline;
-    opacity?: number;
     shadow?: IPPTElementShadow;
 }
 
@@ -341,6 +343,8 @@ export interface IPPTLatexElement extends IPPTBaseElement {
     text: string;
     rotate: number;
     streach: number;
+    fill?: string;
+    fillOpacity?: number;
     flipH?: 1 | -1;
     flipV?: 1 | -1;
     outline?: IPPTElementOutline;
@@ -389,6 +393,8 @@ export interface IPPTChartElement extends IPPTBaseElement {
     stack?: boolean;
     rotate: number;
     streach: number;
+    fill?: string;
+    fillOpacity?: number;
     flipH?: 1 | -1;
     flipV?: 1 | -1;
     outline?: IPPTElementOutline;
