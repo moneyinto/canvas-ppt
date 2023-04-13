@@ -96,11 +96,18 @@
                         :legends="chartSet.legends"
                         :series="chartSet.series"
                         :legend="legend"
+                        :title="title"
                     />
                 </div>
             </div>
             <div class="chart-setting">
                 <a-form>
+                    <a-form-item label="标题：">
+                        <a-input
+                            placeholder="请输入图表标题"
+                            v-model:value="title"
+                        />
+                    </a-form-item>
                     <a-form-item label="图例：">
                         <a-select
                             v-model:value="legend"
@@ -163,6 +170,7 @@ const chartWidth = ref(400);
 const chartHeight = ref(280);
 const chartRenderRef = ref();
 const legend = ref<"" | "top" | "bottom">("");
+const title = ref("");
 
 const initData = () => {
     const _data: string[][] = [];
@@ -225,6 +233,7 @@ watch(
                 chartWidth.value = props.element.width;
                 chartHeight.value = props.element.height;
                 legend.value = props.element.legend || "";
+                title.value = props.element.title || "";
             } else {
                 const { labels, legends, series } = deepClone(baseChartData);
                 chartSet.value.labels = labels;
@@ -233,6 +242,7 @@ watch(
                 chartWidth.value = 400;
                 chartHeight.value = 280;
                 legend.value = "";
+                title.value = "";
             }
             top.value = initTop;
             left.value = initLeft;

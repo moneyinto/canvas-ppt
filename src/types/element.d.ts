@@ -381,6 +381,7 @@ export interface IPPTChartElement extends IPPTBaseElement {
     axisTransformation: boolean;
     src: string;
     legend?: "" | "top" | "bottom";
+    title?: string;
     rotate: number;
     streach: number;
     flipH?: 1 | -1;

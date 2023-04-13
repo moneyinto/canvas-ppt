@@ -49,6 +49,9 @@ const props = defineProps({
     },
     legend: {
         type: String as PropType<"" | "top" | "bottom">
+    },
+    title: {
+        type: String
     }
 });
 
@@ -99,6 +102,7 @@ const getOptions = () => {
     }
 
     const options: EChartsOption = {
+        ...props.title ? { title: { text: props.title } } : {},
         grid: {
             left: 20,
             right: 20,
@@ -158,7 +162,8 @@ watch(
         () => props.labels,
         () => props.legends,
         () => props.series,
-        () => props.legend
+        () => props.legend,
+        () => props.title
     ],
     updateChart,
     {
