@@ -446,8 +446,8 @@ const insertOrUpdateChart = async ({
             image.onload = () => {
                 const element = createChartElement(
                     chartType.value,
-                    image.width / 2,
-                    image.height / 2,
+                    image.width / 3,
+                    image.height / 3,
                     md5,
                     data,
                     axisTransformation

@@ -12,7 +12,11 @@
     >
         <div class="ppt-chart-box">
             <div class="chart-hidden-box">
-                <div class="chart-editor-content" tabindex="1" onkeydown.stop="">
+                <div
+                    class="chart-editor-content"
+                    tabindex="1"
+                    onkeydown.stop=""
+                >
                     <table>
                         <tbody>
                             <tr
@@ -26,25 +30,46 @@
                                     v-for="colIndex in 27"
                                     :key="colIndex"
                                     :class="{
-                                        'chart-table-blue': rowIndex === 2 || colIndex === 2,
+                                        'chart-table-blue':
+                                            rowIndex === 2 || colIndex === 2,
                                         'no-top-border': rowIndex < 3,
                                         'no-left-border': colIndex < 3,
-                                        'no-right-border': colIndex === 1 || colIndex === 27,
-                                        'no-bottom-border': rowIndex === 1 || rowIndex === 31,
+                                        'no-right-border':
+                                            colIndex === 1 || colIndex === 27,
+                                        'no-bottom-border':
+                                            rowIndex === 1 || rowIndex === 31,
                                         'table-fixed-left': colIndex === 1
                                     }"
                                 >
                                     <input
                                         :class="['item']"
-                                        :type="rowIndex > 2 && colIndex > 2 ? 'number' : 'text'"
+                                        :type="
+                                            rowIndex > 2 && colIndex > 2
+                                                ? 'number'
+                                                : 'text'
+                                        "
                                         v-if="rowIndex > 1 && colIndex > 1"
-                                        :disabled="rowIndex === 2 && colIndex === 2"
-                                        :id="`cell-${rowIndex - 1}-${colIndex - 1}`"
+                                        :disabled="
+                                            rowIndex === 2 && colIndex === 2
+                                        "
+                                        :id="`cell-${rowIndex - 1}-${
+                                            colIndex - 1
+                                        }`"
                                         autocomplete="off"
                                         @focus="
-                                            focusCell = [rowIndex - 2, colIndex - 2]
+                                            focusCell = [
+                                                rowIndex - 2,
+                                                colIndex - 2
+                                            ]
                                         "
-                                        @change="($event) => inputChange($event, rowIndex, colIndex)"
+                                        @change="
+                                            ($event) =>
+                                                inputChange(
+                                                    $event,
+                                                    rowIndex,
+                                                    colIndex
+                                                )
+                                        "
                                     />
                                     <div
                                         class="chart-table-td"
@@ -54,7 +79,11 @@
                                         }"
                                         v-else
                                     >
-                                        <span v-if="colIndex === 1 && rowIndex > 1">
+                                        <span
+                                            v-if="
+                                                colIndex === 1 && rowIndex > 1
+                                            "
+                                        >
                                             {{ rowIndex - 1 }}
                                         </span>
                                         <span
@@ -62,7 +91,11 @@
                                                 colIndex > 1 && rowIndex === 1
                                             "
                                         >
-                                            {{ String.fromCharCode(colIndex + 63) }}
+                                            {{
+                                                String.fromCharCode(
+                                                    colIndex + 63
+                                                )
+                                            }}
                                         </span>
                                     </div>
                                 </td>
@@ -109,12 +142,14 @@
                         />
                     </a-form-item>
                     <a-form-item label="图例：">
-                        <a-select
-                            v-model:value="legend"
-                        >
+                        <a-select v-model:value="legend">
                             <a-select-option value="">不显示</a-select-option>
-                            <a-select-option value="top">显示在上方</a-select-option>
-                            <a-select-option value="bottom">显示在下方</a-select-option>
+                            <a-select-option value="top">
+                                显示在上方
+                            </a-select-option>
+                            <a-select-option value="bottom">
+                                显示在下方
+                            </a-select-option>
                         </a-select>
                     </a-form-item>
                 </a-form>
@@ -234,6 +269,7 @@ watch(
                 chartHeight.value = props.element.height;
                 legend.value = props.element.legend || "";
                 title.value = props.element.title || "";
+                axisTransformation.value = props.element.axisTransformation;
             } else {
                 const { labels, legends, series } = deepClone(baseChartData);
                 chartSet.value.labels = labels;
@@ -260,7 +296,15 @@ const close = () => {
 
 const sure = () => {
     const src = chartRenderRef.value.getChartImage();
-    emit("ok", { data: { labels, legends, series }, axisTransformation, src });
+    emit("ok", {
+        data: {
+            labels: chartSet.value.labels,
+            legends: chartSet.value.legends,
+            series: chartSet.value.series
+        },
+        axisTransformation: axisTransformation.value,
+        src
+    });
 };
 
 const startPoint = {
@@ -289,7 +333,12 @@ const onMousedown = (event: MouseEvent) => {
     };
 };
 
-const { resizePointers, resize } = useResizeHandler(left, top, chartWidth, chartHeight);
+const { resizePointers, resize } = useResizeHandler(
+    left,
+    top,
+    chartWidth,
+    chartHeight
+);
 </script>
 
 <style lang="scss">
@@ -360,11 +409,12 @@ const { resizePointers, resize } = useResizeHandler(left, top, chartWidth, chart
             border-left: 0;
         }
     }
-    input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button {
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
         -webkit-appearance: none;
         margin: 0;
     }
-    input[type=number] {
+    input[type="number"] {
         appearance: textfield;
     }
 }

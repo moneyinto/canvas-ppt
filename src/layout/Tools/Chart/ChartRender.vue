@@ -172,7 +172,7 @@ watch(
 );
 
 const getChartImage = () => {
-    return chart?.getDataURL({ pixelRatio: 2 });
+    return chart?.getDataURL({ pixelRatio: 3 });
 };
 
 defineExpose({ getChartImage });
