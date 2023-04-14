@@ -83,8 +83,15 @@
                 :total="slides.length"
                 :current="slideIndex"
                 @onZoomChange="resize"
+                @onPreview="startPreview"
             />
         </div>
+
+        <ScreenView
+            v-if="showPreview"
+            :slides="viewSlides"
+            :startSlideIndex="startSlideIndex"
+        />
     </div>
 </template>
 
@@ -95,15 +102,17 @@ import Tools from "./layout/Tools/index.vue";
 import ThumbnailSlide from "./layout/ThumbnailSlide.vue";
 import Footer from "./layout/Footer.vue";
 import Panels from "./layout/Panels/index.vue";
+import ScreenView from "./layout/ScreenView.vue";
 import Editor from "./plugins/editor";
 import { slides } from "./mock";
 import emitter, { EmitterEvents } from "./utils/emitter";
 import { KeyMap } from "./plugins/shortCut/keyMap";
-import { checkIsMac } from "./utils";
+import { checkIsMac, enterFullScreen, isFullScreen } from "./utils";
 import useSlideHandler from "@/hooks/useSlideHandler";
 import useSlideSort from "@/hooks/useSlideSort";
 import { ISlide } from "./types/slide";
 import { IPPTElement } from "./types/element";
+import { message } from "ant-design-vue";
 
 const pptRef = ref<HTMLDivElement>();
 const zoom = ref(1);
@@ -114,6 +123,7 @@ const historyCursor = ref(0);
 const historyLength = ref(0);
 
 const showPanel = ref(false);
+const showPreview = ref(false);
 
 provide("instance", instance);
 provide("historyCursor", historyCursor);
@@ -210,6 +220,26 @@ const resize = (scale: number) => {
     zoom.value = scale / 100;
 };
 
+const startSlideIndex = ref(0);
+const startPreview = (slideIndex: number) => {
+    console.log(slideIndex);
+    if (viewSlides.value.length === 0) {
+        message.warning("请添加幻灯片");
+    } else {
+        startSlideIndex.value = slideIndex;
+        showPreview.value = true;
+        enterFullScreen();
+    }
+};
+
+const exitFullScreen = () => {
+    if (!isFullScreen()) {
+        showPreview.value = false;
+    }
+};
+
+window.addEventListener("resize", exitFullScreen);
+
 const onKeydown = (event: KeyboardEvent) => {
     switch (event.key) {
         case KeyMap.Delete:
@@ -291,6 +321,8 @@ onUnmounted(() => {
     emitter.off(EmitterEvents.DELETE_SLIDE, deleteSlide);
     emitter.off(EmitterEvents.PASTE_SLIDE, pasteSlide);
     emitter.off(EmitterEvents.SHOW_PANELS, openPanel);
+
+    window.removeEventListener("resize", exitFullScreen);
 });
 </script>
 

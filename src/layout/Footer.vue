@@ -4,6 +4,9 @@
             幻灯片 &nbsp; {{ total === 0 ? 0 : current + 1 }} / {{ total }}
         </div>
         <div class="ppt-zoom-control">
+            <a-tooltip title="从当前页预览">
+                <a-button class="ppt-zoom-btn" type="text" @click="preview()"><PPTIcon icon="preview" :size="20" /></a-button>
+            </a-tooltip>
             <a-tooltip title="适合页面">
                 <a-button class="ppt-zoom-btn" type="text" @click="fitZoom()"><PPTIcon icon="fit" :size="20" /></a-button>
             </a-tooltip>
@@ -38,7 +41,7 @@ const props = defineProps({
 
 const { total, current } = toRefs(props);
 
-const emit = defineEmits(["onZoomChange"]);
+const emit = defineEmits(["onZoomChange", "onPreview"]);
 
 const instance = inject<Ref<Editor>>("instance");
 
@@ -55,6 +58,10 @@ watch(instance!, () => {
         };
     }
 });
+
+const preview = () => {
+    emit("onPreview", current.value);
+};
 
 const fitZoom = () => {
     instance?.value.command.executeFitZoom();
