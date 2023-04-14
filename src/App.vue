@@ -5,59 +5,14 @@
             <Tools :elements="currentElements" />
         </div>
         <div class="ppt-body">
-            <div
-                class="ppt-thumbnail"
-                @keydown.stop="onKeydown"
-                tabindex="0"
-                @drop="onDrop"
-                @dragend="onDragEnd"
-                @dragover="onDragOver"
-                @focus="onSlideFocus"
-            >
-                <div
-                    class="ppt-thumbnail-box"
-                    v-for="(slide, index) in viewSlides"
-                    :key="slide.id"
-                    @click="onSelectedSlide(slide.id)"
-                    @dragstart="onDragStart(index)"
-                >
-                    <ThumbnailSlide
-                        draggable="true"
-                        :size="150"
-                        :slide="slide"
-                        :index="index"
-                    />
-
-                    <div
-                        class="ppt-sort-top"
-                        :class="
-                            sortIndex === index &&
-                            sortType === 'top' &&
-                            'ppt-sort-line'
-                        "
-                        v-if="sortIndex !== -1"
-                        @dragenter="onDragEnter(index, 'top')"
-                    ></div>
-                    <div
-                        class="ppt-sort-bottom"
-                        :class="
-                            sortIndex === index &&
-                            sortType === 'bottom' &&
-                            'ppt-sort-line'
-                        "
-                        v-if="sortIndex !== -1"
-                        @dragenter="onDragEnter(index, 'bottom')"
-                    ></div>
-
-                    <div class="ppt-thumbnail-index">
-                        {{ index + 1 }}
-                    </div>
-                    <div
-                        class="ppt-thumbnail-selected"
-                        v-if="slide.id === selectedSlideId"
-                    ></div>
-                </div>
-            </div>
+            <ThumbnailList
+                :switchSlide="switchSlide"
+                :deleteSlide="deleteSlide"
+                :cutSlide="cutSlide"
+                :copySlide="copySlide"
+                :pasteSlide="pasteSlide"
+                :onSelectedSlide="onSelectedSlide"
+            />
             <div class="ppt-content" ref="pptRef" @focus="onCanvasFocus">
                 <div
                     class="ppt-no-slide"
@@ -99,17 +54,15 @@
 import { nextTick, onUnmounted, provide, ref } from "vue";
 import NavMenu from "./layout/NavMenu/index.vue";
 import Tools from "./layout/Tools/index.vue";
-import ThumbnailSlide from "./layout/ThumbnailSlide.vue";
+import ThumbnailList from "./layout/ThumbnailList.vue";
 import Footer from "./layout/Footer.vue";
 import Panels from "./layout/Panels/index.vue";
 import ScreenView from "./layout/ScreenView.vue";
 import Editor from "./plugins/editor";
 import { slides } from "./mock";
 import emitter, { EmitterEvents } from "./utils/emitter";
-import { KeyMap } from "./plugins/shortCut/keyMap";
-import { checkIsMac, enterFullScreen, isFullScreen } from "./utils";
+import { enterFullScreen, isFullScreen } from "./utils";
 import useSlideHandler from "@/hooks/useSlideHandler";
-import useSlideSort from "@/hooks/useSlideSort";
 import { ISlide } from "./types/slide";
 import { IPPTElement } from "./types/element";
 import { message } from "ant-design-vue";
@@ -128,6 +81,7 @@ const showPreview = ref(false);
 provide("instance", instance);
 provide("historyCursor", historyCursor);
 provide("historyLength", historyLength);
+provide("historyLength", historyLength);
 
 const {
     slideIndex,
@@ -142,20 +96,12 @@ const {
     deleteSlide
 } = useSlideHandler(instance, viewSlides, historyCursor, historyLength);
 
-const {
-    sortIndex,
-    sortType,
-    onDragStart,
-    onDragEnter,
-    onDragOver,
-    onDragEnd,
-    onDrop
-} = useSlideSort(instance, viewSlides);
-
 const slideFocus = ref(false);
-const onSlideFocus = () => {
-    slideFocus.value = true;
-};
+
+provide("selectedSlideId", selectedSlideId);
+provide("slideIndex", slideIndex);
+provide("slideFocus", slideFocus);
+provide("viewSlides", viewSlides);
 
 const onCanvasFocus = () => {
     slideFocus.value = false;
@@ -222,7 +168,6 @@ const resize = (scale: number) => {
 
 const startSlideIndex = ref(0);
 const startPreview = (slideIndex: number) => {
-    console.log(slideIndex);
     if (viewSlides.value.length === 0) {
         message.warning("请添加幻灯片");
     } else {
@@ -239,80 +184,6 @@ const exitFullScreen = () => {
 };
 
 window.addEventListener("resize", exitFullScreen);
-
-const onKeydown = (event: KeyboardEvent) => {
-    switch (event.key) {
-        case KeyMap.Delete:
-        case KeyMap.Backspace: {
-            deleteSlide();
-            break;
-        }
-        case KeyMap.Up: {
-            // 上一页
-            if (slideIndex.value > 0) {
-                slideIndex.value--;
-                switchSlide();
-            }
-            break;
-        }
-        case KeyMap.Down: {
-            // 下一页
-            if (slideIndex.value < viewSlides.value.length - 1) {
-                slideIndex.value++;
-                switchSlide();
-            }
-            break;
-        }
-        case KeyMap.X_UPPERCASE:
-        case KeyMap.X: {
-            if (checkIsMac()) {
-                if (event.metaKey) {
-                    // 剪切
-                    cutSlide();
-                }
-            } else {
-                if (event.ctrlKey) {
-                    cutSlide();
-                }
-            }
-            break;
-        }
-        case KeyMap.C_UPPERCASE:
-        case KeyMap.C: {
-            if (checkIsMac()) {
-                if (event.metaKey) {
-                    // 复制
-                    copySlide();
-                }
-            } else {
-                if (event.ctrlKey) {
-                    copySlide();
-                }
-            }
-            break;
-        }
-
-        case KeyMap.V_UPPERCASE:
-        case KeyMap.V: {
-            if (checkIsMac()) {
-                if (event.metaKey) {
-                    // 复制
-                    pasteSlide();
-                }
-            } else {
-                if (event.ctrlKey) {
-                    pasteSlide();
-                }
-            }
-            break;
-        }
-    }
-
-    setTimeout(() => {
-        // 重新聚焦
-        (event.target as HTMLDivElement).focus();
-    }, 100);
-};
 
 onUnmounted(() => {
     emitter.off(EmitterEvents.ADD_EMPTY_SLIDE, addPPT);
@@ -372,67 +243,6 @@ onUnmounted(() => {
     flex: 1;
     min-height: 0;
     display: flex;
-    .ppt-thumbnail {
-        outline: 0;
-        width: 200px;
-        border-right: 1px solid #d1d1d1;
-        background-color: #fafafa;
-        padding: 15px 0;
-
-        .ppt-thumbnail-index {
-            position: absolute;
-            top: 0;
-            left: -20px;
-            color: #555555;
-        }
-
-        .ppt-thumbnail-box {
-            position: relative;
-            margin: 0 15px 15px 35px;
-            width: 150px;
-
-            .ppt-sort-top,
-            .ppt-sort-bottom {
-                position: absolute;
-                height: 30px;
-                bottom: 0;
-                left: 0;
-                right: 0;
-            }
-
-            .ppt-sort-top {
-                top: 0;
-                bottom: inherit;
-            }
-
-            .ppt-sort-line:after {
-                content: "";
-                position: absolute;
-                height: 2px;
-                left: 0;
-                right: 0;
-                background-color: #5b9bd5;
-            }
-
-            .ppt-sort-top.ppt-sort-line:after {
-                top: -8px;
-            }
-
-            .ppt-sort-bottom.ppt-sort-line:after {
-                bottom: -8px;
-            }
-        }
-
-        .ppt-thumbnail-selected {
-            position: absolute;
-            border: 1px solid #5b9bd5;
-            top: -2px;
-            left: -2px;
-            bottom: -2px;
-            right: -2px;
-            pointer-events: none;
-        }
-    }
     .ppt-content {
         flex: 1;
         min-width: 0;

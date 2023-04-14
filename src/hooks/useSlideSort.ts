@@ -32,6 +32,10 @@ export default (
 
     const onDrop = () => {
         if (sortIndex.value !== -1 && sortType.value) {
+            if (
+                (sortTartIndex.value === sortIndex.value + 1 && sortType.value === "bottom") ||
+                (sortTartIndex.value === sortIndex.value && sortType.value === "top")
+            ) return onDragEnd();
             const targetSlide = viewSlides.value[sortTartIndex.value];
             viewSlides.value.splice(sortTartIndex.value, 1);
             const spliceIndex =
