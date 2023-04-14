@@ -4,6 +4,9 @@ import { IPPTChartElement, IPPTImageElement, IPPTLatexElement } from "@/types/el
 import StageConfig from "../config";
 import { Shadow } from "./shadow";
 import { Fill } from "./fill";
+import { OutLine } from "./outline";
+import { getShapePath } from "@/utils/shape";
+import { SHAPE_TYPE } from "@/plugins/config/shapes";
 
 export class Picture {
     private _stageConfig: StageConfig;
@@ -11,6 +14,7 @@ export class Picture {
     private _history: History;
     private _shadow: Shadow;
     private _fill: Fill;
+    private _outline: OutLine;
     constructor(
         stageConfig: StageConfig,
         ctx: CanvasRenderingContext2D,
@@ -21,6 +25,7 @@ export class Picture {
         this._history = history;
         this._shadow = new Shadow(this._ctx);
         this._fill = new Fill(this._ctx);
+        this._outline = new OutLine(this._ctx);
     }
 
     private async _getCacheImage(element: IPPTImageElement | IPPTLatexElement | IPPTChartElement): Promise<ICacheImage> {
@@ -71,6 +76,11 @@ export class Picture {
 
             if (element.fill) {
                 this._fill.draw(element.fill || "transparent", element.fillOpacity || 0, element.width, element.height);
+            }
+
+            if (element.outline) {
+                const path = getShapePath(SHAPE_TYPE.RECT, element.width, element.height);
+                this._outline.draw(element.outline, path);
             }
 
             if (element.shadow) {

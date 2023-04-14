@@ -16,7 +16,7 @@
         <TextEdit v-if="showTextEidt" :elements="elements" />
 
         <a-divider class="ppt-tool-divider" v-if="showBorder || showTextEidt || showShadowColor" type="vertical" />
-        <Border v-if="showBorder || showTextEidt" :elements="elements" />
+        <Border v-if="showBorder || showTextEidt || showImageEdit" :elements="elements" />
         <FillColor v-if="showFillColor || showTextEidt || showImageEdit" :elements="elements" />
         <Shadow v-if="showShadowColor" :elements="elements" />
 
