@@ -3,17 +3,20 @@ import { IPPTShapeElement } from "@/types/element";
 import StageConfig from "../config";
 import { OutLine } from "./outline";
 import { Shadow } from "./shadow";
+import { Fill } from "./fill";
 
 export class Shape {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
     private _outline: OutLine;
     private _shadow: Shadow;
+    private _fill: Fill;
     constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
         this._outline = new OutLine(this._ctx);
         this._shadow = new Shadow(this._ctx);
+        this._fill = new Fill(this._ctx);
     }
 
     public draw(element: IPPTShapeElement) {
@@ -41,9 +44,9 @@ export class Shape {
             this._shadow.draw(element.shadow, zoom);
         }
 
-        this._ctx.globalAlpha = (100 - (element.fillOpacity || 0)) / 100;
-        this._ctx.fillStyle = element.fill || "transparent";
-        this._ctx.fill(path);
+        if (element.fill) {
+            this._fill.draw(element.fill, path);
+        }
 
         if (element.outline) {
             this._outline.draw(element.outline, path);

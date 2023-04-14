@@ -20,6 +20,7 @@ import { Cursor } from "../stage/cursor";
 import {
     IPPTAudioElement,
     IPPTElement,
+    IPPTElementFill,
     IPPTElementOutline,
     IPPTElementShadow,
     IPPTLineElement,
@@ -103,15 +104,14 @@ export default class Command {
             const slide = this._stageConfig.getCurrentSlide();
             // 对多选元素先进行排序
             // 不然相邻的元素会出现不变化的现象
-            const sortElements =
-                slide?.elements
-                    .filter(
-                        (element) =>
-                            operateElements.findIndex(
-                                (ele) => ele.id === element.id
-                            ) > -1
-                    )
-                    .reverse() || [];
+            const sortElements = slide?.elements
+                .filter(
+                    (element) =>
+                        operateElements.findIndex(
+                            (ele) => ele.id === element.id
+                        ) > -1
+                )
+                .reverse() || [];
             let isChange = false;
             for (const operateElement of sortElements) {
                 const zIndex = slide?.elements.findIndex(
@@ -142,15 +142,14 @@ export default class Command {
         if (operateElements.length > 0) {
             const slide = this._stageConfig.getCurrentSlide();
             let isChange = false;
-            const sortElements =
-                slide?.elements
-                    .filter(
-                        (element) =>
-                            operateElements.findIndex(
-                                (ele) => ele.id === element.id
-                            ) > -1
-                    )
-                    .reverse() || [];
+            const sortElements = slide?.elements
+                .filter(
+                    (element) =>
+                        operateElements.findIndex(
+                            (ele) => ele.id === element.id
+                        ) > -1
+                )
+                .reverse() || [];
             for (const operateElement of sortElements) {
                 const zIndex = slide?.elements.findIndex(
                     (element) => element.id === operateElement.id
@@ -292,15 +291,27 @@ export default class Command {
     }
 
     // 设置填充色
-    public executeFillColor(color: string) {
+    public executeFill(fill?: IPPTElementFill) {
         const operateElements = this._stageConfig.operateElements;
         const newElements: IPPTElement[] = [];
         for (const operateElement of operateElements) {
             if (operateElement) {
                 const newElement = {
-                    ...operateElement,
-                    fill: color
+                    ...operateElement
                 };
+
+                if (
+                    newElement.type === "shape" ||
+                    newElement.type === "text" ||
+                    newElement.type === "image" ||
+                    newElement.type === "latex" ||
+                    newElement.type === "chart"
+                ) {
+                    newElement.fill = {
+                        ...newElement.fill,
+                        ...fill
+                    };
+                }
 
                 newElements.push(newElement);
             }
@@ -308,24 +319,7 @@ export default class Command {
         this.executeUpdateRender(newElements, true);
     }
 
-    // 填充透明度设置
-    public executeOpacity(value: number) {
-        const operateElements = this._stageConfig.operateElements;
-        const newElements: IPPTElement[] = [];
-        for (const operateElement of operateElements) {
-            if (operateElement) {
-                const newElement = {
-                    ...operateElement,
-                    fillOpacity: value
-                };
-
-                newElements.push(newElement);
-            }
-        }
-        this.executeUpdateRender(newElements, true);
-    }
-
-    // 填充透明度设置
+    // 透明度设置
     public executeImageOpacity(value: number) {
         const operateElements = this._stageConfig.operateElements;
         const newElements: IPPTElement[] = [];
@@ -472,7 +466,8 @@ export default class Command {
             if (this._stageConfig.textFocus) {
                 const operateElements = this._stageConfig.operateElements;
                 const operateElement = operateElements.find(
-                    (element) => element.id === this._stageConfig.textFocusElementId
+                    (element) =>
+                        element.id === this._stageConfig.textFocusElementId
                 );
 
                 if (operateElement && operateElement.type === "text") {
@@ -517,7 +512,8 @@ export default class Command {
                 if (this._stageConfig.textFocus) {
                     const operateElements = this._stageConfig.operateElements;
                     const operateElement = operateElements.find(
-                        (element) => element.id === this._stageConfig.textFocusElementId
+                        (element) =>
+                            element.id === this._stageConfig.textFocusElementId
                     );
                     if (operateElement && operateElement.type === "text") {
                         const selectArea = this._stageConfig.selectArea;
@@ -636,7 +632,10 @@ export default class Command {
                 const currentDataPosition = this._cursor.getDataPosition();
                 const content = operateElement.content;
                 // 前面一个字没有，获取后面一个回车符的字样
-                const text = currentDataPosition === -1 ? content[0] : content[currentDataPosition];
+                const text =
+                    currentDataPosition === -1
+                        ? content[0]
+                        : content[currentDataPosition];
 
                 const config = {
                     fontSize: text.fontSize,
@@ -671,7 +670,8 @@ export default class Command {
 
     // 获取文本变更后文本框高度
     private _getTextHeight(operateElement: IPPTTextElement) {
-        const renderContent = this._stageConfig.getRenderContent(operateElement);
+        const renderContent =
+            this._stageConfig.getRenderContent(operateElement);
         let height = TEXT_MARGIN * 2;
         renderContent.forEach((line) => {
             height += line.height * operateElement.lineHeight;
@@ -738,13 +738,16 @@ export default class Command {
                 switch (direction) {
                     case KeyMap.Up: {
                         const position = this._cursor.getDataPosition();
-                        const renderPosition = this._cursor.getRenderDataPosition();
+                        const renderPosition =
+                            this._cursor.getRenderDataPosition();
                         if (renderPosition[0] > 0) {
-                            const renderContent = this._stageConfig.getRenderContent(
-                                operateElement as IPPTTextElement
-                            );
+                            const renderContent =
+                                this._stageConfig.getRenderContent(
+                                    operateElement as IPPTTextElement
+                                );
 
-                            const currentLineData = renderContent[renderPosition[0]];
+                            const currentLineData =
+                                renderContent[renderPosition[0]];
                             let currentLeft = this._stageConfig.getAlignOffsetX(
                                 currentLineData,
                                 operateElement as IPPTTextElement
@@ -758,7 +761,8 @@ export default class Command {
                                 }
                             }
 
-                            const upLineData = renderContent[renderPosition[0] - 1];
+                            const upLineData =
+                                renderContent[renderPosition[0] - 1];
                             let upLineX = -1;
                             let upLeft = this._stageConfig.getAlignOffsetX(
                                 upLineData,
@@ -777,19 +781,26 @@ export default class Command {
                             if (upLineX === -1) upLineX = 0;
 
                             this._updateCursor(
-                                position - (renderPosition[1] + 1 + upLineData.texts.length - upLineX)
+                                position -
+                                    (renderPosition[1] +
+                                        1 +
+                                        upLineData.texts.length -
+                                        upLineX)
                             );
                         }
                         break;
                     }
                     case KeyMap.Down: {
                         const position = this._cursor.getDataPosition();
-                        const renderPosition = this._cursor.getRenderDataPosition();
-                        const renderContent = this._stageConfig.getRenderContent(
-                            operateElement as IPPTTextElement
-                        );
+                        const renderPosition =
+                            this._cursor.getRenderDataPosition();
+                        const renderContent =
+                            this._stageConfig.getRenderContent(
+                                operateElement as IPPTTextElement
+                            );
                         if (renderPosition[0] < renderContent.length - 1) {
-                            const currentLineData = renderContent[renderPosition[0]];
+                            const currentLineData =
+                                renderContent[renderPosition[0]];
                             let currentLeft = this._stageConfig.getAlignOffsetX(
                                 currentLineData,
                                 operateElement as IPPTTextElement
@@ -803,7 +814,8 @@ export default class Command {
                                 }
                             }
 
-                            const downLineData = renderContent[renderPosition[0] + 1];
+                            const downLineData =
+                                renderContent[renderPosition[0] + 1];
                             let downLineX = -1;
                             let downLeft = this._stageConfig.getAlignOffsetX(
                                 downLineData,
@@ -822,7 +834,10 @@ export default class Command {
                             if (downLineX === -1) downLineX = 0;
 
                             this._updateCursor(
-                                position + (currentLineData.texts.length - (renderPosition[1] + 1) + downLineX)
+                                position +
+                                    (currentLineData.texts.length -
+                                        (renderPosition[1] + 1) +
+                                        downLineX)
                             );
                         }
                         break;
@@ -944,7 +959,9 @@ export default class Command {
         const slide = this._stageConfig.getCurrentSlide();
         if (slide && slide.elements) {
             slide.elements = slide.elements.filter(
-                (ele) => elements.findIndex((element) => element.id === ele.id) === -1
+                (ele) =>
+                    elements.findIndex((element) => element.id === ele.id) ===
+                    -1
             );
             this._stageConfig.setOperateElement(null, false);
 
@@ -1397,14 +1414,8 @@ export default class Command {
         operateElement: IPPTElement,
         align: IElementAlignType
     ) {
-        const width =
-            operateElement.type === "line"
-                ? operateElement.end[0] - operateElement.start[0]
-                : operateElement.width;
-        const height =
-            operateElement.type === "line"
-                ? operateElement.end[1] - operateElement.start[1]
-                : operateElement.height;
+        const width = operateElement.type === "line" ? operateElement.end[0] - operateElement.start[0] : operateElement.width;
+        const height = operateElement.type === "line" ? operateElement.end[1] - operateElement.start[1] : operateElement.height;
         switch (align) {
             case "alignLeft": {
                 operateElement.left = 0;

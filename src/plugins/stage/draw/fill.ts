@@ -1,5 +1,4 @@
-import { SHAPE_TYPE } from "@/plugins/config/shapes";
-import { getShapePath } from "@/utils/shape";
+import { IPPTElementFill } from "@/types/element";
 
 export class Fill {
     private _ctx: CanvasRenderingContext2D;
@@ -7,11 +6,10 @@ export class Fill {
         this._ctx = ctx;
     }
 
-    public draw(fill: string, fillOpacity: number, width: number, height: number) {
+    public draw(fill: IPPTElementFill, path: Path2D) {
         this._ctx.save();
-        this._ctx.fillStyle = fill;
-        this._ctx.globalAlpha = (100 - fillOpacity) / 100;
-        const path = getShapePath(SHAPE_TYPE.RECT, width, height);
+        this._ctx.fillStyle = fill.color || "transparent";
+        this._ctx.globalAlpha = (100 - (fill.opacity || 0)) / 100;
         this._ctx.fill(path);
         this._ctx.restore();
     }

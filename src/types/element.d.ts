@@ -70,6 +70,18 @@ export interface IPPTElementOutline {
 }
 
 /**
+ * 元素填充色
+ *
+ * opacity?: 透明度
+ *
+ * color?: 填充色颜色
+ */
+export interface IPPTElementFill {
+    color?: string;
+    opacity?: number;
+}
+
+/**
  * 形状渐变
  *
  * type: 渐变类型（径向、线性）
@@ -114,15 +126,13 @@ export interface IShapeText {
  *
  * fixedRatio: 固定形状宽高比例
  *
- * fill: 填充，不存在渐变时生效
+ * fill?: 填充色，不存在渐变时生效
  *
  * rotate: 旋转角度
  *
  * gradient?: 渐变，该属性存在时将优先作为填充
  *
  * outline?: 边框
- *
- * fillOpacity?: 不透明度
  *
  * flipH?: 水平翻转
  *
@@ -136,11 +146,10 @@ export interface IPPTShapeElement extends IPPTBaseElement {
     type: "shape";
     shape: IShape;
     fixedRatio: boolean;
-    fill: string;
+    fill?: IPPTElementFill;
     rotate: number;
     gradient?: IShapeGradient;
     outline?: IPPTElementOutline;
-    fillOpacity?: number;
     flipH?: 1 | -1;
     flipV?: 1 | -1;
     shadow?: IPPTElementShadow;
@@ -239,9 +248,13 @@ export interface ImageElementClip {
  *
  * flipV?: 垂直翻转
  *
+ * opacity?: 不透明度，默认100（%）
+ *
  * outline?: 边框
  *
- * opacity?: 不透明度，默认100（%）
+ * shadow?: 阴影
+ *
+ * fill?: 填充色
  */
 export interface IPPTImageElement extends IPPTBaseElement {
     type: "image";
@@ -251,13 +264,12 @@ export interface IPPTImageElement extends IPPTBaseElement {
     src: string;
     filters?: ImageElementFilters;
     clip?: ImageElementClip;
-    fill?: string;
-    fillOpacity?: number;
     flipH?: 1 | -1;
     flipV?: 1 | -1;
-    outline?: IPPTElementOutline;
     opacity?: number;
+    outline?: IPPTElementOutline;
     shadow?: IPPTElementShadow;
+    fill?: IPPTElementFill;
 }
 
 /**
@@ -279,8 +291,6 @@ export interface IPPTImageElement extends IPPTBaseElement {
  *
  * outline?: 边框
  *
- * fillOpacity?: 不透明度，默认100（%）
- *
  * shadow?: 阴影
  */
 export interface IPPTTextElement extends IPPTBaseElement {
@@ -290,8 +300,7 @@ export interface IPPTTextElement extends IPPTBaseElement {
     lineHeight: number;
     rotate: number;
     align: "left" | "center" | "right";
-    fill?: string;
-    fillOpacity?: number;
+    fill?: IPPTElementFill;
     outline?: IPPTElementOutline;
     shadow?: IPPTElementShadow;
 }
@@ -336,6 +345,18 @@ export interface IPPTAudioElement extends IPPTBaseElement {
  * src: base4公式图片
  *
  * rotate: 旋转角度
+ *
+ * flipH?: 水平翻转
+ *
+ * flipV?: 垂直翻转
+ *
+ * opacity?: 不透明度，默认100（%）
+ *
+ * outline?: 边框
+ *
+ * shadow?: 阴影
+ *
+ * fill?: 填充色
  */
 export interface IPPTLatexElement extends IPPTBaseElement {
     type: "latex";
@@ -343,13 +364,12 @@ export interface IPPTLatexElement extends IPPTBaseElement {
     text: string;
     rotate: number;
     streach: number;
-    fill?: string;
-    fillOpacity?: number;
     flipH?: 1 | -1;
     flipV?: 1 | -1;
-    outline?: IPPTElementOutline;
     opacity?: number;
+    outline?: IPPTElementOutline;
     shadow?: IPPTElementShadow;
+    fill?: IPPTElementFill;
 }
 
 export type ChartType = "bar" | "line" | "pie" | "funnel";
@@ -380,10 +400,21 @@ export interface ChartData {
  * title?: 标题
  *
  * stack?: 柱状图堆叠显示
+ *
+ * flipH?: 水平翻转
+ *
+ * flipV?: 垂直翻转
+ *
+ * opacity?: 不透明度，默认100（%）
+ *
+ * outline?: 边框
+ *
+ * shadow?: 阴影
+ *
+ * fill?: 填充色
  */
 export interface IPPTChartElement extends IPPTBaseElement {
     type: "chart";
-    fill?: string;
     chartType: ChartType;
     data: ChartData;
     axisTransformation: boolean;
@@ -393,13 +424,12 @@ export interface IPPTChartElement extends IPPTBaseElement {
     stack?: boolean;
     rotate: number;
     streach: number;
-    fill?: string;
-    fillOpacity?: number;
     flipH?: 1 | -1;
     flipV?: 1 | -1;
-    outline?: IPPTElementOutline;
     opacity?: number;
+    outline?: IPPTElementOutline;
     shadow?: IPPTElementShadow;
+    fill?: IPPTElementFill;
 }
 
 export type IPPTElement =

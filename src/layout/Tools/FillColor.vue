@@ -26,7 +26,11 @@
                     </div>
 
                     <template #content>
-                        <div class="ppt-fill-content" @keydown.stop="" tabindex="0">
+                        <div
+                            class="ppt-fill-content"
+                            @keydown.stop=""
+                            tabindex="0"
+                        >
                             <a-button
                                 size="small"
                                 block
@@ -76,7 +80,12 @@
 import { THEME_COLOR } from "@/plugins/config/stage";
 import { inject, PropType, Ref, ref, watch } from "vue";
 import ColorBoard from "@/components/ColorBoard.vue";
-import { IPPTAudioElement, IPPTElement, IPPTLineElement, IPPTVideoElement } from "@/types/element";
+import {
+    IPPTAudioElement,
+    IPPTElement,
+    IPPTLineElement,
+    IPPTVideoElement
+} from "@/types/element";
 import { STORAGE_FILL_COLOR } from "@/utils/storage";
 import Editor from "@/plugins/editor";
 
@@ -99,27 +108,39 @@ const noFill = ref(true);
 const opacity = ref(0);
 
 const init = () => {
-    const operateElements = props.elements.filter(element => element.type !== "line" && element.type !== "audio" && element.type !== "video") as (Exclude<IPPTElement, IPPTLineElement | IPPTAudioElement | IPPTVideoElement>)[];
-    const allHasFill = operateElements.filter(element => !!element.fill).length === operateElements.length;
-    let fill = "#000000";
-    let opacityNum = 0;
+    const operateElements = props.elements.filter(
+        (element) =>
+            element.type !== "line" &&
+            element.type !== "audio" &&
+            element.type !== "video"
+    ) as Exclude<
+        IPPTElement,
+        IPPTLineElement | IPPTAudioElement | IPPTVideoElement
+    >[];
+    const allHasFill =
+        operateElements.filter((element) => !!element.fill).length ===
+        operateElements.length;
+    const fill = {
+        color: "#000000",
+        opacity: 0
+    };
     for (const [index, operateElement] of operateElements.entries()) {
         if (index === 0) {
-            fill = operateElement.fill || "#000000";
-            opacityNum = operateElement.fillOpacity || 0;
+            fill.color = operateElement.fill?.color || "#000000";
+            fill.opacity = operateElement.fill?.opacity || 0;
         } else {
-            if (fill !== operateElement.fill) {
-                fill = "#000000";
+            if (fill.color !== operateElement.fill?.color) {
+                fill.color = "#000000";
             }
 
-            if (opacityNum !== operateElement.fillOpacity) {
-                opacityNum = 0;
+            if (fill.opacity !== operateElement.fill?.opacity) {
+                fill.opacity = 0;
             }
         }
     }
-    currentColor.value = fill;
+    currentColor.value = fill.color;
     noFill.value = !allHasFill;
-    opacity.value = opacityNum;
+    opacity.value = fill.opacity;
 };
 
 init();
@@ -127,7 +148,7 @@ init();
 watch(() => props.elements, init);
 
 const setFillColor = (color?: string, noClose?: boolean) => {
-    instance?.value.command.executeFillColor(color || "");
+    instance?.value.command.executeFill({ color });
     if (!noClose) showFillColor.value = false;
 };
 
@@ -143,8 +164,8 @@ const onChangeColor = (
     }
 };
 
-const onOpacityChange = (value: number) => {
-    instance?.value.command.executeOpacity(value);
+const onOpacityChange = (opacity: number) => {
+    instance?.value.command.executeFill({ opacity });
 };
 </script>
 

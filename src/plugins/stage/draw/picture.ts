@@ -74,12 +74,12 @@ export class Picture {
             // 旋转画布
             this._ctx.rotate((element.rotate / 180) * Math.PI);
 
+            const path = getShapePath(SHAPE_TYPE.RECT, element.width, element.height);
             if (element.fill) {
-                this._fill.draw(element.fill || "transparent", element.fillOpacity || 0, element.width, element.height);
+                this._fill.draw(element.fill, path);
             }
 
             if (element.outline) {
-                const path = getShapePath(SHAPE_TYPE.RECT, element.width, element.height);
                 this._outline.draw(element.outline, path);
             }
 

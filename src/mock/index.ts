@@ -14,7 +14,9 @@ export const slides: ISlide[] = [
                 top: 0,
                 width: 279.06976744186045,
                 height: 242.39713774597493,
-                fill: "#5b9bd5",
+                fill: {
+                    color: "#5b9bd5"
+                },
                 fixedRatio: false,
                 rotate: 0,
                 flipV: -1
@@ -28,11 +30,13 @@ export const slides: ISlide[] = [
                 top: 114,
                 width: 518.783542039356,
                 height: 449,
-                fill: "#5b9bd5",
+                fill: {
+                    color: "#5b9bd5",
+                    opacity: 30
+                },
                 fixedRatio: false,
                 rotate: 0,
-                flipV: 1,
-                fillOpacity: 30
+                flipV: 1
             },
             {
                 name: "文本",
@@ -243,7 +247,9 @@ export const slides: ISlide[] = [
                 top: 81,
                 width: 279.4069462647445,
                 height: 200.52424639580605,
-                fill: "#5b9bd5",
+                fill: {
+                    color: "#5b9bd5"
+                },
                 fixedRatio: false,
                 rotate: 0
             },
@@ -256,7 +262,9 @@ export const slides: ISlide[] = [
                 top: 154,
                 width: 33.912188728702496,
                 height: 128.2765399737877,
-                fill: "#ffffff",
+                fill: {
+                    color: "#ffffff"
+                },
                 fixedRatio: false,
                 rotate: 0
             },
@@ -269,7 +277,9 @@ export const slides: ISlide[] = [
                 top: 154,
                 width: 33.912188728702496,
                 height: 128.2765399737877,
-                fill: "#ffffff",
+                fill: {
+                    color: "#ffffff"
+                },
                 fixedRatio: false,
                 rotate: 0
             },

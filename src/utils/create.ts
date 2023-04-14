@@ -77,7 +77,9 @@ export const createShapeElement = (
         top,
         width,
         height,
-        fill: THEME_COLOR,
+        fill: {
+            color: THEME_COLOR
+        },
         fixedRatio: false,
         rotate: 0
     };
