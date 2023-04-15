@@ -109,8 +109,10 @@ export class History {
     private async _setSlides() {
         const history = await this._db.getData(this._snapshotKeys[this.cursor]);
         const slides = history.slides as ISlide[];
+        const isSlidesChange = this._stageConfig.slides.length !== slides.length;
         this._stageConfig.setSildes(slides);
-        this._stageConfig.resetCheckDrawView();
+        // 当页出现增减变化 不执行该方法 处理页面渲染重叠现象
+        if (!isSlidesChange) this._stageConfig.resetCheckDrawView();
         // oprateElements存在时，这里需要验证一下oprateElements是否还在slides中
         const operateElements = this._stageConfig.operateElements;
         if (operateElements.length > 0) {
