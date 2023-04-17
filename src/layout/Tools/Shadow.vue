@@ -87,6 +87,7 @@
 <script lang="ts" setup>
 import { inject, PropType, Ref, ref, watch } from "vue";
 import ColorBoard from "@/components/ColorBoard.vue";
+import PPTIcon from "@/components/Icon.vue";
 import { IPPTAudioElement, IPPTElement, IPPTLineElement, IPPTVideoElement } from "@/types/element";
 import { STORAGE_SHADOW_COLOR } from "@/utils/storage";
 import Editor from "@/plugins/editor";

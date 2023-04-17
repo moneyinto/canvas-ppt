@@ -46,6 +46,7 @@ import Editor from "@/plugins/editor";
 import { IPPTElement, IPPTTextElement } from "@/types/element";
 import { IFontData } from "@/types/font";
 import { isSupportFont } from "@/utils";
+import PPTIcon from "@/components/Icon.vue";
 
 const instance = inject<Ref<Editor>>("instance");
 

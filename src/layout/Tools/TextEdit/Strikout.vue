@@ -17,6 +17,7 @@ import { inject, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
 import { IPPTElement, IPPTTextElement } from "@/types/element";
 import { IFontData } from "@/types/font";
+import PPTIcon from "@/components/Icon.vue";
 
 const instance = inject<Ref<Editor>>("instance");
 
@@ -51,7 +52,7 @@ const init = () => {
     if (operateElements.length > 0) {
         isStrikout.value = true;
         for (const operateElement of operateElements) {
-            isStrikout.value = getContentStrikout(operateElement.content);
+            isStrikout.value = operateElement.content.length > 1 ? getContentStrikout(operateElement.content) : false;
             if (!isStrikout.value) break;
         }
     }

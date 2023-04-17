@@ -1,6 +1,8 @@
 <template>
     <div class="ppt-nav-menu" @keydown.stop="" tabindex="0">
         <Edit :elements="elements" :slideFocus="slideFocus" />
+
+        <Insert />
     </div>
 </template>
 
@@ -8,6 +10,8 @@
 import { IPPTElement } from "@/types/element";
 import { PropType, toRefs } from "vue";
 import Edit from "./Edit.vue";
+import Insert from "./Insert.vue";
+
 const props = defineProps({
     slideFocus: {
         type: Boolean,

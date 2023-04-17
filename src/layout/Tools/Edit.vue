@@ -22,6 +22,7 @@
 import Editor from "@/plugins/editor";
 import { computed, inject, Ref } from "vue";
 import { throttleRAF } from "@/utils";
+import PPTIcon from "@/components/Icon.vue";
 
 const historyCursor = inject<Ref<number>>("historyCursor");
 const historyLength = inject<Ref<number>>("historyLength");

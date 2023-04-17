@@ -45,6 +45,7 @@ import { inject, Ref, ref } from "vue";
 import ColorBoard from "@/components/ColorBoard.vue";
 import { STORAGE_FONT_COLOR } from "@/utils/storage";
 import Editor from "@/plugins/editor";
+import PPTIcon from "@/components/Icon.vue";
 
 const instance = inject<Ref<Editor>>("instance");
 

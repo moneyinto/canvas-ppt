@@ -40,6 +40,7 @@
 import { computed, inject, ref, Ref } from "vue";
 import { STORAGE_FLIP } from "@/utils/storage";
 import Editor from "@/plugins/editor";
+import PPTIcon from "@/components/Icon.vue";
 
 const instance = inject<Ref<Editor>>("instance");
 

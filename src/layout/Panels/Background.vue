@@ -158,6 +158,7 @@
 import { inject, ref, Ref, watch } from "vue";
 import ColorBoard from "@/components/ColorBoard.vue";
 import FileInput from "@/components/FileInput.vue";
+import PPTIcon from "@/components/Icon.vue";
 import Editor from "@/plugins/editor";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 import { ISlideBackground } from "@/types/slide";

@@ -80,7 +80,8 @@ const icons: { [key: string]: string } = {
     line: new URL("@/assets/icons/line.svg", import.meta.url).href,
     pie: new URL("@/assets/icons/pie.svg", import.meta.url).href,
     funnel: new URL("@/assets/icons/funnel.svg", import.meta.url).href,
-    preview: new URL("@/assets/icons/preview.svg", import.meta.url).href
+    preview: new URL("@/assets/icons/preview.svg", import.meta.url).href,
+    upload: new URL("@/assets/icons/upload.svg", import.meta.url).href
 };
 
 const iconUrl = computed(() => icons[icon.value]);

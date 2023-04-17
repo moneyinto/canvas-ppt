@@ -25,8 +25,8 @@ type Events = {
     [EmitterEvents.PASTE_SLIDE]: void;
     [EmitterEvents.SHOW_PANELS]: boolean;
     [EmitterEvents.PANELS_TYPE]: PANELS | "";
-    [EmitterEvents.OPEN_LATEX]: IPPTLatexElement;
-    [EmitterEvents.OPEN_CHART]: ChartType | IPPTChartElement;
+    [EmitterEvents.OPEN_LATEX]: IPPTLatexElement | undefined;
+    [EmitterEvents.OPEN_CHART]: { args: ChartType | IPPTChartElement; transformation?: boolean };
 };
 
 const emitter: Emitter<Events> = mitt<Events>();

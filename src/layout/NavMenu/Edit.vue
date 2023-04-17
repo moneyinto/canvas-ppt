@@ -59,6 +59,7 @@ import { inject, Ref, computed, toRefs, PropType } from "vue";
 import { throttleRAF } from "@/utils";
 import { IPPTElement } from "@/types/element";
 import emitter, { EmitterEvents } from "@/utils/emitter";
+import PPTIcon from "@/components/Icon.vue";
 
 const props = defineProps({
     slideFocus: {

@@ -11,6 +11,7 @@
 </template>
 
 <script lang="ts" setup>
+import PPTIcon from "@/components/Icon.vue";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const addPPT = () => {

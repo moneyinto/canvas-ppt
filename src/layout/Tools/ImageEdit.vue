@@ -54,6 +54,7 @@ import {
     IPPTLatexElement
 } from "@/types/element";
 import Editor from "@/plugins/editor";
+import PPTIcon from "@/components/Icon.vue";
 
 const props = defineProps({
     elements: {

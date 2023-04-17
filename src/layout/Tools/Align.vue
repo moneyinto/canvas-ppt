@@ -121,6 +121,7 @@ import { computed, inject, PropType, ref, Ref, toRefs } from "vue";
 import Editor from "@/plugins/editor";
 import { IElementAlignType } from "@/types";
 import { IPPTElement } from "@/types/element";
+import PPTIcon from "@/components/Icon.vue";
 
 const props = defineProps({
     elements: {

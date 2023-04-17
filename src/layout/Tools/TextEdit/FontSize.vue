@@ -77,6 +77,7 @@ import Editor from "@/plugins/editor";
 import { throttleRAF } from "@/utils";
 import { IPPTElement, IPPTTextElement } from "@/types/element";
 import { IFontData } from "@/types/font";
+import PPTIcon from "@/components/Icon.vue";
 
 const instance = inject<Ref<Editor>>("instance");
 

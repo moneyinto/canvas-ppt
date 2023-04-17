@@ -9,6 +9,7 @@
 <script lang="ts" setup>
 import emitter, { EmitterEvents } from "@/utils/emitter";
 import { PANELS } from "@/utils/panel";
+import PPTIcon from "@/components/Icon.vue";
 
 const setBackground = () => {
     emitter.emit(EmitterEvents.SHOW_PANELS, true);

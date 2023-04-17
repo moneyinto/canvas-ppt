@@ -4,30 +4,9 @@
             <FileInput
                 class="ppt-tool-btn"
                 accept="image/*"
-                @change="insertImage"
+                @change="insertImageElement"
             >
                 <PPTIcon icon="image" :size="28" />
-            </FileInput>
-        </a-tooltip>
-
-        <a-tooltip title="插入视频">
-            <FileInput
-                class="ppt-tool-btn"
-                accept="video/*"
-                @change="insertVideo"
-            >
-                <PPTIcon icon="video" :size="28" />
-            </FileInput>
-        </a-tooltip>
-
-        <a-tooltip title="插入音频">
-            <FileInput
-                class="ppt-tool-btn"
-                style="padding: 0 8px"
-                accept="audio/*"
-                @change="insertAudio"
-            >
-                <PPTIcon icon="audio" :size="16" />
             </FileInput>
         </a-tooltip>
 
@@ -49,55 +28,7 @@
             </a-tooltip>
 
             <template #content>
-                <div class="shape-pool" @keydown.stop tabindex="0">
-                    <div
-                        class="category"
-                        v-for="item in SHAPE_LIST"
-                        :key="item.type"
-                    >
-                        <div class="category-name">{{ item.name }}</div>
-                        <div class="shape-list">
-                            <div
-                                class="shape-item"
-                                v-for="(shape, index) in item.children"
-                                :key="index"
-                                @click="selectShape(item.type, shape)"
-                            >
-                                <a-tooltip :title="shape.name">
-                                    <SvgWrapper
-                                        style="outline: 0"
-                                        overflow="visible"
-                                        width="18"
-                                        height="18"
-                                    >
-                                        <g
-                                            :transform="`scale(${
-                                                18 / shape.viewBox
-                                            }, ${
-                                                18 / shape.viewBox
-                                            }) translate(0,0) matrix(1,0,0,1,0,0)`"
-                                        >
-                                            <path
-                                                class="shape-path"
-                                                vector-effect="non-scaling-stroke"
-                                                stroke-linecap="butt"
-                                                stroke-miterlimit="8"
-                                                :fill="
-                                                    !!shape.fill
-                                                        ? '#999'
-                                                        : 'transparent'
-                                                "
-                                                stroke="#999"
-                                                stroke-width="1px"
-                                                :d="shape.path"
-                                            ></path>
-                                        </g>
-                                    </SvgWrapper>
-                                </a-tooltip>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <ShapePool @selectShape="insertShapeElement" />
             </template>
         </a-popover>
 
@@ -105,7 +36,7 @@
             <div
                 class="ppt-tool-btn"
                 :class="insertTextActive && 'active'"
-                @click="insertText()"
+                @click="insertTextElement()"
             >
                 <PPTIcon icon="text" :size="28" />
             </div>
@@ -130,23 +61,40 @@
 
             <template #content>
                 <div class="ppt-chart-content" @keydown.stop="" tabindex="0">
-                    <div class="ppt-chart-item" @click="openChart('bar', true)">
+                    <div
+                        class="ppt-chart-item"
+                        @click="
+                            openChart({ args: 'bar', transformation: true })
+                        "
+                    >
                         <PPTIcon icon="bar_h" :size="28" />
                         <div class="ppt-chart-text">条形图</div>
                     </div>
-                    <div class="ppt-chart-item" @click="openChart('bar')">
+                    <div
+                        class="ppt-chart-item"
+                        @click="openChart({ args: 'bar' })"
+                    >
                         <PPTIcon icon="bar_v" :size="28" />
                         <div class="ppt-chart-text">柱状图</div>
                     </div>
-                    <div class="ppt-chart-item" @click="openChart('line')">
+                    <div
+                        class="ppt-chart-item"
+                        @click="openChart({ args: 'line' })"
+                    >
                         <PPTIcon icon="line" :size="28" />
                         <div class="ppt-chart-text">折线图</div>
                     </div>
-                    <div class="ppt-chart-item" @click="openChart('pie')">
+                    <div
+                        class="ppt-chart-item"
+                        @click="openChart({ args: 'pie' })"
+                    >
                         <PPTIcon icon="pie" :size="28" />
                         <div class="ppt-chart-text">饼状图</div>
                     </div>
-                    <div class="ppt-chart-item" @click="openChart('funnel')">
+                    <div
+                        class="ppt-chart-item"
+                        @click="openChart({ args: 'funnel' })"
+                    >
                         <PPTIcon icon="funnel" :size="28" />
                         <div class="ppt-chart-text">漏斗图</div>
                     </div>
@@ -173,20 +121,39 @@
             :axisTransformation="axisTransformation"
             @ok="insertOrUpdateChart"
         />
+
+        <a-tooltip title="插入视频">
+            <FileInput
+                class="ppt-tool-btn"
+                accept="video/*"
+                @change="insertVideoElement"
+            >
+                <PPTIcon icon="video" :size="28" />
+            </FileInput>
+        </a-tooltip>
+
+        <a-tooltip title="插入音频">
+            <FileInput
+                class="ppt-tool-btn"
+                style="padding: 0 8px"
+                accept="audio/*"
+                @change="insertAudioElement"
+            >
+                <PPTIcon icon="audio" :size="16" />
+            </FileInput>
+        </a-tooltip>
     </div>
 </template>
 
 <script lang="ts" setup>
-import SvgWrapper from "@/components/SvgWrapper.vue";
 import Editor from "@/plugins/editor";
 import FileInput from "@/components/FileInput.vue";
 import Latex from "./Latex/index.vue";
 import Chart from "./Chart/index.vue";
-import { SHAPE_LIST } from "@/plugins/config/shapes";
-import { ILineItem, IShapeItem } from "@/types/shape";
+import PPTIcon from "@/components/Icon.vue";
+import ShapePool from "@/components/ShapePool.vue";
 import { inject, onMounted, onUnmounted, ref, Ref, watch } from "vue";
 import {
-    ICreatingType,
     IPPTChartElement,
     IPPTLatexElement,
     ChartType,
@@ -194,13 +161,11 @@ import {
 } from "@/types/element";
 import { fileMd5, dataURLtoFile } from "@/utils";
 import {
-    createImageElement,
     createLatexElement,
-    createVideoElement,
-    createAudioElement,
     createChartElement
 } from "@/utils/create";
 import emitter, { EmitterEvents } from "@/utils/emitter";
+import useInsertElement from "@/hooks/useInsertElement";
 
 const showShapePool = ref(false);
 const hoverShapePool = ref(false);
@@ -208,6 +173,8 @@ const showChartPool = ref(false);
 const hoverChartPool = ref(false);
 const showLatex = ref(false);
 const showChart = ref(false);
+
+const insertTextActive = ref(false);
 
 const latexElement = ref<IPPTLatexElement>();
 const chartElement = ref<IPPTChartElement>();
@@ -236,87 +203,13 @@ onUnmounted(() => {
     emitter.off(EmitterEvents.OPEN_CHART, openChart);
 });
 
-const selectShape = (type: ICreatingType, shape: IShapeItem | ILineItem) => {
-    showShapePool.value = false;
-    if (type === "line") {
-        instance?.value.stageConfig.setInsertElement({
-            type,
-            data: shape as ILineItem
-        });
-    } else if (type === "shape") {
-        instance?.value.stageConfig.setInsertElement({
-            type,
-            data: shape as IShapeItem
-        });
-    }
-};
-
-const insertTextActive = ref(false);
-const insertText = () => {
-    if (!instance?.value.stageConfig.insertElement) {
-        instance?.value.stageConfig.setInsertElement({
-            type: "text"
-        });
-    }
-};
-
-const insertImage = async (files: File[]) => {
-    const imageFile = files[0];
-    if (!imageFile) return;
-    const md5 = await fileMd5(imageFile);
-    if (md5) {
-        const reader = new FileReader();
-        reader.addEventListener(
-            "load",
-            async () => {
-                await instance?.value.history.saveFile(
-                    md5,
-                    reader.result as string
-                );
-                const image = new Image();
-                image.onload = () => {
-                    const element = createImageElement(
-                        image.width,
-                        image.height,
-                        md5
-                    );
-                    instance?.value.command.executeAddRender([element]);
-                };
-                image.src = reader.result as string;
-            },
-            false
-        );
-        reader.readAsDataURL(imageFile);
-    }
-};
-
-const insertVideo = async (files: File[]) => {
-    const videoFile = files[0];
-    if (!videoFile) return;
-    const md5 = await fileMd5(videoFile);
-    if (md5) {
-        const reader = new FileReader();
-        reader.addEventListener(
-            "load",
-            async () => {
-                await instance?.value.history.saveFile(
-                    md5,
-                    reader.result as string
-                );
-                const element = createVideoElement(
-                    300,
-                    200,
-                    md5
-                    // window.URL.createObjectURL(new Blob([reader.result as ArrayBuffer]))
-                );
-                instance?.value.command.executeAddRender([element]);
-            },
-            false
-        );
-        reader.readAsDataURL(videoFile);
-        // reader.readAsArrayBuffer(videoFile);
-    }
-};
+const {
+    insertImageElement,
+    insertShapeElement,
+    insertTextElement,
+    insertVideoElement,
+    insertAudioElement
+} = useInsertElement(instance, showShapePool);
 
 const openLatex = (element?: IPPTLatexElement) => {
     latexElement.value = element;
@@ -368,41 +261,22 @@ const insertOrUpdateLatex = async ({
     }
 };
 
-const insertAudio = async (files: File[]) => {
-    const audioFile = files[0];
-    if (!audioFile) return;
-    const md5 = await fileMd5(audioFile);
-    if (md5) {
-        const reader = new FileReader();
-        reader.addEventListener(
-            "load",
-            async () => {
-                await instance?.value.history.saveFile(
-                    md5,
-                    reader.result as string
-                );
-                const element = createAudioElement(100, 100, md5);
-                instance?.value.command.executeAddRender([element]);
-            },
-            false
-        );
-        reader.readAsDataURL(audioFile);
-    }
-};
-
 const chartType = ref<ChartType>("bar");
 const axisTransformation = ref<boolean>(false);
-const openChart = (
-    arg: ChartType | IPPTChartElement,
-    transformation?: boolean
-) => {
-    if (typeof arg === "string") {
-        const type = arg as ChartType;
+const openChart = ({
+    args,
+    transformation
+}: {
+    args: ChartType | IPPTChartElement;
+    transformation?: boolean;
+}) => {
+    if (typeof args === "string") {
+        const type = args as ChartType;
         chartElement.value = undefined;
         chartType.value = type;
         axisTransformation.value = !!transformation;
     } else {
-        chartElement.value = arg as IPPTChartElement;
+        chartElement.value = args as IPPTChartElement;
         chartType.value = chartElement.value.chartType;
         axisTransformation.value = !!chartElement.value.axisTransformation;
     }
@@ -473,32 +347,6 @@ const insertOrUpdateChart = async ({
     &.active {
         border-color: #ccc;
         background-color: #ececec;
-    }
-}
-
-.shape-pool {
-    width: 280px;
-    outline: 0;
-    .category {
-        .category-name {
-            font-size: 12px;
-            margin-top: 5px;
-        }
-    }
-    .shape-list {
-        display: flex;
-        flex-wrap: wrap;
-    }
-    .shape-item {
-        width: 28px;
-        height: 28px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        &:hover {
-            background-color: #f6f6f6;
-        }
     }
 }
 

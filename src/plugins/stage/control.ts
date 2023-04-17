@@ -158,7 +158,7 @@ export default class ControlStage extends Stage {
             }
 
             if (operateElement.type === "chart") {
-                emitter.emit(EmitterEvents.OPEN_CHART, operateElement);
+                emitter.emit(EmitterEvents.OPEN_CHART, { args: operateElement });
             }
         }
     }

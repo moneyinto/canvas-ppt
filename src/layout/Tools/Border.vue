@@ -150,6 +150,7 @@
 import { THEME_COLOR } from "@/plugins/config/stage";
 import { inject, PropType, Ref, ref, watch } from "vue";
 import ColorBoard from "@/components/ColorBoard.vue";
+import PPTIcon from "@/components/Icon.vue";
 import { IPPTAudioElement, IPPTElement, IPPTElementOutline, IPPTLineElement, IPPTVideoElement } from "@/types/element";
 import { STORAGE_BORDER_COLOR } from "@/utils/storage";
 import Editor from "@/plugins/editor";

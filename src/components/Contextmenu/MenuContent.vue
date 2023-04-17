@@ -41,7 +41,7 @@
 <script lang="ts" setup>
 import { IContextmenuItem } from "@/types/contextmenu";
 import { PropType, toRefs } from "vue";
-import PPTIcon from "@/components/icon.vue";
+import PPTIcon from "@/components/Icon.vue";
 
 const props = defineProps({
     menus: {
