@@ -1,11 +1,13 @@
 <template>
     <div class="ppt-tools" @keydown.stop="" tabindex="0">
-        <AddPPT />
+        <div class="ppt-tools-fixed">
+            <AddPPT />
 
-        <a-divider class="ppt-tool-divider" type="vertical" />
-        <Edit />
+            <a-divider class="ppt-tool-divider" type="vertical" />
+            <Edit />
 
-        <a-divider class="ppt-tool-divider" type="vertical" />
+            <a-divider class="ppt-tool-divider" type="vertical" />
+        </div>
         <Insert />
 
         <a-divider class="ppt-tool-divider" v-if="showEvert || showAlign" type="vertical" />
@@ -90,8 +92,20 @@ watch(elements, () => {
     user-select: none;
     height: 36px;
     border-bottom: 1px solid rgba(65, 70, 75, 0.1);
-    padding: 0px 10px;
+    padding: 0px 10px 0px 0px;
     outline: 0;
+    overflow-x: auto;
+
+    .ppt-tools-fixed {
+        display: flex;
+        align-items: center;
+        position: sticky;
+        left: 0;
+        padding-left: 10px;
+        height: 100%;
+        background-color: rgb(247, 247, 247);
+        z-index: 1;
+    }
 }
 
 .ppt-tool-divider {
@@ -166,5 +180,10 @@ watch(elements, () => {
             background-color: #ececec;
         }
     }
+}
+
+.ppt-tools::-webkit-scrollbar {
+    display: none;
+    height: 0 !important;
 }
 </style>

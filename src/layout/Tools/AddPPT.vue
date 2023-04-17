@@ -17,3 +17,10 @@ const addPPT = () => {
     emitter.emit(EmitterEvents.ADD_EMPTY_SLIDE);
 };
 </script>
+
+<style lang="scss" scoped>
+.ppt-tool-multifunction {
+    width: 114px;
+    min-width: 114px;
+}
+</style>
