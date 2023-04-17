@@ -94,6 +94,8 @@ watch(elements, () => {
     border-bottom: 1px solid rgba(65, 70, 75, 0.1);
     padding: 0px 10px 0px 0px;
     outline: 0;
+    overflow: -moz-scrollbars-none;
+    -ms-overflow-style: none;
     overflow-x: auto;
 
     .ppt-tools-fixed {
