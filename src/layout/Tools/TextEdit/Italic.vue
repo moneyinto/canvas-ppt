@@ -13,17 +13,19 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, PropType, ref, Ref, watch } from "vue";
+import { inject, onMounted, onUnmounted, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
 import { IPPTElement, IPPTTextElement } from "@/types/element";
 import { IFontData } from "@/types/font";
 import PPTIcon from "@/components/Icon.vue";
+import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const instance = inject<Ref<Editor>>("instance");
 
 if (instance?.value) {
     instance.value.listener.onFontStyleChange = (italic) => {
         isItalic.value = italic;
+    emitter.emit(EmitterEvents.FONT_ITALIC_CHANGE, italic);
     };
 }
 
@@ -56,6 +58,7 @@ const init = () => {
             if (!isItalic.value) break;
         }
     }
+    emitter.emit(EmitterEvents.FONT_ITALIC_CHANGE, isItalic.value);
 };
 
 init();
@@ -65,7 +68,20 @@ watch(() => props.elements, init);
 const setFontStyle = () => {
     isItalic.value = !isItalic.value;
     instance?.value.command.executeSetFontStyle(isItalic.value);
+    emitter.emit(EmitterEvents.FONT_ITALIC_CHANGE, isItalic.value);
 };
+
+const onFontItalicChange = (italic: boolean) => {
+    isItalic.value = italic;
+};
+
+onMounted(() => {
+    emitter.on(EmitterEvents.FONT_ITALIC_CHANGE, onFontItalicChange);
+});
+
+onUnmounted(() => {
+    emitter.off(EmitterEvents.FONT_ITALIC_CHANGE, onFontItalicChange);
+});
 </script>
 
 <style lang="scss" scoped>

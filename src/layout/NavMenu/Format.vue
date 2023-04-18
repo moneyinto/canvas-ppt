@@ -22,7 +22,7 @@
                         </div>
                     </a-menu-item>
                     <a-menu-item>
-                        <div class="ppt-menu-option">
+                        <div class="ppt-menu-option" @click="setFontStyle()">
                             <PPTIcon icon="italicFont" :size="28" />
                             &nbsp;&nbsp;斜体
                         </div>
@@ -157,12 +157,24 @@ const onFontSizeChange = (size: string | number) => {
 
 const isBold = ref(false);
 const setFontWeight = () => {
+    formatVisible.value = false;
     isBold.value = !isBold.value;
     instance?.value.command.executeSetFontWeight(isBold.value);
     emitter.emit(EmitterEvents.FONT_WEIGHT_CHANGE, isBold.value);
 };
 const onFontWeightChange = (bold: boolean) => {
     isBold.value = bold;
+};
+
+const isItalic = ref(false);
+const setFontStyle = () => {
+    formatVisible.value = false;
+    isItalic.value = !isItalic.value;
+    instance?.value.command.executeSetFontStyle(isItalic.value);
+    emitter.emit(EmitterEvents.FONT_ITALIC_CHANGE, isItalic.value);
+};
+const onFontStyleChange = (italic: boolean) => {
+    isItalic.value = italic;
 };
 
 watch(elements, () => {
@@ -179,12 +191,14 @@ onMounted(() => {
     emitter.on(EmitterEvents.FONT_FAMILY_CHANGE, onFontFamilyChange);
     emitter.on(EmitterEvents.FONT_SIZE_CHANGE, onFontSizeChange);
     emitter.on(EmitterEvents.FONT_WEIGHT_CHANGE, onFontWeightChange);
+    emitter.on(EmitterEvents.FONT_ITALIC_CHANGE, onFontStyleChange);
 });
 
 onUnmounted(() => {
     emitter.off(EmitterEvents.FONT_FAMILY_CHANGE, onFontFamilyChange);
     emitter.off(EmitterEvents.FONT_SIZE_CHANGE, onFontSizeChange);
     emitter.on(EmitterEvents.FONT_WEIGHT_CHANGE, onFontWeightChange);
+    emitter.on(EmitterEvents.FONT_ITALIC_CHANGE, onFontStyleChange);
 });
 </script>
 
