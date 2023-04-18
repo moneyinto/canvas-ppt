@@ -41,12 +41,11 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, PropType, ref, Ref, watch } from "vue";
+import { computed, inject, PropType, ref, Ref } from "vue";
 import Editor from "@/plugins/editor";
-import { IPPTElement, IPPTTextElement } from "@/types/element";
-import { IFontData } from "@/types/font";
-import { isSupportFont } from "@/utils";
+import { IPPTElement } from "@/types/element";
 import PPTIcon from "@/components/Icon.vue";
+import useFontFamilyHandler from "@/hooks/useFontFamilyHandler";
 
 const instance = inject<Ref<Editor>>("instance");
 
@@ -63,77 +62,10 @@ const props = defineProps({
     }
 });
 
-const SYS_FONTS = [
-    { label: "Arial", value: "Arial" },
-    { label: "微软雅黑", value: "Microsoft YaHei" },
-    { label: "宋体", value: "SimSun" },
-    { label: "黑体", value: "SimHei" },
-    { label: "楷体", value: "KaiTi" },
-    { label: "新宋体", value: "NSimSun" },
-    { label: "仿宋", value: "FangSong" },
-    { label: "苹方", value: "PingFang SC" },
-    { label: "华文黑体", value: "STHeiti" },
-    { label: "华文楷体", value: "STKaiti" },
-    { label: "华文宋体", value: "STSong" },
-    { label: "华文仿宋", value: "STFangSong" },
-    { label: "华文中宋", value: "STZhongSong" },
-    { label: "华文琥珀", value: "STHupo" },
-    { label: "华文新魏", value: "STXinwei" },
-    { label: "华文隶书", value: "STLiti" },
-    { label: "华文行楷", value: "STXingkai" },
-    { label: "冬青黑体", value: "Hiragino Sans GB" },
-    { label: "兰亭黑", value: "Lantinghei SC" },
-    { label: "偏偏体", value: "Hanzipen SC" },
-    { label: "手札体", value: "Hannotate SC" },
-    { label: "宋体", value: "Songti SC" },
-    { label: "娃娃体", value: "Wawati SC" },
-    { label: "行楷", value: "Xingkai SC" },
-    { label: "圆体", value: "Yuanti SC" },
-    { label: "华文细黑", value: "STXihei" },
-    { label: "幼圆", value: "YouYuan" },
-    { label: "隶书", value: "LiSu" }
-];
-
-const availableFonts = ref(SYS_FONTS.filter(font => isSupportFont(font.value)));
-
 const showFontFamily = ref(false);
 const hoverFontFamilyPool = ref(false);
-const fontFamily = ref("");
-const font = computed(() => availableFonts.value.find(font => font.value === fontFamily.value)?.label);
-
-const getContentFontFamily = (texts: IFontData[]) => {
-    let fontFamily = "";
-    for (const text of texts) {
-        if (fontFamily === "") {
-            fontFamily = text.fontFamily;
-        } else if (fontFamily !== text.fontFamily) {
-            // 存在不一样的字体 结束循环
-            fontFamily = "";
-            break;
-        }
-    }
-    return fontFamily;
-};
-
-const init = () => {
-    const operateElements = props.elements.filter(element => element.type === "text") as IPPTTextElement[];
-    if (operateElements.length > 0) {
-        for (const [index, operateElement] of operateElements.entries()) {
-            if (index === 0) {
-                fontFamily.value = getContentFontFamily(operateElement.content);
-            } else {
-                if (fontFamily.value !== getContentFontFamily(operateElement.content)) {
-                    fontFamily.value = "";
-                    break;
-                }
-            }
-        }
-    }
-};
-
-init();
-
-watch(() => props.elements, init);
+const elements = computed(() => props.elements);
+const { availableFonts, font, fontFamily } = useFontFamilyHandler(elements);
 
 const setFontFamily = (font: string) => {
     showFontFamily.value = false;

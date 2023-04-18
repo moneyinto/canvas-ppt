@@ -3,6 +3,8 @@
         <Edit :elements="elements" :slideFocus="slideFocus" />
 
         <Insert />
+
+        <Format :elements="elements" />
     </div>
 </template>
 
@@ -11,6 +13,7 @@ import { IPPTElement } from "@/types/element";
 import { PropType, toRefs } from "vue";
 import Edit from "./Edit.vue";
 import Insert from "./Insert.vue";
+import Format from "./Format.vue";
 
 const props = defineProps({
     slideFocus: {
@@ -53,6 +56,7 @@ const { slideFocus, elements } = toRefs(props);
     display: flex;
     align-items: center;
     font-size: 12px;
+    height: 26px;
     width: 140px;
     .disabled {
         opacity: 0.3;
