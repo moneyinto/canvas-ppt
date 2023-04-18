@@ -11,7 +11,7 @@
                 <a-sub-menu :disabled="fontDisabled" key="sub-text">
                     <template #title>
                         <div class="ppt-menu-option">
-                            <div style="width: 28px; height: 26px"></div>
+                            <PPTIcon icon="text" :size="28" />
                             &nbsp;&nbsp;文字
                         </div>
                     </template>
@@ -39,7 +39,7 @@
                             &nbsp;&nbsp;中划线
                         </div>
                     </a-menu-item>
-                    <a-divider class="ppt-menu-divider"></a-divider>
+                    <a-menu-divider />
                     <a-sub-menu key="sub-font">
                         <template #title>
                             <div class="ppt-menu-option">
