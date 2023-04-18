@@ -13,17 +13,19 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, PropType, ref, Ref, watch } from "vue";
+import { inject, onMounted, onUnmounted, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
 import { IPPTElement, IPPTTextElement } from "@/types/element";
 import { IFontData } from "@/types/font";
 import PPTIcon from "@/components/Icon.vue";
+import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const instance = inject<Ref<Editor>>("instance");
 
 if (instance?.value) {
     instance.value.listener.onFontStrikoutChange = (strikout) => {
         isStrikout.value = strikout;
+        emitter.emit(EmitterEvents.FONT_STRIKOUT_CHANGE, isStrikout.value);
     };
 }
 
@@ -56,6 +58,7 @@ const init = () => {
             if (!isStrikout.value) break;
         }
     }
+    emitter.emit(EmitterEvents.FONT_STRIKOUT_CHANGE, isStrikout.value);
 };
 
 init();
@@ -65,7 +68,20 @@ watch(() => props.elements, init);
 const setFontStrikout = () => {
     isStrikout.value = !isStrikout.value;
     instance?.value.command.executeSetFontStrikout(isStrikout.value);
+    emitter.emit(EmitterEvents.FONT_STRIKOUT_CHANGE, isStrikout.value);
 };
+
+const onFontStrikoutChange = (strikout: boolean) => {
+    isStrikout.value = strikout;
+};
+
+onMounted(() => {
+    emitter.on(EmitterEvents.FONT_STRIKOUT_CHANGE, onFontStrikoutChange);
+});
+
+onUnmounted(() => {
+    emitter.on(EmitterEvents.FONT_STRIKOUT_CHANGE, onFontStrikoutChange);
+});
 </script>
 
 <style lang="scss" scoped>

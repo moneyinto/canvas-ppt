@@ -34,7 +34,7 @@
                         </div>
                     </a-menu-item>
                     <a-menu-item>
-                        <div class="ppt-menu-option">
+                        <div class="ppt-menu-option" @click="setFontStrikout()">
                             <PPTIcon icon="strikout" :size="28" />
                             &nbsp;&nbsp;中划线
                         </div>
@@ -179,12 +179,24 @@ const onFontStyleChange = (italic: boolean) => {
 
 const isUnderLine = ref(false);
 const setFontUnderLine = () => {
+    formatVisible.value = false;
     isUnderLine.value = !isUnderLine.value;
     instance?.value.command.executeSetFontUnderLine(isUnderLine.value);
     emitter.emit(EmitterEvents.FONT_UNDERLINE_CHANGE, isUnderLine.value);
 };
 const onFontUnderLineChange = (underLine: boolean) => {
     isUnderLine.value = underLine;
+};
+
+const isStrikout = ref(false);
+const setFontStrikout = () => {
+    formatVisible.value = false;
+    isStrikout.value = !isStrikout.value;
+    instance?.value.command.executeSetFontStrikout(isStrikout.value);
+    emitter.emit(EmitterEvents.FONT_STRIKOUT_CHANGE, isStrikout.value);
+};
+const onFontStrikoutChange = (strikout: boolean) => {
+    isStrikout.value = strikout;
 };
 
 watch(elements, () => {
@@ -203,14 +215,16 @@ onMounted(() => {
     emitter.on(EmitterEvents.FONT_WEIGHT_CHANGE, onFontWeightChange);
     emitter.on(EmitterEvents.FONT_ITALIC_CHANGE, onFontStyleChange);
     emitter.on(EmitterEvents.FONT_UNDERLINE_CHANGE, onFontUnderLineChange);
+    emitter.on(EmitterEvents.FONT_STRIKOUT_CHANGE, onFontStrikoutChange);
 });
 
 onUnmounted(() => {
     emitter.off(EmitterEvents.FONT_FAMILY_CHANGE, onFontFamilyChange);
     emitter.off(EmitterEvents.FONT_SIZE_CHANGE, onFontSizeChange);
-    emitter.on(EmitterEvents.FONT_WEIGHT_CHANGE, onFontWeightChange);
-    emitter.on(EmitterEvents.FONT_ITALIC_CHANGE, onFontStyleChange);
-    emitter.on(EmitterEvents.FONT_UNDERLINE_CHANGE, onFontUnderLineChange);
+    emitter.off(EmitterEvents.FONT_WEIGHT_CHANGE, onFontWeightChange);
+    emitter.off(EmitterEvents.FONT_ITALIC_CHANGE, onFontStyleChange);
+    emitter.off(EmitterEvents.FONT_UNDERLINE_CHANGE, onFontUnderLineChange);
+    emitter.off(EmitterEvents.FONT_STRIKOUT_CHANGE, onFontStrikoutChange);
 });
 </script>
 
