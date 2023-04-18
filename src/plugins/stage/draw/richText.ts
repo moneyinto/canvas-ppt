@@ -29,7 +29,7 @@ export class RichText {
         this._ctx.beginPath();
         this._ctx.lineWidth = text.fontSize / 10;
         this._ctx.strokeStyle = text.fontColor;
-        const compensate = Math.sign(this._ctx.lineWidth - 2) * 0.2; // 字体大和小，中划线有明显的断开或交叉，进行0.2的补偿错位
+        const compensate = Math.abs(Math.sign(this._ctx.lineWidth - 2) * 0.2); // 字体大和小，中划线有明显的断开或交叉，进行0.2的补偿错位
         this._ctx.moveTo(x - wordSpace / 2 - compensate, underLineY);
         this._ctx.lineTo(x + text.width + wordSpace / 2 + compensate, underLineY);
         this._ctx.stroke();
@@ -43,7 +43,7 @@ export class RichText {
         this._ctx.beginPath();
         this._ctx.lineWidth = Math.ceil(fontHeight / 20);
         this._ctx.strokeStyle = text.fontColor;
-        const compensate = Math.sign(this._ctx.lineWidth - 2) * 0.2; // 字体大和小，下划线有明显的断开或交叉，进行0.2的补偿错位
+        const compensate = Math.abs(Math.sign(this._ctx.lineWidth - 2) * 0.2); // 字体大和小，下划线有明显的断开或交叉，进行0.2的补偿错位
         this._ctx.moveTo(x - wordSpace / 2 - compensate, underLineY);
         this._ctx.lineTo(x + text.width + wordSpace / 2 + compensate, underLineY);
         this._ctx.stroke();
