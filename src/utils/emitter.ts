@@ -17,7 +17,8 @@ export const enum EmitterEvents {
     FONT_FAMILY_CHANGE = "FONT_FAMILY_CHANGE",
     FONT_SIZE_CHANGE = "FONT_SIZE_CHANGE",
     FONT_WEIGHT_CHANGE = "FONT_WEIGHT_CHANGE",
-    FONT_ITALIC_CHANGE = "FONT_ITALIC_CHANGE"
+    FONT_ITALIC_CHANGE = "FONT_ITALIC_CHANGE",
+    FONT_UNDERLINE_CHANGE = "FONT_UNDERLINE_CHANGE"
 }
 
 type Events = {
@@ -35,6 +36,7 @@ type Events = {
     [EmitterEvents.FONT_SIZE_CHANGE]: string | number;
     [EmitterEvents.FONT_WEIGHT_CHANGE]: boolean;
     [EmitterEvents.FONT_ITALIC_CHANGE]: boolean;
+    [EmitterEvents.FONT_UNDERLINE_CHANGE]: boolean;
 };
 
 const emitter: Emitter<Events> = mitt<Events>();

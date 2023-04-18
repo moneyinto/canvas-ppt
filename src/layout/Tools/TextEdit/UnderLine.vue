@@ -13,17 +13,19 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, PropType, ref, Ref, watch } from "vue";
+import { inject, onMounted, onUnmounted, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
 import { IPPTElement, IPPTTextElement } from "@/types/element";
 import { IFontData } from "@/types/font";
 import PPTIcon from "@/components/Icon.vue";
+import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const instance = inject<Ref<Editor>>("instance");
 
 if (instance?.value) {
     instance.value.listener.onFontUnderLineChange = (underline) => {
         isUnderLine.value = underline;
+    emitter.emit(EmitterEvents.FONT_UNDERLINE_CHANGE, isUnderLine.value);
     };
 }
 
@@ -56,6 +58,7 @@ const init = () => {
             if (!isUnderLine.value) break;
         }
     }
+    emitter.emit(EmitterEvents.FONT_UNDERLINE_CHANGE, isUnderLine.value);
 };
 
 init();
@@ -65,7 +68,20 @@ watch(() => props.elements, init);
 const setFontUnderLine = () => {
     isUnderLine.value = !isUnderLine.value;
     instance?.value.command.executeSetFontUnderLine(isUnderLine.value);
+    emitter.emit(EmitterEvents.FONT_UNDERLINE_CHANGE, isUnderLine.value);
 };
+
+const onFontUnderLineChange = (underLine: boolean) => {
+    isUnderLine.value = underLine;
+};
+
+onMounted(() => {
+    emitter.on(EmitterEvents.FONT_UNDERLINE_CHANGE, onFontUnderLineChange);
+});
+
+onUnmounted(() => {
+    emitter.on(EmitterEvents.FONT_UNDERLINE_CHANGE, onFontUnderLineChange);
+});
 </script>
 
 <style lang="scss" scoped>

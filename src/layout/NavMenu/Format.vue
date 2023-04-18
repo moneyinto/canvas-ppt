@@ -28,7 +28,7 @@
                         </div>
                     </a-menu-item>
                     <a-menu-item>
-                        <div class="ppt-menu-option">
+                        <div class="ppt-menu-option" @click="setFontUnderLine()">
                             <PPTIcon icon="underline" :size="28" />
                             &nbsp;&nbsp;下划线
                         </div>
@@ -177,6 +177,16 @@ const onFontStyleChange = (italic: boolean) => {
     isItalic.value = italic;
 };
 
+const isUnderLine = ref(false);
+const setFontUnderLine = () => {
+    isUnderLine.value = !isUnderLine.value;
+    instance?.value.command.executeSetFontUnderLine(isUnderLine.value);
+    emitter.emit(EmitterEvents.FONT_UNDERLINE_CHANGE, isUnderLine.value);
+};
+const onFontUnderLineChange = (underLine: boolean) => {
+    isUnderLine.value = underLine;
+};
+
 watch(elements, () => {
     if (elements.value.length > 0) {
         fontDisabled.value =
@@ -192,6 +202,7 @@ onMounted(() => {
     emitter.on(EmitterEvents.FONT_SIZE_CHANGE, onFontSizeChange);
     emitter.on(EmitterEvents.FONT_WEIGHT_CHANGE, onFontWeightChange);
     emitter.on(EmitterEvents.FONT_ITALIC_CHANGE, onFontStyleChange);
+    emitter.on(EmitterEvents.FONT_UNDERLINE_CHANGE, onFontUnderLineChange);
 });
 
 onUnmounted(() => {
@@ -199,6 +210,7 @@ onUnmounted(() => {
     emitter.off(EmitterEvents.FONT_SIZE_CHANGE, onFontSizeChange);
     emitter.on(EmitterEvents.FONT_WEIGHT_CHANGE, onFontWeightChange);
     emitter.on(EmitterEvents.FONT_ITALIC_CHANGE, onFontStyleChange);
+    emitter.on(EmitterEvents.FONT_UNDERLINE_CHANGE, onFontUnderLineChange);
 });
 </script>
 
