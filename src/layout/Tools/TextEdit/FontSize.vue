@@ -72,18 +72,20 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, PropType, ref, Ref, watch } from "vue";
+import { inject, onMounted, onUnmounted, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
 import { throttleRAF } from "@/utils";
 import { IPPTElement, IPPTTextElement } from "@/types/element";
 import { IFontData } from "@/types/font";
 import PPTIcon from "@/components/Icon.vue";
+import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const instance = inject<Ref<Editor>>("instance");
 
 if (instance?.value) {
     instance.value.listener.onFontSizeChange = (size) => {
         fontSize.value = size;
+        emitter.emit(EmitterEvents.FONT_SIZE_CHANGE, size);
     };
 }
 
@@ -130,6 +132,7 @@ const init = () => {
             }
         }
     }
+    emitter.emit(EmitterEvents.FONT_SIZE_CHANGE, fontSize.value);
 };
 
 init();
@@ -138,21 +141,39 @@ watch(() => props.elements, init);
 
 const onSizeChange = throttleRAF(() => {
     instance?.value.command.executeSetFontSize(Number(fontSize.value));
+    emitter.emit(EmitterEvents.FONT_SIZE_CHANGE, Number(fontSize.value));
 });
 
 const setFontSize = (size: number) => {
     showFontSize.value = false;
     fontSize.value = size;
     instance?.value.command.executeSetFontSize(size);
+    emitter.emit(EmitterEvents.FONT_SIZE_CHANGE, size);
 };
 
 const plusSize = () => {
     instance?.value.command.executeSetFontSize(2, "plus");
+    fontSize.value += 2;
+    emitter.emit(EmitterEvents.FONT_SIZE_CHANGE, fontSize.value);
 };
 
 const minusSize = () => {
     instance?.value.command.executeSetFontSize(2, "minus");
+    fontSize.value -= 2;
+    emitter.emit(EmitterEvents.FONT_SIZE_CHANGE, fontSize.value);
 };
+
+const onFontSizeChange = (size: string | number) => {
+    fontSize.value = size;
+};
+
+onMounted(() => {
+    emitter.on(EmitterEvents.FONT_SIZE_CHANGE, onFontSizeChange);
+});
+
+onUnmounted(() => {
+    emitter.off(EmitterEvents.FONT_SIZE_CHANGE, onFontSizeChange);
+});
 </script>
 
 <style lang="scss" scoped>

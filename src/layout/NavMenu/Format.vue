@@ -58,7 +58,7 @@
                                 {{ font.label }}
 
                                 <PPTIcon
-                                    class="font-family-checked"
+                                    class="font-checked"
                                     :class="
                                         fontFamily == font.value && 'active'
                                     "
@@ -76,8 +76,18 @@
                             </div>
                         </template>
                         <a-menu-item v-for="size in sizes" :key="size">
-                            <div class="ppt-menu-option">
+                            <div
+                                class="ppt-menu-option ppt-menu-checked"
+                                @click="setFontSize(size)"
+                            >
                                 {{ size }}
+
+                                <PPTIcon
+                                    class="font-checked"
+                                    :class="fontSize == size && 'active'"
+                                    icon="checked"
+                                    :size="28"
+                                />
                             </div>
                         </a-menu-item>
                     </a-sub-menu>
@@ -88,11 +98,22 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, PropType, ref, Ref, watch } from "vue";
+import {
+    computed,
+    inject,
+    onMounted,
+    onUnmounted,
+    PropType,
+    ref,
+    Ref,
+    watch
+} from "vue";
 import Editor from "@/plugins/editor";
 import PPTIcon from "@/components/Icon.vue";
-import useFontFamilyHandler from "@/hooks/useFontFamilyHandler";
 import { IPPTElement } from "@/types/element";
+import { SYS_FONTS } from "@/plugins/config/font";
+import { isSupportFont } from "@/utils";
+import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const props = defineProps({
     elements: {
@@ -102,7 +123,12 @@ const props = defineProps({
 });
 
 const elements = computed(() => props.elements);
+const fontFamily = ref("");
+const availableFonts = ref(
+    SYS_FONTS.filter((font) => isSupportFont(font.value))
+);
 
+const fontSize = ref();
 const sizes = ref([
     8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 44, 48, 54, 60, 66, 72
 ]);
@@ -111,19 +137,45 @@ const formatVisible = ref(false);
 const instance = inject<Ref<Editor>>("instance");
 
 const fontDisabled = ref(true);
-const { availableFonts, fontFamily } = useFontFamilyHandler(elements);
+
 const setFontFamily = (font: string) => {
     formatVisible.value = false;
     fontFamily.value = font;
     instance?.value.command.executeSetFontFamily(font);
+    emitter.emit(EmitterEvents.FONT_FAMILY_CHANGE, font);
+};
+const onFontFamilyChange = (font: string) => {
+    fontFamily.value = font;
+};
+
+const setFontSize = (size: number) => {
+    formatVisible.value = false;
+    fontSize.value = size;
+    instance?.value.command.executeSetFontSize(size);
+    emitter.emit(EmitterEvents.FONT_SIZE_CHANGE, size);
+};
+const onFontSizeChange = (size: string | number) => {
+    fontSize.value = size;
 };
 
 watch(elements, () => {
     if (elements.value.length > 0) {
-        fontDisabled.value = elements.value.filter(element => element.type === "text").length === 0;
+        fontDisabled.value =
+            elements.value.filter((element) => element.type === "text")
+                .length === 0;
     } else {
         fontDisabled.value = true;
     }
+});
+
+onMounted(() => {
+    emitter.on(EmitterEvents.FONT_FAMILY_CHANGE, onFontFamilyChange);
+    emitter.on(EmitterEvents.FONT_SIZE_CHANGE, onFontSizeChange);
+});
+
+onUnmounted(() => {
+    emitter.off(EmitterEvents.FONT_FAMILY_CHANGE, onFontFamilyChange);
+    emitter.off(EmitterEvents.FONT_SIZE_CHANGE, onFontSizeChange);
 });
 </script>
 
@@ -145,7 +197,7 @@ watch(elements, () => {
         margin: 4px 0;
     }
 
-    .font-family-checked {
+    .font-checked {
         visibility: hidden;
         &.active {
             visibility: visible;

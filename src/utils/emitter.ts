@@ -13,7 +13,9 @@ export const enum EmitterEvents {
     SHOW_PANELS = "SHOW_PANELS",
     PANELS_TYPE = "PANELS_TYPE",
     OPEN_LATEX = "OPEN_LATEX",
-    OPEN_CHART = "OPEN_CHART"
+    OPEN_CHART = "OPEN_CHART",
+    FONT_FAMILY_CHANGE = "FONT_FAMILY_CHANGE",
+    FONT_SIZE_CHANGE = "FONT_SIZE_CHANGE"
 }
 
 type Events = {
@@ -27,6 +29,8 @@ type Events = {
     [EmitterEvents.PANELS_TYPE]: PANELS | "";
     [EmitterEvents.OPEN_LATEX]: IPPTLatexElement | undefined;
     [EmitterEvents.OPEN_CHART]: { args: ChartType | IPPTChartElement; transformation?: boolean };
+    [EmitterEvents.FONT_FAMILY_CHANGE]: string;
+    [EmitterEvents.FONT_SIZE_CHANGE]: string | number;
 };
 
 const emitter: Emitter<Events> = mitt<Events>();

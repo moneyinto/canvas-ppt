@@ -648,22 +648,12 @@ export default class Command {
                 };
                 this._stageConfig.setFontConfig(config);
 
-                this._listener.onFontSizeChange &&
-                    this._listener.onFontSizeChange(config.fontSize);
-                this._listener.onFontWeightChange &&
-                    this._listener.onFontWeightChange(
-                        config.fontWeight === "bold"
-                    );
-                this._listener.onFontStyleChange &&
-                    this._listener.onFontStyleChange(
-                        config.fontStyle === "italic"
-                    );
-                this._listener.onFontUnderLineChange &&
-                    this._listener.onFontUnderLineChange(config.underline);
-                this._listener.onFontStrikoutChange &&
-                    this._listener.onFontStrikoutChange(config.strikout);
-                this._listener.onFontFamilyChange &&
-                    this._listener.onFontFamilyChange(config.fontFamily);
+                this._listener.onFontSizeChange && this._listener.onFontSizeChange(config.fontSize);
+                this._listener.onFontWeightChange && this._listener.onFontWeightChange(config.fontWeight === "bold");
+                this._listener.onFontStyleChange && this._listener.onFontStyleChange(config.fontStyle === "italic");
+                this._listener.onFontUnderLineChange && this._listener.onFontUnderLineChange(config.underline);
+                this._listener.onFontStrikoutChange && this._listener.onFontStrikoutChange(config.strikout);
+                this._listener.onFontFamilyChange && this._listener.onFontFamilyChange(config.fontFamily);
             }
         }
     }
