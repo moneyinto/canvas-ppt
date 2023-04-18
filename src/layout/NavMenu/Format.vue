@@ -16,7 +16,7 @@
                         </div>
                     </template>
                     <a-menu-item>
-                        <div class="ppt-menu-option">
+                        <div class="ppt-menu-option" @click="setFontWeight()">
                             <PPTIcon icon="boldFont" :size="28" />
                             &nbsp;&nbsp;加粗
                         </div>
@@ -122,22 +122,15 @@ const props = defineProps({
     }
 });
 
+const formatVisible = ref(false);
+const instance = inject<Ref<Editor>>("instance");
+const fontDisabled = ref(true);
+
 const elements = computed(() => props.elements);
 const fontFamily = ref("");
 const availableFonts = ref(
     SYS_FONTS.filter((font) => isSupportFont(font.value))
 );
-
-const fontSize = ref();
-const sizes = ref([
-    8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 44, 48, 54, 60, 66, 72
-]);
-
-const formatVisible = ref(false);
-const instance = inject<Ref<Editor>>("instance");
-
-const fontDisabled = ref(true);
-
 const setFontFamily = (font: string) => {
     formatVisible.value = false;
     fontFamily.value = font;
@@ -148,6 +141,10 @@ const onFontFamilyChange = (font: string) => {
     fontFamily.value = font;
 };
 
+const fontSize = ref();
+const sizes = ref([
+    8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 44, 48, 54, 60, 66, 72
+]);
 const setFontSize = (size: number) => {
     formatVisible.value = false;
     fontSize.value = size;
@@ -156,6 +153,16 @@ const setFontSize = (size: number) => {
 };
 const onFontSizeChange = (size: string | number) => {
     fontSize.value = size;
+};
+
+const isBold = ref(false);
+const setFontWeight = () => {
+    isBold.value = !isBold.value;
+    instance?.value.command.executeSetFontWeight(isBold.value);
+    emitter.emit(EmitterEvents.FONT_WEIGHT_CHANGE, isBold.value);
+};
+const onFontWeightChange = (bold: boolean) => {
+    isBold.value = bold;
 };
 
 watch(elements, () => {
@@ -171,11 +178,13 @@ watch(elements, () => {
 onMounted(() => {
     emitter.on(EmitterEvents.FONT_FAMILY_CHANGE, onFontFamilyChange);
     emitter.on(EmitterEvents.FONT_SIZE_CHANGE, onFontSizeChange);
+    emitter.on(EmitterEvents.FONT_WEIGHT_CHANGE, onFontWeightChange);
 });
 
 onUnmounted(() => {
     emitter.off(EmitterEvents.FONT_FAMILY_CHANGE, onFontFamilyChange);
     emitter.off(EmitterEvents.FONT_SIZE_CHANGE, onFontSizeChange);
+    emitter.on(EmitterEvents.FONT_WEIGHT_CHANGE, onFontWeightChange);
 });
 </script>
 

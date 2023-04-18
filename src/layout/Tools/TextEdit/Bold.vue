@@ -13,17 +13,19 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, PropType, ref, Ref, watch } from "vue";
+import { inject, onMounted, onUnmounted, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
 import { IPPTElement, IPPTTextElement } from "@/types/element";
 import { IFontData } from "@/types/font";
 import PPTIcon from "@/components/Icon.vue";
+import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const instance = inject<Ref<Editor>>("instance");
 
 if (instance?.value) {
     instance.value.listener.onFontWeightChange = (bold) => {
         isBold.value = bold;
+        emitter.emit(EmitterEvents.FONT_WEIGHT_CHANGE, isBold.value);
     };
 }
 
@@ -57,6 +59,7 @@ const init = () => {
             if (!isBold.value) break;
         }
     }
+    emitter.emit(EmitterEvents.FONT_WEIGHT_CHANGE, isBold.value);
 };
 
 init();
@@ -66,7 +69,20 @@ watch(() => props.elements, init);
 const setFontWeight = () => {
     isBold.value = !isBold.value;
     instance?.value.command.executeSetFontWeight(isBold.value);
+    emitter.emit(EmitterEvents.FONT_WEIGHT_CHANGE, isBold.value);
 };
+
+const onFontWeightChange = (bold: boolean) => {
+    isBold.value = bold;
+};
+
+onMounted(() => {
+    emitter.on(EmitterEvents.FONT_WEIGHT_CHANGE, onFontWeightChange);
+});
+
+onUnmounted(() => {
+    emitter.off(EmitterEvents.FONT_WEIGHT_CHANGE, onFontWeightChange);
+});
 </script>
 
 <style lang="scss" scoped>
