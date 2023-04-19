@@ -81,10 +81,11 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, PropType, ref, Ref, watch } from "vue";
+import { inject, onMounted, onUnmounted, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
 import { IPPTElement, IPPTTextElement } from "@/types/element";
 import PPTIcon from "@/components/Icon.vue";
+import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const instance = inject<Ref<Editor>>("instance");
 
@@ -123,7 +124,20 @@ const setAlign = (align: "left" | "center" | "right") => {
     showAlign.value = false;
     alignment.value = align;
     instance?.value.command.executeSetFontAlign(align);
+    emitter.emit(EmitterEvents.FONT_ALIGN_CHANGE, align);
 };
+
+const onFontTextAlignChange = (align: "left" | "center" | "right") => {
+    alignment.value = align;
+};
+
+onMounted(() => {
+    emitter.on(EmitterEvents.FONT_ALIGN_CHANGE, onFontTextAlignChange);
+});
+
+onUnmounted(() => {
+    emitter.off(EmitterEvents.FONT_ALIGN_CHANGE, onFontTextAlignChange);
+});
 </script>
 
 <style lang="scss" scoped>

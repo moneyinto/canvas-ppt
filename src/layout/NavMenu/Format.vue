@@ -11,7 +11,7 @@
                 <a-sub-menu :disabled="fontDisabled" key="sub-text">
                     <template #title>
                         <div class="ppt-menu-option">
-                            <PPTIcon icon="text" :size="28" />
+                            <div style="width: 28px; height: 26px"></div>
                             &nbsp;&nbsp;文字
                         </div>
                     </template>
@@ -28,7 +28,10 @@
                         </div>
                     </a-menu-item>
                     <a-menu-item>
-                        <div class="ppt-menu-option" @click="setFontUnderLine()">
+                        <div
+                            class="ppt-menu-option"
+                            @click="setFontUnderLine()"
+                        >
                             <PPTIcon icon="underline" :size="28" />
                             &nbsp;&nbsp;下划线
                         </div>
@@ -99,7 +102,11 @@
                             </div>
                         </template>
                         <a-menu-item>
-                            <div class="ppt-font-content" @keydown.stop tabindex="0">
+                            <div
+                                class="ppt-font-content"
+                                @keydown.stop
+                                tabindex="0"
+                            >
                                 <ColorBoard
                                     :color="currentColor"
                                     @change="onChangeColor"
@@ -107,6 +114,71 @@
                             </div>
                         </a-menu-item>
                     </a-sub-menu>
+                </a-sub-menu>
+                <a-sub-menu :disabled="fontDisabled" key="sub-text-align">
+                    <template #title>
+                        <div class="ppt-menu-option">
+                            <div style="width: 28px; height: 26px"></div>
+                            &nbsp;&nbsp;对齐
+                        </div>
+                    </template>
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            @click="setTextAlign('left')"
+                        >
+                            <PPTIcon
+                                class="font-alignment"
+                                icon="alignLeft"
+                                :size="28"
+                            />
+                            左对齐
+                            <PPTIcon
+                                class="font-align-checked"
+                                :class="alignment === 'left' && 'active'"
+                                icon="checked"
+                                :size="28"
+                            />
+                        </div>
+                    </a-menu-item>
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            @click="setTextAlign('center')"
+                        >
+                            <PPTIcon
+                                class="font-alignment"
+                                icon="alignCenter"
+                                :size="28"
+                            />
+                            居中对齐
+                            <PPTIcon
+                                class="font-align-checked"
+                                :class="alignment === 'center' && 'active'"
+                                icon="checked"
+                                :size="28"
+                            />
+                        </div>
+                    </a-menu-item>
+                    <a-menu-item>
+                        <div
+                            class="ppt-align-item"
+                            @click="setTextAlign('right')"
+                        >
+                            <PPTIcon
+                                class="font-alignment"
+                                icon="alignRight"
+                                :size="28"
+                            />
+                            右对齐
+                            <PPTIcon
+                                class="font-align-checked"
+                                :class="alignment === 'right' && 'active'"
+                                icon="checked"
+                                :size="28"
+                            />
+                        </div>
+                    </a-menu-item>
                 </a-sub-menu>
             </a-menu>
         </template>
@@ -145,6 +217,7 @@ const formatVisible = ref(false);
 const instance = inject<Ref<Editor>>("instance");
 const fontDisabled = ref(true);
 
+// 文本字体
 const elements = computed(() => props.elements);
 const fontFamily = ref("");
 const availableFonts = ref(
@@ -160,6 +233,7 @@ const onFontFamilyChange = (font: string) => {
     fontFamily.value = font;
 };
 
+// 文本字号
 const fontSize = ref();
 const sizes = ref([
     8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 44, 48, 54, 60, 66, 72
@@ -174,6 +248,7 @@ const onFontSizeChange = (size: string | number) => {
     fontSize.value = size;
 };
 
+// 文本加粗
 const isBold = ref(false);
 const setFontWeight = () => {
     formatVisible.value = false;
@@ -185,6 +260,7 @@ const onFontWeightChange = (bold: boolean) => {
     isBold.value = bold;
 };
 
+// 文本斜体
 const isItalic = ref(false);
 const setFontStyle = () => {
     formatVisible.value = false;
@@ -196,6 +272,7 @@ const onFontStyleChange = (italic: boolean) => {
     isItalic.value = italic;
 };
 
+// 文本下划线
 const isUnderLine = ref(false);
 const setFontUnderLine = () => {
     formatVisible.value = false;
@@ -207,6 +284,7 @@ const onFontUnderLineChange = (underLine: boolean) => {
     isUnderLine.value = underLine;
 };
 
+// 文本中划线
 const isStrikout = ref(false);
 const setFontStrikout = () => {
     formatVisible.value = false;
@@ -218,6 +296,7 @@ const onFontStrikoutChange = (strikout: boolean) => {
     isStrikout.value = strikout;
 };
 
+// 文本颜色
 const currentColor = ref(THEME_COLOR);
 const cacheFontColor = ref(
     localStorage.getItem(STORAGE_FONT_COLOR) || THEME_COLOR
@@ -243,6 +322,18 @@ const onFontColorChange = (color: string) => {
     cacheFontColor.value = color;
 };
 
+// 文本对齐
+const alignment = ref("left");
+const setTextAlign = (align: "left" | "center" | "right") => {
+    formatVisible.value = false;
+    alignment.value = align;
+    instance?.value.command.executeSetFontAlign(align);
+    emitter.emit(EmitterEvents.FONT_ALIGN_CHANGE, align);
+};
+const onTextAlignChange = (align: "left" | "center" | "right") => {
+    alignment.value = align;
+};
+
 watch(elements, () => {
     if (elements.value.length > 0) {
         fontDisabled.value = elements.value.filter((element) => element.type === "text").length === 0;
@@ -259,6 +350,7 @@ onMounted(() => {
     emitter.on(EmitterEvents.FONT_UNDERLINE_CHANGE, onFontUnderLineChange);
     emitter.on(EmitterEvents.FONT_STRIKOUT_CHANGE, onFontStrikoutChange);
     emitter.on(EmitterEvents.FONT_COLOR_CHANGE, onFontColorChange);
+    emitter.on(EmitterEvents.FONT_ALIGN_CHANGE, onTextAlignChange);
 });
 
 onUnmounted(() => {
@@ -268,7 +360,8 @@ onUnmounted(() => {
     emitter.off(EmitterEvents.FONT_ITALIC_CHANGE, onFontStyleChange);
     emitter.off(EmitterEvents.FONT_UNDERLINE_CHANGE, onFontUnderLineChange);
     emitter.off(EmitterEvents.FONT_STRIKOUT_CHANGE, onFontStrikoutChange);
-    emitter.on(EmitterEvents.FONT_COLOR_CHANGE, onFontColorChange);
+    emitter.off(EmitterEvents.FONT_COLOR_CHANGE, onFontColorChange);
+    emitter.off(EmitterEvents.FONT_ALIGN_CHANGE, onTextAlignChange);
 });
 </script>
 
@@ -300,6 +393,19 @@ onUnmounted(() => {
     .ppt-font-content {
         outline: 0;
         background-color: #fff;
+    }
+
+    .font-align-checked {
+        position: absolute;
+        right: 5px;
+        visibility: hidden;
+        &.active {
+            visibility: visible;
+        }
+    }
+
+    .font-alignment {
+        margin-right: 2px;
     }
 }
 </style>

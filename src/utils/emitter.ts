@@ -20,7 +20,8 @@ export const enum EmitterEvents {
     FONT_ITALIC_CHANGE = "FONT_ITALIC_CHANGE",
     FONT_UNDERLINE_CHANGE = "FONT_UNDERLINE_CHANGE",
     FONT_STRIKOUT_CHANGE = "FONT_STRIKOUT_CHANGE",
-    FONT_COLOR_CHANGE = "FONT_COLOR_CHANGE"
+    FONT_COLOR_CHANGE = "FONT_COLOR_CHANGE",
+    FONT_ALIGN_CHANGE = "FONT_ALIGN_CHANGE"
 }
 
 type Events = {
@@ -41,6 +42,7 @@ type Events = {
     [EmitterEvents.FONT_UNDERLINE_CHANGE]: boolean;
     [EmitterEvents.FONT_STRIKOUT_CHANGE]: boolean;
     [EmitterEvents.FONT_COLOR_CHANGE]: string;
+    [EmitterEvents.FONT_ALIGN_CHANGE]: "left" | "center" | "right";
 };
 
 const emitter: Emitter<Events> = mitt<Events>();
