@@ -91,6 +91,22 @@
                             </div>
                         </a-menu-item>
                     </a-sub-menu>
+                    <a-sub-menu key="sub-font-color">
+                        <template #title>
+                            <div class="ppt-menu-option">
+                                <div style="width: 28px; height: 26px"></div>
+                                &nbsp;&nbsp;文本颜色
+                            </div>
+                        </template>
+                        <a-menu-item>
+                            <div class="ppt-font-content" @keydown.stop tabindex="0">
+                                <ColorBoard
+                                    :color="currentColor"
+                                    @change="onChangeColor"
+                                />
+                            </div>
+                        </a-menu-item>
+                    </a-sub-menu>
                 </a-sub-menu>
             </a-menu>
         </template>
@@ -114,6 +130,9 @@ import { IPPTElement } from "@/types/element";
 import { SYS_FONTS } from "@/plugins/config/font";
 import { isSupportFont } from "@/utils";
 import emitter, { EmitterEvents } from "@/utils/emitter";
+import ColorBoard from "@/components/ColorBoard.vue";
+import { THEME_COLOR } from "@/plugins/config/stage";
+import { STORAGE_FONT_COLOR } from "@/utils/storage";
 
 const props = defineProps({
     elements: {
@@ -199,11 +218,34 @@ const onFontStrikoutChange = (strikout: boolean) => {
     isStrikout.value = strikout;
 };
 
+const currentColor = ref(THEME_COLOR);
+const cacheFontColor = ref(
+    localStorage.getItem(STORAGE_FONT_COLOR) || THEME_COLOR
+);
+const setFontColor = (color?: string, noClose?: boolean) => {
+    instance?.value.command.executeSetFontColor(color || "");
+    emitter.emit(EmitterEvents.FONT_COLOR_CHANGE, color || "");
+    if (!noClose) formatVisible.value = false;
+};
+const onChangeColor = (
+    args: Parameters<(color: string, noClose?: boolean) => void>
+) => {
+    const [color, noClose] = args;
+    setFontColor(color, noClose);
+    // 缓存操作颜色
+    if (color) {
+        localStorage.setItem(STORAGE_FONT_COLOR, color);
+        cacheFontColor.value = color;
+    }
+};
+const onFontColorChange = (color: string) => {
+    currentColor.value = color;
+    cacheFontColor.value = color;
+};
+
 watch(elements, () => {
     if (elements.value.length > 0) {
-        fontDisabled.value =
-            elements.value.filter((element) => element.type === "text")
-                .length === 0;
+        fontDisabled.value = elements.value.filter((element) => element.type === "text").length === 0;
     } else {
         fontDisabled.value = true;
     }
@@ -216,6 +258,7 @@ onMounted(() => {
     emitter.on(EmitterEvents.FONT_ITALIC_CHANGE, onFontStyleChange);
     emitter.on(EmitterEvents.FONT_UNDERLINE_CHANGE, onFontUnderLineChange);
     emitter.on(EmitterEvents.FONT_STRIKOUT_CHANGE, onFontStrikoutChange);
+    emitter.on(EmitterEvents.FONT_COLOR_CHANGE, onFontColorChange);
 });
 
 onUnmounted(() => {
@@ -225,6 +268,7 @@ onUnmounted(() => {
     emitter.off(EmitterEvents.FONT_ITALIC_CHANGE, onFontStyleChange);
     emitter.off(EmitterEvents.FONT_UNDERLINE_CHANGE, onFontUnderLineChange);
     emitter.off(EmitterEvents.FONT_STRIKOUT_CHANGE, onFontStrikoutChange);
+    emitter.on(EmitterEvents.FONT_COLOR_CHANGE, onFontColorChange);
 });
 </script>
 
@@ -251,6 +295,11 @@ onUnmounted(() => {
         &.active {
             visibility: visible;
         }
+    }
+
+    .ppt-font-content {
+        outline: 0;
+        background-color: #fff;
     }
 }
 </style>

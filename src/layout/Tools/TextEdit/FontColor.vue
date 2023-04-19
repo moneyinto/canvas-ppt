@@ -41,11 +41,12 @@
 
 <script lang="ts" setup>
 import { THEME_COLOR } from "@/plugins/config/stage";
-import { inject, Ref, ref } from "vue";
+import { inject, onMounted, onUnmounted, Ref, ref } from "vue";
 import ColorBoard from "@/components/ColorBoard.vue";
 import { STORAGE_FONT_COLOR } from "@/utils/storage";
 import Editor from "@/plugins/editor";
 import PPTIcon from "@/components/Icon.vue";
+import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const instance = inject<Ref<Editor>>("instance");
 
@@ -58,6 +59,7 @@ const hoverFontColor = ref(false);
 
 const setFontColor = (color?: string, noClose?: boolean) => {
     instance?.value.command.executeSetFontColor(color || "");
+    emitter.emit(EmitterEvents.FONT_COLOR_CHANGE, color || "");
     if (!noClose) showFontColor.value = false;
 };
 
@@ -72,6 +74,19 @@ const onChangeColor = (
         cacheFontColor.value = color;
     }
 };
+
+const onFontColorChange = (color: string) => {
+    currentColor.value = color;
+    cacheFontColor.value = color;
+};
+
+onMounted(() => {
+    emitter.on(EmitterEvents.FONT_COLOR_CHANGE, onFontColorChange);
+});
+
+onUnmounted(() => {
+    emitter.off(EmitterEvents.FONT_COLOR_CHANGE, onFontColorChange);
+});
 </script>
 
 <style lang="scss" scoped>
