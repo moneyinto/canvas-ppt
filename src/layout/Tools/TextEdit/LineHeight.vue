@@ -43,10 +43,11 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, PropType, ref, Ref, watch } from "vue";
+import { inject, onMounted, onUnmounted, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
 import { IPPTElement, IPPTTextElement } from "@/types/element";
 import PPTIcon from "@/components/Icon.vue";
+import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const instance = inject<Ref<Editor>>("instance");
 
@@ -76,6 +77,7 @@ const init = () => {
             }
         }
     }
+    emitter.emit(EmitterEvents.FONT_LINEHEIGHT_CHANGE, lineHeight.value);
 };
 
 init();
@@ -86,7 +88,20 @@ const setLineHeight = (height: number) => {
     showLineHeight.value = false;
     lineHeight.value = height;
     instance?.value.command.executeSetLineHeight(height);
+    emitter.emit(EmitterEvents.FONT_LINEHEIGHT_CHANGE, height);
 };
+
+const onFontLineHeightChange = (height: number) => {
+    lineHeight.value = height;
+};
+
+onMounted(() => {
+    emitter.on(EmitterEvents.FONT_LINEHEIGHT_CHANGE, onFontLineHeightChange);
+});
+
+onUnmounted(() => {
+    emitter.off(EmitterEvents.FONT_LINEHEIGHT_CHANGE, onFontLineHeightChange);
+});
 </script>
 
 <style lang="scss" scoped>

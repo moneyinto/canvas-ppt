@@ -180,6 +180,34 @@
                         </div>
                     </a-menu-item>
                 </a-sub-menu>
+                <a-sub-menu :disabled="fontDisabled" key="sub-text-lineheight">
+                    <template #title>
+                        <div class="ppt-menu-option">
+                            <div style="width: 28px; height: 26px"></div>
+                            &nbsp;&nbsp;行距
+                        </div>
+                    </template>
+                    <a-menu-item
+                        v-for="height in lineHeightList"
+                        :key="height"
+                    >
+                        <div
+                            class="ppt-menu-option ppt-menu-checked"
+                            @click="setLineHeight(height)"
+                        >
+                            {{ height }}
+
+                            <PPTIcon
+                                class="font-checked"
+                                :class="
+                                    lineHeight == height && 'active'
+                                "
+                                icon="checked"
+                                :size="28"
+                            />
+                        </div>
+                    </a-menu-item>
+                </a-sub-menu>
             </a-menu>
         </template>
     </a-dropdown>
@@ -334,6 +362,18 @@ const onTextAlignChange = (align: "left" | "center" | "right") => {
     alignment.value = align;
 };
 
+const lineHeightList = ref([1, 1.2, 1.6, 2, 2.4, 2.8, 3.2, 4]);
+const lineHeight = ref(2);
+const setLineHeight = (height: number) => {
+    formatVisible.value = false;
+    lineHeight.value = height;
+    instance?.value.command.executeSetLineHeight(height);
+    emitter.emit(EmitterEvents.FONT_LINEHEIGHT_CHANGE, height);
+};
+const onLineHeightChange = (height: number) => {
+    lineHeight.value = height;
+};
+
 watch(elements, () => {
     if (elements.value.length > 0) {
         fontDisabled.value = elements.value.filter((element) => element.type === "text").length === 0;
@@ -351,6 +391,7 @@ onMounted(() => {
     emitter.on(EmitterEvents.FONT_STRIKOUT_CHANGE, onFontStrikoutChange);
     emitter.on(EmitterEvents.FONT_COLOR_CHANGE, onFontColorChange);
     emitter.on(EmitterEvents.FONT_ALIGN_CHANGE, onTextAlignChange);
+    emitter.on(EmitterEvents.FONT_LINEHEIGHT_CHANGE, onLineHeightChange);
 });
 
 onUnmounted(() => {
@@ -362,6 +403,7 @@ onUnmounted(() => {
     emitter.off(EmitterEvents.FONT_STRIKOUT_CHANGE, onFontStrikoutChange);
     emitter.off(EmitterEvents.FONT_COLOR_CHANGE, onFontColorChange);
     emitter.off(EmitterEvents.FONT_ALIGN_CHANGE, onTextAlignChange);
+    emitter.on(EmitterEvents.FONT_LINEHEIGHT_CHANGE, onLineHeightChange);
 });
 </script>
 
