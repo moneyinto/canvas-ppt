@@ -187,10 +187,7 @@
                             &nbsp;&nbsp;行距
                         </div>
                     </template>
-                    <a-menu-item
-                        v-for="height in lineHeightList"
-                        :key="height"
-                    >
+                    <a-menu-item v-for="height in lineHeightList" :key="height">
                         <div
                             class="ppt-menu-option ppt-menu-checked"
                             @click="setLineHeight(height)"
@@ -199,9 +196,7 @@
 
                             <PPTIcon
                                 class="font-checked"
-                                :class="
-                                    lineHeight == height && 'active'
-                                "
+                                :class="lineHeight == height && 'active'"
                                 icon="checked"
                                 :size="28"
                             />
@@ -209,7 +204,16 @@
                     </a-menu-item>
                 </a-sub-menu>
                 <a-menu-divider />
-                <a-sub-menu :disabled="fontDisabled" key="sub-border">
+                <a-sub-menu
+                    :disabled="
+                        fontDisabled &&
+                        shapeDisabled &&
+                        imageDisabled &&
+                        latexDisabled &&
+                        chartDisabled
+                    "
+                    key="sub-border"
+                >
                     <template #title>
                         <div class="ppt-menu-option">
                             <div style="width: 28px; height: 26px"></div>
@@ -217,14 +221,8 @@
                         </div>
                     </template>
                     <a-menu-item>
-                        <div
-                            class="ppt-border-box"
-                            @keydown.stop
-                            tabindex="0"
-                        >
-                            <BorderPool
-                                :elements="elements"
-                            />
+                        <div class="ppt-border-box" @keydown.stop tabindex="0">
+                            <BorderPool :elements="elements" />
                         </div>
                     </a-menu-item>
                 </a-sub-menu>
@@ -265,6 +263,10 @@ const props = defineProps({
 const formatVisible = ref(false);
 const instance = inject<Ref<Editor>>("instance");
 const fontDisabled = ref(true);
+const shapeDisabled = ref(true);
+const imageDisabled = ref(true);
+const latexDisabled = ref(true);
+const chartDisabled = ref(true);
 
 // 文本字体
 const elements = computed(() => props.elements);
@@ -398,8 +400,16 @@ const onLineHeightChange = (height: number) => {
 watch(elements, () => {
     if (elements.value.length > 0) {
         fontDisabled.value = elements.value.filter((element) => element.type === "text").length === 0;
+        shapeDisabled.value = elements.value.filter((element) => element.type === "shape").length === 0;
+        imageDisabled.value = elements.value.filter((element) => element.type === "image").length === 0;
+        latexDisabled.value = elements.value.filter((element) => element.type === "latex").length === 0;
+        imageDisabled.value = elements.value.filter((element) => element.type === "image").length === 0;
     } else {
         fontDisabled.value = true;
+        shapeDisabled.value = true;
+        imageDisabled.value = true;
+        latexDisabled.value = true;
+        imageDisabled.value = true;
     }
 });
 
