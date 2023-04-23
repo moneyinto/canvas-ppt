@@ -55,7 +55,7 @@ nextTick(async () => {
         if (props.index === 0 && slide.value.elements.filter(element => element.type === "video").length > 0) {
             await sleep(500);
         }
-        thumbnailInstance = new Thumbnail(thumbnail.value, slide.value, instance?.value.history);
+        // thumbnailInstance = new Thumbnail(thumbnail.value, slide.value, instance?.value.history);
 
         emitter.on(EmitterEvents.UPDATE_THUMBNAIL, updateSlide);
     }

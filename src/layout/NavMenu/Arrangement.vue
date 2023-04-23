@@ -8,6 +8,47 @@
         <div class="ppt-menu-item">排列</div>
         <template #overlay>
             <a-menu triggerSubMenuAction="click">
+                <a-sub-menu :disabled="elements.length === 0" key="sub-level">
+                    <template #title>
+                        <div class="ppt-menu-option">层级排序</div>
+                    </template>
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            @click="executeMoveTop()"
+                        >
+                            <PPTIcon icon="top" :size="28" />
+                            置于顶层
+                        </div>
+                    </a-menu-item>
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            @click="executeMoveBottom()"
+                        >
+                            <PPTIcon icon="bottom" :size="28" />
+                            置于底层
+                        </div>
+                    </a-menu-item>
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            @click="executeMoveUp()"
+                        >
+                            <PPTIcon icon="moveUp" :size="28" />
+                            上移一层
+                        </div>
+                    </a-menu-item>
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            @click="executeMoveDown()"
+                        >
+                            <PPTIcon icon="moveDown" :size="28" />
+                            下移一层
+                        </div>
+                    </a-menu-item>
+                </a-sub-menu>
                 <a-sub-menu :disabled="elements.length === 0" key="sub-align">
                     <template #title>
                         <div class="ppt-menu-option">对齐方式</div>
@@ -142,7 +183,28 @@ const setAlignType = (
     disabled?: boolean
 ) => {
     if (disabled) return;
+    arrangementVisible.value = false;
     instance?.value.command.executeSetElementAlign(align);
+};
+
+const executeMoveTop = () => {
+    arrangementVisible.value = false;
+    instance?.value.command.executeMoveTop();
+};
+
+const executeMoveBottom = () => {
+    arrangementVisible.value = false;
+    instance?.value.command.executeMoveBottom();
+};
+
+const executeMoveUp = () => {
+    arrangementVisible.value = false;
+    instance?.value.command.executeMoveUp();
+};
+
+const executeMoveDown = () => {
+    arrangementVisible.value = false;
+    instance?.value.command.executeMoveDown();
 };
 </script>
 

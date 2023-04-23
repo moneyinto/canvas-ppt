@@ -125,7 +125,7 @@ export class Contextmenu {
                         text: "置于底层",
                         icon: "bottom",
                         handler: () => {
-                            this._command.executeMoveDown();
+                            this._command.executeMoveBottom();
                         }
                     },
                     {

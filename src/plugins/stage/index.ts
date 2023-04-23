@@ -45,14 +45,16 @@ export default class Stage {
         this._music = null;
 
         if (resize) {
-            window.addEventListener(
-                "resize",
-                throttleRAF(this._resetStage.bind(this))
-            );
+            setTimeout(() => {
+                window.addEventListener(
+                    "resize",
+                    throttleRAF(this._resetStage.bind(this))
+                );
 
-            const resizeObserver = new ResizeObserver(throttleRAF(this._resetStage.bind(this)));
+                const resizeObserver = new ResizeObserver(throttleRAF(this._resetStage.bind(this)));
 
-            resizeObserver.observe(this.container);
+                resizeObserver.observe(this.container);
+            }, 2000);
         }
     }
 
@@ -109,7 +111,7 @@ export default class Stage {
             }
             case "image": {
                 if (!this._picture && this.history) this._picture = new Picture(this.stageConfig, this.ctx, this.history);
-                this._picture?.draw(element);
+                await this._picture?.draw(element);
                 break;
             }
             case "text": {
@@ -124,28 +126,28 @@ export default class Stage {
             }
             case "latex": {
                 if (!this._picture && this.history) this._picture = new Picture(this.stageConfig, this.ctx, this.history);
-                this._picture?.draw(element);
+                await this._picture?.draw(element);
                 break;
             }
             case "audio": {
                 if (!this._music && this.history) this._music = new Music(this.stageConfig, this.ctx);
-                this._music?.draw(element);
+                await this._music?.draw(element);
                 break;
             }
             case "chart": {
                 if (!this._picture && this.history) this._picture = new Picture(this.stageConfig, this.ctx, this.history);
-                this._picture?.draw(element);
+                await this._picture?.draw(element);
                 break;
             }
         }
     }
 
-    public drawElements(elements: IPPTElement[], isThumbnail?: boolean) {
-        elements.forEach(async element => {
+    public async drawElements(elements: IPPTElement[], isThumbnail?: boolean) {
+        for (const element of elements) {
             // if (!this.stageConfig.operateElement || this.stageConfig.operateElement.id !== element.id) {
             //     this.drawElement(element);
             // }
             await this.drawElement(element, isThumbnail);
-        });
+        }
     }
 }
