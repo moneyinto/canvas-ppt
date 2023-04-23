@@ -226,6 +226,30 @@
                         </div>
                     </a-menu-item>
                 </a-sub-menu>
+                <a-sub-menu
+                    :disabled="
+                        fontDisabled &&
+                        shapeDisabled &&
+                        imageDisabled &&
+                        latexDisabled &&
+                        chartDisabled
+                    "
+                    key="sub-fill"
+                >
+                    <template #title>
+                        <div class="ppt-menu-option">
+                            <div style="width: 28px; height: 26px"></div>
+                            &nbsp;&nbsp;填充设置
+                        </div>
+                    </template>
+                    <a-menu-item>
+                        <div class="ppt-border-box" @keydown.stop tabindex="0">
+                            <FillPool
+                                :elements="elements"
+                            />
+                        </div>
+                    </a-menu-item>
+                </a-sub-menu>
             </a-menu>
         </template>
     </a-dropdown>
@@ -252,6 +276,7 @@ import ColorBoard from "@/components/ColorBoard.vue";
 import { THEME_COLOR } from "@/plugins/config/stage";
 import { STORAGE_FONT_COLOR } from "@/utils/storage";
 import BorderPool from "@/components/BorderPool.vue";
+import FillPool from "@/components/FillPool.vue";
 
 const props = defineProps({
     elements: {
