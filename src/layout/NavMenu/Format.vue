@@ -162,7 +162,7 @@
                     </a-menu-item>
                     <a-menu-item>
                         <div
-                            class="ppt-align-item"
+                            class="ppt-menu-option"
                             @click="setTextAlign('right')"
                         >
                             <PPTIcon
@@ -177,6 +177,106 @@
                                 icon="checked"
                                 :size="28"
                             />
+                        </div>
+                    </a-menu-item>
+                    <a-menu-divider />
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            @click="setAlignType('alignLeft')"
+                        >
+                            <PPTIcon icon="canvasAlignLeft" :size="28" />
+                            水平居左
+                        </div>
+                    </a-menu-item>
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            @click="setAlignType('alignCenter')"
+                        >
+                            <PPTIcon icon="canvasAlignCenter" :size="28" />
+                            水平居中
+                        </div>
+                    </a-menu-item>
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            @click="setAlignType('alignRight')"
+                        >
+                            <PPTIcon icon="canvasAlignRight" :size="28" />
+                            水平居右
+                        </div>
+                    </a-menu-item>
+                    <a-menu-divider />
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            @click="setAlignType('verticalTop')"
+                        >
+                            <PPTIcon icon="canvasVerticalTop" :size="28" />
+                            垂直居上
+                        </div>
+                    </a-menu-item>
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            @click="setAlignType('verticalCenter')"
+                        >
+                            <PPTIcon
+                                icon="canvasVerticalCenter"
+                                :size="28"
+                            />
+                            水平居中
+                        </div>
+                    </a-menu-item>
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            @click="setAlignType('verticalBottom')"
+                        >
+                            <PPTIcon
+                                icon="canvasVerticalBottom"
+                                :size="28"
+                            />
+                            垂直居下
+                        </div>
+                    </a-menu-item>
+                    <a-menu-divider />
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            :class="elements.length > 1 && 'disabled'"
+                            @click="setAlignType('oneAlignCenter', elements.length > 1)"
+                        >
+                            <PPTIcon
+                                icon="canvasOneAlignCenter"
+                                :size="28"
+                            />
+                            水平分布
+                        </div>
+                    </a-menu-item>
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            :class="elements.length > 1 && 'disabled'"
+                            @click="setAlignType('oneVerticalCenter', elements.length > 1)"
+                        >
+                            <PPTIcon
+                                icon="canvasOneVerticalCenter"
+                                :size="28"
+                            />
+                            垂直分布
+                        </div>
+                    </a-menu-item>
+                    <a-menu-divider />
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            :class="elements.length > 1 && 'disabled'"
+                            @click="setAlignType('center', elements.length > 1)"
+                        >
+                            <PPTIcon icon="canvasCenter" :size="28" />
+                            中央对齐
                         </div>
                     </a-menu-item>
                 </a-sub-menu>
@@ -277,6 +377,7 @@ import { THEME_COLOR } from "@/plugins/config/stage";
 import { STORAGE_FONT_COLOR } from "@/utils/storage";
 import BorderPool from "@/components/BorderPool.vue";
 import FillPool from "@/components/FillPool.vue";
+import { IElementAlignType } from "@/types";
 
 const props = defineProps({
     elements: {
@@ -408,6 +509,14 @@ const setTextAlign = (align: "left" | "center" | "right") => {
 };
 const onTextAlignChange = (align: "left" | "center" | "right") => {
     alignment.value = align;
+};
+
+const setAlignType = (
+    align: IElementAlignType,
+    disabled?: boolean
+) => {
+    if (disabled) return;
+    instance?.value.command.executeSetElementAlign(align);
 };
 
 const lineHeightList = ref([1, 1.2, 1.6, 2, 2.4, 2.8, 3.2, 4]);
