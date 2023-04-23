@@ -23,7 +23,7 @@ import { Textarea } from "./textarea";
 import { IFontData } from "@/types/font";
 import { Contextmenu } from "./contextmenu";
 import emitter, { EmitterEvents } from "@/utils/emitter";
-import { History } from "../editor/history";
+import History from "../editor/history";
 
 export default class ControlStage extends Stage {
     private _command: Command;

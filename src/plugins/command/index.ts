@@ -12,7 +12,7 @@ import {
 } from "@/utils/create";
 import { encrypt } from "@/utils/crypto";
 import { baseFontConfig } from "../config/font";
-import { History } from "../editor/history";
+import History from "../editor/history";
 import Listener from "../listener";
 import { KeyMap } from "../shortCut/keyMap";
 import StageConfig, { TEXT_MARGIN } from "../stage/config";

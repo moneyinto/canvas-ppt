@@ -13,13 +13,15 @@ export default class View {
     private _resizeObserver: ResizeObserver | null;
     private _container: HTMLDivElement;
     private _resize: boolean;
+    private _isThumbnail: boolean;
 
-    constructor(container: HTMLDivElement, slide: ISlide, history?: History, resize?: boolean) {
+    constructor(container: HTMLDivElement, slide: ISlide, history?: History, resize?: boolean, isThumbnail?: boolean) {
         this._slide = slide;
 
         this._container = container;
         this._resizeObserver = null;
         this._resize = !!resize;
+        this._isThumbnail = !!isThumbnail;
 
         // 画板配置
         this._stageConfig = new StageConfig(container);
@@ -65,7 +67,7 @@ export default class View {
 
     private async _drawPage() {
         await this._background.draw(this._slide.background);
-        await this._stage.drawElements(this._slide.elements, true);
+        await this._stage.drawElements(this._slide.elements, this._isThumbnail);
     }
 
     public updateSlide(slide: ISlide) {

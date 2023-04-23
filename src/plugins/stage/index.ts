@@ -95,7 +95,7 @@ export default class Stage {
         this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     }
 
-    public async drawElement(element: IPPTElement, isScreen?: boolean) {
+    public async drawElement(element: IPPTElement, isThumbnail?: boolean) {
         switch (element.type) {
             case "shape": {
                 if (!this._shape) this._shape = new Shape(this.stageConfig, this.ctx);
@@ -119,7 +119,7 @@ export default class Stage {
             }
             case "video": {
                 if (!this._video && this.history) this._video = new Video(this.stageConfig, this.ctx, this.history);
-                await this._video?.draw(element, !!isScreen);
+                await this._video?.draw(element, !!isThumbnail);
                 break;
             }
             case "latex": {
@@ -140,12 +140,12 @@ export default class Stage {
         }
     }
 
-    public drawElements(elements: IPPTElement[], isScreen?: boolean) {
+    public drawElements(elements: IPPTElement[], isThumbnail?: boolean) {
         elements.forEach(async element => {
             // if (!this.stageConfig.operateElement || this.stageConfig.operateElement.id !== element.id) {
             //     this.drawElement(element);
             // }
-            await this.drawElement(element, isScreen);
+            await this.drawElement(element, isThumbnail);
         });
     }
 }

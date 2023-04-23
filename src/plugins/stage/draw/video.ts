@@ -1,4 +1,4 @@
-import { History } from "@/plugins/editor/history";
+import History from "@/plugins/editor/history";
 import { IPPTVideoElement } from "@/types/element";
 import { sleep, fomatTime } from "@/utils";
 import StageConfig from "../config";
@@ -32,7 +32,7 @@ export default class Video {
         return new Promise(resolve => {
             let video = document.getElementById(id);
             if (video) return resolve(video as HTMLVideoElement);
-            this._history.getFile(src).then(file => {
+            this._history.getFile(src).then((file: string) => {
                 video = this.createVideo(id, file);
                 video.oncanplay = async () => {
                     // 延缓处理主图视频无法初始化问题
