@@ -343,9 +343,47 @@
                         </div>
                     </template>
                     <a-menu-item>
-                        <div class="ppt-border-box" @keydown.stop tabindex="0">
+                        <div class="ppt-fill-box" @keydown.stop tabindex="0">
                             <FillPool
                                 :elements="elements"
+                            />
+                        </div>
+                    </a-menu-item>
+                </a-sub-menu>
+                <a-sub-menu
+                    :disabled="
+                        imageDisabled &&
+                        latexDisabled &&
+                        chartDisabled
+                    "
+                    key="sub-opacity"
+                >
+                    <template #title>
+                        <div class="ppt-menu-option">
+                            <PPTIcon
+                                icon="opacity"
+                                :size="28"
+                            />
+                            &nbsp;&nbsp;透明度
+                        </div>
+                    </template>
+                    <a-menu-item>
+                        <div class="ppt-opacity-box" @keydown.stop tabindex="0">
+                            <a-slider
+                                class="tool-opacity-slider"
+                                :min="0"
+                                :max="100"
+                                v-model:value="opacity"
+                                @change="setOpacity"
+                            />
+                            <a-input-number
+                                class="tool-opacity-input"
+                                v-model:value="opacity"
+                                :min="0"
+                                :max="100"
+                                :formatter="(value: string) => `${value}%`"
+                                :parser="(value: string) => value.replace('%', '')"
+                                @change="setOpacity"
                             />
                         </div>
                     </a-menu-item>
@@ -531,6 +569,12 @@ const onLineHeightChange = (height: number) => {
     lineHeight.value = height;
 };
 
+const opacity = ref(0);
+const setOpacity = (value: number) => {
+    opacity.value = value;
+    instance?.value.command.executeImageOpacity(value);
+};
+
 watch(elements, () => {
     if (elements.value.length > 0) {
         fontDisabled.value = elements.value.filter((element) => element.type === "text").length === 0;
@@ -604,9 +648,31 @@ onUnmounted(() => {
         background-color: #fff;
     }
 
-    .ppt-border-box {
+    .ppt-border-box, .ppt-fill-box, .ppt-opacity-box {
         padding: 1px;
         background-color: #fff;
+    }
+
+    .ppt-opacity-box {
+        margin: -5px -12px;
+        padding: 5px 18px;
+        background-color: #fff;
+        width: 200px;
+        display: flex;
+        align-items: center;
+
+        .tool-opacity-slider {
+            flex: 1;
+            margin-left: 0;
+        }
+
+        .tool-opacity-input {
+            width: 70px;
+            margin-left: 5px;
+            :deep(.ant-input-number-input) {
+                padding-left: 5px;
+            }
+        }
     }
 
     .font-align-checked {
