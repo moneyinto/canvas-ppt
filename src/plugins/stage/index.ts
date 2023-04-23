@@ -6,7 +6,7 @@ import { RichText } from "./draw/richText";
 import { Shape } from "./draw/shape";
 import { Picture } from "./draw/picture";
 import Video from "./draw/video";
-import { History } from "../editor/history";
+import History from "../editor/history";
 import { Music } from "./draw/music";
 
 export default class Stage {
@@ -95,7 +95,7 @@ export default class Stage {
         this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     }
 
-    public async drawElement(element: IPPTElement, isThumbnail?: boolean) {
+    public async drawElement(element: IPPTElement, isScreen?: boolean) {
         switch (element.type) {
             case "shape": {
                 if (!this._shape) this._shape = new Shape(this.stageConfig, this.ctx);
@@ -119,7 +119,7 @@ export default class Stage {
             }
             case "video": {
                 if (!this._video && this.history) this._video = new Video(this.stageConfig, this.ctx, this.history);
-                await this._video?.draw(element, !!isThumbnail);
+                await this._video?.draw(element, !!isScreen);
                 break;
             }
             case "latex": {
@@ -140,12 +140,12 @@ export default class Stage {
         }
     }
 
-    public drawElements(elements: IPPTElement[], isThumbnail?: boolean) {
+    public drawElements(elements: IPPTElement[], isScreen?: boolean) {
         elements.forEach(async element => {
             // if (!this.stageConfig.operateElement || this.stageConfig.operateElement.id !== element.id) {
             //     this.drawElement(element);
             // }
-            await this.drawElement(element, isThumbnail);
+            await this.drawElement(element, isScreen);
         });
     }
 }

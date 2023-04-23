@@ -3,25 +3,20 @@
         class="ppt-preview-fixed"
         tabindex="0"
         @keydown.stop="onKeydown"
+        ref="screenRef"
     >
-        <div
-            class="ppt-preview-box"
-            :style="{
-                width: screenWidth + 'px',
-                height: screenHeight + 'px'
-            }"
-            ref="screenRef"
-        ></div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, PropType, ref } from "vue";
-import { VIEWRATIO } from "@/plugins/config/stage";
+import { computed, inject, nextTick, onUnmounted, PropType, Ref, ref } from "vue";
 import { ISlide } from "@/types/slide";
 import Screen from "@/plugins/screen";
 import { KeyMap } from "@/plugins/shortCut/keyMap";
 import { message } from "ant-design-vue";
+import Editor from "@/plugins/editor";
+
+const instance = inject<Ref<Editor>>("instance");
 
 const props = defineProps({
     slides: {
@@ -35,20 +30,13 @@ const props = defineProps({
 });
 
 const screenRef = ref<HTMLDivElement>();
-const screenWidth = ref(window.innerWidth);
-const screenHeight = ref(screenWidth.value * VIEWRATIO);
-if (screenHeight.value > window.innerHeight) {
-    screenHeight.value = window.innerHeight;
-    screenWidth.value = screenHeight.value / VIEWRATIO;
-}
-
 const previewSlideIndex = ref(props.startSlideIndex);
 const previewSlide = computed(() => props.slides[previewSlideIndex.value]);
 
 let screen: Screen | undefined;
 nextTick(() => {
     if (screenRef.value) {
-        screen = new Screen(screenRef.value, previewSlide.value);
+        screen = new Screen(screenRef.value, previewSlide.value, instance?.value.history, true);
 
         screenRef.value.parentElement?.focus();
     }
@@ -59,7 +47,6 @@ const updateSlide = () => {
 };
 
 const onKeydown = (event: KeyboardEvent) => {
-    console.log(event.key);
     switch (event.key) {
         case KeyMap.Left:
         case KeyMap.Up: {
@@ -90,6 +77,10 @@ const onKeydown = (event: KeyboardEvent) => {
         (event.target as HTMLDivElement).focus();
     }, 100);
 };
+
+onUnmounted(() => {
+    screen?.destroy();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -105,9 +96,5 @@ const onKeydown = (event: KeyboardEvent) => {
     align-items: center;
     justify-content: center;
     outline: 0;
-}
-
-.ppt-preview-box {
-    background-color: #fff;
 }
 </style>

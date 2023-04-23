@@ -10,12 +10,13 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, onUnmounted, PropType, ref } from "vue";
+import { computed, inject, nextTick, onUnmounted, PropType, Ref, ref } from "vue";
 import { VIEWRATIO } from "@/plugins/config/stage";
 import { ISlide } from "@/types/slide";
 import Thumbnail from "@/plugins/screen/thumbnail";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 import { sleep } from "@/utils";
+import Editor from "@/plugins/editor";
 
 const props = defineProps({
     size: {
@@ -32,16 +33,18 @@ const props = defineProps({
     }
 });
 
+const instance = inject<Ref<Editor>>("instance");
+
 const thumbnail = ref();
 const thumbnailWidth = computed(() => props.size);
 const slide = computed(() => props.slide);
 
-let instance: Thumbnail | null;
+let thumbnailInstance: Thumbnail | null;
 
 const updateSlide = (updateSlide: ISlide) => {
     if (updateSlide.id === slide.value.id) {
         // 更新
-        instance?.updateSlide(updateSlide);
+        thumbnailInstance?.updateSlide(updateSlide);
     }
 };
 
@@ -52,7 +55,7 @@ nextTick(async () => {
         if (props.index === 0 && slide.value.elements.filter(element => element.type === "video").length > 0) {
             await sleep(500);
         }
-        instance = new Thumbnail(thumbnail.value, slide.value);
+        thumbnailInstance = new Thumbnail(thumbnail.value, slide.value, instance?.value.history);
 
         emitter.on(EmitterEvents.UPDATE_THUMBNAIL, updateSlide);
     }

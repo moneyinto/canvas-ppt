@@ -9,7 +9,7 @@ interface IStorage {
     data: string;
 }
 
-export class History {
+export default class History {
     public storage: IStorage[] = []; // 快照存储 暂时放在缓存中，后面移到db中
     public cursor = -1; // 快照指针
     private _stageConfig: StageConfig;
