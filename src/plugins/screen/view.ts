@@ -32,14 +32,17 @@ export default class View {
         this._drawPage();
 
         if (resize) {
-            window.addEventListener(
-                "resize",
-                throttleRAF(this._reset.bind(this))
-            );
+            // 延迟启用监听事件，避免初始化时触发，导致图片透明度渲染异常
+            setTimeout(() => {
+                window.addEventListener(
+                    "resize",
+                    throttleRAF(this._reset.bind(this))
+                );
 
-            this._resizeObserver = new ResizeObserver(throttleRAF(this._reset.bind(this)));
+                this._resizeObserver = new ResizeObserver(throttleRAF(this._reset.bind(this)));
 
-            this._resizeObserver.observe(container);
+                this._resizeObserver.observe(container);
+            }, 2000);
         }
     }
 
@@ -62,7 +65,7 @@ export default class View {
 
     private async _drawPage() {
         await this._background.draw(this._slide.background);
-        this._stage.drawElements(this._slide.elements, true);
+        await this._stage.drawElements(this._slide.elements, true);
     }
 
     public updateSlide(slide: ISlide) {
