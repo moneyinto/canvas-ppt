@@ -5,6 +5,8 @@
         <Insert />
 
         <Format :elements="elements" />
+
+        <Arrangement :elements="elements" />
     </div>
 </template>
 
@@ -14,6 +16,7 @@ import { PropType, toRefs } from "vue";
 import Edit from "./Edit.vue";
 import Insert from "./Insert.vue";
 import Format from "./Format.vue";
+import Arrangement from "./Arrangement.vue";
 
 const props = defineProps({
     slideFocus: {
