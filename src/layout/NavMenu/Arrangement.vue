@@ -153,6 +153,29 @@
                         </div>
                     </a-menu-item>
                 </a-sub-menu>
+                <a-sub-menu :disabled="elements.length === 0" key="sub-rotate">
+                    <template #title>
+                        <div class="ppt-menu-option">旋转</div>
+                    </template>
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            @click="executeClockwise()"
+                        >
+                            <PPTIcon icon="clockwise" :size="28" />
+                            顺时针旋转90°
+                        </div>
+                    </a-menu-item>
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            @click="executeAntiClockwise()"
+                        >
+                            <PPTIcon icon="anticlockwise" :size="28" />
+                            逆时针旋转90°
+                        </div>
+                    </a-menu-item>
+                </a-sub-menu>
             </a-menu>
         </template>
     </a-dropdown>
@@ -205,6 +228,16 @@ const executeMoveUp = () => {
 const executeMoveDown = () => {
     arrangementVisible.value = false;
     instance?.value.command.executeMoveDown();
+};
+
+const executeClockwise = () => {
+    arrangementVisible.value = false;
+    instance?.value.command.executeRotate(90, 1);
+};
+
+const executeAntiClockwise = () => {
+    arrangementVisible.value = false;
+    instance?.value.command.executeRotate(90, -1);
 };
 </script>
 

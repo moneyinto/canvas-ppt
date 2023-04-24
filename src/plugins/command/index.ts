@@ -97,6 +97,28 @@ export default class Command {
         this._stageConfig.setZoom(zoom + 0.05);
     }
 
+    // 旋转
+    public executeRotate(rotate: number, direction: 1 | -1) {
+        const operateElements = this._stageConfig.operateElements;
+        if (operateElements.length > 0) {
+            for (const operateElement of operateElements) {
+                if (operateElement.type === "line") {
+                    const start = [operateElement.left, operateElement.top];
+                    const end = [operateElement.left + operateElement.end[0], operateElement.top + operateElement.end[1]];
+                    const center = [(start[0] + end[0]) / 2, (start[1] + end[1]) / 2];
+                    const startResult = this._stageConfig.rotate(start[0], start[1], center[0], center[1], rotate * direction / 180 * Math.PI);
+                    const endResult = this._stageConfig.rotate(end[0], end[1], center[0], center[1], rotate * direction / 180 * Math.PI);
+                    operateElement.left = startResult[0];
+                    operateElement.top = startResult[1];
+                    operateElement.end = [endResult[0] - startResult[0], endResult[1] - startResult[1]];
+                } else {
+                    operateElement.rotate = operateElement.rotate + rotate * direction;
+                }
+            }
+            this.executeLogRender();
+        }
+    }
+
     // 上移一层
     public executeMoveUp() {
         const operateElements = this._stageConfig.operateElements;
