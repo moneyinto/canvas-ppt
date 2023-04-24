@@ -38,7 +38,7 @@ nextTick(() => {
     if (screenRef.value) {
         screen = new Screen(screenRef.value, previewSlide.value, instance?.value.history);
 
-        screenRef.value.parentElement?.focus();
+        screenRef.value.focus();
     }
 });
 

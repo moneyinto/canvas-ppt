@@ -9,6 +9,8 @@
         <Arrangement :elements="elements" />
 
         <SlideShow />
+
+        <Demonstrate :current="current" @onPreview="onPreview" />
     </div>
 </template>
 
@@ -20,6 +22,7 @@ import Insert from "./Insert.vue";
 import Format from "./Format.vue";
 import Arrangement from "./Arrangement.vue";
 import SlideShow from "./SlideShow.vue";
+import Demonstrate from "./Demonstrate.vue";
 
 const props = defineProps({
     slideFocus: {
@@ -29,10 +32,20 @@ const props = defineProps({
     elements: {
         type: Object as PropType<IPPTElement[]>,
         required: true
+    },
+    current: {
+        type: Number,
+        default: 0
     }
 });
 
-const { slideFocus, elements } = toRefs(props);
+const emit = defineEmits(["onPreview"]);
+
+const { slideFocus, elements, current } = toRefs(props);
+
+const onPreview = (slideIndex: number) => {
+    emit("onPreview", slideIndex);
+};
 </script>
 
 <style lang="scss">

@@ -503,7 +503,7 @@ onUnmounted(() => {
     emitter.off(EmitterEvents.FONT_STRIKOUT_CHANGE, onFontStrikoutChange);
     emitter.off(EmitterEvents.FONT_COLOR_CHANGE, onFontColorChange);
     emitter.off(EmitterEvents.FONT_ALIGN_CHANGE, onTextAlignChange);
-    emitter.on(EmitterEvents.FONT_LINEHEIGHT_CHANGE, onLineHeightChange);
+    emitter.off(EmitterEvents.FONT_LINEHEIGHT_CHANGE, onLineHeightChange);
 });
 </script>
 

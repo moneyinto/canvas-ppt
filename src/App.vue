@@ -1,7 +1,12 @@
 <template>
     <div class="ppt-container">
         <div class="ppt-toolbar">
-            <NavMenu :elements="currentElements" :slideFocus="slideFocus" />
+            <NavMenu
+                :elements="currentElements"
+                :slideFocus="slideFocus"
+                :current="slideIndex"
+                @onPreview="startPreview"
+            />
             <Tools :elements="currentElements" />
         </div>
         <div class="ppt-body">
