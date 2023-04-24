@@ -7,6 +7,8 @@
         <Format :elements="elements" />
 
         <Arrangement :elements="elements" />
+
+        <SlideShow />
     </div>
 </template>
 
@@ -17,6 +19,7 @@ import Edit from "./Edit.vue";
 import Insert from "./Insert.vue";
 import Format from "./Format.vue";
 import Arrangement from "./Arrangement.vue";
+import SlideShow from "./SlideShow.vue";
 
 const props = defineProps({
     slideFocus: {
