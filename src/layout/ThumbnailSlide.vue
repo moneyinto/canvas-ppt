@@ -49,13 +49,13 @@ const updateSlide = (updateSlide: ISlide) => {
 };
 
 nextTick(async () => {
-    if (thumbnail.value) {
+    if (thumbnail.value && instance?.value) {
         // 缩略图存在第一位置，且有视频，初始化存在问题！！
         // 索引值如果为0，且存在视频元素，这里缩略进行延缓加载处理
         if (props.index === 0 && slide.value.elements.filter(element => element.type === "video").length > 0) {
             await sleep(500);
         }
-        thumbnailInstance = new Thumbnail(thumbnail.value, slide.value, instance?.value.history);
+        thumbnailInstance = new Thumbnail(thumbnail.value, slide.value, instance.value.history);
 
         emitter.on(EmitterEvents.UPDATE_THUMBNAIL, updateSlide);
     }

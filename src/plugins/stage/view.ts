@@ -13,7 +13,7 @@ export default class ViewStage extends Stage {
     ) {
         super(container, stageConfig, history, resize);
 
-        this._background = new Background(stageConfig, this.ctx);
+        this._background = new Background(stageConfig, this.ctx, history);
         this._drawPage();
     }
 
@@ -28,6 +28,7 @@ export default class ViewStage extends Stage {
         this.ctx.fillStyle = "white";
         this.ctx.fillRect(x, y, stageWidth, stageHeight);
 
+        console.log("绘制背景", currentSlide?.background);
         // 绘制背景
         await this._background.draw(currentSlide?.background);
 

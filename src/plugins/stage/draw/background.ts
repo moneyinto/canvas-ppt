@@ -1,27 +1,41 @@
 import { VIEWPORT_SIZE, VIEWRATIO } from "@/plugins/config/stage";
 import { ISlideBackground } from "@/types/slide";
 import StageConfig from "../config";
+import { ICacheImage } from "@/types";
+import History from "@/plugins/editor/history";
 
 export default class Background {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
-    constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D) {
+    private _history: History;
+    constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D, history: History) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
+        this._history = history;
     }
 
-    private _getCacheImage(url: string): Promise<HTMLImageElement> {
+    private _getCacheImage(id: string): Promise<ICacheImage> {
         return new Promise(resolve => {
-            const cacheImage = this._stageConfig.cacheBackgroundImage;
+            const cacheImage = this._stageConfig.cacheImages.find(image => image.id === id);
             if (cacheImage) {
                 resolve(cacheImage);
             } else {
                 const image = new Image();
                 image.onload = () => {
-                    this._stageConfig.updateBackgroundImage(image);
-                    resolve(image);
+                    const cacheImage = {
+                        id,
+                        image
+                    };
+                    this._stageConfig.addCacheImage(cacheImage);
+                    resolve(cacheImage);
                 };
-                image.src = url;
+                try {
+                    this._history.getFile(id).then(file => {
+                        image.src = file;
+                    });
+                } catch {
+                    image.src = "";
+                }
             }
         });
     }
@@ -48,12 +62,12 @@ export default class Background {
                         const imageElement = await this._getCacheImage(image);
 
                         if (imageSize === "cover") {
-                            this._ctx.drawImage(imageElement, x, y, stageWidth, stageHeight);
+                            this._ctx.drawImage(imageElement.image, x, y, stageWidth, stageHeight);
                         } else {
                             const zoom = stageWidth / VIEWPORT_SIZE;
                             this._ctx.translate(x, y);
                             this._ctx.scale(zoom, zoom);
-                            const pattern = this._ctx.createPattern(imageElement, "repeat");
+                            const pattern = this._ctx.createPattern(imageElement.image, "repeat");
                             if (pattern) {
                                 this._ctx.rect(0, 0, VIEWPORT_SIZE, VIEWPORT_SIZE * VIEWRATIO);
                                 this._ctx.fillStyle = pattern;

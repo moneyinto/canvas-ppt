@@ -19,7 +19,6 @@ export default class StageConfig {
     public operateElements: IPPTElement[]; // 选中操作元素
     public opreateType: string; // 元素操作形式 拉伸方向 旋转
     public cacheImages: ICacheImage[];
-    public cacheBackgroundImage: HTMLImageElement | undefined;
     public cacheVideo: Map<string, HTMLVideoElement>;
 
     public isFullScreen = false;
@@ -56,7 +55,6 @@ export default class StageConfig {
         this.operateElements = [];
         this.opreateType = "";
         this.cacheImages = [];
-        this.cacheBackgroundImage = undefined;
         this.cacheVideo = new Map();
 
         this.resetDrawView = null;
@@ -316,10 +314,6 @@ export default class StageConfig {
 
     public addCacheImage(cacheImage: ICacheImage) {
         this.cacheImages.push(cacheImage);
-    }
-
-    public updateBackgroundImage(cacheImage?: HTMLImageElement) {
-        this.cacheBackgroundImage = cacheImage;
     }
 
     public setSelectArea(selectArea: [number, number, number, number] | null) {

@@ -162,12 +162,14 @@ import PPTIcon from "@/components/Icon.vue";
 import Editor from "@/plugins/editor";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 import { ISlideBackground } from "@/types/slide";
+import { fileMd5 } from "@/utils";
 
 const backgroundType = ref("");
 const currentColor = ref("#ffffff");
 const currentStartColor = ref("#ffffff");
 const currentEndColor = ref("#ffffff");
 const backgroundImage = ref("");
+const backgroundImageId = ref("");
 const imageSize = ref<"cover" | "repeat">("cover");
 const gradientType = ref<"linear" | "radial">("linear");
 const gradientRotate = ref(0);
@@ -176,7 +178,7 @@ const showStartColorPopover = ref(false);
 const showEndColorPopover = ref(false);
 const instance = inject<Ref<Editor>>("instance");
 
-const init = () => {
+const init = async () => {
     if (instance?.value) {
         const currentSlide = instance.value.stageConfig.getCurrentSlide();
         const background = currentSlide?.background;
@@ -186,13 +188,10 @@ const init = () => {
             imageSize.value = background.imageSize || "cover";
             gradientType.value = background.gradientType || "linear";
             gradientRotate.value = background.gradientRotate || 0;
-            currentStartColor.value = background.gradientColor
-                ? background.gradientColor[0]
-                : "#ffffff";
-            currentEndColor.value = background.gradientColor
-                ? background.gradientColor[1]
-                : "#fffffff";
-            backgroundImage.value = background.image || "";
+            currentStartColor.value = background.gradientColor ? background.gradientColor[0] : "#ffffff";
+            currentEndColor.value = background.gradientColor ? background.gradientColor[1] : "#fffffff";
+            backgroundImageId.value = background.image || "";
+            backgroundImage.value = await instance.value.history.getFile(backgroundImageId.value);
         }
     }
 };
@@ -255,34 +254,43 @@ const setBackgroundType = () => {
 const setImageSize = () => {
     instance?.value.command.executeSetBackground({
         type: "image",
-        image: backgroundImage.value,
+        image: backgroundImageId.value,
         imageSize: imageSize.value
     });
 };
 
-const uploadBackgroundImage = (files: File[]) => {
+const uploadBackgroundImage = async (files: File[]) => {
     const imageFile = files[0];
     if (!imageFile) return;
-    const reader = new FileReader();
-    reader.addEventListener(
-        "load",
-        () => {
-            const image = new Image();
-            image.onload = () => {
-                backgroundImage.value = reader.result as string;
+    const md5 = await fileMd5(imageFile);
+    if (md5) {
+        const reader = new FileReader();
+        reader.addEventListener(
+            "load",
+            () => {
+                const image = new Image();
+                image.onload = () => {
+                    backgroundImage.value = reader.result as string;
+                    backgroundImageId.value = md5;
 
-                instance?.value.stageConfig.updateBackgroundImage(image);
+                    instance?.value.stageConfig.addCacheImage({
+                        id: md5,
+                        image
+                    });
 
-                instance?.value.command.executeSetBackground({
-                    type: "image",
-                    image: backgroundImage.value
-                });
-            };
-            image.src = reader.result as string;
-        },
-        false
-    );
-    reader.readAsDataURL(imageFile);
+                    instance?.value.command.executeSetBackground({
+                        type: "image",
+                        image: md5
+                    });
+
+                    instance?.value.history.saveFile(md5, backgroundImage.value);
+                };
+                image.src = reader.result as string;
+            },
+            false
+        );
+        reader.readAsDataURL(imageFile);
+    }
 };
 
 const setGradientType = () => {

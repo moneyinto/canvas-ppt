@@ -15,7 +15,7 @@ export default class View {
     private _resize: boolean;
     private _isThumbnail: boolean;
 
-    constructor(container: HTMLDivElement, slide: ISlide, history?: History, resize?: boolean, isThumbnail?: boolean) {
+    constructor(container: HTMLDivElement, slide: ISlide, history: History, resize?: boolean, isThumbnail?: boolean) {
         this._slide = slide;
 
         this._container = container;
@@ -29,7 +29,7 @@ export default class View {
         // 创建展示画板
         this._stage = new Stage(container, this._stageConfig, history);
 
-        this._background = new Background(this._stageConfig, this._stage.ctx);
+        this._background = new Background(this._stageConfig, this._stage.ctx, history);
 
         this._drawPage();
 
