@@ -260,7 +260,9 @@ export default class Command {
         for (const operateElement of operateElements) {
             if (
                 operateElement.type === "shape" ||
-                operateElement.type === "image"
+                operateElement.type === "image" ||
+                operateElement.type === "chart" ||
+                operateElement.type === "latex"
             ) {
                 const newElement: IPPTElement = {
                     ...operateElement,
@@ -280,7 +282,9 @@ export default class Command {
         for (const operateElement of operateElements) {
             if (
                 operateElement.type === "shape" ||
-                operateElement.type === "image"
+                operateElement.type === "image" ||
+                operateElement.type === "chart" ||
+                operateElement.type === "latex"
             ) {
                 const newElement: IPPTElement = {
                     ...operateElement,

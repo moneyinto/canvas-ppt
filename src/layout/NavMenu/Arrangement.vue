@@ -176,6 +176,29 @@
                         </div>
                     </a-menu-item>
                 </a-sub-menu>
+                <a-sub-menu :disabled="flipDisabled" key="sub-flip">
+                    <template #title>
+                        <div class="ppt-menu-option">翻转</div>
+                    </template>
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            @click="executeFlipH()"
+                        >
+                            <PPTIcon icon="flipH" :size="28" />
+                            水平翻转
+                        </div>
+                    </a-menu-item>
+                    <a-menu-item>
+                        <div
+                            class="ppt-menu-option"
+                            @click="executeFlipV()"
+                        >
+                            <PPTIcon icon="flipV" :size="28" />
+                            垂直翻转
+                        </div>
+                    </a-menu-item>
+                </a-sub-menu>
             </a-menu>
         </template>
     </a-dropdown>
@@ -200,6 +223,10 @@ const elements = computed(() => props.elements);
 const instance = inject<Ref<Editor>>("instance");
 
 const arrangementVisible = ref(false);
+
+const flipDisabled = computed(() => {
+    return elements.value.filter(element => element.type === "shape" || element.type === "image" || element.type === "latex" || element.type === "chart").length === 0;
+});
 
 const setAlignType = (
     align: IElementAlignType,
@@ -238,6 +265,16 @@ const executeClockwise = () => {
 const executeAntiClockwise = () => {
     arrangementVisible.value = false;
     instance?.value.command.executeRotate(90, -1);
+};
+
+const executeFlipH = () => {
+    arrangementVisible.value = false;
+    instance?.value.command.executeFlipH();
+};
+
+const executeFlipV = () => {
+    arrangementVisible.value = false;
+    instance?.value.command.executeFlipV();
 };
 </script>
 

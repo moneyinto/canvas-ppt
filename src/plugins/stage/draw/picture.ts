@@ -73,6 +73,8 @@ export class Picture {
             this._ctx.translate(ox, oy);
             // 旋转画布
             this._ctx.rotate((element.rotate / 180) * Math.PI);
+            // 水平垂直翻转
+            this._ctx.scale(element.flipH || 1, element.flipV || 1);
 
             const path = getShapePath(SHAPE_TYPE.RECT, element.width, element.height);
             if (element.fill) {

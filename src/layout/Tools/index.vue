@@ -12,7 +12,7 @@
 
         <a-divider class="ppt-tool-divider" v-if="showEvert || showAlign" type="vertical" />
         <Align v-if="showAlign" :elements="elements" />
-        <Evert v-if="showEvert" />
+        <Evert v-if="showEvert || showImageEdit" />
 
         <a-divider class="ppt-tool-divider" v-if="showTextEidt" type="vertical" />
         <TextEdit v-if="showTextEidt" :elements="elements" />
