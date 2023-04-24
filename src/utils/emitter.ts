@@ -5,6 +5,7 @@ import { ChartType, IPPTChartElement, IPPTLatexElement } from "@/types/element";
 
 export const enum EmitterEvents {
     UPDATE_THUMBNAIL = "UPDATE_THUMBNAIL",
+    INIT_SLIDE = "INIT_SLIDE",
     ADD_EMPTY_SLIDE = "ADD_EMPTY_SLIDE",
     COPY_SLIDE = "COPY_SLIDE",
     CUT_SLIDE = "CUT_SLIDE",
@@ -27,6 +28,7 @@ export const enum EmitterEvents {
 
 type Events = {
     [EmitterEvents.UPDATE_THUMBNAIL]: ISlide;
+    [EmitterEvents.INIT_SLIDE]: void;
     [EmitterEvents.ADD_EMPTY_SLIDE]: ISlide | undefined;
     [EmitterEvents.COPY_SLIDE]: void;
     [EmitterEvents.CUT_SLIDE]: void;

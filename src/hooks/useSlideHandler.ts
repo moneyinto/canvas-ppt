@@ -25,7 +25,7 @@ export default (
         // 获取历史记录的数据进行展示
         if (instance.value) {
             viewSlides.value = await instance.value.history.getHistorySnapshot();
-            instance.value.stageConfig.setSildes(viewSlides.value);
+            instance.value.stageConfig.setSlides(viewSlides.value);
             historyCursor.value = instance.value.history.cursor;
             historyLength.value = historyCursor.value + 1;
         }
@@ -109,7 +109,7 @@ export default (
         const newSlide = slide ? { ...slide, id } : { id, elements: [] };
         viewSlides.value.splice(slideIndex.value, 0, newSlide);
         onSelectedSlide(id);
-        instance.value?.stageConfig.setSildes(viewSlides.value);
+        instance.value?.stageConfig.setSlides(viewSlides.value);
         if (!noHistory) instance.value?.history.add(OPTION_TYPE.ADD_EMPTY_SLIDE);
     };
 

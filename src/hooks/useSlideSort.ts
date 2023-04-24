@@ -45,7 +45,7 @@ export default (
                         : sortIndex.value - 1
                     : sortIndex.value;
             viewSlides.value.splice(spliceIndex, 0, targetSlide);
-            instance.value?.stageConfig.setSildes(viewSlides.value);
+            instance.value?.stageConfig.setSlides(viewSlides.value);
             instance.value?.history.add(OPTION_TYPE.SORT_SLIDE);
             onDragEnd();
         }

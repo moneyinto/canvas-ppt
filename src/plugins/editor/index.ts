@@ -43,7 +43,7 @@ export default class Editor {
             return this._controlStage.getFontSize(text);
         };
 
-        this.stageConfig.setSildes(slides);
+        this.stageConfig.setSlides(slides);
         if (slides.length > 0) this.stageConfig.setSlideId(slides[0].id);
 
         // 历史数据

@@ -158,6 +158,7 @@ nextTick(() => {
             currentElements.value = elements;
         };
 
+        emitter.on(EmitterEvents.INIT_SLIDE, initSlide);
         emitter.on(EmitterEvents.ADD_EMPTY_SLIDE, addPPT);
         emitter.on(EmitterEvents.COPY_SLIDE, copySlide);
         emitter.on(EmitterEvents.CUT_SLIDE, cutSlide);
@@ -192,6 +193,7 @@ const exitFullScreen = () => {
 window.addEventListener("resize", exitFullScreen);
 
 onUnmounted(() => {
+    emitter.off(EmitterEvents.INIT_SLIDE, initSlide);
     emitter.off(EmitterEvents.ADD_EMPTY_SLIDE, addPPT);
     emitter.off(EmitterEvents.COPY_SLIDE, copySlide);
     emitter.off(EmitterEvents.CUT_SLIDE, cutSlide);

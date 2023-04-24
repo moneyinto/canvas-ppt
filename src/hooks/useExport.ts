@@ -34,7 +34,12 @@ export default (instance: Ref<Editor> | undefined, exporting: Ref<boolean>, expo
         }, 500);
     };
 
+    const outputPPTX = async () => {
+        console.log("outputPPTX");
+    };
+
     return {
-        outputMPPTX
+        outputMPPTX,
+        outputPPTX
     };
 };

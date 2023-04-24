@@ -69,4 +69,12 @@ export default class DB {
                 .add({ fileId, file });
         }
     }
+
+    async deleteFiles() {
+        if (!this.db) await this.init();
+        const keys = await this.db!.transaction("file").objectStore("file").getAllKeys();
+        for (const key of keys) {
+            await this.db!.transaction("file", "readwrite").objectStore("file").delete(key);
+        }
+    }
 }

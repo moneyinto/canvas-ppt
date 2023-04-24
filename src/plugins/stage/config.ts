@@ -302,7 +302,7 @@ export default class StageConfig {
         slide?.elements.push(element);
     }
 
-    public setSildes(slides: ISlide[]) {
+    public setSlides(slides: ISlide[]) {
         this.slides = slides;
     }
 
