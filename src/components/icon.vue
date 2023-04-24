@@ -84,7 +84,9 @@ const icons: { [key: string]: string } = {
     upload: new URL("@/assets/icons/upload.svg", import.meta.url).href,
     anticlockwise: new URL("@/assets/icons/anticlockwise.svg", import.meta.url).href,
     clockwise: new URL("@/assets/icons/clockwise.svg", import.meta.url).href,
-    demonstrate: new URL("@/assets/icons/demonstrate.svg", import.meta.url).href
+    demonstrate: new URL("@/assets/icons/demonstrate.svg", import.meta.url).href,
+    fullScreen: new URL("@/assets/icons/fullScreen.svg", import.meta.url).href,
+    offScreen: new URL("@/assets/icons/offScreen.svg", import.meta.url).href
 };
 
 const iconUrl = computed(() => icons[icon.value]);
