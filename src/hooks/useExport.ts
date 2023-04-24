@@ -1,10 +1,10 @@
 import Editor from "@/plugins/editor";
 import { IMPPTXJSON } from "@/types";
 import { encrypt } from "@/utils/crypto";
+import { addText, formatColor } from "@/utils/export";
 import { message } from "ant-design-vue";
 import { saveAs } from "file-saver";
 import Pptxgen from "pptxgenjs";
-import tinycolor from "tinycolor2";
 import { Ref } from "vue";
 
 export default (
@@ -47,16 +47,6 @@ export default (
         }, 500);
     };
 
-    const formatColor = (_color: string) => {
-        const c = tinycolor(_color);
-        const alpha = c.getAlpha();
-        const color = alpha === 0 ? "#ffffff" : c.setAlpha(1).toHexString();
-        return {
-            alpha,
-            color
-        };
-    };
-
     const outputPPTX = async () => {
         exporting.value = true;
         const pptx = new Pptxgen();
@@ -71,6 +61,7 @@ export default (
                 if (background.type === "image" && background.image) {
                     const file = await instance?.value.history.getFile(background.image);
                     pptxSlide.background = { data: file };
+                    // 不支持平铺
                 } else if (background.type === "solid" && background.color) {
                     const c = formatColor(background.color);
                     pptxSlide.background = {
@@ -81,18 +72,18 @@ export default (
                     background.type === "gradient" &&
                     background.gradientColor
                 ) {
-                    const [color1, color2] = background.gradientColor;
-                    const color = tinycolor.mix(color1, color2).toHexString();
-                    const c = formatColor(color);
-                    pptxSlide.background = {
-                        color: c.color,
-                        transparency: (1 - c.alpha) * 100
-                    };
+                    // 不支持渐变
                 }
             }
 
             for (const element of slide.elements) {
                 console.log(element);
+                switch (element.type) {
+                    case "text": {
+                        addText(pptxSlide, element);
+                        break;
+                    }
+                }
             }
 
             exportPercent.value = ((index + 1) / slides.length) * 100 - 10;
