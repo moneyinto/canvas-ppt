@@ -1,5 +1,7 @@
 <template>
     <div class="ppt-nav-menu" @keydown.stop="" tabindex="0">
+        <FileEdit />
+
         <Edit :elements="elements" :slideFocus="slideFocus" />
 
         <Insert />
@@ -23,6 +25,7 @@ import Format from "./Format.vue";
 import Arrangement from "./Arrangement.vue";
 import SlideShow from "./SlideShow.vue";
 import Demonstrate from "./Demonstrate.vue";
+import FileEdit from "./FileEdit.vue";
 
 const props = defineProps({
     slideFocus: {

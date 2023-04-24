@@ -38,3 +38,12 @@ export type IElementAlignType =
     | "verticalTop"
     | "verticalCenter"
     | "verticalBottom";
+
+export interface IFileStore {
+    [key: string]: string;
+}
+
+export interface IMPPTXJSON {
+    files: IFileStore;
+    slides: ISlide[];
+}
