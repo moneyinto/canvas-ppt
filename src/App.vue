@@ -40,7 +40,7 @@
         </div>
         <div class="ppt-footer">
             <Footer
-                :total="slides.length"
+                :total="total"
                 :current="slideIndex"
                 @onZoomChange="resize"
                 @onPreview="startPreview"
@@ -56,7 +56,7 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onUnmounted, provide, ref } from "vue";
+import { computed, nextTick, onUnmounted, provide, ref } from "vue";
 import NavMenu from "./layout/NavMenu/index.vue";
 import Tools from "./layout/Tools/index.vue";
 import ThumbnailList from "./layout/ThumbnailList.vue";
@@ -76,6 +76,7 @@ const pptRef = ref<HTMLDivElement>();
 const zoom = ref(1);
 const instance = ref<Editor>();
 const viewSlides = ref<ISlide[]>([]);
+const total = computed(() => viewSlides.value.length);
 
 const historyCursor = ref(0);
 const historyLength = ref(0);
