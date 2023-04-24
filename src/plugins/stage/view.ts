@@ -28,7 +28,6 @@ export default class ViewStage extends Stage {
         this.ctx.fillStyle = "white";
         this.ctx.fillRect(x, y, stageWidth, stageHeight);
 
-        console.log("绘制背景", currentSlide?.background);
         // 绘制背景
         await this._background.draw(currentSlide?.background);
 
