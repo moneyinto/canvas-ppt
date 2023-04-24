@@ -21,6 +21,10 @@ export default (
             slides
         };
         for (const [index, slide] of slides.entries()) {
+            if (slide.background && slide.background.type === "image" && slide.background.image) {
+                mpptxJson.files[slide.background.image] = (await instance?.value.history.getFile(slide.background.image)) || "";
+            }
+
             for (const element of slide.elements) {
                 if (
                     element.type === "image" ||
@@ -29,9 +33,7 @@ export default (
                     element.type === "chart" ||
                     element.type === "latex"
                 ) {
-                    mpptxJson.files[element.src] =
-                        (await instance?.value.history.getFile(element.src)) ||
-                        "";
+                    mpptxJson.files[element.src] = (await instance?.value.history.getFile(element.src)) || "";
                 }
             }
             exportPercent.value = ((index + 1) / slides.length) * 100 - 10;
