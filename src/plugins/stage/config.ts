@@ -67,8 +67,8 @@ export default class StageConfig {
         this.fontConfig = fontConfig;
     }
 
-    public resetCheckDrawView() {
-        this.resetDrawView && this.resetDrawView();
+    public async resetCheckDrawView() {
+        this.resetDrawView && await this.resetDrawView();
     }
 
     public resetCheckDrawOprate() {

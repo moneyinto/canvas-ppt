@@ -30,8 +30,8 @@ export default class Editor {
 
         // 画板配置
         this.stageConfig = new StageConfig(container, this.listener, 40);
-        this.stageConfig.resetDrawView = () => {
-            this._viewStage.resetDrawPage();
+        this.stageConfig.resetDrawView = async () => {
+            await this._viewStage.resetDrawPage();
         };
         this.stageConfig.resetDrawOprate = () => {
             this._controlStage.resetDrawOprate();

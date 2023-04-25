@@ -36,14 +36,14 @@ export default class ViewStage extends Stage {
         this.ctx.shadowBlur = 0;
 
         const elements = currentSlide?.elements || [];
-        this.drawElements(elements);
+        await this.drawElements(elements);
     }
 
-    public resetDrawPage() {
+    public async resetDrawPage() {
         const width = this.stageConfig.getWidth();
         const height = this.stageConfig.getHeight();
         this.ctx.clearRect(0, 0, width, height);
 
-        this._drawPage();
+        await this._drawPage();
     }
 }
