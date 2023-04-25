@@ -1,21 +1,21 @@
 import { SHAPE_TYPE } from "@/plugins/config/shapes";
 
-export const getShapePath = (type: SHAPE_TYPE, width: number, height: number) => {
+export const getShapePath = (type: SHAPE_TYPE, width: number, height: number, needPathString?: boolean) => {
     const offsetX = -width / 2;
     const offsetY = -height / 2;
 
     const rect = {
-        minX: offsetX,
-        minY: offsetY,
-        maxX: width / 2,
-        maxY: height / 2
+        minX: needPathString ? 0 : offsetX,
+        minY: needPathString ? 0 : offsetY,
+        maxX: needPathString ? width : width / 2,
+        maxY: needPathString ? height : height / 2
     };
 
     let path = "";
 
     switch (type) {
         case SHAPE_TYPE.RECT: {
-            path = `M${rect.minX} ${rect.minY}h${width}v${height}H${rect.minX}z`;
+            path = `M${rect.minX} ${rect.minY}H${rect.maxX}V${rect.maxY}H${rect.minX}Z`;
             break;
         }
         case SHAPE_TYPE.RECT_RADIUS: {
@@ -260,5 +260,5 @@ export const getShapePath = (type: SHAPE_TYPE, width: number, height: number) =>
         }
     }
 
-    return new Path2D(path);
+    return needPathString ? path : new Path2D(path);
 };

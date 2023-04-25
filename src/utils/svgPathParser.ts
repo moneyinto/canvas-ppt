@@ -1,0 +1,149 @@
+import { SVGPathData } from "svg-pathdata";
+import arcToBezier from "svg-arc-to-cubic-bezier";
+import { CommandH, CommandV, SVGCommand } from "svg-pathdata/lib/types";
+
+const typeMap = {
+    1: "Z",
+    2: "M",
+    4: "H",
+    8: "V",
+    16: "L",
+    32: "C",
+    64: "S",
+    128: "Q",
+    256: "T",
+    512: "A"
+};
+
+/**
+ * 简单解析SVG路径
+ * @param d SVG path d属性
+ */
+export const parseSvgPath = (d: string) => {
+    const pathData = new SVGPathData(d);
+
+    const ret = pathData.commands.map((item) => {
+        return { ...item, type: typeMap[item.type] };
+    });
+    return ret;
+};
+
+export type SvgPath = ReturnType<typeof parseSvgPath>;
+
+interface ICurve {
+    type: "quadratic" | "cubic";
+    x1: number;
+    y1: number;
+    x2?: number;
+    y2?: number;
+}
+
+interface IPoint {
+    x?: number;
+    y?: number;
+    relative?: boolean;
+    type: string;
+    curve?: ICurve;
+    close?: boolean;
+}
+
+type IPoints = IPoint[];
+
+/**
+ * 解析SVG路径，并将圆弧（A）类型的路径转为三次贝塞尔（C）类型的路径
+ * @param d SVG path d属性
+ */
+export const toPoints = (d: string) => {
+    const pathData = new SVGPathData(d);
+
+    const points: IPoints = [];
+    let preItem: SVGCommand = {} as SVGCommand;
+    for (const item of pathData.commands) {
+        const type = typeMap[item.type];
+        if (item.type === 2 || item.type === 16) {
+            points.push({
+                x: item.x,
+                y: item.y,
+                relative: item.relative,
+                type
+            });
+        } else if (item.type === 4) {
+            points.push({
+                y: (preItem as CommandV).y,
+                x: item.x,
+                relative: item.relative,
+                type
+            });
+        } else if (item.type === 8) {
+            points.push({
+                x: (preItem as CommandH).x,
+                y: item.y,
+                relative: item.relative,
+                type
+            });
+        } else if (item.type === 32) {
+            points.push({
+                x: item.x,
+                y: item.y,
+                curve: {
+                    type: "cubic",
+                    x1: item.x1,
+                    y1: item.y1,
+                    x2: item.x2,
+                    y2: item.y2
+                },
+                relative: item.relative,
+                type
+            });
+        } else if (item.type === 128) {
+            points.push({
+                x: item.x,
+                y: item.y,
+                curve: {
+                    type: "quadratic",
+                    x1: item.x1,
+                    y1: item.y1
+                },
+                relative: item.relative,
+                type
+            });
+        } else if (item.type === 512) {
+            const lastPoint = points[points.length - 1];
+            if (!["M", "L", "Q", "C"].includes(lastPoint.type)) continue;
+
+            const cubicBezierPoints = arcToBezier({
+                px: lastPoint.x as number,
+                py: lastPoint.y as number,
+                cx: item.x,
+                cy: item.y,
+                rx: item.rX,
+                ry: item.rY,
+                xAxisRotation: item.xRot,
+                largeArcFlag: item.lArcFlag,
+                sweepFlag: item.sweepFlag
+            });
+            for (const cbPoint of cubicBezierPoints) {
+                points.push({
+                    x: cbPoint.x,
+                    y: cbPoint.y,
+                    curve: {
+                        type: "cubic",
+                        x1: cbPoint.x1,
+                        y1: cbPoint.y1,
+                        x2: cbPoint.x2,
+                        y2: cbPoint.y2
+                    },
+                    relative: false,
+                    type: "C"
+                });
+            }
+        } else if (item.type === 1) {
+            points.push({ close: true, type });
+        } else continue;
+
+        preItem = item;
+    }
+    return points;
+};
+
+export type SvgPoints = ReturnType<typeof toPoints>;

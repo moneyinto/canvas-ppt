@@ -1,7 +1,7 @@
 import Editor from "@/plugins/editor";
 import { IMPPTXJSON } from "@/types";
 import { encrypt } from "@/utils/crypto";
-import { addText, formatColor } from "@/utils/export";
+import { addShape, addText } from "@/utils/export";
 import { message } from "ant-design-vue";
 import { saveAs } from "file-saver";
 import Pptxgen from "pptxgenjs";
@@ -63,10 +63,8 @@ export default (
                     pptxSlide.background = { data: file };
                     // 不支持平铺
                 } else if (background.type === "solid" && background.color) {
-                    const c = formatColor(background.color);
                     pptxSlide.background = {
-                        color: c.color,
-                        transparency: (1 - c.alpha) * 100
+                        color: background.color
                     };
                 } else if (
                     background.type === "gradient" &&
@@ -77,10 +75,13 @@ export default (
             }
 
             for (const element of slide.elements) {
-                console.log(element);
                 switch (element.type) {
                     case "text": {
                         addText(pptxSlide, element);
+                        break;
+                    }
+                    case "shape": {
+                        addShape(pptxSlide, element);
                         break;
                     }
                 }

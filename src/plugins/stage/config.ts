@@ -416,7 +416,7 @@ export default class StageConfig {
                 );
 
                 if (element.type === "shape" && isInRect) {
-                    const path = getShapePath(element.shape, element.width, element.height);
+                    const path = getShapePath(element.shape, element.width, element.height) as Path2D;
                     ctx.save();
                     // 缩放画布
                     // ctx.scale(this.zoom, this.zoom);

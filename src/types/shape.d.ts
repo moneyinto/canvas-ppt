@@ -1,4 +1,4 @@
-import { SHAPE_TYPE, LINE_TYPE } from "../config/shapes";
+import { SHAPE_TYPE, LINE_TYPE } from "@/plugins/config/shapes";
 import { ICreatingType } from "./element";
 
 export type IShape = SHAPE_TYPE;

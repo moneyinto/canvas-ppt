@@ -76,7 +76,7 @@ export class Picture {
             // 水平垂直翻转
             this._ctx.scale(element.flipH || 1, element.flipV || 1);
 
-            const path = getShapePath(SHAPE_TYPE.RECT, element.width, element.height);
+            const path = getShapePath(SHAPE_TYPE.RECT, element.width, element.height) as Path2D;
             if (element.fill) {
                 this._fill.draw(element.fill, path);
             }

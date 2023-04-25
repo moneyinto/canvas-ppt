@@ -79,7 +79,7 @@ export class RichText {
         // 旋转画布
         this._ctx.rotate((element.rotate / 180) * Math.PI);
 
-        const path = getShapePath(SHAPE_TYPE.RECT, element.width, element.height);
+        const path = getShapePath(SHAPE_TYPE.RECT, element.width, element.height) as Path2D;
         if (element.fill) {
             this._fill.draw(element.fill, path);
         }

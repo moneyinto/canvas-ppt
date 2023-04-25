@@ -38,7 +38,7 @@ export class Shape {
         // 水平垂直翻转
         this._ctx.scale(element.flipH || 1, element.flipV || 1);
 
-        const path = getShapePath(element.shape, element.width, element.height);
+        const path = getShapePath(element.shape, element.width, element.height) as Path2D;
 
         if (element.shadow) {
             this._shadow.draw(element.shadow, zoom);
