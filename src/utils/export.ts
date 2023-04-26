@@ -165,13 +165,12 @@ export const addText = (slide: Pptxgen.Slide, element: IPPTTextElement) => {
         charSpacing: element.wordSpace / INCH_PX_RATIO,
         valign: "top",
         lineSpacingMultiple: element.lineHeight * PT_PX_RATIO,
-        autoFit: true,
+        align: element.align,
         rectRadius: 0
     };
     if (element.rotate) options.rotate = element.rotate;
     if (element.fill) {
-        const opacity =
-            element.fill.opacity === undefined ? 0 : element.fill.opacity;
+        const opacity = element.fill.opacity === undefined ? 0 : element.fill.opacity;
         options.fill = { transparency: opacity };
         if (element.fill.color) options.fill.color = element.fill.color;
     }
@@ -189,6 +188,7 @@ export const addText = (slide: Pptxgen.Slide, element: IPPTTextElement) => {
                 color: text.fontColor,
                 fontFace: text.fontFamily,
                 bold: text.fontWeight === "bold",
+                italic: text.fontStyle === "italic",
                 strike: text.strikout ? "sngStrike" : false,
                 underline: {
                     style: text.underline ? "heavy" : "none"
