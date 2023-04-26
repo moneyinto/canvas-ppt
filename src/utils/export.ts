@@ -248,6 +248,7 @@ export const addLine = (slide: Pptxgen.Slide, element: IPPTLineElement) => {
         h: height / INCH_PX_RATIO,
         line: {
             color: element.color,
+            transparency: element.opacity,
             width: element.borderWidth * PT_PX_RATIO,
             dashType: element.style === "solid" ? "solid" : "dash",
             beginArrowType: element.startStyle === "dot" ? "oval" : (element.startStyle || "none"),
