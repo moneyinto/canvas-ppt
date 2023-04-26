@@ -372,9 +372,17 @@ export default class Command {
         const operateElements = this._stageConfig.operateElements;
         const newElements: IPPTElement[] = [];
         for (const operateElement of operateElements) {
-            if (
-                operateElement &&
-                operateElement.type !== "line" &&
+            if (operateElement && operateElement.type === "line") {
+                const newElement: IPPTLineElement = {
+                    ...operateElement
+                };
+
+                if (outline?.color) newElement.color = outline.color;
+                if (outline?.width) newElement.borderWidth = outline.width;
+                if (outline?.style) newElement.style = outline.style;
+                if (outline?.opacity) newElement.opacity = outline.opacity;
+                newElements.push(newElement);
+            } else if (
                 operateElement.type !== "video" &&
                 operateElement.type !== "audio"
             ) {

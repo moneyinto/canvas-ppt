@@ -18,7 +18,7 @@
         <TextEdit v-if="showTextEidt" :elements="elements" />
 
         <a-divider class="ppt-tool-divider" v-if="showBorder || showTextEidt || showShadowColor" type="vertical" />
-        <Border v-if="showBorder || showTextEidt || showImageEdit" :elements="elements" />
+        <Border v-if="showBorder" :elements="elements" />
         <FillColor v-if="showFillColor || showTextEidt || showImageEdit" :elements="elements" />
         <Shadow v-if="showShadowColor" :elements="elements" />
 
@@ -64,7 +64,7 @@ const { elements } = toRefs(props);
 watch(elements, () => {
     if (elements.value.length > 0) {
         showFillColor.value = elements.value.filter(element => element.type === "shape").length > 0;
-        showBorder.value = elements.value.filter(element => element.type === "shape").length > 0;
+        showBorder.value = elements.value.filter(element => element.type === "shape" || element.type === "line" || element.type === "text" || element.type === "image" || element.type === "latex" || element.type === "chart").length > 0;
         showShadowColor.value = elements.value.filter(element => element.type !== "line" && element.type !== "video" && element.type !== "audio").length > 0;
         showEvert.value = elements.value.filter(element => element.type === "shape").length > 0;
         showTextEidt.value = elements.value.filter(element => element.type === "text").length > 0;

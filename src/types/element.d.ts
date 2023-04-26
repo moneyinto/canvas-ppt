@@ -165,7 +165,7 @@ export interface IPPTShapeElement extends IPPTBaseElement {
  *
  * end: 终点位置 ([x, y])
  *
- * style: 线条样式（实线、虚线、点线间隔）
+ * style: 线条样式（实线、虚线）
  *
  * color: 线条颜色
  *
@@ -174,6 +174,8 @@ export interface IPPTShapeElement extends IPPTBaseElement {
  * endStyle: 终点样式（无、箭头、圆点）
  *
  * borderWidth: 线粗
+ *
+ * opacity: 透明度
  */
 
 export interface IPPTLineElement
@@ -181,11 +183,12 @@ export interface IPPTLineElement
     type: "line";
     start: [number, number];
     end: [number, number];
-    style: "solid" | "dashed" | "dashedPoint";
+    style: "solid" | "dashed";
     color: string;
     startStyle: "" | "arrow" | "dot";
     endStyle: "" | "arrow" | "dot";
     borderWidth: number;
+    opacity: number;
 }
 
 /**

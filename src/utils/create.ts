@@ -103,6 +103,7 @@ export const createLineElement = (
         left,
         top,
         style: "solid",
+        opacity: 0,
         start: [0, 0],
         end,
         borderWidth: 2,

@@ -21,10 +21,9 @@ export class Line {
         this._ctx.translate(x + element.left, y + element.top);
 
         this._ctx.strokeStyle = element.color;
+        this._ctx.globalAlpha = (100 - element.opacity) / 100;
         this._ctx.lineWidth = element.borderWidth;
-        if (element.style === "dashedPoint") {
-            // 点线间隔
-        } else if (element.style === "dashed") {
+        if (element.style === "dashed") {
             this._ctx.setLineDash([8, 4]);
         }
 

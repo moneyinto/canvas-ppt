@@ -105,7 +105,7 @@ import PPTIcon from "@/components/Icon.vue";
 import Editor from "@/plugins/editor";
 import { PropType, Ref, inject, ref, watch } from "vue";
 import { STORAGE_BORDER_COLOR } from "@/utils/storage";
-import { IPPTAudioElement, IPPTElement, IPPTElementOutline, IPPTLineElement, IPPTVideoElement } from "@/types/element";
+import { IPPTAudioElement, IPPTElement, IPPTElementOutline, IPPTVideoElement } from "@/types/element";
 
 const instance = inject<Ref<Editor>>("instance");
 
@@ -131,8 +131,8 @@ const borderStyle = ref("solid");
 const borderWidth = ref(2);
 
 const init = () => {
-    const operateElements = props.elements.filter(element => element.type !== "line" && element.type !== "video" && element.type !== "audio") as Exclude<IPPTElement, IPPTLineElement | IPPTVideoElement | IPPTAudioElement>[];
-    const allHasOutline = operateElements.filter(element => !!element.outline).length === operateElements.length;
+    const operateElements = props.elements.filter(element => element.type !== "video" && element.type !== "audio") as Exclude<IPPTElement, IPPTVideoElement | IPPTAudioElement>[];
+    const allHasOutline = operateElements.filter(element => element.type === "line" || !!element.outline).length === operateElements.length;
     let outline: Required<IPPTElementOutline> = {
         color: THEME_COLOR,
         opacity: 0,
@@ -141,7 +141,32 @@ const init = () => {
     };
     if (allHasOutline) {
         for (const [index, operateElement] of operateElements.entries()) {
-            if (operateElement.outline) {
+            if (operateElement.type === "line") {
+                if (index === 0) {
+                    outline = {
+                        color: operateElement.color,
+                        opacity: operateElement.opacity,
+                        style: operateElement.style,
+                        width: operateElement.borderWidth
+                    };
+                } else {
+                    if (outline.color !== operateElement.color) {
+                        outline.color = THEME_COLOR;
+                    }
+
+                    if (outline.opacity !== operateElement.opacity) {
+                        outline.opacity = 0;
+                    }
+
+                    if (outline.style !== operateElement.style) {
+                        outline.style = "solid";
+                    }
+
+                    if (outline.width !== operateElement.borderWidth) {
+                        outline.width = 2;
+                    }
+                }
+            } else if (operateElement.outline) {
                 if (index === 0) {
                     outline = {
                         ...outline,
