@@ -1,6 +1,7 @@
 import {
     IPPTElementOutline,
     IPPTElementShadow,
+    IPPTImageElement,
     IPPTShapeElement,
     IPPTTextElement
 } from "@/types/element";
@@ -226,4 +227,40 @@ export const addShape = (slide: Pptxgen.Slide, element: IPPTShapeElement) => {
     if (element.outline?.width) options.line = getOutlineOption(element.outline);
     if (element.rotate) options.rotate = element.rotate;
     slide.addShape("custGeom" as Pptxgen.ShapeType, options);
+};
+
+const getImageSize = (file: string): Promise<{ width: number; height: number; }> => {
+    return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => {
+            resolve({
+                width: img.width,
+                height: img.height
+            });
+        };
+        img.src = file;
+    });
+};
+
+export const addImage = async (slide: Pptxgen.Slide, element: IPPTImageElement, file: string) => {
+    const { width, height } = await getImageSize(file);
+    const scale = Math.min(element.width / width, element.height / height);
+    const options: Pptxgen.ImageProps = {
+        x: element.left / INCH_PX_RATIO,
+        y: element.top / INCH_PX_RATIO,
+        w: width * scale / INCH_PX_RATIO,
+        h: height * scale / INCH_PX_RATIO,
+        data: file,
+        sizing: {
+            type: "contain",
+            w: element.width / INCH_PX_RATIO,
+            h: element.height / INCH_PX_RATIO
+        }
+    };
+    if (element.rotate) options.rotate = element.rotate;
+    if (element.shadow) options.shadow = getShadowOption(element.shadow);
+    if (element.flipH) options.flipH = element.flipH === -1;
+    if (element.flipV) options.flipV = element.flipV === -1;
+    if (element.opacity) options.transparency = element.opacity;
+    slide.addImage(options);
 };

@@ -1,7 +1,7 @@
 import Editor from "@/plugins/editor";
 import { IMPPTXJSON } from "@/types";
 import { encrypt } from "@/utils/crypto";
-import { addShape, addText } from "@/utils/export";
+import { addImage, addShape, addText } from "@/utils/export";
 import { message } from "ant-design-vue";
 import { saveAs } from "file-saver";
 import Pptxgen from "pptxgenjs";
@@ -82,6 +82,11 @@ export default (
                     }
                     case "shape": {
                         addShape(pptxSlide, element);
+                        break;
+                    }
+                    case "image": {
+                        const file = await instance?.value.history.getFile(element.src);
+                        await addImage(pptxSlide, element, file || "");
                         break;
                     }
                 }
