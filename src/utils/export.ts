@@ -302,3 +302,38 @@ export const addImage = async (
     if (element.opacity) options.transparency = element.opacity;
     slide.addImage(options);
 };
+
+export const addChart = async (
+    slide: Pptxgen.Slide,
+    element: IPPTChartElement
+) => {
+    const chartData: any[] = [];
+    for (let i = 0; i < element.data.series.length; i++) {
+        const item = element.data.series[i];
+        chartData.push({
+            name: `系列${i + 1}`,
+            labels: element.data.labels,
+            values: item
+        });
+    }
+
+    const options: Pptxgen.IChartOpts = {
+        x: element.left / INCH_PX_RATIO,
+        y: element.top / INCH_PX_RATIO,
+        w: element.width / INCH_PX_RATIO,
+        h: element.height / INCH_PX_RATIO
+    };
+
+    if (element.fill?.color) options.plotArea = { fill: { color: element.fill.color } };
+    if (element.legend) {
+        options.showLegend = true;
+        options.legendPos = element.legend === "top" ? "t" : "b";
+        options.legendFontSize = 14 * PT_PX_RATIO;
+    }
+
+    if (element.chartType === "bar") {
+        options.barDir = element.axisTransformation ? "bar" : "col";
+    }
+
+    slide.addChart(element.chartType as Pptxgen.CHART_TYPE, chartData, options);
+};

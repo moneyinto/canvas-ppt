@@ -1,7 +1,7 @@
 import Editor from "@/plugins/editor";
 import { IMPPTXJSON } from "@/types";
 import { encrypt } from "@/utils/crypto";
-import { addChart, addImage, addLine, addShape, addText } from "@/utils/export";
+import { addImage, addLine, addShape, addText } from "@/utils/export";
 import { message } from "ant-design-vue";
 import { saveAs } from "file-saver";
 import Pptxgen from "pptxgenjs";
