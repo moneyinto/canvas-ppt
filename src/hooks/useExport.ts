@@ -93,6 +93,11 @@ export default (
                         addLine(pptxSlide, element);
                         break;
                     }
+                    case "latex": {
+                        const file = await instance?.value.history.getFile(element.src);
+                        await addImage(pptxSlide, element, file || "");
+                        break;
+                    }
                 }
             }
 
