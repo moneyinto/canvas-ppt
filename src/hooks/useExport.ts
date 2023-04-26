@@ -1,7 +1,7 @@
 import Editor from "@/plugins/editor";
 import { IMPPTXJSON } from "@/types";
 import { encrypt } from "@/utils/crypto";
-import { addImage, addLine, addShape, addText, addVideo } from "@/utils/export";
+import { addAudio, addImage, addLine, addShape, addText, addVideo } from "@/utils/export";
 import { message } from "ant-design-vue";
 import { saveAs } from "file-saver";
 import Pptxgen from "pptxgenjs";
@@ -98,6 +98,11 @@ export default (
                     case "video": {
                         const file = await instance?.value.history.getFile(element.src);
                         await addVideo(pptxSlide, element, file || "");
+                        break;
+                    }
+                    case "audio": {
+                        const file = await instance?.value.history.getFile(element.src);
+                        await addAudio(pptxSlide, element, file || "");
                         break;
                     }
                 }

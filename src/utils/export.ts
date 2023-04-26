@@ -1,4 +1,5 @@
 import {
+    IPPTAudioElement,
     IPPTChartElement,
     IPPTElementOutline,
     IPPTElementShadow,
@@ -339,14 +340,68 @@ export const addChart = async (
     slide.addChart(element.chartType as Pptxgen.CHART_TYPE, chartData, options);
 };
 
+const getVideoCover = (file: string): Promise<string> => {
+    return new Promise(resolve => {
+        const video = document.createElement("video");
+        video.preload = "auto";
+        video.onloadeddata = () => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataURL = canvas.toDataURL("image/png");
+            video.remove();
+            canvas.remove();
+            resolve(dataURL);
+        };
+        video.src = file;
+    });
+};
+
 export const addVideo = async (slide: Pptxgen.Slide, element: IPPTVideoElement, file: string) => {
+    const cover = await getVideoCover(file);
     const options: Pptxgen.MediaProps = {
         x: element.left / INCH_PX_RATIO,
         y: element.top / INCH_PX_RATIO,
         w: element.width / INCH_PX_RATIO,
         h: element.height / INCH_PX_RATIO,
         type: "video",
-        data: file
+        data: file,
+        cover
+    };
+
+    slide.addMedia(options);
+};
+
+const getAudioCover = (): Promise<string> => {
+    return new Promise(resolve => {
+        const image = new Image();
+        image.onload = () => {
+            const canvas = document.createElement("canvas") as HTMLCanvasElement;
+            const ctx = canvas.getContext("2d");
+            canvas.height = image.height;
+            canvas.width = image.width;
+            ctx?.drawImage(image, 0, 0);
+            const dataURL = canvas.toDataURL("image/png");
+            image.remove();
+            canvas.remove();
+            resolve(dataURL);
+        };
+        image.src = new URL("@/assets/icons/audioView.png", import.meta.url).href;
+    });
+};
+
+export const addAudio = async (slide: Pptxgen.Slide, element: IPPTAudioElement, file: string) => {
+    const cover = await getAudioCover();
+    const options: Pptxgen.MediaProps = {
+        x: element.left / INCH_PX_RATIO,
+        y: element.top / INCH_PX_RATIO,
+        w: element.width / INCH_PX_RATIO,
+        h: element.height / INCH_PX_RATIO,
+        type: "audio",
+        data: file,
+        cover
     };
 
     slide.addMedia(options);
