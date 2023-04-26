@@ -6,7 +6,8 @@ import {
     IPPTLatexElement,
     IPPTLineElement,
     IPPTShapeElement,
-    IPPTTextElement
+    IPPTTextElement,
+    IPPTVideoElement
 } from "@/types/element";
 import Pptxgen from "pptxgenjs";
 import tinycolor from "tinycolor2";
@@ -336,4 +337,17 @@ export const addChart = async (
     }
 
     slide.addChart(element.chartType as Pptxgen.CHART_TYPE, chartData, options);
+};
+
+export const addVideo = async (slide: Pptxgen.Slide, element: IPPTVideoElement, file: string) => {
+    const options: Pptxgen.MediaProps = {
+        x: element.left / INCH_PX_RATIO,
+        y: element.top / INCH_PX_RATIO,
+        w: element.width / INCH_PX_RATIO,
+        h: element.height / INCH_PX_RATIO,
+        type: "video",
+        data: file
+    };
+
+    slide.addMedia(options);
 };
