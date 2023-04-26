@@ -1,4 +1,5 @@
 import {
+    IPPTChartElement,
     IPPTElementOutline,
     IPPTElementShadow,
     IPPTImageElement,
@@ -277,7 +278,7 @@ const getImageSize = (
 
 export const addImage = async (
     slide: Pptxgen.Slide,
-    element: IPPTImageElement | IPPTLatexElement,
+    element: IPPTImageElement | IPPTLatexElement | IPPTChartElement,
     file: string
 ) => {
     const { width, height } = await getImageSize(file);

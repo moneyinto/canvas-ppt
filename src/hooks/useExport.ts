@@ -1,7 +1,7 @@
 import Editor from "@/plugins/editor";
 import { IMPPTXJSON } from "@/types";
 import { encrypt } from "@/utils/crypto";
-import { addImage, addLine, addShape, addText } from "@/utils/export";
+import { addChart, addImage, addLine, addShape, addText } from "@/utils/export";
 import { message } from "ant-design-vue";
 import { saveAs } from "file-saver";
 import Pptxgen from "pptxgenjs";
@@ -84,6 +84,8 @@ export default (
                         addShape(pptxSlide, element);
                         break;
                     }
+                    case "latex":
+                    case "chart":
                     case "image": {
                         const file = await instance?.value.history.getFile(element.src);
                         await addImage(pptxSlide, element, file || "");
@@ -91,11 +93,6 @@ export default (
                     }
                     case "line": {
                         addLine(pptxSlide, element);
-                        break;
-                    }
-                    case "latex": {
-                        const file = await instance?.value.history.getFile(element.src);
-                        await addImage(pptxSlide, element, file || "");
                         break;
                     }
                 }
