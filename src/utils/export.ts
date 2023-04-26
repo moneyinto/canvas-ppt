@@ -2,6 +2,7 @@ import {
     IPPTElementOutline,
     IPPTElementShadow,
     IPPTImageElement,
+    IPPTLineElement,
     IPPTShapeElement,
     IPPTTextElement
 } from "@/types/element";
@@ -157,6 +158,12 @@ const formatPoints = (points: SvgPoints): Points => {
     });
 };
 
+const getLineElementPath = (element: IPPTLineElement) => {
+    const start = element.start.join(",");
+    const end = element.end.join(",");
+    return `M${start} L${end}`;
+};
+
 export const addText = (slide: Pptxgen.Slide, element: IPPTTextElement) => {
     const options: Pptxgen.TextPropsOptions = {
         x: element.left / INCH_PX_RATIO,
@@ -229,8 +236,32 @@ export const addShape = (slide: Pptxgen.Slide, element: IPPTShapeElement) => {
     slide.addShape("custGeom" as Pptxgen.ShapeType, options);
 };
 
-const getImageSize = (file: string): Promise<{ width: number; height: number; }> => {
-    return new Promise(resolve => {
+export const addLine = (slide: Pptxgen.Slide, element: IPPTLineElement) => {
+    const path = getLineElementPath(element);
+    const points = formatPoints(toPoints(path));
+    const width = Math.abs(element.start[0] - element.end[0]);
+    const height = Math.abs(element.start[1] - element.end[1]);
+    const options: Pptxgen.ShapeProps = {
+        x: element.left / INCH_PX_RATIO,
+        y: element.top / INCH_PX_RATIO,
+        w: width / INCH_PX_RATIO,
+        h: height / INCH_PX_RATIO,
+        line: {
+            color: element.color,
+            width: element.borderWidth * PT_PX_RATIO,
+            dashType: element.style === "solid" ? "solid" : "dash",
+            beginArrowType: element.startStyle === "dot" ? "oval" : (element.startStyle || "none"),
+            endArrowType: element.endStyle === "dot" ? "oval" : (element.endStyle || "none")
+        },
+        points
+    };
+    slide.addShape("custGeom" as Pptxgen.ShapeType, options);
+};
+
+const getImageSize = (
+    file: string
+): Promise<{ width: number; height: number }> => {
+    return new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
             resolve({
@@ -242,14 +273,18 @@ const getImageSize = (file: string): Promise<{ width: number; height: number; }>
     });
 };
 
-export const addImage = async (slide: Pptxgen.Slide, element: IPPTImageElement, file: string) => {
+export const addImage = async (
+    slide: Pptxgen.Slide,
+    element: IPPTImageElement,
+    file: string
+) => {
     const { width, height } = await getImageSize(file);
     const scale = Math.min(element.width / width, element.height / height);
     const options: Pptxgen.ImageProps = {
         x: element.left / INCH_PX_RATIO,
         y: element.top / INCH_PX_RATIO,
-        w: width * scale / INCH_PX_RATIO,
-        h: height * scale / INCH_PX_RATIO,
+        w: (width * scale) / INCH_PX_RATIO,
+        h: (height * scale) / INCH_PX_RATIO,
         data: file,
         sizing: {
             type: "contain",
