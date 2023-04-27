@@ -36,6 +36,7 @@
     },
     "type": "module",
     "dependencies": {
+        "analyze-pptx": "^1.0.1",
         "ant-design-vue": "^3.2.15",
         "clipboard": "^2.0.11",
         "crypto-js": "^4.1.1",
