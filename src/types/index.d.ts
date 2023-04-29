@@ -9,6 +9,13 @@ export type IRects = Record<string, IRectParameter>;
 
 export type IElementOptions = Record<string, string>;
 
+export interface IRect {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
 export interface ICacheImage {
     id: string;
     image: HTMLImageElement;

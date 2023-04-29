@@ -92,7 +92,7 @@ export interface IPPTElementFill {
  */
 export interface IShapeGradient {
     type: "linear" | "radial";
-    color: [string, string];
+    color: string[];
     rotate: number;
 }
 

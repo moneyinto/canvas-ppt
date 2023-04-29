@@ -3,6 +3,7 @@ import { ISlideBackground } from "@/types/slide";
 import StageConfig from "../config";
 import { ICacheImage } from "@/types";
 import History from "@/plugins/editor/history";
+import Gradient from "./gradient";
 
 export default class Background {
     private _stageConfig: StageConfig;
@@ -79,68 +80,8 @@ export default class Background {
                 }
                 case "gradient": {
                     // 背景渐变色
-                    this._ctx.translate(x, y);
-                    const linear: [number, number, number, number] = [stageWidth / 2, 0, stageWidth / 2, stageHeight];
-                    const radial: [number, number, number, number, number, number] = [stageWidth / 2, stageHeight / 2, 0, stageWidth / 2, stageHeight / 2, stageWidth / 2];
-                    const rotate = background.gradientRotate || 0;
-                    const startColor = background.gradientColor ? background.gradientColor[0] : "#ffffff";
-                    const endColor = background.gradientColor ? background.gradientColor[1] : "#ffffff";
-                    if (rotate > 0 && background.gradientType === "linear") {
-                        const angle = Math.atan(9 / 16);
-                        const currentAngle = Math.PI / 180 * rotate;
-                        if (angle >= currentAngle) {
-                            const offsetX = Math.tan(rotate / 180 * Math.PI) * stageHeight / 2;
-                            linear[0] = linear[0] + offsetX;
-                            linear[2] = linear[2] - offsetX;
-                        } else if (angle < currentAngle && currentAngle <= Math.PI / 2 - angle) {
-                            const offsetY = Math.tan(Math.PI / 2 - currentAngle) * stageWidth / 2;
-                            linear[0] = stageWidth;
-                            linear[1] = stageHeight / 2 - offsetY;
-                            linear[2] = 0;
-                            linear[3] = stageHeight / 2 + offsetY;
-                        } else if (currentAngle > Math.PI / 2 && currentAngle <= Math.PI - angle) {
-                            const offsetY = Math.tan(currentAngle - Math.PI / 2) * stageWidth / 2;
-                            linear[0] = stageWidth;
-                            linear[1] = stageHeight / 2 + offsetY;
-                            linear[2] = 0;
-                            linear[3] = stageHeight / 2 - offsetY;
-                        } else if (currentAngle <= Math.PI && currentAngle > Math.PI - angle) {
-                            const offsetX = Math.tan(Math.PI - currentAngle) * stageHeight / 2;
-                            linear[0] = stageWidth / 2 + offsetX;
-                            linear[1] = stageHeight;
-                            linear[2] = stageWidth / 2 - offsetX;
-                            linear[3] = 0;
-                        } else if (currentAngle > Math.PI && currentAngle <= Math.PI + angle) {
-                            const offsetX = Math.tan(currentAngle - Math.PI) * stageHeight / 2;
-                            linear[0] = stageWidth / 2 - offsetX;
-                            linear[1] = stageHeight;
-                            linear[2] = stageWidth / 2 + offsetX;
-                            linear[3] = 0;
-                        } else if (currentAngle > Math.PI + angle && currentAngle <= Math.PI * 3 / 2) {
-                            const offsetY = Math.tan(Math.PI * 3 / 2 - currentAngle) * stageWidth / 2;
-                            linear[0] = 0;
-                            linear[1] = stageHeight / 2 + offsetY;
-                            linear[2] = stageWidth;
-                            linear[3] = stageHeight / 2 - offsetY;
-                        } else if (currentAngle > Math.PI * 3 / 2 && currentAngle <= Math.PI * 2 - angle) {
-                            const offsetY = Math.tan(currentAngle - Math.PI * 3 / 2) * stageWidth / 2;
-                            linear[0] = 0;
-                            linear[1] = stageHeight / 2 - offsetY;
-                            linear[2] = stageWidth;
-                            linear[3] = stageHeight / 2 + offsetY;
-                        } else {
-                            const offsetX = Math.tan(Math.PI * 2 - currentAngle) * stageHeight / 2;
-                            linear[0] = stageWidth / 2 - offsetX;
-                            linear[1] = 0;
-                            linear[2] = stageWidth / 2 + offsetX;
-                            linear[3] = stageHeight;
-                        }
-                    }
-                    const gra = background.gradientType === "radial" ? this._ctx.createRadialGradient(...radial) : this._ctx.createLinearGradient(...linear);
-                    gra.addColorStop(0, startColor);
-                    gra.addColorStop(1, endColor);
-                    this._ctx.fillStyle = gra;
-                    this._ctx.fillRect(0, 0, stageWidth, stageHeight);
+                    const gradient = new Gradient({ x, y, width: stageWidth, height: stageHeight }, this._ctx);
+                    gradient.draw(background.gradientColor, background.gradientType, background.gradientRotate);
                     break;
                 }
             }
