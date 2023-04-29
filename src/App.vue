@@ -216,6 +216,7 @@ onUnmounted(() => {
     display: flex;
     flex-direction: column;
     background-color: #eee;
+    z-index: 1;
 }
 
 .ppt-no-slide {
