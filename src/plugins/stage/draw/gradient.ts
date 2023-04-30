@@ -2,15 +2,13 @@ import { IRect } from "@/types";
 
 export default class Gradient {
     private _ctx: CanvasRenderingContext2D;
-    private _rect: IRect;
-    constructor(rect: IRect, ctx: CanvasRenderingContext2D) {
+    constructor(ctx: CanvasRenderingContext2D) {
         this._ctx = ctx;
-        this._rect = rect;
     }
 
-    async draw(gradientColor?: string[], gradientType: "linear" | "radial" = "linear", gradientRotate?: number) {
+    async draw(rect: IRect, gradientColor?: string[], gradientType: "linear" | "radial" = "linear", gradientRotate?: number) {
         this._ctx.save();
-        const { x, y, width, height } = this._rect;
+        const { x, y, width, height } = rect;
         this._ctx.translate(x, y);
         const linear: [number, number, number, number] = [width / 2, 0, width / 2, height];
         const radial: [number, number, number, number, number, number] = [width / 2, height / 2, 0, width / 2, height / 2, width / 2];

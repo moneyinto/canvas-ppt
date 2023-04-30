@@ -9,10 +9,12 @@ export default class Background {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
     private _history: History;
+    private _gradient: Gradient;
     constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D, history: History) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
         this._history = history;
+        this._gradient = new Gradient(this._ctx);
     }
 
     private _getCacheImage(id: string): Promise<ICacheImage> {
@@ -80,8 +82,7 @@ export default class Background {
                 }
                 case "gradient": {
                     // 背景渐变色
-                    const gradient = new Gradient({ x, y, width: stageWidth, height: stageHeight }, this._ctx);
-                    gradient.draw(background.gradientColor, background.gradientType, background.gradientRotate);
+                    this._gradient.draw({ x, y, width: stageWidth, height: stageHeight }, background.gradientColor, background.gradientType, background.gradientRotate);
                     break;
                 }
             }

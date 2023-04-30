@@ -4,6 +4,7 @@ import StageConfig from "../config";
 import { OutLine } from "./outline";
 import { Shadow } from "./shadow";
 import { Fill } from "./fill";
+import Gradient from "./gradient";
 
 export class Shape {
     private _stageConfig: StageConfig;
@@ -11,12 +12,14 @@ export class Shape {
     private _outline: OutLine;
     private _shadow: Shadow;
     private _fill: Fill;
+    private _gradient: Gradient;
     constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
         this._outline = new OutLine(this._ctx);
         this._shadow = new Shadow(this._ctx);
         this._fill = new Fill(this._ctx);
+        this._gradient = new Gradient(this._ctx);
     }
 
     public draw(element: IPPTShapeElement) {
@@ -50,6 +53,12 @@ export class Shape {
 
         if (element.outline) {
             this._outline.draw(element.outline, path);
+        }
+
+        if (element.gradient) {
+            const { color, type, rotate } = element.gradient;
+            console.log(color);
+            this._gradient.draw({ x: -element.width / 2, y: -element.height / 2, width: element.width, height: element.height }, color, type, rotate);
         }
 
         this._ctx.restore();
