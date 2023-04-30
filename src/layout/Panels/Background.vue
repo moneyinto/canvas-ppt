@@ -93,51 +93,70 @@
                 <a-select-option value="radial">径向渐变</a-select-option>
             </a-select>
 
+            <div class="ppt-gradient-flex" v-if="backgroundType === 'gradient'">
+                <div
+                    class="ppt-gradient-color"
+                    :class="currentGradientIndex === index && 'active'"
+                    v-for="(color, index) in gradientColor"
+                    :key="color.value"
+                    @click="selectGradientColor(index)"
+                >
+                    <div
+                        class="ppt-gradient-view"
+                        :style="{ background: color.value }"
+                    ></div>
+                </div>
+
+                <div class="ppt-gradient-color" @click="addGradient">
+                    <PPTIcon icon="plus" />
+                </div>
+
+                <div class="ppt-gradient-color" @click="reduceGradient">
+                    <PPTIcon icon="minus" />
+                </div>
+            </div>
+
             <div class="ppt-panel-flex" v-if="backgroundType === 'gradient'">
-                <div class="ppt-panel-label">起点颜色</div>
+                <div class="ppt-panel-label">渐变颜色</div>
 
                 <a-popover
                     trigger="click"
-                    v-model:visible="showStartColorPopover"
+                    v-model:visible="showGradientColorPopover"
                 >
                     <div class="ppt-background-color">
                         <div
                             class="ppt-background-view"
-                            :style="{ background: currentStartColor }"
+                            :style="{ background: currentGradientColor }"
                         ></div>
                     </div>
                     <template #content>
                         <ColorBoard
-                            :color="currentStartColor"
-                            @change="onStartChangeColor"
+                            :color="currentGradientColor"
+                            @change="onGradientChangeColor"
                         />
                     </template>
                 </a-popover>
             </div>
 
             <div class="ppt-panel-flex" v-if="backgroundType === 'gradient'">
-                <div class="ppt-panel-label">终点颜色</div>
+                <div class="ppt-panel-label">渐变位置</div>
 
-                <a-popover
-                    trigger="click"
-                    v-model:visible="showEndColorPopover"
-                >
-                    <div class="ppt-background-color">
-                        <div
-                            class="ppt-background-view"
-                            :style="{ background: currentEndColor }"
-                        ></div>
-                    </div>
-                    <template #content>
-                        <ColorBoard
-                            :color="currentEndColor"
-                            @change="onEndChangeColor"
-                        />
-                    </template>
-                </a-popover>
+                <a-slider
+                    class="ppt-rotate-slider"
+                    v-model:value="currentGradientOffset"
+                    :min="0"
+                    :max="1"
+                    :step="0.01"
+                    @change="onGradientOffsetChange"
+                />
             </div>
 
-            <div class="ppt-panel-flex" v-if="backgroundType === 'gradient' && gradientType === 'linear'">
+            <div
+                class="ppt-panel-flex"
+                v-if="
+                    backgroundType === 'gradient' && gradientType === 'linear'
+                "
+            >
                 <div class="ppt-panel-label">渐变角度</div>
 
                 <a-slider
@@ -150,7 +169,9 @@
             </div>
         </div>
 
-        <a-button class="ppt-apply-btn" @click="applyAll()">应用到全部</a-button>
+        <a-button class="ppt-apply-btn" @click="applyAll()">
+            应用到全部
+        </a-button>
     </div>
 </template>
 
@@ -162,21 +183,36 @@ import PPTIcon from "@/components/Icon.vue";
 import Editor from "@/plugins/editor";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 import { ISlideBackground } from "@/types/slide";
-import { fileMd5 } from "@/utils";
+import { deepClone, fileMd5 } from "@/utils";
+import { IGradientColor } from "@/types";
+import { THEME_COLOR } from "@/plugins/config/stage";
+import { message } from "ant-design-vue";
 
 const backgroundType = ref("");
 const currentColor = ref("#ffffff");
-const currentStartColor = ref("#ffffff");
-const currentEndColor = ref("#ffffff");
+const gradientColor = ref<IGradientColor[]>([]);
 const backgroundImage = ref("");
 const backgroundImageId = ref("");
 const imageSize = ref<"cover" | "repeat">("cover");
 const gradientType = ref<"linear" | "radial">("linear");
 const gradientRotate = ref(0);
 const showColorPopover = ref(false);
-const showStartColorPopover = ref(false);
-const showEndColorPopover = ref(false);
+const showGradientColorPopover = ref(false);
+const currentGradientOffset = ref(0);
+const currentGradientColor = ref("");
+const currentGradientIndex = ref(0);
 const instance = inject<Ref<Editor>>("instance");
+
+const defaultGradientColor: IGradientColor[] = [
+    {
+        offset: 0,
+        value: "#ffffff"
+    },
+    {
+        offset: 1,
+        value: THEME_COLOR
+    }
+];
 
 const init = async () => {
     if (instance?.value) {
@@ -188,10 +224,14 @@ const init = async () => {
             imageSize.value = background.imageSize || "cover";
             gradientType.value = background.gradientType || "linear";
             gradientRotate.value = background.gradientRotate || 0;
-            currentStartColor.value = background.gradientColor ? background.gradientColor[0] : "#ffffff";
-            currentEndColor.value = background.gradientColor ? background.gradientColor[1] : "#fffffff";
+            gradientColor.value = background.gradientColor || defaultGradientColor;
+            currentGradientIndex.value = 0;
+            currentGradientColor.value = gradientColor.value[0].value;
+            currentGradientOffset.value = gradientColor.value[0].offset;
             backgroundImageId.value = background.image || "";
-            backgroundImage.value = await instance.value.history.getFile(backgroundImageId.value);
+            backgroundImage.value = await instance.value.history.getFile(
+                backgroundImageId.value
+            );
         }
     }
 };
@@ -216,38 +256,55 @@ const setGradient = () => {
     instance?.value.command.executeSetBackground({
         type: "gradient",
         gradientType: gradientType.value,
-        gradientColor: [currentStartColor.value, currentEndColor.value],
+        gradientColor: gradientColor.value,
         gradientRotate: gradientRotate.value
     });
 };
 
-const onStartChangeColor = (args: Parameters<(color: string) => void>) => {
-    const [color] = args;
-    if (color) {
-        currentStartColor.value = color;
-        setGradient();
+const reduceGradient = () => {
+    if (gradientColor.value.length > 2) {
+        gradientColor.value.splice(currentGradientIndex.value, 1);
+        const index = currentGradientIndex.value < gradientColor.value.length ? currentGradientIndex.value : (gradientColor.value.length - 1);
+        selectGradientColor(index);
+    } else {
+        message.warning("至少保留两个!");
     }
-    showStartColorPopover.value = false;
 };
 
-const onEndChangeColor = (args: Parameters<(color: string) => void>) => {
+const addGradient = () => {
+    const lastIndex = gradientColor.value.length - 1;
+    const lastGradientColor = deepClone(gradientColor.value[lastIndex]);
+    const lastPrevGradientOffset = gradientColor.value[lastIndex - 1].offset;
+    // 取两者中间值
+    lastGradientColor.offset = Math.floor((lastGradientColor.offset * 100 + lastPrevGradientOffset * 100) / 2) / 100;
+    gradientColor.value.splice(lastIndex, 0, lastGradientColor);
+    selectGradientColor(lastIndex);
+    setGradient();
+};
+
+const onGradientChangeColor = (args: Parameters<(color: string) => void>) => {
     const [color] = args;
     if (color) {
-        currentEndColor.value = color;
+        currentGradientColor.value = color;
+        gradientColor.value[currentGradientIndex.value].value = color;
         setGradient();
     }
-    showEndColorPopover.value = false;
+    showGradientColorPopover.value = false;
 };
 
 const setBackgroundType = () => {
     const background = backgroundType.value ? ({ type: backgroundType.value } as ISlideBackground) : undefined;
     currentColor.value = "#ffffff";
     backgroundImage.value = "";
-    currentStartColor.value = "#ffffff";
-    currentEndColor.value = "#ffffff";
+    gradientColor.value = defaultGradientColor;
     imageSize.value = "cover";
     gradientType.value = "linear";
     gradientRotate.value = 0;
+    if (background?.type === "gradient") {
+        background.gradientColor = gradientColor.value;
+        background.gradientType = gradientType.value;
+        background.gradientRotate = gradientRotate.value;
+    }
     instance?.value.command.executeSetBackground(background);
 };
 
@@ -283,7 +340,10 @@ const uploadBackgroundImage = async (files: File[]) => {
                         image: md5
                     });
 
-                    instance?.value.history.saveFile(md5, backgroundImage.value);
+                    instance?.value.history.saveFile(
+                        md5,
+                        backgroundImage.value
+                    );
                 };
                 image.src = reader.result as string;
             },
@@ -298,6 +358,18 @@ const setGradientType = () => {
 };
 
 const onGradientRotateChange = () => {
+    setGradient();
+};
+
+const selectGradientColor = (i: number) => {
+    currentGradientIndex.value = i;
+    currentGradientColor.value = gradientColor.value[i].value;
+    currentGradientOffset.value = gradientColor.value[i].offset;
+};
+
+const onGradientOffsetChange = () => {
+    const i = currentGradientIndex.value;
+    gradientColor.value[i].offset = currentGradientOffset.value;
     setGradient();
 };
 
@@ -358,11 +430,41 @@ const closePanel = () => {
         justify-content: space-between;
     }
 
+    .ppt-gradient-flex {
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-left: -5px;
+    }
+
+    .ppt-gradient-color {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border: 1px solid #d9d9d9;
+        background-color: #ffffff;
+        cursor: pointer;
+        margin-left: 5px;
+        margin-bottom: 5px;
+        &.active {
+            border-color: #5b9bd5;
+        }
+    }
+
+    .ppt-gradient-view {
+        border: 1px dashed #d9d9d9;
+        height: 22px;
+        width: 22px;
+    }
+
     .ppt-background-color {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 100px;
+        flex: 1;
         height: 32px;
         border: 1px solid #d9d9d9;
         background-color: #ffffff;
@@ -372,7 +474,7 @@ const closePanel = () => {
     .ppt-background-view {
         border: 1px dashed #d9d9d9;
         height: 22px;
-        width: 90px;
+        width: calc(100% - 10px);
     }
 
     .ppt-background-image {

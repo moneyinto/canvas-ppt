@@ -1,3 +1,4 @@
+import { IGradientColor } from ".";
 import { IPPTElement } from "./element";
 
 /**
@@ -23,7 +24,7 @@ export interface ISlideBackground {
     image?: string;
     imageSize?: "cover" | "repeat";
     gradientType?: "linear" | "radial";
-    gradientColor?: string[];
+    gradientColor?: IGradientColor[];
     gradientRotate?: number;
 }
 

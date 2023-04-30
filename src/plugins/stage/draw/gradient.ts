@@ -1,4 +1,4 @@
-import { IRect } from "@/types";
+import { IGradientColor, IRect } from "@/types";
 
 export default class Gradient {
     private _ctx: CanvasRenderingContext2D;
@@ -6,15 +6,13 @@ export default class Gradient {
         this._ctx = ctx;
     }
 
-    async draw(rect: IRect, gradientColor?: string[], gradientType: "linear" | "radial" = "linear", gradientRotate?: number) {
+    async draw(rect: IRect, gradientColor?: IGradientColor[], gradientType: "linear" | "radial" = "linear", gradientRotate?: number) {
         this._ctx.save();
         const { x, y, width, height } = rect;
         this._ctx.translate(x, y);
         const linear: [number, number, number, number] = [width / 2, 0, width / 2, height];
         const radial: [number, number, number, number, number, number] = [width / 2, height / 2, 0, width / 2, height / 2, width / 2];
         const rotate = gradientRotate || 0;
-        const startColor = gradientColor ? gradientColor[0] : "#ffffff";
-        const endColor = gradientColor ? gradientColor[1] : "#ffffff";
         if (rotate > 0 && gradientType === "linear") {
             const angle = Math.atan(9 / 16);
             const currentAngle = Math.PI / 180 * rotate;
@@ -66,9 +64,13 @@ export default class Gradient {
                 linear[3] = height;
             }
         }
+
         const gra = gradientType === "radial" ? this._ctx.createRadialGradient(...radial) : this._ctx.createLinearGradient(...linear);
-        gra.addColorStop(0, startColor);
-        gra.addColorStop(1, endColor);
+
+        for (const color of gradientColor || []) {
+            gra.addColorStop(color.offset, color.value);
+        }
+
         this._ctx.fillStyle = gra;
         this._ctx.fillRect(0, 0, width, height);
         this._ctx.restore();

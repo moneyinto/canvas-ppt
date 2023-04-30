@@ -1,3 +1,4 @@
+import { IGradientColor } from ".";
 import { IFontData } from "./font";
 import { ILineItem, IShape, IShapeItem } from "./shape";
 
@@ -92,7 +93,7 @@ export interface IPPTElementFill {
  */
 export interface IShapeGradient {
     type: "linear" | "radial";
-    color: string[];
+    color: IGradientColor[];
     rotate: number;
 }
 

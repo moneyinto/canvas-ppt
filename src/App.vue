@@ -263,7 +263,7 @@ onUnmounted(() => {
         transition: all .3s;
         position: relative;
         &.active {
-            width: 280px;
+            width: 284px;
         }
     }
 }

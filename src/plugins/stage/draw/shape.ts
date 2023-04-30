@@ -57,7 +57,6 @@ export class Shape {
 
         if (element.gradient) {
             const { color, type, rotate } = element.gradient;
-            console.log(color);
             this._gradient.draw({ x: -element.width / 2, y: -element.height / 2, width: element.width, height: element.height }, color, type, rotate);
         }
 

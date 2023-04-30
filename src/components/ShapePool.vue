@@ -65,7 +65,7 @@ const selectShape = (type: ICreatingType, shape: IShapeItem | ILineItem) => {
 
 <style lang="scss" scoped>
 .shape-pool {
-    width: 280px;
+    width: 284px;
     outline: 0;
     background-color: #ffffff;
     .category {

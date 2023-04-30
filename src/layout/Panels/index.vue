@@ -50,7 +50,7 @@ onUnmounted(() => {
     height: 100%;
     position: absolute;
     left: 100%;
-    width: 280px;
+    width: 284px;
     &.active {
         left: 0;
     }
