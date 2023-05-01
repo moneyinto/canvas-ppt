@@ -47,6 +47,17 @@ export default (instance: Ref<Editor> | undefined, importing: Ref<boolean>, impo
                 await instance?.value.history.saveFile(md5, base64);
                 slide.background.image = md5;
             }
+
+            for (const element of slide.elements) {
+                if (element.type === "image") {
+                    const base64 = element.src;
+                    const fileExt = base64.split(";")[0].split("/")[1];
+                    const file = dataURLtoFile(base64, "file", fileExt);
+                    const md5 = await fileMd5(file);
+                    await instance?.value.history.saveFile(md5, base64);
+                    element.src = md5;
+                }
+            }
         }
         importPercent.value = 80;
         instance?.value.stageConfig.setSlideId(slides.length > 0 ? slides[0].id : "");
