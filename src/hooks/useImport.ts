@@ -31,6 +31,14 @@ export default (instance: Ref<Editor> | undefined, importing: Ref<boolean>, impo
         };
     };
 
+    const dealFile = async (base64: string) => {
+        const fileExt = base64.split(";")[0].split("/")[1];
+        const file = dataURLtoFile(base64, "file", fileExt);
+        const md5 = await fileMd5(file);
+        await instance?.value.history.saveFile(md5, base64);
+        return md5;
+    };
+
     const importPPTX = async (file: File) => {
         importing.value = true;
         importPercent.value = 10;
@@ -41,21 +49,26 @@ export default (instance: Ref<Editor> | undefined, importing: Ref<boolean>, impo
         for (const slide of slides) {
             if (slide.background && slide.background.image) {
                 const base64 = slide.background.image;
-                const fileExt = base64.split(";")[0].split("/")[1];
-                const file = dataURLtoFile(base64, "file", fileExt);
-                const md5 = await fileMd5(file);
-                await instance?.value.history.saveFile(md5, base64);
+                const md5 = await dealFile(base64);
                 slide.background.image = md5;
             }
 
             for (const element of slide.elements) {
                 if (element.type === "image") {
                     const base64 = element.src;
-                    const fileExt = base64.split(";")[0].split("/")[1];
-                    const file = dataURLtoFile(base64, "file", fileExt);
-                    const md5 = await fileMd5(file);
-                    await instance?.value.history.saveFile(md5, base64);
+                    const md5 = await dealFile(base64);
                     element.src = md5;
+                }
+
+                if (element.type === "audio" || element.type === "video") {
+                    const base64 = element.src;
+                    const md5 = await dealFile(base64);
+                    element.src = md5;
+                    if (element.cover) {
+                        const coverBase64 = element.cover;
+                        const coverMd5 = await dealFile(coverBase64);
+                        element.cover = coverMd5;
+                    }
                 }
             }
         }

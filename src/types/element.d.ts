@@ -321,6 +321,7 @@ export interface IPPTTextElement extends IPPTBaseElement {
 export interface IPPTVideoElement extends IPPTBaseElement {
     type: "video";
     src: string;
+    cover?: string;
     rotate: number;
 }
 
@@ -336,6 +337,7 @@ export interface IPPTVideoElement extends IPPTBaseElement {
 export interface IPPTAudioElement extends IPPTBaseElement {
     type: "audio";
     src: string;
+    cover?: string;
     rotate: number;
 }
 
