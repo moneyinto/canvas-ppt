@@ -101,6 +101,7 @@ export default (instance: Ref<Editor> | undefined, importing: Ref<boolean>, impo
                 }
             }
         }
+
         importPercent.value = 80;
         instance?.value.stageConfig.setSlideId(slides.length > 0 ? slides[0].id : "");
         instance?.value.stageConfig.setSlides(slides);

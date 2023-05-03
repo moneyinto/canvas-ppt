@@ -694,8 +694,7 @@ export default class Command {
 
     // 获取文本变更后文本框高度
     private _getTextHeight(operateElement: IPPTTextElement) {
-        const renderContent =
-            this._stageConfig.getRenderContent(operateElement);
+        const renderContent = this._stageConfig.getRenderContent(operateElement);
         let height = TEXT_MARGIN * 2;
         renderContent.forEach((line) => {
             height += line.height * operateElement.lineHeight;
