@@ -1,3 +1,4 @@
+import { IRectParameter } from "@/types";
 import SparkMD5 from "spark-md5";
 
 // throttle callback to execute once per animation frame
@@ -227,4 +228,39 @@ export const dataURLtoFile = (
         u8arr[n] = bstr.charCodeAt(n);
     }
     return new File([u8arr], filename, { type });
+};
+
+export const getVideoElementControlPoints = (
+    x: number,
+    y: number,
+    elementWidth: number,
+    elementHeight: number
+) => {
+    // 增加模糊值，来扩大选中区域
+    const PLAY_PAUSE_BTN: IRectParameter = [
+        x + 20 - 1,
+        y + elementHeight - 30 - 1,
+        11 + 2,
+        12 + 2
+    ];
+
+    const PROGRESS_LINE: IRectParameter = [
+        x + 15 - 1,
+        y + elementHeight - 45 - 1,
+        elementWidth - 30 + 2,
+        4 + 2
+    ];
+
+    const FULLSCREEN_BTN: IRectParameter = [
+        x + elementWidth - 32 - 1,
+        y + elementHeight - 30 - 1,
+        12 + 2,
+        12 + 2
+    ];
+
+    return {
+        PLAY_PAUSE_BTN,
+        PROGRESS_LINE,
+        FULLSCREEN_BTN
+    };
 };

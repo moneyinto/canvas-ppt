@@ -8,7 +8,7 @@ import { Textarea } from "../stage/textarea";
 import ViewStage from "../stage/view";
 import { ISlide } from "@/types/slide";
 import History from "./history";
-import { debounce } from "@/utils";
+import { throttleRAF } from "@/utils";
 
 export default class Editor {
     public listener: Listener;
@@ -71,7 +71,7 @@ export default class Editor {
             this.listener
         );
 
-        window.addEventListener("resize", debounce(this._reset.bind(this), 100));
+        window.addEventListener("resize", throttleRAF(this._reset.bind(this)));
 
         // 快捷键
         // eslint-disable-next-line

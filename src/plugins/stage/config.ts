@@ -340,7 +340,7 @@ export default class StageConfig {
     }
 
     // 获取鼠标位置的元素
-    public getMouseInElement(left: number, top: number, ctx: CanvasRenderingContext2D) {
+    public getMouseInElement(left: number, top: number, ctx: CanvasRenderingContext2D, checkElements: IPPTElement[]) {
         // 当存在操作选中元素是时，因为选中元素处于层级最高，优先判断选中元素
         // if (this.operateElement) {
         //     const element = this.operateElement;
@@ -382,8 +382,7 @@ export default class StageConfig {
         //     }
         // }
 
-        const currentSlide = this.getCurrentSlide();
-        const elements: IPPTElement[] = deepClone(currentSlide?.elements || []);
+        const elements: IPPTElement[] = deepClone(checkElements);
         return elements.reverse().find((element) => {
             if (element.type === "line") {
                 return this.checkPointNearLine(

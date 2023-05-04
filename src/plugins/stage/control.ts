@@ -1,6 +1,6 @@
 import Stage from ".";
 import StageConfig, { TEXT_MARGIN } from "./config";
-import { throttleRAF, deepClone, normalizeAngle, isFullScreen } from "@/utils";
+import { throttleRAF, deepClone, normalizeAngle, isFullScreen, getVideoElementControlPoints } from "@/utils";
 import Command from "../command";
 import {
     createLineElement,
@@ -130,10 +130,12 @@ export default class ControlStage extends Stage {
 
     private _dblClick(evt: MouseEvent) {
         const { left, top } = this._getMousePosition(evt);
+        const currentSlide = this.stageConfig.getCurrentSlide();
         const operateElement = this.stageConfig.getMouseInElement(
             left,
             top,
-            this.ctx
+            this.ctx,
+            currentSlide?.elements || []
         );
         if (operateElement) {
             if (operateElement.type === "text") {
@@ -203,10 +205,12 @@ export default class ControlStage extends Stage {
         this._startOriginPoint = [left, top];
 
         if (this._videoControlType) {
+            const currentSlide = this.stageConfig.getCurrentSlide();
             const hoverElement = this.stageConfig.getMouseInElement(
                 left,
                 top,
-                this.ctx
+                this.ctx,
+                currentSlide?.elements || []
             ) as IPPTVideoElement;
             if (hoverElement) {
                 const video = document.getElementById(hoverElement.id) as HTMLVideoElement;
@@ -263,10 +267,12 @@ export default class ControlStage extends Stage {
                 this._operateCacheElements = deepClone(elements);
                 this._cursor.hideCursor();
             } else {
+                const currentSlide = this.stageConfig.getCurrentSlide();
                 const operateElement = this.stageConfig.getMouseInElement(
                     left,
                     top,
-                    this.ctx
+                    this.ctx,
+                    currentSlide?.elements || []
                 );
 
                 // 右击菜单会触发mousedown事件，这里延迟取消文本选中
@@ -654,10 +660,12 @@ export default class ControlStage extends Stage {
         }
 
         if (!this.stageConfig.opreateType) {
+            const currentSlide = this.stageConfig.getCurrentSlide();
             const hoverElement = this.stageConfig.getMouseInElement(
                 left,
                 top,
-                this.ctx
+                this.ctx,
+                currentSlide?.elements || []
             );
 
             if (hoverElement) {
@@ -684,7 +692,7 @@ export default class ControlStage extends Stage {
 
                 if (hoverElement.type === "video") {
                     // 当元素是视频时，区分播放按钮 全屏按钮 进度条 悬浮状态
-                    const rects: IRects = this._getVideoElementControlPoints(
+                    const rects: IRects = getVideoElementControlPoints(
                         hoverElement.left,
                         hoverElement.top,
                         hoverElement.width,
@@ -995,41 +1003,6 @@ export default class ControlStage extends Stage {
         return {
             START,
             END
-        };
-    }
-
-    private _getVideoElementControlPoints(
-        x: number,
-        y: number,
-        elementWidth: number,
-        elementHeight: number
-    ) {
-        // 增加模糊值，来扩大选中区域
-        const PLAY_PAUSE_BTN: IRectParameter = [
-            x + 20 - 1,
-            y + elementHeight - 30 - 1,
-            11 + 2,
-            12 + 2
-        ];
-
-        const PROGRESS_LINE: IRectParameter = [
-            x + 15 - 1,
-            y + elementHeight - 45 - 1,
-            elementWidth - 30 + 2,
-            4 + 2
-        ];
-
-        const FULLSCREEN_BTN: IRectParameter = [
-            x + elementWidth - 32 - 1,
-            y + elementHeight - 30 - 1,
-            12 + 2,
-            12 + 2
-        ];
-
-        return {
-            PLAY_PAUSE_BTN,
-            PROGRESS_LINE,
-            FULLSCREEN_BTN
         };
     }
 

@@ -47,6 +47,7 @@ const updateSlide = () => {
 };
 
 const onKeydown = (event: KeyboardEvent) => {
+    event.preventDefault();
     switch (event.key) {
         case KeyMap.Left:
         case KeyMap.Up: {
