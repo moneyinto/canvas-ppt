@@ -8,6 +8,7 @@ import { Textarea } from "../stage/textarea";
 import ViewStage from "../stage/view";
 import { ISlide } from "@/types/slide";
 import History from "./history";
+import { debounce } from "@/utils";
 
 export default class Editor {
     public listener: Listener;
@@ -19,6 +20,7 @@ export default class Editor {
     private _textarea: Textarea;
     private _viewStage: ViewStage;
     private _controlStage: ControlStage;
+
     constructor(container: HTMLDivElement, slides: ISlide[]) {
         // 禁止右击系统菜单
         document.oncontextmenu = (event: Event) => {
@@ -56,7 +58,7 @@ export default class Editor {
         this.command = new Command(this.stageConfig, this.listener, this.history, this._cursor);
 
         // 创建展示画板
-        this._viewStage = new ViewStage(container, this.stageConfig, this.history, true);
+        this._viewStage = new ViewStage(container, this.stageConfig, this.history);
 
         // 创建操作画板
         this._controlStage = new ControlStage(
@@ -66,12 +68,20 @@ export default class Editor {
             this.command,
             this._cursor,
             this._textarea,
-            this.listener,
-            true
+            this.listener
         );
+
+        window.addEventListener("resize", debounce(this._reset.bind(this), 100));
 
         // 快捷键
         // eslint-disable-next-line
         new Shortcut(container, this.stageConfig, this.command);
+    }
+
+    private _reset() {
+        this._controlStage.resetStage();
+        this._viewStage.resetStage();
+
+        this.stageConfig.resetBaseZoom();
     }
 }

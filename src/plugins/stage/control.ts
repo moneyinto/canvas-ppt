@@ -53,10 +53,9 @@ export default class ControlStage extends Stage {
         command: Command,
         cursor: Cursor,
         textarea: Textarea,
-        listener: Listener,
-        resize?: boolean
+        listener: Listener
     ) {
-        super(container, stageConfig, history, resize);
+        super(container, stageConfig, history);
 
         this._canMoveCanvas = false;
         this._canCreate = false;

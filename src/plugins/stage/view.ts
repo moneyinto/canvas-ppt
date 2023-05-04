@@ -8,10 +8,9 @@ export default class ViewStage extends Stage {
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
-        history: History,
-        resize?: boolean
+        history: History
     ) {
-        super(container, stageConfig, history, resize);
+        super(container, stageConfig, history);
 
         this._background = new Background(stageConfig, this.ctx, history);
         this._drawPage();

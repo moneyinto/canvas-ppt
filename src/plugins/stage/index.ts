@@ -25,8 +25,7 @@ export default class Stage {
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
-        history?: History,
-        resize?: boolean
+        history?: History
     ) {
         this.container = container;
         this.stageConfig = stageConfig;
@@ -43,22 +42,9 @@ export default class Stage {
         this._picture = null;
         this._video = null;
         this._music = null;
-
-        if (resize) {
-            setTimeout(() => {
-                window.addEventListener(
-                    "resize",
-                    throttleRAF(this._resetStage.bind(this))
-                );
-
-                const resizeObserver = new ResizeObserver(throttleRAF(this._resetStage.bind(this)));
-
-                resizeObserver.observe(this.container);
-            }, 2000);
-        }
     }
 
-    private _resetStage() {
+    public resetStage() {
         const width = this.stageConfig.getWidth();
         const height = this.stageConfig.getHeight();
         this.canvas.style.width = `${width}px`;
@@ -68,8 +54,6 @@ export default class Stage {
         this.canvas.width = width * dpr;
         this.canvas.height = height * dpr;
         this.ctx.scale(dpr, dpr);
-
-        this.stageConfig.resetBaseZoom();
     }
 
     private _createStage() {
