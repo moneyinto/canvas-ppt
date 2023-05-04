@@ -21,7 +21,7 @@
 > 一个基于Vue3.x + Typescript + canvas实现的在线演示文稿。
 
 # 项目展示
-![](./public/demo.jpeg)
+![](./public/demo.png)
 
 # 项目运行
 ```

@@ -12,11 +12,9 @@ export const slides: ISlide[] = [
                 id: "9Hvcq8",
                 left: 0,
                 top: 0,
-                width: 279.06976744186045,
-                height: 242.39713774597493,
-                fill: {
-                    color: "#5b9bd5"
-                },
+                width: 368.64818228165814,
+                height: 324.42074651494625,
+                fill: { color: "#5b9bd5" },
                 fixedRatio: false,
                 rotate: 0,
                 flipV: -1
@@ -28,12 +26,9 @@ export const slides: ISlide[] = [
                 id: "OxVslP",
                 left: 0,
                 top: 114,
-                width: 518.783542039356,
-                height: 449,
-                fill: {
-                    color: "#5b9bd5",
-                    opacity: 30
-                },
+                width: 647.2152452434033,
+                height: 605.4924114671163,
+                fill: { color: "#5b9bd5", opacity: 30 },
                 fixedRatio: false,
                 rotate: 0,
                 flipV: 1
@@ -226,8 +221,8 @@ export const slides: ISlide[] = [
                 wordSpace: 1,
                 lineHeight: 2,
                 id: "4bdkmJ",
-                left: 198.81889763779495,
-                top: 148.86811023622045,
+                left: 312.46072950830575,
+                top: 226.57468696471966,
                 width: 704.7244094488188,
                 height: 126,
                 rotate: 0,
@@ -243,13 +238,11 @@ export const slides: ISlide[] = [
                 type: "shape",
                 shape: SHAPE_TYPE.RECT_MINUS_SAME_SIDE_ANGLE,
                 id: "2yKET2",
-                left: 341.4973787680211,
-                top: 81,
+                left: 476.6694772344014,
+                top: 144.67622259696455,
                 width: 279.4069462647445,
                 height: 200.52424639580605,
-                fill: {
-                    color: "#5b9bd5"
-                },
+                fill: { color: "#5b9bd5" },
                 fixedRatio: false,
                 rotate: 0
             },
@@ -258,13 +251,11 @@ export const slides: ISlide[] = [
                 type: "shape",
                 shape: SHAPE_TYPE.RECT,
                 id: "2iEM7q",
-                left: 412,
-                top: 154,
+                left: 546.6694772344016,
+                top: 217.67622259696483,
                 width: 33.912188728702496,
                 height: 128.2765399737877,
-                fill: {
-                    color: "#ffffff"
-                },
+                fill: { color: "#ffffff" },
                 fixedRatio: false,
                 rotate: 0
             },
@@ -273,13 +264,11 @@ export const slides: ISlide[] = [
                 type: "shape",
                 shape: SHAPE_TYPE.RECT,
                 id: "EH26L5",
-                left: 515.897771952817,
-                top: 154,
+                left: 650.6694772344011,
+                top: 217.67622259696483,
                 width: 33.912188728702496,
                 height: 128.2765399737877,
-                fill: {
-                    color: "#ffffff"
-                },
+                fill: { color: "#ffffff" },
                 fixedRatio: false,
                 rotate: 0
             },
@@ -495,8 +484,8 @@ export const slides: ISlide[] = [
                 wordSpace: 1,
                 lineHeight: 2,
                 id: "K0BN_m",
-                left: 152,
-                top: 305,
+                left: 286.6694772344012,
+                top: 368.6762225969651,
                 width: 681.1926605504589,
                 height: 114,
                 rotate: 0,
