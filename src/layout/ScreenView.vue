@@ -36,7 +36,7 @@
             class="white-board-box"
             :class="whiteboardVisible && 'ppt-can-write'"
         >
-            <WhiteBoard
+            <MWhiteboard
                 :disabled="!whiteboardVisible"
                 :options="options"
                 ref="whiteboard"
@@ -62,7 +62,7 @@ import { message } from "ant-design-vue";
 import Editor from "@/plugins/editor";
 import PPTIcon from "@/components/Icon.vue";
 import { exitFullScreen } from "@/utils";
-import WhiteBoard, { OPTION_TYPE, IElement } from "mwhiteboard";
+import { OPTION_TYPE, IElement } from "mwhiteboard";
 
 const instance = inject<Ref<Editor>>("instance");
 

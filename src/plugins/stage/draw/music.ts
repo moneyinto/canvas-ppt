@@ -17,23 +17,47 @@ export class Music {
         this._history = history;
     }
 
-    private async _getCacheImage(): Promise<HTMLImageElement> {
+    private async _getCacheImage(element: IPPTAudioElement): Promise<HTMLImageElement> {
         return new Promise(resolve => {
-            if (this._image) {
-                resolve(this._image);
+            if (element.cover) {
+                const cacheImage = this._stageConfig.cacheImages.find(image => image.id === element.src);
+                if (cacheImage) {
+                    resolve(cacheImage.image);
+                } else {
+                    const image = new Image();
+                    image.onload = () => {
+                        const cacheImage = {
+                            id: element.src,
+                            image
+                        };
+                        this._stageConfig.addCacheImage(cacheImage);
+                        resolve(cacheImage.image);
+                    };
+                    try {
+                        this._history.getFile(element.src).then(file => {
+                            image.src = file;
+                        });
+                    } catch {
+                        image.src = "";
+                    }
+                }
             } else {
-                const image = new Image();
-                image.onload = () => {
-                    this._image = image;
-                    resolve(image);
-                };
-                image.src = new URL("@/assets/icons/audioView.png", import.meta.url).href;
+                if (this._image) {
+                    resolve(this._image);
+                } else {
+                    const image = new Image();
+                    image.onload = () => {
+                        this._image = image;
+                        resolve(image);
+                    };
+                    image.src = new URL("@/assets/icons/audioView.png", import.meta.url).href;
+                }
             }
         });
     }
 
     public async draw(element: IPPTAudioElement) {
-        const image = await this._getCacheImage();
+        const image = await this._getCacheImage(element);
         if (image) {
             const zoom = this._stageConfig.zoom;
             const { x, y } = this._stageConfig.getStageOrigin();
