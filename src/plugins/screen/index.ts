@@ -1,14 +1,17 @@
 import { ISlide } from "@/types/slide";
 import View from "./view";
 import History from "../editor/history";
-import { getVideoElementControlPoints, throttleRAF } from "@/utils";
+import { getVideoElementControlPoints, sleep, throttleRAF } from "@/utils";
 import { IRects } from "@/types";
 import { IPPTVideoElement } from "@/types/element";
 
 export default class Screen extends View {
     private _videoControlType = "";
+    private _audioControlType = "";
+    private _history: History;
     constructor(container: HTMLDivElement, slide: ISlide, history: History) {
         super(container, slide, history, true);
+        this._history = history;
         this.container.addEventListener(
             "mousedown",
             this._mousedown.bind(this),
@@ -21,9 +24,34 @@ export default class Screen extends View {
         );
     }
 
-    private _mousedown(evt: MouseEvent) {
+    private _createAudio(id: string, file: string) {
+        const audio = document.createElement("audio");
+        audio.id = id;
+        audio.src = file;
+        audio.style.visibility = "hidden";
+        audio.style.position = "absolute";
+        audio.style.zIndex = "-1000";
+        document.body.appendChild(audio);
+        return audio;
+    }
+
+    private _getAudio(id: string, src: string): Promise<HTMLAudioElement> {
+        return new Promise(resolve => {
+            let audio = document.getElementById(id);
+            if (audio) return resolve(audio as HTMLAudioElement);
+            this._history.getFile(src).then((file: string) => {
+                audio = this._createAudio(id, file);
+                audio.oncanplay = async () => {
+                    await sleep(200);
+                    resolve(audio as HTMLAudioElement);
+                };
+            });
+        });
+    }
+
+    private async _mousedown(evt: MouseEvent) {
         const { left, top } = this._getMousePosition(evt);
-        if (this._videoControlType) {
+        if (this._videoControlType || this._audioControlType) {
             const hoverElement = this.stageConfig.getMouseInElement(
                 left,
                 top,
@@ -31,51 +59,63 @@ export default class Screen extends View {
                 this.slide.elements
             ) as IPPTVideoElement;
             if (hoverElement) {
-                const video = document.getElementById(hoverElement.id) as HTMLVideoElement;
-                // 视频实际操作
-                if (this._videoControlType === "PLAY_PAUSE_BTN") {
-                    // 播放与暂停
-                    if (video.paused) {
-                        video.play();
-                        video.onended = () => this.stageConfig.stopVideoRender();
-                        video.onpause = () => this.stageConfig.stopVideoRender();
-                        this.stageConfig.startVideoRender();
-                    } else {
-                        video.pause();
-                        this.stageConfig.stopVideoRender();
-                    }
-                } else if (this._videoControlType === "PROGRESS_LINE") {
-                    // 进度条
-                    const progress = (left - hoverElement.left - 15) / (hoverElement.width - 30);
-                    video.currentTime = video.duration * progress;
-                    setTimeout(() => {
-                        if (video.paused) this.stageConfig.resetCheckDrawView();
-                    }, 100);
-                } else if (this._videoControlType === "FULLSCREEN_BTN") {
-                    // 全屏
-                    video.classList.add("full-screen-video");
-                    video.requestFullscreen();
-                    video.onfullscreenchange = () => {
-                        if (video.classList.contains("full-sceen-active")) {
-                            video.classList.remove("full-sceen-active");
-                            video.classList.remove("full-screen-video");
-                            // 视频还正在播放当中，开机同步渲染
-                            if (!video.paused && !video.ended) {
-                                this.stageConfig.startVideoRender();
-                            } else {
-                                // 视频暂停状态，退出全屏重新渲染一下，同步视频进度
-                                // 延迟渲染，防止出现视频渲染压扁现象
-                                setTimeout(() => {
-                                    this.stageConfig.resetCheckDrawView();
-                                }, 30);
-                            }
-                            // 视频退出全屏，进行聚焦
-                            this.container.focus();
+                if (hoverElement.type === "video") {
+                    const video = document.getElementById(hoverElement.id) as HTMLVideoElement;
+                    // 视频实际操作
+                    if (this._videoControlType === "PLAY_PAUSE_BTN") {
+                        // 播放与暂停
+                        if (video.paused) {
+                            video.play();
+                            video.onended = () => this.stageConfig.stopVideoRender();
+                            video.onpause = () => this.stageConfig.stopVideoRender();
+                            this.stageConfig.startVideoRender();
                         } else {
-                            video.classList.add("full-sceen-active");
+                            video.pause();
+                            this.stageConfig.stopVideoRender();
                         }
-                    };
-                    video.controls = true;
+                    } else if (this._videoControlType === "PROGRESS_LINE") {
+                        // 进度条
+                        const progress = (left - hoverElement.left - 15) / (hoverElement.width - 30);
+                        video.currentTime = video.duration * progress;
+                        setTimeout(() => {
+                            if (video.paused) this.stageConfig.resetCheckDrawView();
+                        }, 100);
+                    } else if (this._videoControlType === "FULLSCREEN_BTN") {
+                        // 全屏
+                        video.classList.add("full-screen-video");
+                        video.requestFullscreen();
+                        video.onfullscreenchange = () => {
+                            if (video.classList.contains("full-sceen-active")) {
+                                video.classList.remove("full-sceen-active");
+                                video.classList.remove("full-screen-video");
+                                // 视频还正在播放当中，开机同步渲染
+                                if (!video.paused && !video.ended) {
+                                    this.stageConfig.startVideoRender();
+                                } else {
+                                    // 视频暂停状态，退出全屏重新渲染一下，同步视频进度
+                                    // 延迟渲染，防止出现视频渲染压扁现象
+                                    setTimeout(() => {
+                                        this.stageConfig.resetCheckDrawView();
+                                    }, 30);
+                                }
+                                // 视频退出全屏，进行聚焦
+                                this.container.focus();
+                            } else {
+                                video.classList.add("full-sceen-active");
+                            }
+                        };
+                        video.controls = true;
+                    }
+                } else if (hoverElement.type === "audio") {
+                    const audio = await this._getAudio(hoverElement.id, hoverElement.src);
+                    if (this._audioControlType === "PLAY_PAUSE_BTN") {
+                        // 播放与暂停
+                        if (audio.paused) {
+                            audio.play();
+                        } else {
+                            audio.pause();
+                        }
+                    }
                 }
             }
         }
@@ -95,6 +135,7 @@ export default class Screen extends View {
 
     private _mousemove(evt: MouseEvent) {
         this._videoControlType = "";
+        this._audioControlType = "";
         const { left, top } = this._getMousePosition(evt);
         const hoverElement = this.stageConfig.getMouseInElement(
             left,
@@ -134,7 +175,12 @@ export default class Screen extends View {
                         this.container.style.cursor = "default";
                     }
                 }
+            } else if (hoverElement.type === "audio") {
+                this._audioControlType = "PLAY_PAUSE_BTN";
+                this.container.style.cursor = "pointer";
             }
+        } else {
+            this.container.style.cursor = "default";
         }
     }
 }

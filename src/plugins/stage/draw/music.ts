@@ -1,16 +1,20 @@
 import { IPPTAudioElement } from "@/types/element";
 import StageConfig from "../config";
+import History from "@/plugins/editor/history";
 
 export class Music {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
     private _image: HTMLImageElement | undefined;
+    private _history: History;
     constructor(
         stageConfig: StageConfig,
-        ctx: CanvasRenderingContext2D
+        ctx: CanvasRenderingContext2D,
+        history: History
     ) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
+        this._history = history;
     }
 
     private async _getCacheImage(): Promise<HTMLImageElement> {

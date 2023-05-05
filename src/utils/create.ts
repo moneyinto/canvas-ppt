@@ -159,6 +159,7 @@ export const createVideoElement = (
     const name = "视频";
     const newElement: IPPTVideoElement = {
         name,
+        fixedRatio: false,
         type: "video",
         id,
         left: 0,
@@ -166,6 +167,7 @@ export const createVideoElement = (
         rotate: 0,
         width,
         height,
+        streach: 0,
         src
     };
 
@@ -181,6 +183,7 @@ export const createAudioElement = (
     const name = "音频";
     const newElement: IPPTAudioElement = {
         name,
+        fixedRatio: false,
         type: "audio",
         id,
         left: 0,
@@ -188,6 +191,7 @@ export const createAudioElement = (
         rotate: 0,
         width,
         height,
+        streach: 0,
         src
     };
 
@@ -233,6 +237,7 @@ export const createChartElement = (
     const name = "图表";
     const newElement: IPPTChartElement = {
         name,
+        fixedRatio: false,
         type: "chart",
         id,
         left: 0,

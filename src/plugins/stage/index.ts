@@ -1,5 +1,4 @@
 import StageConfig from "./config";
-import { throttleRAF } from "@/utils";
 import { IPPTElement } from "@/types/element";
 import { Line } from "./draw/line";
 import { RichText } from "./draw/richText";
@@ -114,7 +113,7 @@ export default class Stage {
                 break;
             }
             case "audio": {
-                if (!this._music && this.history) this._music = new Music(this.stageConfig, this.ctx);
+                if (!this._music && this.history) this._music = new Music(this.stageConfig, this.ctx, this.history);
                 await this._music?.draw(element);
                 break;
             }
