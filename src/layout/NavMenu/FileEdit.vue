@@ -16,6 +16,17 @@
                 <a-menu-item key="exportPPTX">
                     <div class="ppt-menu-option">&nbsp;&nbsp;导出pptx</div>
                 </a-menu-item>
+                <a-menu-divider />
+                <a-menu-item>
+                    <div class="ppt-menu-option" @click="onSave">
+                        &nbsp;&nbsp;保存
+                    </div>
+                </a-menu-item>
+                <a-menu-item>
+                    <div class="ppt-menu-option" @click="onSaveAs">
+                        &nbsp;&nbsp;另存为
+                    </div>
+                </a-menu-item>
             </a-menu>
         </template>
     </a-dropdown>
@@ -87,6 +98,19 @@ const inputPPTXFileChange = (e: Event) => {
     const files = (e.target as HTMLInputElement).files;
     if (!files || files.length === 0) return;
     importPPTX(files[0]);
+};
+
+const onSave = async () => {
+    console.log(instance?.value.stageConfig.slides);
+    // 清理历史记录 初始化历史记录
+    await instance?.value.history.clear();
+    instance?.value.history.getHistorySnapshot();
+};
+
+const onSaveAs = async () => {
+    // 弹出文件选择框
+    // 替换当前文件路径数据
+    // 执行保存操作
 };
 </script>
 

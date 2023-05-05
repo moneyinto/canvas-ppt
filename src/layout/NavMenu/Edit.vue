@@ -41,13 +41,13 @@
                         &nbsp;&nbsp;全选
                     </div>
                 </a-menu-item>
-                <a-menu-divider />
+                <!-- <a-menu-divider />
                 <a-menu-item>
                     <div class="ppt-menu-option" @click="onSave">
                         <PPTIcon style="margin: 0 5px" icon="save" :size="14" />
                         &nbsp;&nbsp;保存
                     </div>
-                </a-menu-item>
+                </a-menu-item> -->
             </a-menu>
         </template>
     </a-dropdown>
@@ -104,12 +104,12 @@ const paste = () => {
     }
 };
 
-const onSave = async () => {
-    console.log(instance?.value.stageConfig.slides);
-    // 清理历史记录 初始化历史记录
-    await instance?.value.history.clear();
-    instance?.value.history.getHistorySnapshot();
-};
+// const onSave = async () => {
+//     console.log(instance?.value.stageConfig.slides);
+//     // 清理历史记录 初始化历史记录
+//     await instance?.value.history.clear();
+//     instance?.value.history.getHistorySnapshot();
+// };
 
 const historyCursor = inject<Ref<number>>("historyCursor");
 const historyLength = inject<Ref<number>>("historyLength");
