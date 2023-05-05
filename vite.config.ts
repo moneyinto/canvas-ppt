@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
     ];
 
     const defaultOptions: UserConfig = {
-        base: "/",
+        base: "./",
         plugins,
         resolve: {
             alias: {
