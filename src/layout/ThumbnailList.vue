@@ -8,46 +8,48 @@
         @dragover="onDragOver"
         @focus="onSlideFocus"
     >
-        <div
-            class="ppt-thumbnail-box"
-            v-for="(slide, index) in viewSlides"
-            :key="slide.id"
-            @click="onSelectedSlide(slide.id)"
-            @dragstart="onDragStart(index)"
-        >
-            <ThumbnailSlide
-                draggable="true"
-                :size="150"
-                :slide="slide"
-                :index="index"
-            />
-
+        <div class="ppt-thumbnail-body">
             <div
-                class="ppt-sort-top"
-                :class="
-                    sortIndex === index && sortType === 'top' && 'ppt-sort-line'
-                "
-                v-if="sortIndex !== -1"
-                @dragenter="onDragEnter(index, 'top')"
-            ></div>
-            <div
-                class="ppt-sort-bottom"
-                :class="
-                    sortIndex === index &&
-                    sortType === 'bottom' &&
-                    'ppt-sort-line'
-                "
-                v-if="sortIndex !== -1"
-                @dragenter="onDragEnter(index, 'bottom')"
-            ></div>
+                class="ppt-thumbnail-box"
+                v-for="(slide, index) in viewSlides"
+                :key="slide.id"
+                @click="onSelectedSlide(slide.id)"
+                @dragstart="onDragStart(index)"
+            >
+                <ThumbnailSlide
+                    draggable="true"
+                    :size="150"
+                    :slide="slide"
+                    :index="index"
+                />
 
-            <div class="ppt-thumbnail-index">
-                {{ index + 1 }}
+                <div
+                    class="ppt-sort-top"
+                    :class="
+                        sortIndex === index && sortType === 'top' && 'ppt-sort-line'
+                    "
+                    v-if="sortIndex !== -1"
+                    @dragenter="onDragEnter(index, 'top')"
+                ></div>
+                <div
+                    class="ppt-sort-bottom"
+                    :class="
+                        sortIndex === index &&
+                        sortType === 'bottom' &&
+                        'ppt-sort-line'
+                    "
+                    v-if="sortIndex !== -1"
+                    @dragenter="onDragEnter(index, 'bottom')"
+                ></div>
+
+                <div class="ppt-thumbnail-index">
+                    {{ index + 1 }}
+                </div>
+                <div
+                    class="ppt-thumbnail-selected"
+                    v-if="slide.id === selectedSlideId"
+                ></div>
             </div>
-            <div
-                class="ppt-thumbnail-selected"
-                v-if="slide.id === selectedSlideId"
-            ></div>
         </div>
     </div>
 </template>
@@ -190,6 +192,11 @@ const onKeydown = (event: KeyboardEvent) => {
     border-right: 1px solid #d1d1d1;
     background-color: #fafafa;
     padding: 15px 0;
+    .ppt-thumbnail-body {
+        height: 100%;
+        overflow-y: auto;
+        padding: 2px 0;
+    }
 
     .ppt-thumbnail-index {
         position: absolute;
