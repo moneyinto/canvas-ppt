@@ -6,7 +6,6 @@
     "scripts": {
         "dev": "vite",
         "build": "vue-tsc --noEmit && vite build",
-        "electron:serve": "vite && electron .",
         "electron:build": "vue-tsc --noEmit && vite build && electron-builder -c electron.json"
     },
     "repository": {
