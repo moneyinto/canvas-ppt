@@ -69,7 +69,7 @@ export default defineConfig(({ mode, command }) => {
     ];
 
     const defaultOptions: UserConfig = {
-        base: isServe ? "/" : path.resolve(__dirname, './dist/'),
+        base: "./",
         plugins,
         resolve: {
             alias: {
