@@ -147,7 +147,7 @@ npm run dev
 - [x] 预览放映
 - [x] 画笔功能
 
-### electron版本
+### [electron版本](https://github.com/moneyinto/canvas-ppt/tree/electron)
 - [ ] 对应文件格式打开
 - [ ] 编辑保存
 - [ ] 另存为
@@ -156,7 +156,7 @@ npm run dev
 ```
 npm install
 
-npm run electron:serve
+npm run dev
 ```
 - #### 打包
 ```
