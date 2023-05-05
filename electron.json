@@ -1,0 +1,19 @@
+{
+    "asar": true,
+    "appId": "com.moneyinto.mpptx",
+    "productName": "MPPTX在线文档",
+    "directories": {
+        "output": "build"
+    },
+    "mac": {
+        "icon": "public/icon.icns"
+    },
+    "win": {
+        "icon": "public/icon.ico",
+        "target": "nsis"
+    },
+    "linux": {
+        "target": "deb",
+        "icon": "public"
+    }
+}

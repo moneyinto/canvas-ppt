@@ -2,10 +2,12 @@
     "name": "mppt",
     "version": "1.0.0",
     "description": "canvas实现ppt功能",
-    "main": "index.js",
+    "main": "dist-electron/main/index.js",
     "scripts": {
         "dev": "vite",
-        "build": "vue-tsc --noEmit && vite build"
+        "build": "vue-tsc --noEmit && vite build",
+        "electron:serve": "vite && electron .",
+        "electron:build": "electron-builder -c electron.json"
     },
     "repository": {
         "type": "git",
@@ -26,15 +28,18 @@
         "@vitejs/plugin-vue": "^3.2.0",
         "@vue/eslint-config-standard": "^8.0.1",
         "@vue/eslint-config-typescript": "^11.0.2",
+        "electron": "^24.2.0",
+        "electron-builder": "^23.6.0",
         "eslint": "^8.28.0",
         "eslint-plugin-vue": "^9.8.0",
         "sass": "^1.56.1",
         "typescript": "^4.9.3",
         "vite": "^3.2.4",
+        "vite-plugin-electron": "^0.11.2",
+        "vite-plugin-electron-renderer": "^0.14.2",
         "vite-plugin-eslint": "^1.8.1",
         "vue-tsc": "^1.0.9"
     },
-    "type": "module",
     "dependencies": {
         "analyze-pptx": "^1.0.9",
         "ant-design-vue": "^3.2.15",
