@@ -12,7 +12,6 @@ export default defineConfig(({ mode, command }) => {
     const name = "mpptx";
     const port: number = parseInt(process.env.APP_PORT || "8000");
 
-    console.log("command", command);
     const isServe = command === "serve";
     const isBuild = command === "build";
     const sourcemap = isServe;
@@ -70,7 +69,7 @@ export default defineConfig(({ mode, command }) => {
     ];
 
     const defaultOptions: UserConfig = {
-        base: "/",
+        base: isServe ? "/" : path.resolve(__dirname, './dist/'),
         plugins,
         resolve: {
             alias: {
