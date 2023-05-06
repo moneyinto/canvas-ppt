@@ -1572,7 +1572,7 @@ export default class Command {
             this._updateDebounce = null;
         }
 
-        this._updateDebounce = setTimeout(() => {
+        this._updateDebounce = window.setTimeout(() => {
             this.executeLogRender();
             this._updateDebounce = null;
         }, 1000);

@@ -280,7 +280,7 @@ export default class ControlStage extends Stage {
                     clearTimeout(this._debounceSelectArea);
                 }
                 if (!isContextmenu) {
-                    this._debounceSelectArea = setTimeout(() => {
+                    this._debounceSelectArea = window.setTimeout(() => {
                         this.stageConfig.setSelectArea(null);
                     }, 20);
                 }

@@ -57,7 +57,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, onUnmounted, provide, ref } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, provide, ref } from "vue";
 import NavMenu from "./layout/NavMenu/index.vue";
 import Tools from "./layout/Tools/index.vue";
 import ThumbnailList from "./layout/ThumbnailList.vue";
@@ -75,6 +75,7 @@ import { message } from "ant-design-vue";
 import isElectron from "is-electron";
 import { decrypt } from "./utils/crypto";
 import { OPTION_TYPE } from "./plugins/config/options";
+import { ipcRenderer } from "electron";
 
 const pptRef = ref<HTMLDivElement>();
 const zoom = ref(1);
@@ -128,11 +129,16 @@ const path = params.get("path");
 
 nextTick(async () => {
     if (pptRef.value) {
-        instance.value = new Editor(pptRef.value, isElectron() ? [] : slides);
+        // 是否是开发环境 开发环境加载mock或db中数据
+        const isDev = process.env.NODE_ENV === "development";
 
-        // electron清空db数据
-        await instance.value?.history.getHistorySnapshot();
-        await instance.value?.history.clear();
+        instance.value = new Editor(pptRef.value, isElectron() && !isDev ? [] : slides);
+
+        if (!isDev) {
+            // electron清空db数据
+            await instance.value?.history.getHistorySnapshot();
+            await instance.value?.history.clear();
+        }
 
         if (!path) hideLoading();
         // 设置初始化页面
@@ -233,11 +239,16 @@ const outFullScreen = () => {
 };
 
 const endPreview = () => {
-    showPreview.value = false;
-    exitFullScreen();
+    if (showPreview.value) {
+        showPreview.value = false;
+        exitFullScreen();
+    }
 };
 
-window.addEventListener("resize", outFullScreen);
+onMounted(() => {
+    window.addEventListener("resize", outFullScreen);
+    ipcRenderer.on("esc", endPreview);
+});
 
 onUnmounted(() => {
     emitter.off(EmitterEvents.INIT_SLIDE, initSlide);
@@ -249,6 +260,7 @@ onUnmounted(() => {
     emitter.off(EmitterEvents.SHOW_PANELS, openPanel);
 
     window.removeEventListener("resize", outFullScreen);
+    ipcRenderer.off("esc", endPreview);
 });
 </script>
 

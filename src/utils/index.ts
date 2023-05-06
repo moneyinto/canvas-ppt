@@ -80,7 +80,7 @@ export const debounce = <T extends unknown[]>(
             clearTimeout(timerId);
         }
         // 设置新的延时执行
-        timerId = setTimeout(() => {
+        timerId = window.setTimeout(() => {
             fn(...args);
             timerId = null;
         }, delay);
