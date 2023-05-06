@@ -24,7 +24,8 @@
         "installerHeaderIcon": "./public/icon.ico",
         "createDesktopShortcut": true,
         "createStartMenuShortcut": true,
-        "shortcutName": "MPPTX在线文档"
+        "shortcutName": "MPPTX在线文档",
+        "include": "installer.nsh"
     },
     "win": {
         "icon": "public/icon.ico",
@@ -39,5 +40,9 @@
     "linux": {
         "target": "deb",
         "icon": "public"
-    }
+    },
+    "protocols": [{
+        "name": "mpptx",
+        "schemes": ["mpptx"]
+    }]
 }

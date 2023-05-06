@@ -16,7 +16,7 @@
         "baseUrl": "./",
         "noImplicitAny": false,
         "allowJs": true,
-        "types": ["vite/client", "vite-plugin-electron/electron-env"],
+        "types": ["vite/client"],
         "paths": {
             "@/*": ["src/*"]
         }

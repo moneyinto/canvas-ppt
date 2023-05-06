@@ -6,7 +6,8 @@
     "scripts": {
         "dev": "vite",
         "build": "vue-tsc --noEmit && vite build",
-        "electron:build": "vue-tsc --noEmit && vite build && electron-builder -c electron.json"
+        "electron:build": "vue-tsc --noEmit && vite build && electron-builder -c electron.json",
+        "electron:build:win": "vue-tsc --noEmit && vite build && electron-builder -c electron.json --win"
     },
     "repository": {
         "type": "git",
