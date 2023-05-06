@@ -7,6 +7,14 @@
     <link rel="icon" href="/favicon.png">
     <title>MPPTX在线文档</title>
     <style>
+        .start-loading-container {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            background: #fff;
+            z-index: 100000;
+        }
+
         .start-loading-box {
             position: fixed;
             top: 50%;
@@ -52,10 +60,12 @@
 </head>
 <body>
     <div id="app"></div>
-    <div class="start-loading-box">
-        <div class="loading-point"></div>
-        <img src="/favicon-192x192.png" alt="">
-        欢迎使用mpptx在线文档
+    <div id="startLoadingContainer" class="start-loading-container">
+        <div class="start-loading-box">
+            <div class="loading-point"></div>
+            <img src="/favicon-192x192.png" alt="">
+            欢迎使用mpptx在线文档
+        </div>
     </div>
     <script type="module" src="./src/main.ts"></script>
 </body>

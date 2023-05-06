@@ -10,3 +10,12 @@ declare module "*.vue" {
 declare interface Window {
     MathJax: any;
 }
+
+type Electron = {
+    exit: () => void;
+    readFile: (path: string) => string;
+};
+
+interface Window {
+    electron: Electron;
+}

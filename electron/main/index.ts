@@ -1,6 +1,7 @@
 import { app, BrowserWindow, shell, ipcMain } from "electron";
 import { release } from "node:os";
 import { join } from "node:path";
+import ElectronLog from "electron-log";
 
 // The built directory structure
 //
@@ -32,9 +33,9 @@ if (!app.requestSingleInstanceLock()) {
 let win: BrowserWindow | null = null;
 // Here, you can also use other preload
 const preload = join(__dirname, "../preload/index.js");
-const url = process.env.VITE_DEV_SERVER_URL || "";
+let url = process.env.VITE_DEV_SERVER_URL || "dist/index.html";
 
-async function createWindow() {
+async function createWindow(filePath?: string) {
     win = new BrowserWindow({
         webPreferences: {
             preload,
@@ -55,15 +56,12 @@ async function createWindow() {
         // Open devTool if the app is not packaged
         win.webContents.openDevTools();
     } else {
-        win.loadFile("dist/index.html");
+        win.loadFile(url, { query: { path: filePath || "" } });
     }
 
     // Test actively push message to the Electron-Renderer
     win.webContents.on("did-finish-load", () => {
-        win?.webContents.send(
-            "main-process-message",
-            new Date().toLocaleString()
-        );
+        isOpenFile = false;
     });
 
     // Make all links open with the browser, not with the application
@@ -74,7 +72,29 @@ async function createWindow() {
     // win.webContents.on('will-navigate', (event, url) => { }) #344
 }
 
-app.whenReady().then(createWindow);
+let isOpenFile = false;
+
+app.whenReady().then(() => {
+    if (!isOpenFile) {
+        ElectronLog.info("whenReady");
+        createWindow();
+    }
+});
+
+app.on("will-finish-launching", () => {
+    app.on("open-file", (event, path) => {
+        isOpenFile = true;
+        event.preventDefault();
+        ElectronLog.info("open-file", path);
+        if (app.isReady()) {
+            createWindow(path);
+        } else {
+            app.on("ready", () => {
+                createWindow(path);
+            });
+        }
+    });
+});
 
 app.on("window-all-closed", () => {
     win = null;

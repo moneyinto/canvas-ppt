@@ -12,6 +12,7 @@ declare namespace NodeJS {
 
 type Electron = {
     exit: () => void;
+    readFile: (path: string) => string;
 };
 
 interface Window {

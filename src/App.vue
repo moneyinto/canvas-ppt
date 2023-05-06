@@ -71,6 +71,9 @@ import useSlideHandler from "@/hooks/useSlideHandler";
 import { ISlide } from "./types/slide";
 import { IPPTElement } from "./types/element";
 import { message } from "ant-design-vue";
+import isElectron from "is-electron";
+import { decrypt } from "./utils/crypto";
+import { OPTION_TYPE } from "./plugins/config/options";
 
 const pptRef = ref<HTMLDivElement>();
 const zoom = ref(1);
@@ -119,9 +122,18 @@ const openPanel = (show: boolean) => {
     showPanel.value = show;
 };
 
-nextTick(() => {
+const params = new URLSearchParams(location.search);
+const path = params.get("path");
+
+nextTick(async () => {
     if (pptRef.value) {
-        instance.value = new Editor(pptRef.value, slides);
+        instance.value = new Editor(pptRef.value, isElectron() ? [] : slides);
+
+        // electron清空db数据
+        await instance.value?.history.getHistorySnapshot();
+        await instance.value?.history.clear();
+
+        if (!path) hideLoading();
         // 设置初始化页面
         initSlide();
 
@@ -130,7 +142,7 @@ nextTick(() => {
             historyCursor.value = cursor;
             historyLength.value = length;
             viewSlides.value = instance.value!.stageConfig.slides;
-            if (slideId !== selectedSlideId.value) {
+            if (slideId && slideId !== selectedSlideId.value) {
                 // id不相等切换页
                 const updateSlide = viewSlides.value.find(
                     (slide) => slide.id === selectedSlideId.value
@@ -167,7 +179,36 @@ nextTick(() => {
     }
 
     emitter.on(EmitterEvents.SHOW_PANELS, openPanel);
+
+    onLoadFile();
 });
+
+// 暂存文件路径，为了后面保存使用
+const storePath = ref("");
+const onLoadFile = async () => {
+    if (isElectron()) {
+        if (path) {
+            storePath.value = path;
+            const fileStr = window.electron.readFile(path);
+            const mpptxJson = JSON.parse(decrypt(fileStr));
+            const slides: ISlide[] = mpptxJson.slides;
+            await instance.value?.history.clear();
+            for (const key in mpptxJson.files) {
+                await instance.value?.history.saveFile(key, mpptxJson.files[key]);
+            }
+            instance.value?.stageConfig.setSlideId(slides.length > 0 ? slides[0].id : "");
+            instance.value?.stageConfig.setSlides(slides);
+            await instance.value?.history.add(OPTION_TYPE.INIT_DB_SLIDE);
+            emitter.emit(EmitterEvents.INIT_SLIDE);
+        }
+    }
+    hideLoading();
+};
+
+const hideLoading = () => {
+    const loading = document.getElementById("startLoadingContainer");
+    loading?.remove();
+};
 
 const resize = (scale: number) => {
     zoom.value = scale / 100;

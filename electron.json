@@ -6,11 +6,35 @@
         "output": "build"
     },
     "mac": {
-        "icon": "public/icon.icns"
+        "icon": "public/icon.icns",
+        "fileAssociations": [
+            {
+                "ext": "mpptx",
+                "icon": "./public/mpptx.icns"
+            }
+        ]
+    },
+    "nsis": {
+        "oneClick": false,
+        "allowElevation": true,
+        "allowToChangeInstallationDirectory": true,
+        "installerIcon": "./public/icon.ico",
+        "uninstallerIcon": "./public/icon.ico",
+        "deleteAppDataOnUninstall": true,
+        "installerHeaderIcon": "./public/icon.ico",
+        "createDesktopShortcut": true,
+        "createStartMenuShortcut": true,
+        "shortcutName": "MPPTX在线文档"
     },
     "win": {
         "icon": "public/icon.ico",
-        "target": "nsis"
+        "target": "nsis",
+        "fileAssociations": [
+            {
+                "ext": "mpptx",
+                "icon": "./public/mpptx.ico"
+            }
+        ]
     },
     "linux": {
         "target": "deb",

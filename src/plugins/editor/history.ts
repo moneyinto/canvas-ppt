@@ -47,11 +47,11 @@ export default class History {
         // 获取当前编辑页，存储历史记录时，存入变化的页ID
         const currentSlide = this._stageConfig.getCurrentSlide();
 
-        await this._db.setData(currentSlide!.id, data, optionType);
+        await this._db.setData(currentSlide?.id || "", data, optionType);
 
         this._snapshotKeys = (await this._db.getAllKeys() || []) as number[];
         this.cursor++;
-        this._listener.onEditChange && this._listener.onEditChange(this.cursor, this.length, currentSlide!.id);
+        this._listener.onEditChange && this._listener.onEditChange(this.cursor, this.length, currentSlide?.id || "");
     }
 
     get length() {
