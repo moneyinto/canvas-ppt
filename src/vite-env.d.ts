@@ -14,6 +14,7 @@ declare interface Window {
 type Electron = {
     exit: () => void;
     readFile: (path: string) => string;
+    saveFile: (path: string, content: string) => boolean;
 };
 
 interface Window {

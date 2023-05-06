@@ -12,9 +12,7 @@ export default (
     exporting: Ref<boolean>,
     exportPercent: Ref<number>
 ) => {
-    const outputMPPTX = async () => {
-        exporting.value = true;
-        exportPercent.value = 0;
+    const getMPPTXContent = async () => {
         const slides = instance?.value.stageConfig.slides || [];
         const mpptxJson: IMPPTXJSON = {
             files: {},
@@ -38,8 +36,15 @@ export default (
             }
             exportPercent.value = ((index + 1) / slides.length) * 100 - 10;
         }
+        return encrypt(JSON.stringify(mpptxJson));
+    }
+
+    const outputMPPTX = async () => {
+        exporting.value = true;
+        exportPercent.value = 0;
+        const content = await getMPPTXContent();
         setTimeout(() => {
-            const blob = new Blob([encrypt(JSON.stringify(mpptxJson))], {
+            const blob = new Blob([content], {
                 type: ""
             });
             saveAs(blob, "mpptx_slides.mpptx");
@@ -123,6 +128,7 @@ export default (
 
     return {
         outputMPPTX,
-        outputPPTX
+        outputPPTX,
+        getMPPTXContent
     };
 };

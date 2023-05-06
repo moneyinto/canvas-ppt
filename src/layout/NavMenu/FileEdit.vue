@@ -18,13 +18,13 @@
                 </a-menu-item>
                 <a-menu-divider />
                 <a-menu-item>
-                    <div class="ppt-menu-option" @click="onSave">
-                        &nbsp;&nbsp;保存
+                    <div class="ppt-menu-option" @click="onSaveAs">
+                        &nbsp;&nbsp;另存为
                     </div>
                 </a-menu-item>
                 <a-menu-item>
-                    <div class="ppt-menu-option" @click="onSaveAs">
-                        &nbsp;&nbsp;另存为
+                    <div class="ppt-menu-option" @click="onSave">
+                        &nbsp;&nbsp;保存
                     </div>
                 </a-menu-item>
             </a-menu>
@@ -53,15 +53,17 @@ import { Ref, inject, ref } from "vue";
 import useExport from "@/hooks/useExport";
 import { MenuInfo } from "ant-design-vue/lib/menu/src/interface";
 import useImport from "@/hooks/useImport";
+import { message } from "ant-design-vue";
 
 const instance = inject<Ref<Editor>>("instance");
+const storePath = inject<Ref<string>>("storePath");
 const fileVisible = ref(false);
 const loading = ref(false);
 const percent = ref(0);
 const inputMPPTXRef = ref();
 const inputPPTXRef = ref();
 
-const { outputMPPTX, outputPPTX } = useExport(instance, loading, percent);
+const { outputMPPTX, outputPPTX, getMPPTXContent } = useExport(instance, loading, percent);
 const { importMPPTX, importPPTX } = useImport(instance, loading, percent);
 
 const handleDropdown = (e: MenuInfo) => {
@@ -101,16 +103,24 @@ const inputPPTXFileChange = (e: Event) => {
 };
 
 const onSave = async () => {
-    console.log(instance?.value.stageConfig.slides);
+    if (storePath?.value) {
+        const content = await getMPPTXContent();
+        const isOK = window.electron.saveFile(storePath.value, content);
+        if (isOK) {
+            message.success("保存成功");
+        } else {
+            message.error("文件不存在了");
+        }
+    } else {
+        await outputMPPTX();
+    }
     // 清理历史记录 初始化历史记录
     await instance?.value.history.clear();
     instance?.value.history.getHistorySnapshot();
 };
 
 const onSaveAs = async () => {
-    // 弹出文件选择框
-    // 替换当前文件路径数据
-    // 执行保存操作
+    await outputMPPTX();
 };
 </script>
 
