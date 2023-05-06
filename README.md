@@ -148,7 +148,8 @@ npm run dev
 - [x] 画笔功能
 
 ### [electron版本](https://github.com/moneyinto/canvas-ppt/tree/electron)
-- [ ] 对应文件格式打开
+- [x] 网页唤醒或下载客户端
+- [x] 对应文件格式打开
 - [ ] 编辑保存
 - [ ] 另存为
 
