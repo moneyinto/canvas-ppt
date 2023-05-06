@@ -61,8 +61,9 @@ import { KeyMap } from "@/plugins/shortCut/keyMap";
 import { message } from "ant-design-vue";
 import Editor from "@/plugins/editor";
 import PPTIcon from "@/components/Icon.vue";
-import { exitFullScreen } from "@/utils";
 import { OPTION_TYPE, IElement } from "mwhiteboard";
+
+const emit = defineEmits(["endPreview"]);
 
 const instance = inject<Ref<Editor>>("instance");
 
@@ -173,7 +174,7 @@ const onKeydown = (event: KeyboardEvent) => {
 };
 
 const endPreview = () => {
-    exitFullScreen();
+    emit("endPreview");
 };
 
 onUnmounted(() => {
