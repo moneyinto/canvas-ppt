@@ -14,7 +14,7 @@
 
         <Demonstrate :current="current" @onPreview="onPreview" />
 
-        <div class="ppt-electron" @click="openClient()">打开客户端</div>
+        <div class="ppt-electron" v-if="!isElectron()" @click="openClient()">打开客户端</div>
     </div>
 </template>
 
@@ -29,6 +29,7 @@ import SlideShow from "./SlideShow.vue";
 import Demonstrate from "./Demonstrate.vue";
 import FileEdit from "./FileEdit.vue";
 import customProtocolCheck from "custom-protocol-check";
+import isElectron from "is-electron";
 
 const props = defineProps({
     slideFocus: {
