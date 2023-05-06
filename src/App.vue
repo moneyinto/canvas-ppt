@@ -51,6 +51,7 @@
             v-if="showPreview"
             :slides="viewSlides"
             :startSlideIndex="startSlideIndex"
+            @endPreview="endPreview"
         />
     </div>
 </template>
@@ -66,7 +67,7 @@ import ScreenView from "./layout/ScreenView.vue";
 import Editor from "./plugins/editor";
 import { slides } from "./mock";
 import emitter, { EmitterEvents } from "./utils/emitter";
-import { enterFullScreen, isFullScreen } from "./utils";
+import { enterFullScreen, isFullScreen, exitFullScreen } from "./utils";
 import useSlideHandler from "@/hooks/useSlideHandler";
 import { ISlide } from "./types/slide";
 import { IPPTElement } from "./types/element";
@@ -225,13 +226,18 @@ const startPreview = (slideIndex: number) => {
     }
 };
 
-const exitFullScreen = () => {
+const outFullScreen = () => {
     if (!isFullScreen()) {
         showPreview.value = false;
     }
 };
 
-window.addEventListener("resize", exitFullScreen);
+const endPreview = () => {
+    showPreview.value = false;
+    exitFullScreen();
+};
+
+window.addEventListener("resize", outFullScreen);
 
 onUnmounted(() => {
     emitter.off(EmitterEvents.INIT_SLIDE, initSlide);
@@ -242,7 +248,7 @@ onUnmounted(() => {
     emitter.off(EmitterEvents.PASTE_SLIDE, pasteSlide);
     emitter.off(EmitterEvents.SHOW_PANELS, openPanel);
 
-    window.removeEventListener("resize", exitFullScreen);
+    window.removeEventListener("resize", outFullScreen);
 });
 </script>
 
