@@ -191,7 +191,8 @@ nextTick(async () => {
 });
 
 // 暂存文件路径，为了后面保存使用
-const storePath = ref("");
+const storePath = ref("/Users/moneyinto/Downloads/mpptx_slides.mpptx");
+provide("storePath", storePath);
 const onLoadFile = async () => {
     if (isElectron()) {
         if (path) {
