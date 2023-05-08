@@ -1,4 +1,4 @@
-import { app, BrowserWindow, globalShortcut } from "electron";
+import { app, BrowserWindow, globalShortcut, Menu } from "electron";
 import { release } from "node:os";
 import { join } from "node:path";
 import ElectronLog from "electron-log";
@@ -52,6 +52,22 @@ async function createWindow(filePath?: string) {
         win.loadURL(url);
         win.webContents.openDevTools();
     } else {
+        const menu = Menu.buildFromTemplate([
+            {
+                label: "MPPTX在线文档",
+                submenu: [
+                    {
+                        label: "退出",
+                        accelerator: "CmdOrCtrl+Q",
+                        click: () => {
+                            app.quit();
+                        }
+                    }
+                ]
+            }
+        ]);
+        Menu.setApplicationMenu(menu);
+
         win.loadFile(url, { query: { path: filePath || "" } });
     }
 
@@ -90,7 +106,7 @@ app.on("will-finish-launching", () => {
 
 app.on("window-all-closed", () => {
     win = null;
-    if (process.platform !== "darwin") app.quit();
+    app.quit();
 });
 
 app.on("second-instance", () => {
