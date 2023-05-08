@@ -1,7 +1,7 @@
 {
     "asar": true,
     "appId": "com.moneyinto.mpptx",
-    "productName": "MPPTX在线文档",
+    "productName": "MPPTX",
     "directories": {
         "output": "build"
     },
@@ -24,7 +24,7 @@
         "installerHeaderIcon": "./public/icon.ico",
         "createDesktopShortcut": true,
         "createStartMenuShortcut": true,
-        "shortcutName": "MPPTX在线文档",
+        "shortcutName": "MPPTX",
         "include": "installer.nsh"
     },
     "win": {
