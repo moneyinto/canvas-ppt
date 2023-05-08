@@ -28,7 +28,7 @@
         "include": "installer.nsh"
     },
     "win": {
-        "icon": "public/icon.ico",
+        "icon": "public/icon.png",
         "target": "nsis",
         "fileAssociations": [
             {

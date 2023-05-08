@@ -195,6 +195,7 @@ const onKeydown = (event: KeyboardEvent) => {
     .ppt-thumbnail-body {
         height: 100%;
         overflow-y: auto;
+        overflow-x: hidden;
         padding: 2px 0;
     }
 

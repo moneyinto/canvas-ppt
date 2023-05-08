@@ -5,9 +5,9 @@
     "main": "dist-electron/main/index.js",
     "scripts": {
         "dev": "vite",
-        "build": "vue-tsc --noEmit && vite build",
-        "electron:build": "vue-tsc --noEmit && vite build && electron-builder -c electron.json",
-        "electron:build:win": "vue-tsc --noEmit && vite build && electron-builder -c electron.json --win"
+        "build": "vite build",
+        "electron:build": "vite build && electron-builder -c electron.json",
+        "electron:build:win": "vite build && electron-builder -c electron.json --win"
     },
     "repository": {
         "type": "git",
@@ -36,7 +36,7 @@
         "sass": "^1.56.1",
         "terser": "^5.17.1",
         "typescript": "^4.9.3",
-        "vite": "^3.2.4",
+        "vite": "^3.2.6",
         "vite-plugin-electron": "^0.11.2",
         "vite-plugin-electron-renderer": "^0.14.2",
         "vite-plugin-eslint": "^1.8.1",

@@ -52,20 +52,24 @@ async function createWindow(filePath?: string) {
         win.loadURL(url);
         win.webContents.openDevTools();
     } else {
-        const menu = Menu.buildFromTemplate([
-            {
-                label: "MPPTX在线文档",
-                submenu: [
-                    {
-                        label: "退出",
-                        accelerator: "CmdOrCtrl+Q",
-                        click: () => {
-                            app.quit();
-                        }
-                    }
-                ]
-            }
-        ]);
+        const menu = Menu.buildFromTemplate(
+            process.platform === "darwin"
+                ? [
+                      {
+                          label: "MPPTX在线文档",
+                          submenu: [
+                              {
+                                  label: "退出",
+                                  accelerator: "CmdOrCtrl+Q",
+                                  click: () => {
+                                      app.quit();
+                                  }
+                              }
+                          ]
+                      }
+                  ]
+                : []
+        );
         Menu.setApplicationMenu(menu);
 
         win.loadFile(url, { query: { path: filePath || "" } });
@@ -74,7 +78,7 @@ async function createWindow(filePath?: string) {
     win.webContents.on("did-finish-load", () => {
         isOpenFile = false;
     });
-    
+
     globalShortcut.register("esc", () => {
         win?.webContents.send("esc");
     });
@@ -109,11 +113,17 @@ app.on("window-all-closed", () => {
     app.quit();
 });
 
-app.on("second-instance", () => {
+app.on("second-instance", (e, argv) => {
     if (win) {
         // Focus on the main window if the user tried to open another
         if (win.isMinimized()) win.restore();
         win.focus();
+    }
+
+    if (process.platform !== "darwin") {
+        const path = argv[argv.length - 1];
+        path && createWindow(path);
+        ElectronLog.info("open-file", path);
     }
 });
 
