@@ -16,11 +16,11 @@
         "baseUrl": "./",
         "noImplicitAny": false,
         "allowJs": true,
-        "types": ["vite/client"],
+        "types": ["vite/client", "vite-plugin-electron/electron-env"],
         "paths": {
             "@/*": ["src/*"]
         }
     },
-    "include": ["src"],
+    "include": ["src/**/*.ts", "src/**/*.vue", "electron/**/*.ts"],
     "exclude": ["node_modules", "dist", "**/*.js", "dist-electron"]
 }
