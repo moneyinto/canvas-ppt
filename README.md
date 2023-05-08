@@ -150,8 +150,8 @@ npm run dev
 ### [electron版本](https://github.com/moneyinto/canvas-ppt/tree/electron)
 - [x] 网页唤醒或下载客户端
 - [x] 对应文件格式打开
-- [ ] 编辑保存
-- [ ] 另存为
+- [x] 编辑保存
+- [x] 另存为
 
 - #### 运行
 ```
