@@ -61,7 +61,7 @@ const openClient = () => {
         if (isWin) {
             window.location.href = "https://github.com/moneyinto/canvas-ppt/releases/download/release/MPPTX.Setup.1.0.0.exe";
         } else if (isMac) {
-            window.location.href = "https://github.com/moneyinto/canvas-ppt/releases/download/release/MPPTX.-1.0.0.dmg";
+            window.location.href = "https://github.com/moneyinto/canvas-ppt/releases/download/release/MPPTX-1.0.0.dmg";
         }
     });
 };
