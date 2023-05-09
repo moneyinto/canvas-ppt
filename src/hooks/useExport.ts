@@ -12,33 +12,38 @@ export default (
     exporting: Ref<boolean>,
     exportPercent: Ref<number>
 ) => {
-    const addFileFileToFolder = async (zip: JSZip, fileName: string, type: "image" | "video" | "audio") => {
+    const addFileFileToFolder = async (zip: JSZip, fileName: string) => {
         const file = (await instance?.value.history.getFile(fileName)) || "";
-        const regExp = new RegExp(`data:${type}/(.*?);base64,`);
+        const regExp = /data:(.*?)\/(.*?);base64,/;
         const result = file.match(regExp);
-        const ext = result ? result[1] : "";
+        const ext = result ? result[2] : "";
         await zip.folder("files")?.file(`${fileName}.${ext}`, file.replace(regExp, ""), { base64: true });
     };
 
     const getMPPTXContent = async (zipType?: "blob" | "nodebuffer") => {
         const jszip = new JSZip();
         const slides = instance?.value.stageConfig.slides || [];
+        const cacheFiles: string[] = [];
         for (const [index, slide] of slides.entries()) {
             if (slide.background && slide.background.type === "image" && slide.background.image) {
-                await addFileFileToFolder(jszip, slide.background.image, "image");
+                if (!cacheFiles.includes(slide.background.image)) {
+                    await addFileFileToFolder(jszip, slide.background.image);
+                    cacheFiles.push(slide.background.image);
+                }
             }
 
             for (const element of slide.elements) {
                 if (
                     element.type === "image" ||
                     element.type === "chart" ||
-                    element.type === "latex"
+                    element.type === "latex" ||
+                    element.type === "video" ||
+                    element.type === "audio"
                 ) {
-                    await addFileFileToFolder(jszip, element.src, "image");
-                } else if (element.type === "video") {
-                    await addFileFileToFolder(jszip, element.src, "video");
-                } else if (element.type === "audio") {
-                    await addFileFileToFolder(jszip, element.src, "audio");
+                    if (!cacheFiles.includes(element.src)) {
+                        await addFileFileToFolder(jszip, element.src);
+                        cacheFiles.push(element.src);
+                    }
                 }
             }
             exportPercent.value = ((index + 1) / slides.length) * 100 - 10;
