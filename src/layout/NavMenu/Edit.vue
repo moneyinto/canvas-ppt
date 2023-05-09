@@ -107,7 +107,7 @@ const paste = () => {
 const onSave = async () => {
     console.log(instance?.value.stageConfig.slides);
     // 清理历史记录 初始化历史记录
-    await instance?.value.history.clear();
+    await instance?.value.history.clear(true);
     instance?.value.history.getHistorySnapshot();
 };
 

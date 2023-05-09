@@ -59,8 +59,8 @@ export default class History {
     }
 
     // 清理
-    public async clear() {
-        await this._db.deleteFiles();
+    public async clear(ignoreFile?: boolean) {
+        if (!ignoreFile) await this._db.deleteFiles();
         await this._db.delete(this._snapshotKeys);
         this._snapshotKeys = [];
         this.cursor = -1;

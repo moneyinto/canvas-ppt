@@ -9,29 +9,74 @@ import { ISlide } from "@/types/slide";
 import ChartRender from "@/layout/Tools/Chart/ChartRender.vue";
 import { IPPTChartElement } from "@/types/element";
 import { message } from "ant-design-vue";
+import JSZip from "jszip";
 
-export default (instance: Ref<Editor> | undefined, importing: Ref<boolean>, importPercent: Ref<number>) => {
+export default (
+    instance: Ref<Editor> | undefined,
+    importing: Ref<boolean>,
+    importPercent: Ref<number>
+) => {
+    const getFileType = (fileExt: string) => {
+        let result: undefined | string;
+
+        const imgList = ["png", "jpg", "jpeg", "bmp", "gif"];
+        result = imgList.find((item) => item === fileExt);
+        if (result) return "image";
+
+        const videoList = [
+            "mp4",
+            "m2v",
+            "mkv",
+            "rmvb",
+            "wmv",
+            "avi",
+            "flv",
+            "mov",
+            "m4v"
+        ];
+        result = videoList.find((item) => item === fileExt);
+        if (result) return "video";
+
+        const radioList = ["mp3", "wav", "wmv"];
+        result = radioList.find((item) => item === fileExt);
+        if (result) return "audio";
+
+        return "";
+    };
+
     const importMPPTX = async (file: File) => {
         importing.value = true;
         importPercent.value = 10;
-        const reader = new FileReader();
-        reader.readAsText(file);
-        reader.onload = async () => {
-            importPercent.value = 30;
-            const mpptxJson = JSON.parse(decrypt(reader.result as string));
-            const slides: ISlide[] = mpptxJson.slides;
-            await instance?.value.history.clear();
-            importPercent.value = 50;
-            for (const key in mpptxJson.files) {
-                await instance?.value.history.saveFile(key, mpptxJson.files[key]);
+        await instance?.value.history.clear();
+        const jszip = new JSZip();
+        const zip = await jszip.loadAsync(file);
+        let slides: ISlide[] = [];
+        for (const key in zip.files) {
+            if (!zip.files[key].dir) {
+                const path = zip.files[key].name;
+                if (path === "mpptx.json") {
+                    const result = await zip.file(path)!.async("string");
+                    slides = JSON.parse(decrypt(result));
+                } else {
+                    const fileExt = path.replace(/.+\./, "");
+                    const fileName = path.replace(/(.*\/)*([^.]+).*/ig, "$2");
+                    const file = await zip.file(path)!.async("base64");
+                    const fileType = getFileType(fileExt);
+                    if (fileType) {
+                        await instance?.value.history.saveFile(
+                            fileName,
+                            `data:${fileType}/${fileExt};base64,` + file
+                        );
+                    }
+                }
             }
-            importPercent.value = 80;
-            instance?.value.stageConfig.setSlideId(slides.length > 0 ? slides[0].id : "");
-            instance?.value.stageConfig.setSlides(slides);
-            await instance?.value.history.add(OPTION_TYPE.INIT_DB_SLIDE);
-            emitter.emit(EmitterEvents.INIT_SLIDE);
-            importing.value = false;
-        };
+        }
+        importPercent.value = 80;
+        instance?.value.stageConfig.setSlideId(slides.length > 0 ? slides[0].id : "");
+        instance?.value.stageConfig.setSlides(slides);
+        await instance?.value.history.add(OPTION_TYPE.INIT_DB_SLIDE);
+        emitter.emit(EmitterEvents.INIT_SLIDE);
+        importing.value = false;
     };
 
     const dealFile = async (base64: string) => {
@@ -43,17 +88,21 @@ export default (instance: Ref<Editor> | undefined, importing: Ref<boolean>, impo
     };
 
     const getChartImage = (element: IPPTChartElement): Promise<string> => {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             const container = document.createElement("div");
-            const vm = createVNode(ChartRender, {
-                type: element.chartType,
-                axisTransformation: element.axisTransformation,
-                width: element.width,
-                height: element.height,
-                labels: element.data.labels,
-                legends: element.data.legends,
-                series: element.data.series
-            }, null);
+            const vm = createVNode(
+                ChartRender,
+                {
+                    type: element.chartType,
+                    axisTransformation: element.axisTransformation,
+                    width: element.width,
+                    height: element.height,
+                    labels: element.data.labels,
+                    legends: element.data.legends,
+                    series: element.data.series
+                },
+                null
+            );
             render(vm, container);
             setTimeout(() => {
                 const chartBase64 = vm.component?.exposed?.getChartImage();

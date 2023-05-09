@@ -50,11 +50,6 @@ export interface IFileStore {
     [key: string]: string;
 }
 
-export interface IMPPTXJSON {
-    files: IFileStore;
-    slides: ISlide[];
-}
-
 export interface IGradientColor {
     offset: number;
     value: string;

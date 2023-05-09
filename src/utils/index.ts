@@ -73,7 +73,7 @@ export const debounce = <T extends unknown[]>(
     fn: (...args: T) => void,
     delay: number
 ) => {
-    let timerId: number | null = null; // 使用闭包的特性，存储timerId
+    let timerId: NodeJS.Timeout | number | null = null; // 使用闭包的特性，存储timerId
     return function(...args: T) {
         // 当timerId有值时，说明有正在准备执行的函数，需要将它清除
         if (timerId !== null) {
