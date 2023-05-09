@@ -52,6 +52,7 @@
         "file-saver": "^2.0.5",
         "idb": "^7.1.1",
         "is-electron": "^2.2.2",
+        "jszip": "^3.10.1",
         "mitt": "^3.0.0",
         "mwhiteboard": "^0.2.2",
         "pptxgenjs": "^3.12.0",

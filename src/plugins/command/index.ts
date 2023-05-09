@@ -39,7 +39,7 @@ export default class Command {
     private _history: History;
     private _cursor: Cursor;
 
-    private _updateDebounce: null | number;
+    private _updateDebounce: null | number | NodeJS.Timeout;
     constructor(
         stageConfig: StageConfig,
         listener: Listener,

@@ -104,8 +104,8 @@ const inputPPTXFileChange = (e: Event) => {
 
 const onSave = async () => {
     if (storePath?.value) {
-        const content = await getMPPTXContent();
-        const isOK = window.electron.saveFile(storePath.value, content);
+        const buffer = await getMPPTXContent("nodebuffer") as Buffer;
+        const isOK = window.electron.saveFile(storePath.value, buffer);
         if (isOK) {
             message.success("保存成功");
         } else {

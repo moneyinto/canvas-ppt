@@ -22,7 +22,7 @@ const { visible } = toRefs(props);
 const panel = ref<PANELS | "">("");
 
 const PanelComponent = computed(() => {
-    const PanelMap = {
+    const PanelMap: any = {
         [PANELS.BACKGROUND]: Background
     };
 

@@ -10,10 +10,10 @@ window.electron = {
         });
         return content;
     },
-    saveFile: (path: string, content: string) => {
+    saveFile: (path: string, buffer: Buffer) => {
         const isExist = fs.existsSync(path);
         if (isExist) {
-            fs.writeFileSync(path, content);
+            fs.writeFileSync(path, buffer);
             return true;
         } else {
             return false;

@@ -43,7 +43,7 @@ export default class ControlStage extends Stage {
     private _textarea: Textarea;
     private _contextmenu: Contextmenu;
     private _textClick: IMouseClick | null;
-    private _debounceSelectArea: null | number;
+    private _debounceSelectArea: null | number | NodeJS.Timeout;
     private _videoControlType = "";
     private _videoElement: IPPTVideoElement | null = null;
     constructor(

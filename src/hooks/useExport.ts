@@ -1,10 +1,10 @@
 import Editor from "@/plugins/editor";
-import { IMPPTXJSON } from "@/types";
 import { encrypt } from "@/utils/crypto";
 import { addAudio, addImage, addLine, addShape, addText, addVideo } from "@/utils/export";
 import { message } from "ant-design-vue";
 import { saveAs } from "file-saver";
 import Pptxgen from "pptxgenjs";
+import JSZip from "jszip";
 import { Ref } from "vue";
 
 export default (
@@ -12,41 +12,53 @@ export default (
     exporting: Ref<boolean>,
     exportPercent: Ref<number>
 ) => {
-    const getMPPTXContent = async () => {
+    const addFileFileToFolder = async (zip: JSZip, fileName: string, type: "image" | "video" | "audio") => {
+        const file = (await instance?.value.history.getFile(fileName)) || "";
+        const regExp = new RegExp(`data:${type}/(.*?);base64,`);
+        const result = file.match(regExp);
+        const ext = result ? result[1] : "";
+        await zip.folder("files")?.file(`${fileName}.${ext}`, file.replace(regExp, ""), { base64: true });
+    };
+
+    const getMPPTXContent = async (zipType?: "blob" | "nodebuffer") => {
+        const jszip = new JSZip();
         const slides = instance?.value.stageConfig.slides || [];
-        const mpptxJson: IMPPTXJSON = {
-            files: {},
-            slides
-        };
         for (const [index, slide] of slides.entries()) {
             if (slide.background && slide.background.type === "image" && slide.background.image) {
-                mpptxJson.files[slide.background.image] = (await instance?.value.history.getFile(slide.background.image)) || "";
+                await addFileFileToFolder(jszip, slide.background.image, "image");
             }
 
             for (const element of slide.elements) {
                 if (
                     element.type === "image" ||
-                    element.type === "video" ||
-                    element.type === "audio" ||
                     element.type === "chart" ||
                     element.type === "latex"
                 ) {
-                    mpptxJson.files[element.src] = (await instance?.value.history.getFile(element.src)) || "";
+                    await addFileFileToFolder(jszip, element.src, "image");
+                } else if (element.type === "video") {
+                    await addFileFileToFolder(jszip, element.src, "video");
+                } else if (element.type === "audio") {
+                    await addFileFileToFolder(jszip, element.src, "audio");
                 }
             }
             exportPercent.value = ((index + 1) / slides.length) * 100 - 10;
         }
-        return encrypt(JSON.stringify(mpptxJson));
+        jszip.file("mpptx.json", encrypt(JSON.stringify(slides)));
+        const content = await jszip.generateAsync({
+            type: zipType || "blob", // 压缩类型
+            compression: "DEFLATE", // 压缩算法
+            compressionOptions: { // 压缩级别
+                level: 9
+            }
+        });
+        return content;
     }
 
     const outputMPPTX = async () => {
         exporting.value = true;
         exportPercent.value = 0;
-        const content = await getMPPTXContent();
+        const blob = await getMPPTXContent() as Blob;
         setTimeout(() => {
-            const blob = new Blob([content], {
-                type: ""
-            });
             saveAs(blob, "mpptx_slides.mpptx");
             exporting.value = false;
         }, 500);
