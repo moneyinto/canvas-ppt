@@ -12,7 +12,7 @@ declare namespace NodeJS {
 
 type Electron = {
     exit: () => void;
-    readFile: (path: string) => string;
+    readFile: (path: string) => File;
     saveFile: (path: string, buffer: Buffer) => boolean;
 };
 

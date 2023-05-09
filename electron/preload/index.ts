@@ -5,10 +5,9 @@ window.electron = {
         console.log("xxxx exit");
     },
     readFile: (path: string) => {
-        const content = fs.readFileSync(path, {
-            encoding: "utf-8"
-        });
-        return content;
+        const buffer = fs.readFileSync(path);
+        const arraybuffer = new Uint8Array(buffer).buffer;
+        return new File([arraybuffer], "fileName.zip");
     },
     saveFile: (path: string, buffer: Buffer) => {
         const isExist = fs.existsSync(path);

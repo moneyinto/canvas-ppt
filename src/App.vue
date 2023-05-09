@@ -53,6 +53,18 @@
             :startSlideIndex="startSlideIndex"
             @endPreview="endPreview"
         />
+
+        <div class="loading-fullscreen" v-if="loading">
+            <div class="loading-box">
+                <a-spin size="large"></a-spin>
+                <a-progress
+                    :strokeWidth="16"
+                    :percent="percent"
+                    status="active"
+                    :show-info="false"
+                />
+            </div>
+        </div>
     </div>
 </template>
 
@@ -73,9 +85,8 @@ import { ISlide } from "./types/slide";
 import { IPPTElement } from "./types/element";
 import { message } from "ant-design-vue";
 import isElectron from "is-electron";
-import { decrypt } from "./utils/crypto";
-import { OPTION_TYPE } from "./plugins/config/options";
 import { ipcRenderer } from "electron";
+import useImport from "./hooks/useImport";
 
 const pptRef = ref<HTMLDivElement>();
 const zoom = ref(1);
@@ -193,21 +204,15 @@ nextTick(async () => {
 // 暂存文件路径，为了后面保存使用
 const storePath = ref("");
 provide("storePath", storePath);
+const loading = ref(false);
+const percent = ref(0);
+const { importMPPTX } = useImport(instance, loading, percent);
 const onLoadFile = async () => {
     if (isElectron()) {
         if (path) {
             storePath.value = path;
-            const fileStr = window.electron.readFile(path);
-            const mpptxJson = JSON.parse(decrypt(fileStr));
-            const slides: ISlide[] = mpptxJson.slides;
-            await instance.value?.history.clear();
-            for (const key in mpptxJson.files) {
-                await instance.value?.history.saveFile(key, mpptxJson.files[key]);
-            }
-            instance.value?.stageConfig.setSlideId(slides.length > 0 ? slides[0].id : "");
-            instance.value?.stageConfig.setSlides(slides);
-            await instance.value?.history.add(OPTION_TYPE.INIT_DB_SLIDE);
-            emitter.emit(EmitterEvents.INIT_SLIDE);
+            const file = window.electron.readFile(path);
+            await importMPPTX(file)
         }
     }
     hideLoading();

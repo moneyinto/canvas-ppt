@@ -12,7 +12,7 @@ import { message } from "ant-design-vue";
 import JSZip from "jszip";
 
 export default (
-    instance: Ref<Editor> | undefined,
+    instance: Ref<Editor | undefined> | undefined,
     importing: Ref<boolean>,
     importPercent: Ref<number>
 ) => {
@@ -47,7 +47,7 @@ export default (
     const importMPPTX = async (file: File) => {
         importing.value = true;
         importPercent.value = 10;
-        await instance?.value.history.clear();
+        await instance?.value?.history.clear();
         const jszip = new JSZip();
         const zip = await jszip.loadAsync(file);
         let slides: ISlide[] = [];
@@ -63,7 +63,7 @@ export default (
                     const file = await zip.file(path)!.async("base64");
                     const fileType = getFileType(fileExt);
                     if (fileType) {
-                        await instance?.value.history.saveFile(
+                        await instance?.value?.history.saveFile(
                             fileName,
                             `data:${fileType}/${fileExt};base64,` + file
                         );
@@ -72,9 +72,9 @@ export default (
             }
         }
         importPercent.value = 80;
-        instance?.value.stageConfig.setSlideId(slides.length > 0 ? slides[0].id : "");
-        instance?.value.stageConfig.setSlides(slides);
-        await instance?.value.history.add(OPTION_TYPE.INIT_DB_SLIDE);
+        instance?.value?.stageConfig.setSlideId(slides.length > 0 ? slides[0].id : "");
+        instance?.value?.stageConfig.setSlides(slides);
+        await instance?.value?.history.add(OPTION_TYPE.INIT_DB_SLIDE);
         emitter.emit(EmitterEvents.INIT_SLIDE);
         importing.value = false;
     };
@@ -83,7 +83,7 @@ export default (
         const fileExt = base64.split(";")[0].split("/")[1];
         const file = dataURLtoFile(base64, "file", fileExt);
         const md5 = await fileMd5(file);
-        await instance?.value.history.saveFile(md5, base64);
+        await instance?.value?.history.saveFile(md5, base64);
         return md5;
     };
 
@@ -118,7 +118,7 @@ export default (
             importPercent.value = 10;
             const analyzePPTX = new AnalyzePPTX();
             const slides = await analyzePPTX.read(file);
-            await instance?.value.history.clear();
+            await instance?.value?.history.clear();
             importPercent.value = 50;
             for (const slide of slides) {
                 if (slide.background && slide.background.image) {
@@ -154,9 +154,9 @@ export default (
             }
 
             importPercent.value = 80;
-            instance?.value.stageConfig.setSlideId(slides.length > 0 ? slides[0].id : "");
-            instance?.value.stageConfig.setSlides(slides);
-            await instance?.value.history.add(OPTION_TYPE.INIT_DB_SLIDE);
+            instance?.value?.stageConfig.setSlideId(slides.length > 0 ? slides[0].id : "");
+            instance?.value?.stageConfig.setSlides(slides);
+            await instance?.value?.history.add(OPTION_TYPE.INIT_DB_SLIDE);
             emitter.emit(EmitterEvents.INIT_SLIDE);
             importing.value = false;
         } catch (error) {
