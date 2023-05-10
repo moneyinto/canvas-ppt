@@ -128,6 +128,8 @@ export interface IPPTShapeElement extends IPPTBaseElement {
     fixedRatio: boolean;
     fill?: IPPTElementFill;
     rotate: number;
+    wordSpace: number;
+    lineHeight: number;
     gradient?: IShapeGradient;
     outline?: IPPTElementOutline;
     flipH?: 1 | -1;

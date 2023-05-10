@@ -518,7 +518,7 @@ export default class Command {
                         0,
                         ...elementContent
                     );
-                    operateElement.height = this._getTextHeight(operateElement);
+                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
                     const cursorPosition = position + elementContent.length;
                     this.executeUpdateRender(operateElements, true);
                     this._updateCursor(cursorPosition);
@@ -536,7 +536,7 @@ export default class Command {
                 });
                 newElement.content.splice(0, 0, ...elementContent);
                 newElement.width = contentWidth;
-                newElement.height = this._getTextHeight(newElement);
+                newElement.height = this._stageConfig.getTextHeight(newElement);
                 this.executeAddRender([newElement]);
             }
         } else {
@@ -582,8 +582,7 @@ export default class Command {
                             0,
                             ...elementContent
                         );
-                        operateElement.height =
-                            this._getTextHeight(operateElement);
+                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
                         const cursorPosition = position + elementContent.length;
                         this.executeUpdateRender(operateElements, true);
                         this._updateCursor(cursorPosition);
@@ -617,7 +616,7 @@ export default class Command {
                     });
                     newElement.content.splice(0, 0, ...pasteContent);
                     newElement.width = contentWidth;
-                    newElement.height = this._getTextHeight(newElement);
+                    newElement.height = this._stageConfig.getTextHeight(newElement);
                     this.executeAddRender([newElement]);
                 }
             }
@@ -692,16 +691,6 @@ export default class Command {
         }
     }
 
-    // 获取文本变更后文本框高度
-    private _getTextHeight(operateElement: IPPTTextElement) {
-        const renderContent = this._stageConfig.getRenderContent(operateElement);
-        let height = TEXT_MARGIN * 2;
-        renderContent.forEach((line) => {
-            height += line.height * operateElement.lineHeight;
-        });
-        return height;
-    }
-
     // 删除选中文本
     private _deleteSelectText() {
         const selectArea = this._stageConfig.selectArea;
@@ -716,7 +705,7 @@ export default class Command {
                     operateElement
                 );
                 operateElement.content.splice(startX, endX - startX);
-                operateElement.height = this._getTextHeight(operateElement);
+                operateElement.height = this._stageConfig.getTextHeight(operateElement);
 
                 this._stageConfig.setSelectArea(null);
 
@@ -739,7 +728,7 @@ export default class Command {
                 position === -1
             ) return false;
             operateElement.content.splice(position, 1);
-            operateElement.height = this._getTextHeight(operateElement);
+            operateElement.height = this._stageConfig.getTextHeight(operateElement);
 
             this.executeUpdateRender(operateElements);
 
@@ -1000,7 +989,7 @@ export default class Command {
         );
         if (operateElement && operateElement.type === "text") {
             operateElement.content.splice(position, 0, text);
-            operateElement.height = this._getTextHeight(operateElement);
+            operateElement.height = this._stageConfig.getTextHeight(operateElement);
 
             this.executeUpdateRender(operateElements);
 
@@ -1060,7 +1049,7 @@ export default class Command {
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._getTextHeight(operateElement);
+                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
 
                     this.executeUpdateRender(operateElements);
 
@@ -1093,7 +1082,7 @@ export default class Command {
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._getTextHeight(operateElement);
+                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
                 }
             }
 
@@ -1118,7 +1107,7 @@ export default class Command {
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._getTextHeight(operateElement);
+                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
 
                     this.executeUpdateRender(operateElements);
 
@@ -1143,7 +1132,7 @@ export default class Command {
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._getTextHeight(operateElement);
+                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
                 }
             }
 
@@ -1168,7 +1157,7 @@ export default class Command {
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._getTextHeight(operateElement);
+                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
 
                     this.executeUpdateRender(operateElements);
 
@@ -1193,7 +1182,7 @@ export default class Command {
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._getTextHeight(operateElement);
+                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
                 }
             }
 
@@ -1218,7 +1207,7 @@ export default class Command {
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._getTextHeight(operateElement);
+                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
 
                     this.executeUpdateRender(operateElements);
 
@@ -1243,7 +1232,7 @@ export default class Command {
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._getTextHeight(operateElement);
+                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
                 }
             }
 
@@ -1268,7 +1257,7 @@ export default class Command {
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._getTextHeight(operateElement);
+                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
 
                     this.executeUpdateRender(operateElements);
 
@@ -1293,7 +1282,7 @@ export default class Command {
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._getTextHeight(operateElement);
+                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
                 }
             }
 
@@ -1317,7 +1306,7 @@ export default class Command {
                         text.fontColor = fontColor;
                     });
 
-                    operateElement.height = this._getTextHeight(operateElement);
+                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
 
                     this.executeUpdateRender(operateElements);
 
@@ -1341,7 +1330,7 @@ export default class Command {
                         text.fontColor = fontColor;
                     });
 
-                    operateElement.height = this._getTextHeight(operateElement);
+                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
                 }
             }
 
@@ -1365,7 +1354,7 @@ export default class Command {
                         text.fontFamily = fontFamily;
                     });
 
-                    operateElement.height = this._getTextHeight(operateElement);
+                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
 
                     this.executeUpdateRender(operateElements);
 
@@ -1389,7 +1378,7 @@ export default class Command {
                         text.fontFamily = fontFamily;
                     });
 
-                    operateElement.height = this._getTextHeight(operateElement);
+                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
                 }
             }
 
@@ -1426,7 +1415,7 @@ export default class Command {
         for (const operateElement of operateElements) {
             if (operateElement && operateElement.type === "text") {
                 operateElement.lineHeight = lineHeight;
-                operateElement.height = this._getTextHeight(operateElement);
+                operateElement.height = this._stageConfig.getTextHeight(operateElement);
             }
         }
 

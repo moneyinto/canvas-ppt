@@ -81,7 +81,9 @@ export const createShapeElement = (
             color: THEME_COLOR
         },
         fixedRatio: false,
-        rotate: 0
+        rotate: 0,
+        wordSpace: 1,
+        lineHeight: 2
     };
 
     return newElement;

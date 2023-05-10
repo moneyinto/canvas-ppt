@@ -5,6 +5,7 @@ import { OutLine } from "./outline";
 import { Shadow } from "./shadow";
 import { Fill } from "./fill";
 import Gradient from "./gradient";
+import { RichText } from "./richText";
 
 export class Shape {
     private _stageConfig: StageConfig;
@@ -13,6 +14,7 @@ export class Shape {
     private _shadow: Shadow;
     private _fill: Fill;
     private _gradient: Gradient;
+    private _richText: RichText;
     constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
@@ -20,6 +22,7 @@ export class Shape {
         this._shadow = new Shadow(this._ctx);
         this._fill = new Fill(this._ctx);
         this._gradient = new Gradient(this._ctx);
+        this._richText = new RichText(stageConfig, ctx);
     }
 
     public draw(element: IPPTShapeElement) {
@@ -40,6 +43,20 @@ export class Shape {
         this._ctx.rotate((element.rotate / 180) * Math.PI);
         // 水平垂直翻转
         this._ctx.scale(element.flipH || 1, element.flipV || 1);
+
+        if (element.content && element.content.length > 0) {
+            this._ctx.save();
+
+            const height = this._stageConfig.getTextHeight(element);
+            // console.log(height, element.height);
+            // 高度比较，考虑文字高度大于形状时，进行压缩
+
+            const offsetY = (element.height - height) / 2;
+            this._ctx.translate(-element.width / 2, -element.height / 2 + offsetY);
+            this._richText.renderContent(element);
+
+            this._ctx.restore();
+        }
 
         const path = getShapePath(element.shape, element.width, element.height) as Path2D;
 

@@ -4,7 +4,7 @@ import { baseFontConfig } from "../config/font";
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import Listener from "../listener";
 import { ICacheImage, IRectParameter } from "@/types";
-import { ICreatingElement, IPPTElement, IPPTTextElement } from "@/types/element";
+import { ICreatingElement, IPPTElement, IPPTShapeElement, IPPTTextElement } from "@/types/element";
 import { IFontConfig, IFontData, ILineData } from "@/types/font";
 import { ISlide, ISlideBackground } from "@/types/slide";
 
@@ -479,7 +479,17 @@ export default class StageConfig {
         );
     }
 
-    public getRenderContent(element: IPPTTextElement) {
+    // 获取文本变更后文本框高度
+    public getTextHeight(operateElement: IPPTTextElement | IPPTShapeElement) {
+        const renderContent = this.getRenderContent(operateElement);
+        let height = TEXT_MARGIN * 2;
+        renderContent.forEach((line) => {
+            height += line.height * operateElement.lineHeight;
+        });
+        return height;
+    }
+
+    public getRenderContent(element: IPPTTextElement | IPPTShapeElement) {
         const width = element.width - TEXT_MARGIN * 2;
         const renderContent: ILineData[] = [];
         let lineData: ILineData = {
@@ -488,7 +498,7 @@ export default class StageConfig {
             texts: []
         };
         let countWidth = 0;
-        element.content.forEach((text) => {
+        element.content?.forEach((text) => {
             if (lineData.height === 0) lineData.height = text.fontSize;
             if (text.value === "\n") {
                 lineData.texts.push(text);
@@ -518,8 +528,8 @@ export default class StageConfig {
         return renderContent;
     }
 
-    public getAlignOffsetX(line: ILineData, element: IPPTTextElement) {
-        const align = element.align;
+    public getAlignOffsetX(line: ILineData, element: IPPTTextElement | IPPTShapeElement) {
+        const align = element.align || "center";
         return {
             left: 0,
             center: (element.width - TEXT_MARGIN * 2 - line.width) / 2,

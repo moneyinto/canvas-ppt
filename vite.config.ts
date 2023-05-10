@@ -33,7 +33,7 @@ export default defineConfig(({ mode }) => {
             rollupOptions: {
                 output: {
                     manualChunks(id) {
-                        if (id.includes("node_modules")) {
+                        if (id.includes("node_modules/")) {
                             return id
                                 .toString()
                                 .split("node_modules/")[1]
