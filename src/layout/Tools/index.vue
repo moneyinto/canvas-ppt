@@ -4,6 +4,20 @@
             <AddPPT />
 
             <a-divider class="ppt-tool-divider" type="vertical" />
+            <div class="ppt-edit-tools">
+                <a-tooltip title="保存">
+                    <div
+                        class="ppt-tool-btn"
+                        @click="save()"
+                    >
+                        &nbsp;
+                        <PPTIcon icon="save" :size="16" />
+                        &nbsp;
+                    </div>
+                </a-tooltip>
+            </div>
+
+            <a-divider class="ppt-tool-divider" type="vertical" />
             <Edit />
 
             <a-divider class="ppt-tool-divider" type="vertical" />
@@ -30,7 +44,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, ref, watch, toRefs } from "vue";
+import { PropType, ref, watch, toRefs, inject, Ref } from "vue";
 import { IPPTElement } from "@/types/element";
 import AddPPT from "./AddPPT.vue";
 import Edit from "./Edit.vue";
@@ -43,6 +57,8 @@ import TextEdit from "./TextEdit/index.vue";
 import Align from "./Align.vue";
 import ImageEdit from "./ImageEdit.vue";
 import Background from "./Background.vue";
+import PPTIcon from "@/components/Icon.vue";
+import Editor from "@/plugins/editor";
 
 const props = defineProps({
     elements: {
@@ -50,6 +66,8 @@ const props = defineProps({
         required: true
     }
 });
+
+const instance = inject<Ref<Editor>>("instance");
 
 const showFillColor = ref(false);
 const showBorder = ref(false);
@@ -80,6 +98,13 @@ watch(elements, () => {
         showImageEdit.value = false;
     }
 });
+
+const save = async () => {
+    console.log(instance?.value.stageConfig.slides);
+    // 清理历史记录 初始化历史记录
+    await instance?.value.history.clear(true);
+    instance?.value.history.getHistorySnapshot();
+};
 </script>
 
 <style lang="scss" scoped>
