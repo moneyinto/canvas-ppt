@@ -488,7 +488,7 @@ export default class StageConfig {
         const renderContent = this.getRenderContent(operateElement);
         let height = TEXT_MARGIN * 2;
         renderContent.forEach((line) => {
-            height += line.height * (operateElement.lineHeight || 2);
+            height += line.height * operateElement.lineHeight;
         });
         return height;
     }
@@ -502,7 +502,7 @@ export default class StageConfig {
             texts: []
         };
         let countWidth = 0;
-        element.content?.forEach((text) => {
+        element.content.forEach((text) => {
             if (lineData.height === 0) lineData.height = text.fontSize;
             if (text.value === "\n") {
                 lineData.texts.push(text);
@@ -517,7 +517,7 @@ export default class StageConfig {
                 // 一行数据可以摆得下
                 lineData.texts.push(text);
                 if (lineData.height < text.fontSize) lineData.height = text.fontSize;
-                countWidth = countWidth + text.width + (element.wordSpace || 0);
+                countWidth = countWidth + text.width + element.wordSpace;
                 lineData.width = countWidth;
             } else {
                 renderContent.push(lineData);
@@ -526,7 +526,7 @@ export default class StageConfig {
                     width: text.width,
                     texts: [text]
                 };
-                countWidth = text.width + (element.wordSpace || 0);
+                countWidth = text.width + element.wordSpace;
             }
         });
         return renderContent;
@@ -541,7 +541,7 @@ export default class StageConfig {
         }[align];
     }
 
-    public getSelectArea(selectArea: [number, number, number, number], element: IPPTTextElement) {
+    public getSelectArea(selectArea: [number, number, number, number], element: IPPTTextElement | IPPTShapeElement) {
         const renderContent = this.getRenderContent(element);
         let startX = 0;
         let endX = 0;
@@ -577,7 +577,7 @@ export default class StageConfig {
         lineData: ILineData,
         index: number,
         selectArea: [number, number, number, number],
-        element: IPPTTextElement
+        element: IPPTTextElement | IPPTShapeElement
     ) {
         if (index >= selectArea[1] && index <= selectArea[3]) {
             let startX = 0;

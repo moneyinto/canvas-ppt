@@ -699,13 +699,15 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && operateElement.type === "text") {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
                 const { startX, endX } = this._stageConfig.getSelectArea(
                     selectArea,
                     operateElement
                 );
                 operateElement.content.splice(startX, endX - startX);
-                operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                if (operateElement.type === "text") {
+                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                }
 
                 this._stageConfig.setSelectArea(null);
 
@@ -722,13 +724,15 @@ export default class Command {
         const operateElement = operateElements.find(
             (element) => element.id === this._stageConfig.textFocusElementId
         );
-        if (operateElement && operateElement.type === "text") {
+        if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
             if (
                 position >= operateElement.content.length - 1 ||
                 position === -1
             ) return false;
             operateElement.content.splice(position, 1);
-            operateElement.height = this._stageConfig.getTextHeight(operateElement);
+            if (operateElement.type === "text") {
+                operateElement.height = this._stageConfig.getTextHeight(operateElement);
+            }
 
             this.executeUpdateRender(operateElements);
 
@@ -745,7 +749,7 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && operateElement.type === "text") {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
                 // 光标移动
                 switch (direction) {
                     case KeyMap.Up: {
@@ -908,7 +912,7 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && operateElement.type === "text") {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
                 if (this._cursor.getTextareaText()) return;
                 const config = this._stageConfig.fontConfig;
                 const text: IFontData = {
@@ -987,9 +991,11 @@ export default class Command {
         const operateElement = operateElements.find(
             (element) => element.id === this._stageConfig.textFocusElementId
         );
-        if (operateElement && operateElement.type === "text") {
+        if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
             operateElement.content.splice(position, 0, text);
-            operateElement.height = this._stageConfig.getTextHeight(operateElement);
+            if (operateElement.type === "text") {
+                operateElement.height = this._stageConfig.getTextHeight(operateElement);
+            }
 
             this.executeUpdateRender(operateElements);
 

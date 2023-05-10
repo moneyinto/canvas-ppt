@@ -44,20 +44,6 @@ export class Shape {
         // 水平垂直翻转
         this._ctx.scale(element.flipH || 1, element.flipV || 1);
 
-        if (element.content && element.content.length > 0) {
-            this._ctx.save();
-
-            const height = this._stageConfig.getTextHeight(element);
-            // console.log(height, element.height);
-            // 高度比较，考虑文字高度大于形状时，进行压缩
-
-            const offsetY = (element.height - height) / 2;
-            this._ctx.translate(-element.width / 2, -element.height / 2 + offsetY);
-            this._richText.renderContent(element);
-
-            this._ctx.restore();
-        }
-
         const path = getShapePath(element.shape, element.width, element.height) as Path2D;
 
         if (element.shadow) {
@@ -75,6 +61,14 @@ export class Shape {
         if (element.gradient) {
             const { color, type, rotate } = element.gradient;
             this._gradient.draw({ x: -element.width / 2, y: -element.height / 2, width: element.width, height: element.height }, color, type, rotate);
+        }
+
+        if (element.content && element.content.length > 0) {
+            const height = this._stageConfig.getTextHeight(element);
+            // 高度比较，考虑文字高度大于形状时，进行压缩！！！！！！！！！！！！！
+            const offsetY = (element.height - height) / 2;
+            this._ctx.translate(-element.width / 2, -element.height / 2 + offsetY);
+            this._richText.renderContent(element);
         }
 
         this._ctx.restore();

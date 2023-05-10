@@ -67,21 +67,21 @@ export class RichText {
         let textX = TEXT_MARGIN;
         let textY = TEXT_MARGIN;
         lineTexts.forEach(lineData => {
-            const lineHeight = lineData.height * (element.lineHeight || 2);
+            const lineHeight = lineData.height * element.lineHeight;
             const offsetX = this._stageConfig.getAlignOffsetX(lineData, element);
             lineData.texts.forEach(text => {
                 // 排除换行情况
                 if (text.value !== "\n") {
                     if (text.underline) {
-                        this._drawUnderLine(text, textX + offsetX, textY, lineData.height, (element.lineHeight || 2), (element.wordSpace || 0));
+                        this._drawUnderLine(text, textX + offsetX, textY, lineData.height, element.lineHeight, element.wordSpace);
                     }
 
                     if (text.strikout) {
-                        this._drawStrikout(text, textX + offsetX, textY, lineData.height, (element.lineHeight || 2), (element.wordSpace || 0));
+                        this._drawStrikout(text, textX + offsetX, textY, lineData.height, element.lineHeight, element.wordSpace);
                     }
 
-                    this._fillText(text, textX + offsetX, textY, lineData.height, (element.lineHeight || 2));
-                    textX = textX + text.width + (element.wordSpace || 0);
+                    this._fillText(text, textX + offsetX, textY, lineData.height, element.lineHeight);
+                    textX = textX + text.width + element.wordSpace;
                 }
             });
             textX = TEXT_MARGIN;
