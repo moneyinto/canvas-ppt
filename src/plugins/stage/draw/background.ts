@@ -4,6 +4,7 @@ import StageConfig from "../config";
 import { ICacheImage } from "@/types";
 import History from "@/plugins/editor/history";
 import Gradient from "./gradient";
+import { defaultImageSrc } from "@/plugins/config";
 
 export default class Background {
     private _stageConfig: StageConfig;
@@ -34,10 +35,10 @@ export default class Background {
                 };
                 try {
                     this._history.getFile(id).then(file => {
-                        image.src = file;
+                        image.src = file || defaultImageSrc;
                     });
                 } catch {
-                    image.src = "";
+                    image.src = defaultImageSrc;
                 }
             }
         });

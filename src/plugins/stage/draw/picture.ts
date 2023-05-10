@@ -7,6 +7,7 @@ import { Fill } from "./fill";
 import { OutLine } from "./outline";
 import { getShapePath } from "@/utils/shape";
 import { SHAPE_TYPE } from "@/plugins/config/shapes";
+import { defaultImageSrc } from "@/plugins/config";
 
 export class Picture {
     private _stageConfig: StageConfig;
@@ -45,10 +46,10 @@ export class Picture {
                 };
                 try {
                     this._history.getFile(element.src).then(file => {
-                        image.src = file;
+                        image.src = file || defaultImageSrc;
                     });
                 } catch {
-                    image.src = "";
+                    image.src = defaultImageSrc;
                 }
             }
         });
