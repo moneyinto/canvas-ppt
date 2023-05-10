@@ -29,12 +29,11 @@ export class Picture {
         this._outline = new OutLine(this._ctx);
     }
 
-    private async _getCacheImage(element: IPPTImageElement | IPPTLatexElement | IPPTChartElement): Promise<ICacheImage> {
+    private async _getCacheImage(element: IPPTImageElement | IPPTLatexElement | IPPTChartElement): Promise<HTMLImageElement> {
         return new Promise(resolve => {
-            let isDefault = false;
             const cacheImage = this._stageConfig.cacheImages.find(image => image.id === element.src);
             if (cacheImage) {
-                resolve(cacheImage);
+                resolve(cacheImage.image);
             } else {
                 const image = new Image();
                 image.onload = () => {
@@ -42,16 +41,14 @@ export class Picture {
                         id: element.src,
                         image
                     };
-                    if (!isDefault) this._stageConfig.addCacheImage(cacheImage);
-                    resolve(cacheImage);
+                    this._stageConfig.addCacheImage(cacheImage);
+                    resolve(cacheImage.image);
                 };
                 try {
                     this._history.getFile(element.src).then(file => {
-                        isDefault = !file;
                         image.src = file || defaultImageSrc;
                     });
                 } catch {
-                    isDefault = true;
                     image.src = defaultImageSrc;
                 }
             }
@@ -61,7 +58,7 @@ export class Picture {
     public async draw(element: IPPTImageElement | IPPTLatexElement | IPPTChartElement) {
         const cacheImage = await this._getCacheImage(element);
         if (cacheImage) {
-            const image = cacheImage.image;
+            const image = cacheImage;
             const zoom = this._stageConfig.zoom;
             const { x, y } = this._stageConfig.getStageOrigin();
 

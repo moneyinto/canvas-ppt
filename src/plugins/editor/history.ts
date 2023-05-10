@@ -64,6 +64,9 @@ export default class History {
         await this._db.delete(this._snapshotKeys);
         this._snapshotKeys = [];
         this.cursor = -1;
+
+        // 清空图片暂存
+        this._stageConfig.clearCacheImages();
     }
 
     public async updateThumbnailSlide(cursor: number) {

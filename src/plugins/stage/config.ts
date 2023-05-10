@@ -316,6 +316,10 @@ export default class StageConfig {
         this.cacheImages.push(cacheImage);
     }
 
+    public clearCacheImages() {
+        this.cacheImages = [];
+    }
+
     public setSelectArea(selectArea: [number, number, number, number] | null) {
         this.selectArea = selectArea;
     }
