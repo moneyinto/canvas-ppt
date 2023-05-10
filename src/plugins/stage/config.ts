@@ -484,7 +484,7 @@ export default class StageConfig {
         const renderContent = this.getRenderContent(operateElement);
         let height = TEXT_MARGIN * 2;
         renderContent.forEach((line) => {
-            height += line.height * operateElement.lineHeight;
+            height += line.height * (operateElement.lineHeight || 2);
         });
         return height;
     }
@@ -513,7 +513,7 @@ export default class StageConfig {
                 // 一行数据可以摆得下
                 lineData.texts.push(text);
                 if (lineData.height < text.fontSize) lineData.height = text.fontSize;
-                countWidth = countWidth + text.width + element.wordSpace;
+                countWidth = countWidth + text.width + (element.wordSpace || 0);
                 lineData.width = countWidth;
             } else {
                 renderContent.push(lineData);
@@ -522,7 +522,7 @@ export default class StageConfig {
                     width: text.width,
                     texts: [text]
                 };
-                countWidth = text.width + element.wordSpace;
+                countWidth = text.width + (element.wordSpace || 0);
             }
         });
         return renderContent;
