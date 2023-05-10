@@ -31,6 +31,7 @@ export class Picture {
 
     private async _getCacheImage(element: IPPTImageElement | IPPTLatexElement | IPPTChartElement): Promise<ICacheImage> {
         return new Promise(resolve => {
+            let isDefault = false;
             const cacheImage = this._stageConfig.cacheImages.find(image => image.id === element.src);
             if (cacheImage) {
                 resolve(cacheImage);
@@ -41,14 +42,16 @@ export class Picture {
                         id: element.src,
                         image
                     };
-                    this._stageConfig.addCacheImage(cacheImage);
+                    if (!isDefault) this._stageConfig.addCacheImage(cacheImage);
                     resolve(cacheImage);
                 };
                 try {
                     this._history.getFile(element.src).then(file => {
+                        isDefault = !file;
                         image.src = file || defaultImageSrc;
                     });
                 } catch {
+                    isDefault = true;
                     image.src = defaultImageSrc;
                 }
             }

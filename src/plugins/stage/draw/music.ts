@@ -21,6 +21,7 @@ export class Music {
     private async _getCacheImage(element: IPPTAudioElement): Promise<HTMLImageElement> {
         return new Promise(resolve => {
             if (element.cover) {
+                let isDefault = false;
                 const cacheImage = this._stageConfig.cacheImages.find(image => image.id === element.src);
                 if (cacheImage) {
                     resolve(cacheImage.image);
@@ -31,14 +32,16 @@ export class Music {
                             id: element.src,
                             image
                         };
-                        this._stageConfig.addCacheImage(cacheImage);
+                        if (!isDefault) this._stageConfig.addCacheImage(cacheImage);
                         resolve(cacheImage.image);
                     };
                     try {
                         this._history.getFile(element.src).then(file => {
+                            isDefault = !file;
                             image.src = file || defaultImageSrc;
                         });
                     } catch {
+                        isDefault = true;
                         image.src = defaultImageSrc;
                     }
                 }

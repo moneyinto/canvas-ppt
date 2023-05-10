@@ -20,6 +20,7 @@ export default class Background {
 
     private _getCacheImage(id: string): Promise<ICacheImage> {
         return new Promise(resolve => {
+            let isDefault = false;
             const cacheImage = this._stageConfig.cacheImages.find(image => image.id === id);
             if (cacheImage) {
                 resolve(cacheImage);
@@ -30,14 +31,16 @@ export default class Background {
                         id,
                         image
                     };
-                    this._stageConfig.addCacheImage(cacheImage);
+                    if (!isDefault) this._stageConfig.addCacheImage(cacheImage);
                     resolve(cacheImage);
                 };
                 try {
                     this._history.getFile(id).then(file => {
+                        isDefault = !file;
                         image.src = file || defaultImageSrc;
                     });
                 } catch {
+                    isDefault = true;
                     image.src = defaultImageSrc;
                 }
             }
