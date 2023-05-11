@@ -24,6 +24,7 @@ import {
     IPPTElementOutline,
     IPPTElementShadow,
     IPPTLineElement,
+    IPPTShapeElement,
     IPPTTextElement,
     IPPTVideoElement
 } from "@/types/element";
@@ -1017,7 +1018,7 @@ export default class Command {
 
     // 循环选中文本
     private _forSelectTexts(
-        element: IPPTTextElement,
+        element: IPPTTextElement | IPPTShapeElement,
         selectArea: [number, number, number, number],
         callback: (text: IFontData) => void
     ) {
@@ -1055,7 +1056,7 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && operateElement.type === "text") {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
@@ -1067,7 +1068,9 @@ export default class Command {
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    if (operateElement.type === "text") {
+                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    }
 
                     this.executeUpdateRender(operateElements);
 
@@ -1089,7 +1092,7 @@ export default class Command {
             }
         } else {
             for (const operateElement of operateElements) {
-                if (operateElement.type === "text") {
+                if (operateElement.type === "text" || operateElement.type === "shape") {
                     // 未聚焦文本框，直接设置整个文本框内容字体大小
                     operateElement.content.forEach((text) => {
                         text.fontSize = !type
@@ -1100,7 +1103,9 @@ export default class Command {
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    if (operateElement.type === "text") {
+                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    }
                 }
             }
 
@@ -1117,7 +1122,7 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && operateElement.type === "text") {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
@@ -1125,7 +1130,9 @@ export default class Command {
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    if (operateElement.type === "text") {
+                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    }
 
                     this.executeUpdateRender(operateElements);
 
@@ -1143,14 +1150,16 @@ export default class Command {
             }
         } else {
             for (const operateElement of operateElements) {
-                if (operateElement.type === "text") {
+                if (operateElement.type === "text" || operateElement.type === "shape") {
                     // 未聚焦文本框，直接设置整个文本框内容字体
                     operateElement.content.forEach((text) => {
                         text.fontWeight = bold ? "bold" : "normal";
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    if (operateElement.type === "text") {
+                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    }
                 }
             }
 
@@ -1167,7 +1176,7 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && operateElement.type === "text") {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
@@ -1175,7 +1184,9 @@ export default class Command {
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    if (operateElement.type === "text") {
+                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    }
 
                     this.executeUpdateRender(operateElements);
 
@@ -1193,14 +1204,16 @@ export default class Command {
             }
         } else {
             for (const operateElement of operateElements) {
-                if (operateElement.type === "text") {
+                if (operateElement.type === "text" || operateElement.type === "shape") {
                     // 未聚焦文本框，直接设置整个文本框内容字体
                     operateElement.content.forEach((text) => {
                         text.fontStyle = italic ? "italic" : "normal";
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    if (operateElement.type === "text") {
+                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    }
                 }
             }
 
@@ -1217,7 +1230,7 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && operateElement.type === "text") {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
@@ -1225,7 +1238,9 @@ export default class Command {
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    if (operateElement.type === "text") {
+                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    }
 
                     this.executeUpdateRender(operateElements);
 
@@ -1243,14 +1258,16 @@ export default class Command {
             }
         } else {
             for (const operateElement of operateElements) {
-                if (operateElement.type === "text") {
+                if (operateElement.type === "text" || operateElement.type === "shape") {
                     // 未聚焦文本框，直接设置整个文本框内容字体
                     operateElement.content.forEach((text) => {
                         text.underline = underline;
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    if (operateElement.type === "text") {
+                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    }
                 }
             }
 
@@ -1267,7 +1284,7 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && operateElement.type === "text") {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
@@ -1275,7 +1292,9 @@ export default class Command {
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    if (operateElement.type === "text") {
+                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    }
 
                     this.executeUpdateRender(operateElements);
 
@@ -1293,14 +1312,16 @@ export default class Command {
             }
         } else {
             for (const operateElement of operateElements) {
-                if (operateElement.type === "text") {
+                if (operateElement.type === "text" || operateElement.type === "shape") {
                     // 未聚焦文本框，直接设置整个文本框内容字体
                     operateElement.content.forEach((text) => {
                         text.strikout = strikout;
                         this._resetTextFontSize(text);
                     });
 
-                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    if (operateElement.type === "text") {
+                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    }
                 }
             }
 
@@ -1317,14 +1338,16 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && operateElement.type === "text") {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
                         text.fontColor = fontColor;
                     });
 
-                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    if (operateElement.type === "text") {
+                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    }
 
                     this.executeUpdateRender(operateElements);
 
@@ -1342,13 +1365,15 @@ export default class Command {
             }
         } else {
             for (const operateElement of operateElements) {
-                if (operateElement.type === "text") {
+                if (operateElement.type === "text" || operateElement.type === "shape") {
                     // 未聚焦文本框，直接设置整个文本框内容字体
                     operateElement.content.forEach((text) => {
                         text.fontColor = fontColor;
                     });
 
-                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    if (operateElement.type === "text") {
+                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    }
                 }
             }
 
@@ -1365,14 +1390,16 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && operateElement.type === "text") {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
                 const selectArea = this._stageConfig.selectArea;
                 if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
                         text.fontFamily = fontFamily;
                     });
 
-                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    if (operateElement.type === "text") {
+                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    }
 
                     this.executeUpdateRender(operateElements);
 
@@ -1390,13 +1417,15 @@ export default class Command {
             }
         } else {
             for (const operateElement of operateElements) {
-                if (operateElement.type === "text") {
+                if (operateElement.type === "text" || operateElement.type === "shape") {
                     // 未聚焦文本框，直接设置整个文本框内容字体
                     operateElement.content.forEach((text) => {
                         text.fontFamily = fontFamily;
                     });
 
-                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    if (operateElement.type === "text") {
+                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    }
                 }
             }
 
@@ -1411,7 +1440,7 @@ export default class Command {
         const operateElements = this._stageConfig.operateElements;
 
         for (const operateElement of operateElements) {
-            if (operateElement && operateElement.type === "text") {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
                 operateElement.align = align;
             }
         }
@@ -1431,9 +1460,11 @@ export default class Command {
         const operateElements = this._stageConfig.operateElements;
 
         for (const operateElement of operateElements) {
-            if (operateElement && operateElement.type === "text") {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
                 operateElement.lineHeight = lineHeight;
-                operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                if (operateElement.type === "text") {
+                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                }
             }
         }
 

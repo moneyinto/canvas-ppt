@@ -15,7 +15,7 @@
 <script lang="ts" setup>
 import { inject, onMounted, onUnmounted, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
-import { IPPTElement, IPPTTextElement } from "@/types/element";
+import { IPPTElement, IPPTShapeElement, IPPTTextElement } from "@/types/element";
 import { IFontData } from "@/types/font";
 import PPTIcon from "@/components/Icon.vue";
 import emitter, { EmitterEvents } from "@/utils/emitter";
@@ -50,7 +50,7 @@ const getContentUnderLine = (texts: IFontData[]) => {
 };
 
 const init = () => {
-    const operateElements = props.elements.filter(element => element.type === "text") as IPPTTextElement[];
+    const operateElements = props.elements.filter(element => (element.type === "text" || element.type === "shape")) as (IPPTTextElement | IPPTShapeElement)[];
     if (operateElements.length > 0) {
         isUnderLine.value = true;
         for (const operateElement of operateElements) {
