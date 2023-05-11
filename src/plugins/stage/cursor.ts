@@ -117,8 +117,14 @@ export class Cursor {
         const element = this.opreateElement;
         if (!element) return;
         const renderContent = this._stageConfig.getRenderContent(element);
-
+        // y值大于于偏移值的时候，进行y值的偏移，否则为第一行，y为固定值
+        if (y < offsetY) {
+            y = 4;
+        } else {
+            y -= offsetY;
+        }
         const { left, textX, top, textY } = this.getCursorPosition(x, y, renderContent);
+
         this._top = top + offsetY;
         this._left = left;
 

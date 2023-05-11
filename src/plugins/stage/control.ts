@@ -306,7 +306,7 @@ export default class ControlStage extends Stage {
                         const x = left - operateElement.left;
                         const y = top - operateElement.top;
                         const renderContent = this.stageConfig.getRenderContent(
-                            operateElement as IPPTTextElement
+                            operateElement as (IPPTTextElement | IPPTShapeElement)
                         );
                         const { textX, textY } = this._cursor.getCursorPosition(
                             x,
@@ -874,7 +874,7 @@ export default class ControlStage extends Stage {
         } else if (!isMouseOut && this.stageConfig.textFocus && operateElements.length > 0) {
             const operateElement = operateElements.find(element => element.id === this.stageConfig.textFocusElementId);
             if (operateElement) {
-                this._dealSelectText(evt, operateElement as IPPTTextElement);
+                this._dealSelectText(evt, operateElement as (IPPTTextElement | IPPTShapeElement));
             }
         }
         this._textClick = null;
