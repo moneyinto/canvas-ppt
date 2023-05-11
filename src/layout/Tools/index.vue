@@ -40,6 +40,18 @@
 
         <a-divider class="ppt-tool-divider" type="vertical" />
         <Background />
+
+        <div class="loading-fullscreen" v-if="loading">
+            <div class="loading-box">
+                <a-spin size="large"></a-spin>
+                <a-progress
+                    :strokeWidth="16"
+                    :percent="percent"
+                    status="active"
+                    :show-info="false"
+                />
+            </div>
+        </div>
     </div>
 </template>
 
@@ -59,6 +71,8 @@ import ImageEdit from "./ImageEdit.vue";
 import Background from "./Background.vue";
 import PPTIcon from "@/components/Icon.vue";
 import Editor from "@/plugins/editor";
+import { message } from "ant-design-vue";
+import useExport from "@/hooks/useExport";
 
 const props = defineProps({
     elements: {
@@ -95,9 +109,22 @@ watch(elements, () => {
         showImageEdit.value = false;
     }
 });
-
+const storePath = inject<Ref<string>>("storePath");
+const loading = ref(false);
+const percent = ref(0);
+const { outputMPPTX, getMPPTXContent } = useExport(instance, loading, percent);
 const save = async () => {
-    console.log(instance?.value.stageConfig.slides);
+    if (storePath?.value) {
+        const buffer = await getMPPTXContent("nodebuffer") as Buffer;
+        const isOK = window.electron.saveFile(storePath.value, buffer);
+        if (isOK) {
+            message.success("保存成功");
+        } else {
+            message.error("文件不存在了");
+        }
+    } else {
+        await outputMPPTX();
+    }
     // 清理历史记录 初始化历史记录
     await instance?.value.history.clear(true);
     instance?.value.history.getHistorySnapshot();
@@ -209,5 +236,27 @@ const save = async () => {
 .ppt-tools::-webkit-scrollbar {
     display: none;
     height: 0 !important;
+}
+
+.loading-fullscreen {
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .loading-box {
+        width: 400px;
+        text-align: center;
+        height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
 }
 </style>
