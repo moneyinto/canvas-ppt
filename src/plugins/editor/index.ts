@@ -8,7 +8,7 @@ import { Textarea } from "../stage/textarea";
 import ViewStage from "../stage/view";
 import { ISlide } from "@/types/slide";
 import History from "./history";
-import { debounce, throttleRAF } from "@/utils";
+import { throttleRAF } from "@/utils";
 
 export default class Editor {
     public listener: Listener;
@@ -33,9 +33,9 @@ export default class Editor {
         // 画板配置
         this.stageConfig = new StageConfig(container, this.listener, 40);
         // 防抖，减少渲染叠加
-        this.stageConfig.resetDrawView = debounce(async () => {
+        this.stageConfig.resetDrawView = async () => {
             this._viewStage.resetDrawPage();
-        }, 50);
+        };
         this.stageConfig.resetDrawOprate = () => {
             this._controlStage.resetDrawOprate();
         };

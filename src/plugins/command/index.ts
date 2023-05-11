@@ -40,6 +40,7 @@ export default class Command {
     private _cursor: Cursor;
 
     private _updateDebounce: null | number | NodeJS.Timeout;
+    private _addTextRenderThrottle: null | Date;
     constructor(
         stageConfig: StageConfig,
         listener: Listener,
@@ -52,6 +53,7 @@ export default class Command {
         this._cursor = cursor;
 
         this._updateDebounce = null;
+        this._addTextRenderThrottle = null;
     }
 
     public getZoom() {
@@ -997,7 +999,17 @@ export default class Command {
                 operateElement.height = this._stageConfig.getTextHeight(operateElement);
             }
 
-            this.executeUpdateRender(operateElements);
+            const currentDate = new Date();
+            if (this._addTextRenderThrottle) {
+                if (currentDate.getTime() - this._addTextRenderThrottle.getTime() >= 100) {
+                    // 渲染过快导致重叠问题进行节流操作
+                    this.executeUpdateRender(operateElements);
+                    this._addTextRenderThrottle = currentDate;
+                }
+            } else {
+                this.executeUpdateRender(operateElements);
+                this._addTextRenderThrottle = currentDate;
+            }
 
             this._debounceLog();
         }
