@@ -304,10 +304,21 @@ export default class ControlStage extends Stage {
                     if (this.stageConfig.textFocus && operateElement.id === this.stageConfig.textFocusElementId) {
                         if (!isContextmenu) this._cursor.hideCursor();
                         const x = left - operateElement.left;
-                        const y = top - operateElement.top;
+                        let y = top - operateElement.top;
                         const renderContent = this.stageConfig.getRenderContent(
                             operateElement as (IPPTTextElement | IPPTShapeElement)
                         );
+
+                        if (operateElement.type === "shape") {
+                            const height = this.stageConfig.getTextHeight(operateElement);
+                            const offsetY = operateElement.height / 2 - height / 2;
+                            if (y < offsetY) {
+                                y = 4;
+                            } else {
+                                y = y - offsetY;
+                            }
+                        }
+
                         const { textX, textY } = this._cursor.getCursorPosition(
                             x,
                             y,
@@ -634,10 +645,21 @@ export default class ControlStage extends Stage {
                 if (this._textClick) {
                     const { left, top } = this._getMousePosition(evt);
                     const x = left - operateElement.left;
-                    const y = top - operateElement.top;
+                    let y = top - operateElement.top;
                     const renderContent = this.stageConfig.getRenderContent(
-                        operateElement as IPPTTextElement
+                        operateElement as (IPPTTextElement | IPPTShapeElement)
                     );
+
+                    if (operateElement.type === "shape") {
+                        const height = this.stageConfig.getTextHeight(operateElement);
+                        const offsetY = operateElement.height / 2 - height / 2;
+                        if (y < offsetY) {
+                            y = 4;
+                        } else {
+                            y -= offsetY;
+                        }
+                    }
+
                     const { textX, textY } = this._cursor.getCursorPosition(
                         x,
                         y,

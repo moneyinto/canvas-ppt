@@ -620,9 +620,16 @@ export default class StageConfig {
                 });
 
             const offsetX = this.getAlignOffsetX(lineData, element);
+
+            let offsetY = 0;
+            if (element.type === "shape") {
+                const height = this.getTextHeight(element);
+                offsetY = (element.height - height) / 2;
+            }
+
             return {
                 x: x + offsetX,
-                y,
+                y: y + offsetY,
                 width: width + element.wordSpace,
                 height: lineData.height * element.lineHeight
             };
