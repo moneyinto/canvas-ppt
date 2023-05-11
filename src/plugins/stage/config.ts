@@ -4,7 +4,7 @@ import { baseFontConfig } from "../config/font";
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import Listener from "../listener";
 import { ICacheImage, IRectParameter } from "@/types";
-import { ICreatingElement, IPPTElement, IPPTTextElement } from "@/types/element";
+import { ICreatingElement, IPPTElement, IPPTShapeElement, IPPTTextElement } from "@/types/element";
 import { IFontConfig, IFontData, ILineData } from "@/types/font";
 import { ISlide, ISlideBackground } from "@/types/slide";
 
@@ -316,6 +316,10 @@ export default class StageConfig {
         this.cacheImages.push(cacheImage);
     }
 
+    public clearCacheImages() {
+        this.cacheImages = [];
+    }
+
     public setSelectArea(selectArea: [number, number, number, number] | null) {
         this.selectArea = selectArea;
     }
@@ -479,7 +483,17 @@ export default class StageConfig {
         );
     }
 
-    public getRenderContent(element: IPPTTextElement) {
+    // 获取文本变更后文本框高度
+    public getTextHeight(operateElement: IPPTTextElement | IPPTShapeElement) {
+        const renderContent = this.getRenderContent(operateElement);
+        let height = TEXT_MARGIN * 2;
+        renderContent.forEach((line) => {
+            height += line.height * operateElement.lineHeight;
+        });
+        return height;
+    }
+
+    public getRenderContent(element: IPPTTextElement | IPPTShapeElement) {
         const width = element.width - TEXT_MARGIN * 2;
         const renderContent: ILineData[] = [];
         let lineData: ILineData = {
@@ -518,8 +532,8 @@ export default class StageConfig {
         return renderContent;
     }
 
-    public getAlignOffsetX(line: ILineData, element: IPPTTextElement) {
-        const align = element.align;
+    public getAlignOffsetX(line: ILineData, element: IPPTTextElement | IPPTShapeElement) {
+        const align = element.align || "center";
         return {
             left: 0,
             center: (element.width - TEXT_MARGIN * 2 - line.width) / 2,
@@ -527,7 +541,7 @@ export default class StageConfig {
         }[align];
     }
 
-    public getSelectArea(selectArea: [number, number, number, number], element: IPPTTextElement) {
+    public getSelectArea(selectArea: [number, number, number, number], element: IPPTTextElement | IPPTShapeElement) {
         const renderContent = this.getRenderContent(element);
         let startX = 0;
         let endX = 0;
@@ -563,7 +577,7 @@ export default class StageConfig {
         lineData: ILineData,
         index: number,
         selectArea: [number, number, number, number],
-        element: IPPTTextElement
+        element: IPPTTextElement | IPPTShapeElement
     ) {
         if (index >= selectArea[1] && index <= selectArea[3]) {
             let startX = 0;
@@ -606,9 +620,16 @@ export default class StageConfig {
                 });
 
             const offsetX = this.getAlignOffsetX(lineData, element);
+
+            let offsetY = 0;
+            if (element.type === "shape") {
+                const height = this.getTextHeight(element);
+                offsetY = (element.height - height) / 2;
+            }
+
             return {
                 x: x + offsetX,
-                y,
+                y: y + offsetY,
                 width: width + element.wordSpace,
                 height: lineData.height * element.lineHeight
             };

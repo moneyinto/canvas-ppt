@@ -1,20 +1,24 @@
 <template>
     <div class="ppt-edit-tools">
-        <div
-            class="ppt-tool-btn"
-            :class="!canUndo && 'disabled'"
-            @click="undo()"
-        >
-            <PPTIcon icon="undo" :size="28" />
-        </div>
+        <a-tooltip title="撤销">
+            <div
+                class="ppt-tool-btn"
+                :class="!canUndo && 'disabled'"
+                @click="undo()"
+            >
+                <PPTIcon icon="undo" :size="28" />
+            </div>
+        </a-tooltip>
 
-        <div
-            class="ppt-tool-btn"
-            :class="!canRedo && 'disabled'"
-            @click="redo()"
-        >
-            <PPTIcon icon="redo" :size="28" />
-        </div>
+        <a-tooltip title="恢复">
+            <div
+                class="ppt-tool-btn"
+                :class="!canRedo && 'disabled'"
+                @click="redo()"
+            >
+                <PPTIcon icon="redo" :size="28" />
+            </div>
+        </a-tooltip>
     </div>
 </template>
 

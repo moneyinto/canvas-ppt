@@ -1,5 +1,5 @@
 import { IFontData, ILineData } from "@/types/font";
-import { IPPTTextElement } from "@/types/element";
+import { IPPTShapeElement, IPPTTextElement } from "@/types/element";
 import StageConfig, { TEXT_MARGIN } from "./config";
 import { Textarea } from "./textarea";
 
@@ -40,7 +40,7 @@ export class Cursor {
     }
 
     get opreateElement() {
-        return this._stageConfig.textFocus ? this._stageConfig.operateElements.find(opreateElement => opreateElement.id === this._stageConfig.textFocusElementId) as IPPTTextElement : null;
+        return this._stageConfig.textFocus ? this._stageConfig.operateElements.find(opreateElement => opreateElement.id === this._stageConfig.textFocusElementId) as (IPPTTextElement | IPPTShapeElement) : null;
     }
 
     get config() {
@@ -113,13 +113,19 @@ export class Cursor {
         return { left: left + offsetX, textX, top, textY };
     }
 
-    setCursorPosition(x: number, y: number) {
+    setCursorPosition(x: number, y: number, offsetY: number) {
         const element = this.opreateElement;
         if (!element) return;
         const renderContent = this._stageConfig.getRenderContent(element);
-
+        // y值大于于偏移值的时候，进行y值的偏移，否则为第一行，y为固定值
+        if (y < offsetY) {
+            y = 4;
+        } else {
+            y -= offsetY;
+        }
         const { left, textX, top, textY } = this.getCursorPosition(x, y, renderContent);
-        this._top = top;
+
+        this._top = top + offsetY;
         this._left = left;
 
         let allDataIndex = 0;
@@ -131,9 +137,16 @@ export class Cursor {
     }
 
     setCursorPositionByData() {
+        const element = this.opreateElement;
+        if (!element) return;
         const { top, left } = this._getLineCursorPositionByData();
+        let offsetY = 0;
+        if (element.type === "shape") {
+            const height = this._stageConfig.getTextHeight(element);
+            offsetY = (element.height - height) / 2;
+        }
         this._left = left;
-        this._top = top;
+        this._top = top + offsetY;
     }
 
     private _getLineCursorPositionByData() {
@@ -250,9 +263,9 @@ export class Cursor {
         return this._dataPosition;
     }
 
-    focus(x: number, y: number) {
+    focus(x: number, y: number, offsetY: number) {
         // 暂时默认到最后
-        this.setCursorPosition(x, y);
+        this.setCursorPosition(x, y, offsetY);
         this.updateCursor();
         this.showCursor();
 

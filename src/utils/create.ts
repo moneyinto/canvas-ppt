@@ -81,7 +81,17 @@ export const createShapeElement = (
             color: THEME_COLOR
         },
         fixedRatio: false,
-        rotate: 0
+        rotate: 0,
+        wordSpace: 1,
+        lineHeight: 2,
+        content: [
+            {
+                value: "\n",
+                ...baseFontConfig,
+                width: 0,
+                height: 0
+            }
+        ]
     };
 
     return newElement;

@@ -1,5 +1,5 @@
 import { SHAPE_TYPE } from "@/plugins/config/shapes";
-import { IPPTTextElement } from "@/types/element";
+import { IPPTShapeElement, IPPTTextElement } from "@/types/element";
 import { IFontData } from "@/types/font";
 import { getShapePath } from "@/utils/shape";
 import StageConfig, { TEXT_MARGIN } from "../config";
@@ -61,6 +61,34 @@ export class RichText {
         this._ctx.restore();
     }
 
+    public renderContent(element: IPPTTextElement | IPPTShapeElement) {
+        // 绘制text
+        const lineTexts = this._stageConfig.getRenderContent(element);
+        let textX = TEXT_MARGIN;
+        let textY = TEXT_MARGIN;
+        lineTexts.forEach(lineData => {
+            const lineHeight = lineData.height * element.lineHeight;
+            const offsetX = this._stageConfig.getAlignOffsetX(lineData, element);
+            lineData.texts.forEach(text => {
+                // 排除换行情况
+                if (text.value !== "\n") {
+                    if (text.underline) {
+                        this._drawUnderLine(text, textX + offsetX, textY, lineData.height, element.lineHeight, element.wordSpace);
+                    }
+
+                    if (text.strikout) {
+                        this._drawStrikout(text, textX + offsetX, textY, lineData.height, element.lineHeight, element.wordSpace);
+                    }
+
+                    this._fillText(text, textX + offsetX, textY, lineData.height, element.lineHeight);
+                    textX = textX + text.width + element.wordSpace;
+                }
+            });
+            textX = TEXT_MARGIN;
+            textY = textY + lineHeight;
+        });
+    }
+
     public draw(element: IPPTTextElement) {
         const zoom = this._stageConfig.zoom;
         const { x, y } = this._stageConfig.getStageOrigin();
@@ -95,31 +123,7 @@ export class RichText {
         // 平移到矩形左上角点位
         this._ctx.translate(-element.width / 2, -element.height / 2);
 
-        // 绘制text
-        const lineTexts = this._stageConfig.getRenderContent(element);
-        let textX = TEXT_MARGIN;
-        let textY = TEXT_MARGIN;
-        lineTexts.forEach(lineData => {
-            const lineHeight = lineData.height * element.lineHeight;
-            const offsetX = this._stageConfig.getAlignOffsetX(lineData, element);
-            lineData.texts.forEach(text => {
-                // 排除换行情况
-                if (text.value !== "\n") {
-                    if (text.underline) {
-                        this._drawUnderLine(text, textX + offsetX, textY, lineData.height, element.lineHeight, element.wordSpace);
-                    }
-
-                    if (text.strikout) {
-                        this._drawStrikout(text, textX + offsetX, textY, lineData.height, element.lineHeight, element.wordSpace);
-                    }
-
-                    this._fillText(text, textX + offsetX, textY, lineData.height, element.lineHeight);
-                    textX = textX + text.width + element.wordSpace;
-                }
-            });
-            textX = TEXT_MARGIN;
-            textY = textY + lineHeight;
-        });
+        this.renderContent(element);
 
         this._ctx.restore();
     }

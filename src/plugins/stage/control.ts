@@ -10,6 +10,7 @@ import {
 import {
     IPPTElement,
     IPPTLineElement,
+    IPPTShapeElement,
     IPPTTextElement,
     IPPTVideoElement
 } from "@/types/element";
@@ -138,7 +139,7 @@ export default class ControlStage extends Stage {
             currentSlide?.elements || []
         );
         if (operateElement) {
-            if (operateElement.type === "text") {
+            if (operateElement.type === "text" || operateElement.type === "shape") {
                 // 点击位置坐标
                 const { left, top } = this._getMousePosition(evt);
                 // 当元素被选中，且被双击时，开启编辑
@@ -146,11 +147,19 @@ export default class ControlStage extends Stage {
                 this.stageConfig.textFocusElementId = operateElement.id;
                 this.container.style.cursor = "text";
 
+                let offsetY = 0;
+                if (operateElement.type === "shape") {
+                    const height = this.stageConfig.getTextHeight(operateElement);
+                    offsetY = operateElement.height / 2 - height / 2;
+                }
+
                 // 聚焦光标到点击位置
                 this._cursor.focus(
                     left - operateElement.left,
-                    top - operateElement.top
+                    top - operateElement.top,
+                    offsetY
                 );
+
                 this._command.executeUpdateFontConfig();
             }
 
@@ -295,10 +304,21 @@ export default class ControlStage extends Stage {
                     if (this.stageConfig.textFocus && operateElement.id === this.stageConfig.textFocusElementId) {
                         if (!isContextmenu) this._cursor.hideCursor();
                         const x = left - operateElement.left;
-                        const y = top - operateElement.top;
+                        let y = top - operateElement.top;
                         const renderContent = this.stageConfig.getRenderContent(
-                            operateElement as IPPTTextElement
+                            operateElement as (IPPTTextElement | IPPTShapeElement)
                         );
+
+                        if (operateElement.type === "shape") {
+                            const height = this.stageConfig.getTextHeight(operateElement);
+                            const offsetY = operateElement.height / 2 - height / 2;
+                            if (y < offsetY) {
+                                y = 4;
+                            } else {
+                                y = y - offsetY;
+                            }
+                        }
+
                         const { textX, textY } = this._cursor.getCursorPosition(
                             x,
                             y,
@@ -617,7 +637,7 @@ export default class ControlStage extends Stage {
             }
 
             if (
-                operateElement.type === "text" &&
+                (operateElement.type === "text" || operateElement.type === "shape") &&
                 operateElement.id === this.stageConfig.textFocusElementId &&
                 this.stageConfig.textFocus
             ) {
@@ -625,10 +645,21 @@ export default class ControlStage extends Stage {
                 if (this._textClick) {
                     const { left, top } = this._getMousePosition(evt);
                     const x = left - operateElement.left;
-                    const y = top - operateElement.top;
+                    let y = top - operateElement.top;
                     const renderContent = this.stageConfig.getRenderContent(
-                        operateElement as IPPTTextElement
+                        operateElement as (IPPTTextElement | IPPTShapeElement)
                     );
+
+                    if (operateElement.type === "shape") {
+                        const height = this.stageConfig.getTextHeight(operateElement);
+                        const offsetY = operateElement.height / 2 - height / 2;
+                        if (y < offsetY) {
+                            y = 4;
+                        } else {
+                            y -= offsetY;
+                        }
+                    }
+
                     const { textX, textY } = this._cursor.getCursorPosition(
                         x,
                         y,
@@ -672,7 +703,7 @@ export default class ControlStage extends Stage {
                 for (const operateElement of operateElements) {
                     if (
                         operateElement &&
-                        hoverElement.type === "text" &&
+                        (hoverElement.type === "text" || hoverElement.type === "shape") &&
                         hoverElement.id === operateElement.id &&
                         hoverElement.id === this.stageConfig.textFocusElementId &&
                         this.stageConfig.textFocus
@@ -767,7 +798,7 @@ export default class ControlStage extends Stage {
     }
 
     // 文本框数据显示处理
-    private _dealSelectText(evt: MouseEvent, operateElement: IPPTTextElement) {
+    private _dealSelectText(evt: MouseEvent, operateElement: IPPTTextElement | IPPTShapeElement) {
         const selectArea = this.stageConfig.selectArea;
         if (selectArea && !(selectArea[0] === selectArea[2] && selectArea[1] === selectArea[3])) {
             let first = true;
@@ -834,7 +865,12 @@ export default class ControlStage extends Stage {
             const { left, top } = this._getMousePosition(evt);
             const x = left - operateElement.left;
             const y = top - operateElement.top;
-            this._cursor.focus(x, y);
+            let offsetY = 0;
+            if (operateElement.type === "shape") {
+                const height = this.stageConfig.getTextHeight(operateElement);
+                offsetY = operateElement.height / 2 - height / 2;
+            }
+            this._cursor.focus(x, y, offsetY);
             this._command.executeUpdateFontConfig();
             this.resetDrawOprate();
         }
@@ -860,7 +896,7 @@ export default class ControlStage extends Stage {
         } else if (!isMouseOut && this.stageConfig.textFocus && operateElements.length > 0) {
             const operateElement = operateElements.find(element => element.id === this.stageConfig.textFocusElementId);
             if (operateElement) {
-                this._dealSelectText(evt, operateElement as IPPTTextElement);
+                this._dealSelectText(evt, operateElement as (IPPTTextElement | IPPTShapeElement));
             }
         }
         this._textClick = null;
@@ -1133,7 +1169,7 @@ export default class ControlStage extends Stage {
                 if (
                     selectArea &&
                     this.stageConfig.textFocus &&
-                    element.type === "text"
+                    (element.type === "text" || element.type === "shape")
                 ) {
                     // 存在文本选中状态
                     const lineTexts = this.stageConfig.getRenderContent(element);

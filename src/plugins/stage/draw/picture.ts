@@ -1,5 +1,4 @@
 import History from "@/plugins/editor/history";
-import { ICacheImage } from "@/types";
 import { IPPTChartElement, IPPTImageElement, IPPTLatexElement } from "@/types/element";
 import StageConfig from "../config";
 import { Shadow } from "./shadow";
@@ -7,6 +6,7 @@ import { Fill } from "./fill";
 import { OutLine } from "./outline";
 import { getShapePath } from "@/utils/shape";
 import { SHAPE_TYPE } from "@/plugins/config/shapes";
+import { defaultImageSrc } from "@/plugins/config";
 
 export class Picture {
     private _stageConfig: StageConfig;
@@ -28,11 +28,11 @@ export class Picture {
         this._outline = new OutLine(this._ctx);
     }
 
-    private async _getCacheImage(element: IPPTImageElement | IPPTLatexElement | IPPTChartElement): Promise<ICacheImage> {
+    private async _getCacheImage(element: IPPTImageElement | IPPTLatexElement | IPPTChartElement): Promise<HTMLImageElement> {
         return new Promise(resolve => {
             const cacheImage = this._stageConfig.cacheImages.find(image => image.id === element.src);
             if (cacheImage) {
-                resolve(cacheImage);
+                resolve(cacheImage.image);
             } else {
                 const image = new Image();
                 image.onload = () => {
@@ -41,14 +41,14 @@ export class Picture {
                         image
                     };
                     this._stageConfig.addCacheImage(cacheImage);
-                    resolve(cacheImage);
+                    resolve(cacheImage.image);
                 };
                 try {
                     this._history.getFile(element.src).then(file => {
-                        image.src = file;
+                        image.src = file || defaultImageSrc;
                     });
                 } catch {
-                    image.src = "";
+                    image.src = defaultImageSrc;
                 }
             }
         });
@@ -57,7 +57,7 @@ export class Picture {
     public async draw(element: IPPTImageElement | IPPTLatexElement | IPPTChartElement) {
         const cacheImage = await this._getCacheImage(element);
         if (cacheImage) {
-            const image = cacheImage.image;
+            const image = cacheImage;
             const zoom = this._stageConfig.zoom;
             const { x, y } = this._stageConfig.getStageOrigin();
 

@@ -43,7 +43,7 @@
 <script lang="ts" setup>
 import { computed, inject, onMounted, onUnmounted, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
-import { IPPTElement, IPPTTextElement } from "@/types/element";
+import { IPPTElement, IPPTShapeElement, IPPTTextElement } from "@/types/element";
 import PPTIcon from "@/components/Icon.vue";
 import { IFontData } from "@/types/font";
 import { SYS_FONTS } from "@/plugins/config/font";
@@ -88,7 +88,7 @@ const getContentFontFamily = (texts: IFontData[]) => {
 };
 
 const init = () => {
-    const operateElements = props.elements.filter(element => element.type === "text") as IPPTTextElement[];
+    const operateElements = props.elements.filter(element => (element.type === "text" || element.type === "shape")) as (IPPTTextElement | IPPTShapeElement)[];
     if (operateElements.length > 0) {
         for (const [index, operateElement] of operateElements.entries()) {
             if (index === 0) {

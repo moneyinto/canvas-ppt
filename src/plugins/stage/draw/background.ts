@@ -1,9 +1,9 @@
 import { VIEWPORT_SIZE, VIEWRATIO } from "@/plugins/config/stage";
 import { ISlideBackground } from "@/types/slide";
 import StageConfig from "../config";
-import { ICacheImage } from "@/types";
 import History from "@/plugins/editor/history";
 import Gradient from "./gradient";
+import { defaultImageSrc } from "@/plugins/config";
 
 export default class Background {
     private _stageConfig: StageConfig;
@@ -17,11 +17,11 @@ export default class Background {
         this._gradient = new Gradient(this._ctx);
     }
 
-    private _getCacheImage(id: string): Promise<ICacheImage> {
+    private _getCacheImage(id: string): Promise<HTMLImageElement> {
         return new Promise(resolve => {
             const cacheImage = this._stageConfig.cacheImages.find(image => image.id === id);
             if (cacheImage) {
-                resolve(cacheImage);
+                resolve(cacheImage.image);
             } else {
                 const image = new Image();
                 image.onload = () => {
@@ -30,14 +30,14 @@ export default class Background {
                         image
                     };
                     this._stageConfig.addCacheImage(cacheImage);
-                    resolve(cacheImage);
+                    resolve(cacheImage.image);
                 };
                 try {
                     this._history.getFile(id).then(file => {
-                        image.src = file;
+                        image.src = file || defaultImageSrc;
                     });
                 } catch {
-                    image.src = "";
+                    image.src = defaultImageSrc;
                 }
             }
         });
@@ -65,12 +65,12 @@ export default class Background {
                         const imageElement = await this._getCacheImage(image);
 
                         if (imageSize === "cover") {
-                            this._ctx.drawImage(imageElement.image, x, y, stageWidth, stageHeight);
+                            this._ctx.drawImage(imageElement, x, y, stageWidth, stageHeight);
                         } else {
                             const zoom = stageWidth / VIEWPORT_SIZE;
                             this._ctx.translate(x, y);
                             this._ctx.scale(zoom, zoom);
-                            const pattern = this._ctx.createPattern(imageElement.image, "repeat");
+                            const pattern = this._ctx.createPattern(imageElement, "repeat");
                             if (pattern) {
                                 this._ctx.rect(0, 0, VIEWPORT_SIZE, VIEWPORT_SIZE * VIEWRATIO);
                                 this._ctx.fillStyle = pattern;

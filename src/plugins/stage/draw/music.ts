@@ -1,6 +1,7 @@
 import { IPPTAudioElement } from "@/types/element";
 import StageConfig from "../config";
 import History from "@/plugins/editor/history";
+import { defaultAudioSrc, defaultImageSrc } from "@/plugins/config";
 
 export class Music {
     private _stageConfig: StageConfig;
@@ -35,10 +36,10 @@ export class Music {
                     };
                     try {
                         this._history.getFile(element.src).then(file => {
-                            image.src = file;
+                            image.src = file || defaultImageSrc;
                         });
                     } catch {
-                        image.src = "";
+                        image.src = defaultImageSrc;
                     }
                 }
             } else {
@@ -50,7 +51,7 @@ export class Music {
                         this._image = image;
                         resolve(image);
                     };
-                    image.src = new URL("@/assets/icons/audioView.png", import.meta.url).href;
+                    image.src = defaultAudioSrc;
                 }
             }
         });

@@ -120,7 +120,7 @@ export interface IShapeGradient {
  *
  * shadow?: 阴影
  *
- * content?: 形状内文本
+ * content: 形状内文本
  */
 export interface IPPTShapeElement extends IPPTBaseElement {
     type: "shape";
@@ -128,12 +128,14 @@ export interface IPPTShapeElement extends IPPTBaseElement {
     fixedRatio: boolean;
     fill?: IPPTElementFill;
     rotate: number;
+    wordSpace: number;
+    lineHeight: number;
     gradient?: IShapeGradient;
     outline?: IPPTElementOutline;
     flipH?: 1 | -1;
     flipV?: 1 | -1;
     shadow?: IPPTElementShadow;
-    content?: IFontData[];
+    content: IFontData[];
     align?: "left" | "center" | "right";
 }
 
