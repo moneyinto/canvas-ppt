@@ -30,6 +30,9 @@ npm install
 npm run dev
 ```
 
+# 思路图
+![](./public/idea_map.png)
+
 # 功能列表
 ### 基础功能
 - [x] 历史记录（撤销、重做）
