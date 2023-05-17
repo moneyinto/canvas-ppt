@@ -11,7 +11,9 @@ import {
     IPPTAudioElement,
     ChartType,
     ChartData,
-    IPPTChartElement
+    IPPTChartElement,
+    IPPTTableElement,
+    IPPTTableCell
 } from "@/types/element";
 import { baseFontConfig } from "@/plugins/config/font";
 
@@ -262,6 +264,48 @@ export const createChartElement = (
         axisTransformation,
         title,
         stack
+    };
+
+    return newElement;
+};
+
+export const createTableElement = (row: number, col: number) => {
+    const id = createRandomCode();
+    const name = "表格";
+
+    const data: IPPTTableCell[][] = [];
+    for (let i = 0; i < row; i++) {
+        const rowCells: IPPTTableCell[] = [];
+        for (let j = 0; j < col; j++) {
+            rowCells.push({
+                id: createRandomCode(),
+                colspan: 1,
+                rowspan: 1,
+                content: [],
+                wordSpace: 1,
+                lineHeight: 1.2,
+                align: "center"
+            });
+        }
+        data.push(rowCells);
+    }
+
+    const colWidths: number[] = new Array(col).fill(1 / col);
+    const rowHeights: number[] = new Array(row).fill(1 / row);
+
+    const newElement: IPPTTableElement = {
+        name,
+        fixedRatio: false,
+        type: "table",
+        id,
+        left: 0,
+        top: 0,
+        rotate: 0,
+        width: col * 120,
+        height: row * 60,
+        data,
+        colWidths,
+        rowHeights
     };
 
     return newElement;

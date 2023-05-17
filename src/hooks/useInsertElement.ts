@@ -3,9 +3,17 @@ import Editor from "@/plugins/editor";
 import { ICreatingType } from "@/types/element";
 import { ILineItem, IShapeItem } from "@/types/shape";
 import { fileMd5 } from "@/utils";
-import { createAudioElement, createImageElement, createVideoElement } from "@/utils/create";
+import {
+    createAudioElement,
+    createImageElement,
+    createTableElement,
+    createVideoElement
+} from "@/utils/create";
 
-export default (instance: Ref<Editor> | undefined, insertVisible: Ref<boolean>) => {
+export default (
+    instance: Ref<Editor> | undefined,
+    insertVisible: Ref<boolean>
+) => {
     const insertShapeElement = (
         type: ICreatingType,
         shape: IShapeItem | ILineItem
@@ -114,11 +122,18 @@ export default (instance: Ref<Editor> | undefined, insertVisible: Ref<boolean>) 
         }
     };
 
+    const insertTableElement = (row: number, col: number) => {
+        insertVisible.value = false;
+        const element = createTableElement(row, col);
+        instance?.value.command.executeAddRender([element]);
+    };
+
     return {
         insertImageElement,
         insertShapeElement,
         insertTextElement,
         insertVideoElement,
-        insertAudioElement
+        insertAudioElement,
+        insertTableElement
     };
 };

@@ -126,6 +126,12 @@ npm run dev
 - [x] 边框
 
 #### 表格
+- [ ] 插入表格
+- [ ] 边框
+- [ ] 阴影
+- [ ] 填充色
+- [ ] 文本
+- [ ] 表格宽高调整
 
 #### 视频
 - [x] [研究canvas播放视频](https://github.com/moneyinto/canvas-video)
