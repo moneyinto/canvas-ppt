@@ -80,7 +80,7 @@ const { elements } = toRefs(props);
 
 watch(elements, () => {
     if (elements.value.length > 0) {
-        showBorder.value = elements.value.filter(element => element.type === "line" || element.type === "text" || element.type === "image" || element.type === "latex" || element.type === "chart").length > 0;
+        showBorder.value = elements.value.filter(element => element.type === "line" || element.type === "text" || element.type === "image" || element.type === "latex" || element.type === "chart" || element.type === "table").length > 0;
         showShadowColor.value = elements.value.filter(element => element.type !== "line" && element.type !== "video" && element.type !== "audio").length > 0;
         showEvert.value = elements.value.filter(element => element.type === "shape").length > 0;
         showTextEidt.value = elements.value.filter(element => element.type === "text" || element.type === "shape").length > 0;
