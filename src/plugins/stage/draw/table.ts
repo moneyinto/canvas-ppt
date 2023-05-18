@@ -98,6 +98,12 @@ export default class Table {
         // 旋转画布
         this._ctx.rotate((element.rotate / 180) * Math.PI);
 
+        this._ctx.save();
+
+        if (element.shadow) {
+            this._shadow.draw(element.shadow, zoom);
+        }
+
         // 增加白底
         const path = getShapePath(
             SHAPE_TYPE.RECT,
@@ -105,6 +111,8 @@ export default class Table {
             element.height
         ) as Path2D;
         this._fill.draw({ color: "#ffffff" }, path);
+
+        this._ctx.restore();
 
         // 平移到元素起始位置
         this._ctx.translate(-element.width / 2, -element.height / 2);
@@ -156,10 +164,6 @@ export default class Table {
                 }
             }
             cellY += rowHeight;
-        }
-
-        if (element.shadow) {
-            this._shadow.draw(element.shadow, zoom);
         }
 
         this._ctx.restore();
