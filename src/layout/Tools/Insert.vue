@@ -275,7 +275,7 @@ const {
     insertVideoElement,
     insertAudioElement,
     insertTableElement
-} = useInsertElement(instance, showShapePool);
+} = useInsertElement(instance, showShapePool, showTablePool);
 
 const openLatex = (element?: IPPTLatexElement) => {
     latexElement.value = element;

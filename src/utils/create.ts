@@ -305,7 +305,11 @@ export const createTableElement = (row: number, col: number) => {
         height: row * 60,
         data,
         colWidths,
-        rowHeights
+        rowHeights,
+        outline: {
+            width: 2,
+            color: "#f6f6f6"
+        }
     };
 
     return newElement;

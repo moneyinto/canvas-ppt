@@ -12,13 +12,14 @@ import {
 
 export default (
     instance: Ref<Editor> | undefined,
-    insertVisible: Ref<boolean>
+    shapeVisible: Ref<boolean>,
+    tableVisible: Ref<boolean>
 ) => {
     const insertShapeElement = (
         type: ICreatingType,
         shape: IShapeItem | ILineItem
     ) => {
-        insertVisible.value = false;
+        shapeVisible.value = false;
         if (type === "line") {
             instance?.value.stageConfig.setInsertElement({
                 type,
@@ -33,7 +34,6 @@ export default (
     };
 
     const insertImageElement = async (files: File[]) => {
-        insertVisible.value = false;
         const imageFile = files[0];
         if (!imageFile) return;
         const md5 = await fileMd5(imageFile);
@@ -64,14 +64,12 @@ export default (
     };
 
     const insertTextElement = () => {
-        insertVisible.value = false;
         instance?.value.stageConfig.setInsertElement({
             type: "text"
         });
     };
 
     const insertVideoElement = async (files: File[]) => {
-        insertVisible.value = false;
         const videoFile = files[0];
         if (!videoFile) return;
         const md5 = await fileMd5(videoFile);
@@ -100,7 +98,6 @@ export default (
     };
 
     const insertAudioElement = async (files: File[]) => {
-        insertVisible.value = false;
         const audioFile = files[0];
         if (!audioFile) return;
         const md5 = await fileMd5(audioFile);
@@ -123,7 +120,7 @@ export default (
     };
 
     const insertTableElement = (row: number, col: number) => {
-        insertVisible.value = false;
+        tableVisible.value = false;
         const element = createTableElement(row, col);
         instance?.value.command.executeAddRender([element]);
     };
