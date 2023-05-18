@@ -306,6 +306,10 @@ export const createTableElement = (row: number, col: number) => {
         data,
         colWidths,
         rowHeights,
+        theme: {
+            color: THEME_COLOR,
+            rowHeader: true
+        },
         outline: {
             width: 2,
             color: "#f6f6f6"

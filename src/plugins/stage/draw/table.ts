@@ -9,6 +9,14 @@ import {
 } from "@/types/element";
 import { SHAPE_TYPE } from "@/plugins/config/shapes";
 import { getShapePath } from "@/utils/shape";
+import tinycolor from "tinycolor2";
+
+interface ITheme {
+    color: string;
+    headerColor?: string;
+    subColor1: string;
+    subColor2: string;
+}
 
 export default class Table {
     private _stageConfig: StageConfig;
@@ -33,7 +41,9 @@ export default class Table {
         cellWidth: number,
         cellHeight: number,
         cell: IPPTTableCell,
-        outline?: IPPTElementOutline
+        row: number,
+        outline?: IPPTElementOutline,
+        theme?: ITheme
     ) {
         this._ctx.save();
         this._ctx.translate(x + cellWidth / 2, y + cellHeight / 2);
@@ -46,6 +56,22 @@ export default class Table {
 
         if (cell.fill) {
             this._fill.draw(cell.fill, path);
+        } else if (theme) {
+            if (theme.headerColor) {
+                if (row === 0) {
+                    this._fill.draw({ color: theme.headerColor }, path);
+                } else if (row % 2 === 0) {
+                    this._fill.draw({ color: theme.subColor2 }, path);
+                } else {
+                    this._fill.draw({ color: theme.subColor1 }, path);
+                }
+            } else {
+                if (row % 2 === 0) {
+                    this._fill.draw({ color: theme.subColor1 }, path);
+                } else {
+                    this._fill.draw({ color: theme.subColor2 }, path);
+                }
+            }
         }
 
         if (outline) {
@@ -75,6 +101,22 @@ export default class Table {
         // 平移到元素起始位置
         this._ctx.translate(-element.width / 2, -element.height / 2);
 
+        let theme: ITheme | undefined;
+        if (element.theme) {
+            const themeColor = tinycolor(element.theme.color);
+            const subColor1 = themeColor.setAlpha(0.3).toHex8String();
+            const subColor2 = themeColor.setAlpha(0.1).toHex8String();
+            theme = {
+                color: element.theme.color,
+                subColor1,
+                subColor2
+            };
+
+            if (element.theme.rowHeader) {
+                theme.headerColor = themeColor.setAlpha(1).toHex8String();
+            }
+        }
+
         let cellX = 0;
         let cellY = 0;
         for (let row = 0; row < element.data.length; row++) {
@@ -98,7 +140,9 @@ export default class Table {
                         cellWidth,
                         cellHeight,
                         cell,
-                        element.outline
+                        row,
+                        element.outline,
+                        theme
                     );
                     cellX += cellWidth;
                 }

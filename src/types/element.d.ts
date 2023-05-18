@@ -465,6 +465,18 @@ export interface IPPTTableCell {
 }
 
 /**
+ * 表格主题
+ *
+ * color: 主题色
+ *
+ * rowHeader: 标题行
+ */
+export interface IPPTTableTheme {
+    color: string;
+    rowHeader: boolean;
+}
+
+/**
  * 表格元素
  *
  * type: 元素类型（table）
@@ -488,6 +500,7 @@ export interface IPPTTableElement extends IPPTBaseElement {
     data: IPPTTableCell[][];
     outline?: IPPTElementOutline;
     shadow?: IPPTElementShadow;
+    theme?: IPPTTableTheme;
 }
 
 export type IPPTElement =
