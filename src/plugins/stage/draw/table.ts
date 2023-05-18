@@ -3,6 +3,7 @@ import { Fill } from "./fill";
 import { OutLine } from "./outline";
 import { Shadow } from "./shadow";
 import {
+    IPPTElementFill,
     IPPTElementOutline,
     IPPTTableCell,
     IPPTTableElement
@@ -42,6 +43,7 @@ export default class Table {
         cellHeight: number,
         cell: IPPTTableCell,
         row: number,
+        fill?: IPPTElementFill,
         outline?: IPPTElementOutline,
         theme?: ITheme
     ) {
@@ -56,6 +58,8 @@ export default class Table {
 
         if (cell.fill) {
             this._fill.draw(cell.fill, path);
+        } else if (fill) {
+            this._fill.draw(fill, path);
         } else if (theme) {
             if (theme.headerColor) {
                 if (row === 0) {
@@ -98,21 +102,19 @@ export default class Table {
         // 旋转画布
         this._ctx.rotate((element.rotate / 180) * Math.PI);
 
-        this._ctx.save();
-
         if (element.shadow) {
+            this._ctx.save();
             this._shadow.draw(element.shadow, zoom);
+
+            // 增加白底
+            const path = getShapePath(
+                SHAPE_TYPE.RECT,
+                element.width,
+                element.height
+            ) as Path2D;
+            this._fill.draw({ color: "#ffffff" }, path);
+            this._ctx.restore();
         }
-
-        // 增加白底
-        const path = getShapePath(
-            SHAPE_TYPE.RECT,
-            element.width,
-            element.height
-        ) as Path2D;
-        this._fill.draw({ color: "#ffffff" }, path);
-
-        this._ctx.restore();
 
         // 平移到元素起始位置
         this._ctx.translate(-element.width / 2, -element.height / 2);
@@ -122,6 +124,7 @@ export default class Table {
             const themeColor = tinycolor(element.theme.color);
             const subColor1 = themeColor.setAlpha(0.3).toHex8String();
             const subColor2 = themeColor.setAlpha(0.1).toHex8String();
+
             theme = {
                 color: element.theme.color,
                 subColor1,
@@ -157,6 +160,7 @@ export default class Table {
                         cellHeight,
                         cell,
                         row,
+                        element.fill,
                         element.outline,
                         theme
                     );

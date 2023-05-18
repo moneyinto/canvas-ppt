@@ -1,22 +1,10 @@
 <template>
-    <div
-        class="ppt-fill-content"
-        @keydown.stop=""
-        tabindex="0"
-    >
-        <a-button
-            size="small"
-            block
-            :disabled="noFill"
-            @click="setFillColor()"
-        >
+    <div class="ppt-fill-content" @keydown.stop="" tabindex="0">
+        <a-button size="small" block :disabled="noFill" @click="setFillColor()">
             无填充色
         </a-button>
 
-        <ColorBoard
-            :color="currentColor"
-            @change="onChangeColor"
-        />
+        <ColorBoard :color="currentColor" @change="onChangeColor" />
 
         <a-divider style="margin: 12px 0" />
 
@@ -45,12 +33,17 @@
 </template>
 
 <script lang="ts" setup>
-import { THEME_COLOR } from '@/plugins/config/stage';
+import { THEME_COLOR } from "@/plugins/config/stage";
 import ColorBoard from "./ColorBoard.vue";
-import Editor from '@/plugins/editor';
-import { IPPTAudioElement, IPPTElement, IPPTLineElement, IPPTVideoElement } from '@/types/element';
-import { STORAGE_FILL_COLOR } from '@/utils/storage';
-import { PropType, Ref, inject, ref, watch } from 'vue';
+import Editor from "@/plugins/editor";
+import {
+    IPPTAudioElement,
+    IPPTElement,
+    IPPTLineElement,
+    IPPTVideoElement
+} from "@/types/element";
+import { STORAGE_FILL_COLOR } from "@/utils/storage";
+import { PropType, Ref, inject, ref, watch } from "vue";
 
 const props = defineProps({
     elements: {

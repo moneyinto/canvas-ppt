@@ -500,6 +500,7 @@ export interface IPPTTableElement extends IPPTBaseElement {
     data: IPPTTableCell[][];
     outline?: IPPTElementOutline;
     shadow?: IPPTElementShadow;
+    fill?: IPPTElementFill;
     theme?: IPPTTableTheme;
 }
 

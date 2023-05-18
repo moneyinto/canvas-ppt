@@ -31,9 +31,9 @@
         <a-divider class="ppt-tool-divider" v-if="showTextEidt" type="vertical" />
         <TextEdit v-if="showTextEidt" :elements="elements" />
 
-        <a-divider class="ppt-tool-divider" v-if="showBorder || showTextEidt || showShadowColor" type="vertical" />
+        <a-divider class="ppt-tool-divider" v-if="showBorder || showTextEidt || showFillColor || showShadowColor" type="vertical" />
         <Border v-if="showBorder" :elements="elements" />
-        <FillColor v-if="showTextEidt || showImageEdit" :elements="elements" />
+        <FillColor v-if="showFillColor" :elements="elements" />
         <Shadow v-if="showShadowColor" :elements="elements" />
 
         <ImageEdit :elements="elements" v-if="showImageEdit" />
@@ -75,12 +75,14 @@ const showEvert = ref(false);
 const showAlign = ref(false);
 const showTextEidt = ref(false);
 const showImageEdit = ref(false);
+const showFillColor = ref(false);
 
 const { elements } = toRefs(props);
 
 watch(elements, () => {
     if (elements.value.length > 0) {
-        showBorder.value = elements.value.filter(element => element.type === "line" || element.type === "text" || element.type === "image" || element.type === "latex" || element.type === "chart" || element.type === "table").length > 0;
+        showBorder.value = elements.value.filter(element => element.type !== "video" && element.type !== "audio").length > 0;
+        showFillColor.value = elements.value.filter(element => element.type !== "line" && element.type !== "video" && element.type !== "audio").length > 0;
         showShadowColor.value = elements.value.filter(element => element.type !== "line" && element.type !== "video" && element.type !== "audio").length > 0;
         showEvert.value = elements.value.filter(element => element.type === "shape").length > 0;
         showTextEidt.value = elements.value.filter(element => element.type === "text" || element.type === "shape").length > 0;
@@ -88,6 +90,7 @@ watch(elements, () => {
         showAlign.value = true;
     } else {
         showBorder.value = false;
+        showFillColor.value = false;
         showShadowColor.value = false;
         showEvert.value = false;
         showTextEidt.value = false;

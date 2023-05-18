@@ -334,7 +334,8 @@ export default class Command {
                     newElement.type === "text" ||
                     newElement.type === "image" ||
                     newElement.type === "latex" ||
-                    newElement.type === "chart"
+                    newElement.type === "chart" ||
+                    newElement.type === "table"
                 ) {
                     newElement.fill = {
                         ...newElement.fill,
