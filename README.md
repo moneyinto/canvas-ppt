@@ -20,6 +20,8 @@
 # CANVAS-PPT
 > 一个基于Vue3.x + Typescript + canvas实现的在线演示文稿。
 
+##### 在线体验地址：[https://demo.money-into.com/canvas-ppt](https://demo.money-into.com/canvas-ppt)
+
 # 项目展示
 ![](./public/demo.png)
 
