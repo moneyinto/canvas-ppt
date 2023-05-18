@@ -98,6 +98,14 @@ export default class Table {
         // 旋转画布
         this._ctx.rotate((element.rotate / 180) * Math.PI);
 
+        // 增加白底
+        const path = getShapePath(
+            SHAPE_TYPE.RECT,
+            element.width,
+            element.height
+        ) as Path2D;
+        this._fill.draw({ color: "#ffffff" }, path);
+
         // 平移到元素起始位置
         this._ctx.translate(-element.width / 2, -element.height / 2);
 
