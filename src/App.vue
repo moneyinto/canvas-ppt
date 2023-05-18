@@ -208,6 +208,7 @@ onUnmounted(() => {
     emitter.off(EmitterEvents.SHOW_PANELS, openPanel);
 
     window.removeEventListener("resize", outFullScreen);
+    instance.value?.destory();
 });
 </script>
 
