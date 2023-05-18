@@ -135,6 +135,8 @@ npm run dev
 - [ ] 填充色
 - [ ] 文本
 - [ ] 表格宽高调整
+- [ ] 合并和拆分单元格
+- [ ] 主题色设置
 
 #### 视频
 - [x] [研究canvas播放视频](https://github.com/moneyinto/canvas-video)
