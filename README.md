@@ -159,6 +159,7 @@ npm run dev
 - [x] 边框
 
 ### 幻灯片放映
+- [x] [研究canvas实现元素动画](https://github.com/moneyinto/canvas-animation)
 - [x] 预览放映
 - [ ] 预览元素动画
 - [x] 画笔功能
