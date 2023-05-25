@@ -4,7 +4,7 @@ import eslintPlugin from "vite-plugin-eslint";
 import * as path from "path";
 
 export default defineConfig(({ mode }) => {
-    const name = "canvas-ppt";
+    const name = "mpptx在线文档";
     const port: number = parseInt(process.env.APP_PORT || "8000");
 
     const plugins: (Plugin | Plugin[])[] = [
@@ -15,7 +15,15 @@ export default defineConfig(({ mode }) => {
         })
     ];
 
+    const version = require("./package.json").version;
+
     const defaultOptions: UserConfig = {
+        define: {
+            mpptx: {
+                name,
+                version
+            }
+        },
         base: "./",
         plugins,
         resolve: {
