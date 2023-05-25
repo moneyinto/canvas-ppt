@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
 
     const defaultOptions: UserConfig = {
         define: {
-            __MPPTX__: {
+            __APP_MPPTX__: {
                 name,
                 version
             }
