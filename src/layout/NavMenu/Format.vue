@@ -295,7 +295,6 @@
 
 <script lang="ts" setup>
 import {
-    computed,
     inject,
     onMounted,
     onUnmounted,
@@ -332,7 +331,6 @@ const latexDisabled = ref(true);
 const chartDisabled = ref(true);
 
 // 文本字体
-const elements = computed(() => props.elements);
 const fontFamily = ref("");
 const availableFonts = ref(
     SYS_FONTS.filter((font) => isSupportFont(font.value))
@@ -466,13 +464,13 @@ const setOpacity = (value: number) => {
     instance?.value.command.executeImageOpacity(value);
 };
 
-watch(elements, () => {
-    if (elements.value.length > 0) {
-        fontDisabled.value = elements.value.filter((element) => element.type === "text").length === 0;
-        shapeDisabled.value = elements.value.filter((element) => element.type === "shape").length === 0;
-        imageDisabled.value = elements.value.filter((element) => element.type === "image").length === 0;
-        latexDisabled.value = elements.value.filter((element) => element.type === "latex").length === 0;
-        imageDisabled.value = elements.value.filter((element) => element.type === "image").length === 0;
+watch(() => props.elements, () => {
+    if (props.elements.length > 0) {
+        fontDisabled.value = props.elements.filter((element) => element.type === "text").length === 0;
+        shapeDisabled.value = props.elements.filter((element) => element.type === "shape").length === 0;
+        imageDisabled.value = props.elements.filter((element) => element.type === "image").length === 0;
+        latexDisabled.value = props.elements.filter((element) => element.type === "latex").length === 0;
+        imageDisabled.value = props.elements.filter((element) => element.type === "image").length === 0;
     } else {
         fontDisabled.value = true;
         shapeDisabled.value = true;

@@ -73,17 +73,15 @@ const props = defineProps({
     }
 });
 
-const element = computed(() => props.element);
-
 const init = () => {
-    if (element.value) {
-        latex.value = element.value.text;
+    if (props.element) {
+        latex.value = props.element.text;
     } else {
         latex.value = "";
     }
 };
 
-watch(element, init);
+watch(() => props.element, init);
 
 init();
 

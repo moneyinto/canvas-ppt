@@ -15,20 +15,18 @@
 <script lang="ts" setup>
 import { IPPTLatexElement } from "@/types/element";
 import { message } from "ant-design-vue";
-import { PropType, ref, toRefs } from "vue";
+import { PropType, ref } from "vue";
 import Editor from "./Editor/index.vue";
 
 const editor = ref();
 
 const emit = defineEmits(["ok"]);
 
-const props = defineProps({
+defineProps({
     element: {
         type: Object as PropType<IPPTLatexElement>
     }
 });
-
-const { element } = toRefs(props);
 
 const sure = () => {
     const result = editor.value.getEditorContent();

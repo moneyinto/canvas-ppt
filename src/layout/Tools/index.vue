@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, ref, watch, toRefs, inject, Ref } from "vue";
+import { PropType, ref, watch, inject, Ref } from "vue";
 import { IPPTElement } from "@/types/element";
 import AddPPT from "./AddPPT.vue";
 import Edit from "./Edit.vue";
@@ -77,16 +77,14 @@ const showTextEidt = ref(false);
 const showImageEdit = ref(false);
 const showFillColor = ref(false);
 
-const { elements } = toRefs(props);
-
-watch(elements, () => {
-    if (elements.value.length > 0) {
-        showBorder.value = elements.value.filter(element => element.type !== "video" && element.type !== "audio").length > 0;
-        showFillColor.value = elements.value.filter(element => element.type !== "line" && element.type !== "video" && element.type !== "audio").length > 0;
-        showShadowColor.value = elements.value.filter(element => element.type !== "line" && element.type !== "video" && element.type !== "audio").length > 0;
-        showEvert.value = elements.value.filter(element => element.type === "shape").length > 0;
-        showTextEidt.value = elements.value.filter(element => element.type === "text" || element.type === "shape").length > 0;
-        showImageEdit.value = elements.value.filter(element => element.type === "image" || element.type === "latex" || element.type === "chart").length > 0;
+watch(() => props.elements, () => {
+    if (props.elements.length > 0) {
+        showBorder.value = props.elements.filter(element => element.type !== "video" && element.type !== "audio").length > 0;
+        showFillColor.value = props.elements.filter(element => element.type !== "line" && element.type !== "video" && element.type !== "audio").length > 0;
+        showShadowColor.value = props.elements.filter(element => element.type !== "line" && element.type !== "video" && element.type !== "audio").length > 0;
+        showEvert.value = props.elements.filter(element => element.type === "shape").length > 0;
+        showTextEidt.value = props.elements.filter(element => element.type === "text" || element.type === "shape").length > 0;
+        showImageEdit.value = props.elements.filter(element => element.type === "image" || element.type === "latex" || element.type === "chart").length > 0;
         showAlign.value = true;
     } else {
         showBorder.value = false;

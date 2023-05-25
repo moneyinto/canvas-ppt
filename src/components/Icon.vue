@@ -3,9 +3,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, toRefs } from "vue";
+import { computed } from "vue";
 
-const porps = defineProps({
+const props = defineProps({
     size: {
         type: Number,
         default: 24
@@ -16,8 +16,6 @@ const porps = defineProps({
         required: true
     }
 });
-
-const { size, icon } = toRefs(porps);
 
 const icons: { [key: string]: string } = {
     undo: new URL("@/assets/icons/undo.svg", import.meta.url).href,
@@ -94,7 +92,7 @@ const icons: { [key: string]: string } = {
     table: new URL("@/assets/icons/table.svg", import.meta.url).href
 };
 
-const iconUrl = computed(() => icons[icon.value]);
+const iconUrl = computed(() => icons[props.icon]);
 </script>
 
 <style scoped>

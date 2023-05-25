@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, toRefs } from "vue";
+import { PropType } from "vue";
 import { IPPTElement } from "@/types/element";
 import FontSize from "./FontSize.vue";
 import Bold from "./Bold.vue";
@@ -35,14 +35,12 @@ import LineHeight from "./LineHeight.vue";
 
 // const instance = inject<Ref<Editor>>("instance");
 
-const props = defineProps({
+defineProps({
     elements: {
         type: Object as PropType<IPPTElement[]>,
         required: true
     }
 });
-
-const { elements } = toRefs(props);
 </script>
 
 <style lang="scss" scoped>

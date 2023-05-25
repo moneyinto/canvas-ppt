@@ -40,7 +40,7 @@
 
 <script lang="ts" setup>
 import { THEME_COLOR } from "@/plugins/config/stage";
-import { inject, PropType, Ref, ref, toRefs } from "vue";
+import { inject, PropType, Ref, ref } from "vue";
 import FillPool from "@/components/FillPool.vue";
 import PPTIcon from "@/components/Icon.vue";
 import {
@@ -49,14 +49,12 @@ import {
 import { STORAGE_FILL_COLOR } from "@/utils/storage";
 import Editor from "@/plugins/editor";
 
-const props = defineProps({
+defineProps({
     elements: {
         type: Object as PropType<IPPTElement[]>,
         required: true
     }
 });
-
-const { elements } = toRefs(props);
 
 const instance = inject<Ref<Editor>>("instance");
 

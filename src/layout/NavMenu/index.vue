@@ -20,7 +20,7 @@
 
 <script lang="ts" setup>
 import { IPPTElement } from "@/types/element";
-import { PropType, toRefs } from "vue";
+import { PropType } from "vue";
 import Edit from "./Edit.vue";
 import Insert from "./Insert.vue";
 import Format from "./Format.vue";
@@ -30,7 +30,7 @@ import Demonstrate from "./Demonstrate.vue";
 import FileEdit from "./FileEdit.vue";
 import customProtocolCheck from "custom-protocol-check";
 
-const props = defineProps({
+defineProps({
     slideFocus: {
         type: Boolean,
         default: false
@@ -47,7 +47,7 @@ const props = defineProps({
 
 const emit = defineEmits(["onPreview"]);
 
-const { slideFocus, elements, current } = toRefs(props);
+// const { slideFocus, elements, current } = toRefs(props);
 
 const isWin = navigator.platform === "Win32" || navigator.platform === "Windows";
 const isMac =

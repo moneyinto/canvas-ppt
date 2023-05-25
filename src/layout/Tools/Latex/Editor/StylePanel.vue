@@ -6,7 +6,7 @@
                 <input
                     class="style-color-view"
                     type="color"
-                    v-model="color"
+                    v-model="fontColor"
                     @input="onChangeColor"
                 />
             </div>
@@ -45,7 +45,7 @@
 </template>
 
 <script name="StylePanel" lang="ts" setup>
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { fonts } from "../config/font";
 import { fontSizes } from "../config/fontSize";
 
@@ -68,12 +68,10 @@ const props = defineProps({
 
 const emit = defineEmits(["update:color", "update:fontStyle", "update:fontSize"]);
 
-const color = ref(props.color);
-const fontStyle = computed(() => props.fontStyle);
-const fontSize = computed(() => props.fontSize);
+const fontColor = ref(props.color);
 
 const onChangeColor = () => {
-    emit("update:color", color.value);
+    emit("update:color", fontColor.value);
 };
 
 const selectFontStyle = (fontStyle: string) => {
