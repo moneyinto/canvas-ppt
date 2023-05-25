@@ -14,6 +14,7 @@ import Pptxgen from "pptxgenjs";
 import tinycolor from "tinycolor2";
 import { getShapePath } from "./shape";
 import { SvgPoints, toPoints } from "./svgPathParser";
+import { defaultAudioSrc } from "@/plugins/config";
 const INCH_PX_RATIO = 100;
 const PT_PX_RATIO = 0.73;
 
@@ -388,7 +389,7 @@ const getAudioCover = (): Promise<string> => {
             canvas.remove();
             resolve(dataURL);
         };
-        image.src = new URL("@/assets/icons/audioView.png", import.meta.url).href;
+        image.src = defaultAudioSrc;
     });
 };
 
