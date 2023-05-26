@@ -47,8 +47,8 @@ export default class ControlStage extends Stage {
     private _debounceSelectArea: null | number | NodeJS.Timeout;
     private _videoControlType = "";
     private _videoElement: IPPTVideoElement | null = null;
-    private _tableControlType: ["ROWS" | "COLS", number] | null = null;
-    private _operateTableControlType: ["ROWS" | "COLS", number] | null = null;
+    private _tableControlType: [string, "ROWS" | "COLS", number] | null = null;
+    private _operateTableControlType: [string, "ROWS" | "COLS", number] | null = null;
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
@@ -796,19 +796,64 @@ export default class ControlStage extends Stage {
                                 )
                             ) {
                                 this.container.style.cursor = key === "COLS" ? "col-resize" : "row-resize";
-                                this._tableControlType = [key as "ROWS" | "COLS", index];
+                                this._tableControlType = [hoverElement.id, key as "ROWS" | "COLS", index];
                                 break;
                             }
                         }
                     }
                 } else if (this._operateTableControlType) {
-                    const key = this._operateTableControlType[0];
+                    const key = this._operateTableControlType[1];
                     this.container.style.cursor = key === "COLS" ? "col-resize" : "row-resize";
                 }
             } else {
                 if (this.container.style.cursor !== "default") {
                     this.container.style.cursor = "default";
                 }
+            }
+        }
+    }
+
+    private _resizeTable(evt: MouseEvent, operateElements: IPPTElement[]) {
+        if (operateElements.length > 0 && this._operateTableControlType) {
+            const operateElementId = this._operateTableControlType[0];
+            const operateElement = operateElements.find((item) => item.id === operateElementId);
+            if (operateElement && operateElement.type === "table") {
+                const type = this._operateTableControlType[1];
+                const element = deepClone(operateElement);
+                if (type === "ROWS") {
+                    // 拖动行
+                    const pageY = evt.pageY;
+                    const startOriginY = this._startPoint[1];
+                    const moveY = pageY - startOriginY;
+                    // 拖拽的行索引
+                    const rowIndex = this._operateTableControlType[2];
+                    const rowHeights = element.rowHeights.map((item) => item * element.height);
+                    const currentHeight = rowHeights[rowIndex] + moveY;
+                    element.height = element.height + moveY;
+                    // 最小高度限定！！！！
+                    if (currentHeight > 20) {
+                        rowHeights[rowIndex] = currentHeight;
+                        element.rowHeights = rowHeights.map((item) => item / element.height);
+                    }
+                } else if (type === "COLS") {
+                    // 拖动列
+                    const pageX = evt.pageX;
+                    const startOriginX = this._startPoint[0];
+                    const moveX = pageX - startOriginX;
+                    // 拖拽的列索引
+                    const colIndex = this._operateTableControlType[2];
+                    const colWidths = element.colWidths.map((item) => item * element.width);
+                    const currentWidth = colWidths[colIndex] + moveX;
+                    element.width = element.width + moveX;
+                    // 最小宽度限定！！！！
+                    if (currentWidth > 20) {
+                        colWidths[colIndex] = currentWidth;
+                        element.colWidths = colWidths.map((item) => item / element.width);
+                    }
+                }
+
+                this._startPoint = [evt.pageX, evt.pageY];
+                this._command.executeUpdateRender([element]);
             }
         }
     }
@@ -842,6 +887,9 @@ export default class ControlStage extends Stage {
         } else if (this._canResizeElement && operateElements.length > 0) {
             // 旋转缩放元素
             this._resizeElements(evt, operateElements);
+        } else if (this._operateTableControlType) {
+            // 调整表格
+            this._resizeTable(evt, operateElements);
         } else if (
             !this.stageConfig.insertElement &&
             !this.stageConfig.canMove &&
@@ -953,6 +1001,8 @@ export default class ControlStage extends Stage {
             if (operateElement) {
                 this._dealSelectText(evt, operateElement as (IPPTTextElement | IPPTShapeElement));
             }
+        } else if (this._operateTableControlType) {
+            this._command.executeUpdateRender(deepClone(operateElements), true);
         }
         this._textClick = null;
         this._canMoveCanvas = false;
