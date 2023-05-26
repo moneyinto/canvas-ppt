@@ -1,6 +1,6 @@
 import Stage from ".";
 import StageConfig, { TEXT_MARGIN } from "./config";
-import { throttleRAF, deepClone, normalizeAngle, isFullScreen, getVideoElementControlPoints } from "@/utils";
+import { throttleRAF, deepClone, normalizeAngle, isFullScreen, getVideoElementControlPoints, getTableElementControlPoints } from "@/utils";
 import Command from "../command";
 import {
     createLineElement,
@@ -47,6 +47,8 @@ export default class ControlStage extends Stage {
     private _debounceSelectArea: null | number | NodeJS.Timeout;
     private _videoControlType = "";
     private _videoElement: IPPTVideoElement | null = null;
+    private _tableControlType: ["ROWS" | "COLS", number] | null = null;
+    private _operateTableControlType: ["ROWS" | "COLS", number] | null = null;
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
@@ -247,6 +249,11 @@ export default class ControlStage extends Stage {
                     this._enterFullScreen(hoverElement);
                 }
             }
+            return;
+        }
+
+        if (this._tableControlType) {
+            this._operateTableControlType = this._tableControlType;
             return;
         }
 
@@ -750,6 +757,54 @@ export default class ControlStage extends Stage {
                         }
                     }
                 }
+
+                if (
+                    hoverElement.type === "table" &&
+                    operateElements.find((item) => item.id === hoverElement.id) &&
+                    !this._operateTableControlType
+                ) {
+                    this._tableControlType = null;
+
+                    // 当元素是表格时，区分单元格 悬浮状态
+                    const tableRect: {
+                        ROWS: IRectParameter[];
+                        COLS: IRectParameter[];
+                    } = getTableElementControlPoints(
+                        hoverElement.left,
+                        hoverElement.top,
+                        hoverElement.width,
+                        hoverElement.height,
+                        hoverElement.rowHeights,
+                        hoverElement.colWidths
+                    );
+
+                    const cx = hoverElement.left + hoverElement.width / 2;
+                    const cy = hoverElement.top + hoverElement.height / 2;
+
+                    for (const key in tableRect) {
+                        const rects: IRectParameter[] = tableRect[key];
+
+                        for (const [index, rect] of rects.entries()) {
+                            if (
+                                this.stageConfig.checkPointInRect(
+                                    left,
+                                    top,
+                                    rect,
+                                    cx,
+                                    cy,
+                                    (hoverElement.rotate / 180) * Math.PI
+                                )
+                            ) {
+                                this.container.style.cursor = key === "COLS" ? "col-resize" : "row-resize";
+                                this._tableControlType = [key as "ROWS" | "COLS", index];
+                                break;
+                            }
+                        }
+                    }
+                } else if (this._operateTableControlType) {
+                    const key = this._operateTableControlType[0];
+                    this.container.style.cursor = key === "COLS" ? "col-resize" : "row-resize";
+                }
             } else {
                 if (this.container.style.cursor !== "default") {
                     this.container.style.cursor = "default";
@@ -906,6 +961,8 @@ export default class ControlStage extends Stage {
         this._canResizeElement = false;
         this._operateCacheElements = [];
         this._operateRisizeElementId = "";
+        this._tableControlType = null;
+        this._operateTableControlType = null;
     }
 
     private _mouseLeave(evt: MouseEvent) {
