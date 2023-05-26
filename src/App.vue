@@ -168,6 +168,11 @@ nextTick(() => {
     }
 
     emitter.on(EmitterEvents.SHOW_PANELS, openPanel);
+
+    document.addEventListener("webkitfullscreenchange", outFullScreen, false);
+    document.addEventListener("mozfullscreenchange", outFullScreen, false);
+    document.addEventListener("fullscreenchange", outFullScreen, false);
+    document.addEventListener("MSFullscreenChange", outFullScreen, false);
 });
 
 const resize = (scale: number) => {
@@ -192,11 +197,11 @@ const outFullScreen = () => {
 };
 
 const endPreview = () => {
-    showPreview.value = false;
-    exitFullScreen();
+    if (isFullScreen()) {
+        showPreview.value = false;
+        exitFullScreen();
+    }
 };
-
-window.addEventListener("resize", outFullScreen);
 
 onUnmounted(() => {
     emitter.off(EmitterEvents.INIT_SLIDE, initSlide);
@@ -207,7 +212,11 @@ onUnmounted(() => {
     emitter.off(EmitterEvents.PASTE_SLIDE, pasteSlide);
     emitter.off(EmitterEvents.SHOW_PANELS, openPanel);
 
-    window.removeEventListener("resize", outFullScreen);
+    document.removeEventListener("webkitfullscreenchange", outFullScreen, false);
+    document.removeEventListener("mozfullscreenchange", outFullScreen, false);
+    document.removeEventListener("fullscreenchange", outFullScreen, false);
+    document.removeEventListener("MSFullscreenChange", outFullScreen, false);
+
     instance.value?.destory();
 });
 </script>
