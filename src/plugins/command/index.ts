@@ -681,6 +681,8 @@ export default class Command {
                     this._updateCursor(position - 1);
                 }
             }
+        } else if (this._stageConfig.tableEditElementID) {
+            // 删除表格文本
         } else {
             const operateElements = this._stageConfig.operateElements;
             this.executeDeleteRender(operateElements);
