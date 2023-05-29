@@ -25,6 +25,7 @@ import {
     IPPTElementShadow,
     IPPTLineElement,
     IPPTShapeElement,
+    IPPTTableElement,
     IPPTTextElement,
     IPPTVideoElement
 } from "@/types/element";
@@ -1591,6 +1592,62 @@ export default class Command {
         }
 
         if (operateElements.length > 0) this.executeUpdateRender(elements, true);
+    }
+
+    // 合并单元格
+    public executeMergeCell() {
+        const operateElement = this._stageConfig.operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+        if (operateElement) {
+            const tableSelectCells = this._stageConfig.tableSelectCells;
+            if (tableSelectCells) {
+                const [start, end] = tableSelectCells;
+                const [startRow, startCol] = start;
+                const [endRow, endCol] = end;
+                if (!(startRow === endRow && startCol === endCol)) {
+                    const tableData = operateElement.data;
+                    const tableCell = tableData[startRow][startCol];
+                    tableCell.colspan = endCol - startCol + 1;
+                    tableCell.rowspan = endRow - startRow + 1;
+                    for (let i = startRow; i <= endRow; i++) {
+                        for (let j = startCol; j <= endCol; j++) {
+                            if (!(i === startRow && j === startCol)) {
+                                tableData[i][j].colspan = 0;
+                                tableData[i][j].rowspan = 0;
+                            }
+                        }
+                    }
+                    this.executeUpdateRender([operateElement], true);
+                }
+            }
+        }
+    }
+
+    // 拆分单元格
+    public executeSplitCell() {
+        const operateElement = this._stageConfig.operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+        if (operateElement) {
+            const tableSelectCells = this._stageConfig.tableSelectCells;
+            if (tableSelectCells) {
+                const [start, end] = tableSelectCells;
+                const [startRow, startCol] = start;
+                const [endRow, endCol] = end;
+                if (startRow === endRow && startCol === endCol) {
+                    const tableData = operateElement.data;
+                    const tableCell = tableData[startRow][startCol];
+                    const colspan = tableCell.colspan;
+                    const rowspan = tableCell.rowspan;
+                    if (colspan > 1 || rowspan > 1) {
+                        for (let i = startRow; i <= startRow + rowspan; i++) {
+                            for (let j = startCol; j <= startCol + colspan; j++) {
+                                tableData[i][j].colspan = 1;
+                                tableData[i][j].rowspan = 1;
+                            }
+                        }
+                        this.executeUpdateRender([operateElement], true);
+                    }
+                }
+            }
+        }
     }
 
     private _updateCursor(position: number) {

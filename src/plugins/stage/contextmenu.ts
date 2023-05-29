@@ -41,8 +41,10 @@ export class Contextmenu {
         if (this._stageConfig.tableSelectCells) {
             // 单元格选中状态
             const [start, end] = this._stageConfig.tableSelectCells;
-            const [startRow, startCol] = start;
-            const [endRow, endCol] = end;
+            const startRow = Math.min(start[0], end[0]);
+            const startCol = Math.min(start[1], end[1]);
+            const endRow = Math.max(start[0], end[0]);
+            const endCol = Math.max(start[1], end[1]);
 
             // 先要判断右击是否在选中的单元格内
             const { left, top } = this._stageConfig.getMousePosition(evt);
@@ -299,7 +301,7 @@ export class Contextmenu {
                 text: "合并单元格",
                 icon: "mergeCell",
                 handler: () => {
-                    // this._command.executeMergeCell();
+                    this._command.executeMergeCell();
                 }
             },
             {
@@ -308,7 +310,7 @@ export class Contextmenu {
                 text: "拆分单元格",
                 icon: "splitCell",
                 handler: () => {
-                    // this._command.executeSplitCell();
+                    this._command.executeSplitCell();
                 }
             },
             { divider: true, hide: !selectedElement },

@@ -362,24 +362,29 @@ export default class StageConfig {
     public getMouseTableCell(element: IPPTTableElement, left: number, top: number) {
         const x = left - element.left;
         const y = top - element.top;
-        const rowHeights = element.rowHeights.reduce((heights: number[], curr, index) => {
-            if (heights.length > 0) {
-                heights.push(heights[index - 1] + curr * element.height);
-            } else {
-                heights.push(curr * element.height);
+        const rowHeights = element.rowHeights.map(item => item * element.height);
+        const colWidths = element.colWidths.map(item => item * element.width);
+        let row = -1;
+        let col = -1;
+        let totalHeight = 0;
+        for (const [rowIndex, rowData] of element.data.entries()) {
+            let totalWidth = 0;
+            let rowHeight = 0;
+            for (const [colIndex, cellData] of rowData.entries()) {
+                if (cellData.colspan > 0 && cellData.rowspan > 0) {
+                    const colWidth = colWidths.slice(colIndex, colIndex + cellData.colspan).reduce((total, curr) => total + curr, 0);
+                    rowHeight = totalHeight + rowHeights.slice(rowIndex, rowIndex + cellData.rowspan).reduce((total, curr) => total + curr, 0);
+                    totalWidth += colWidth;
+                }
+                if (x < totalWidth && y < rowHeight) {
+                    col = colIndex;
+                    row = rowIndex;
+                    break;
+                }
             }
-            return heights;
-        }, []);
-        const colWidths = element.colWidths.reduce((widths: number[], curr, index) => {
-            if (widths.length > 0) {
-                widths.push(widths[index - 1] + curr * element.width);
-            } else {
-                widths.push(curr * element.width);
-            }
-            return widths;
-        }, []);
-        const row = rowHeights.findIndex((height) => height > y);
-        const col = colWidths.findIndex((width) => width > x);
+            totalHeight += rowHeights[rowIndex];
+            if (col >= 0 && row >= 0) break;
+        }
         return { row, col };
     }
 
