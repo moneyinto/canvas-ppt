@@ -43,6 +43,7 @@ export default class Table {
         cellHeight: number,
         cell: IPPTTableCell,
         row: number,
+        isSelected: boolean,
         fill?: IPPTElementFill,
         outline?: IPPTElementOutline,
         theme?: ITheme
@@ -76,6 +77,10 @@ export default class Table {
                     this._fill.draw({ color: theme.subColor2 }, path);
                 }
             }
+        }
+
+        if (isSelected) {
+            this._fill.draw({ color: "#000000", opacity: 70 }, path);
         }
 
         if (outline) {
@@ -138,6 +143,17 @@ export default class Table {
 
         let cellX = 0;
         let cellY = 0;
+        let startRow = -1;
+        let startCol = -1;
+        let endRow = -1;
+        let endCol = -1;
+        const tableSelectCells = this._stageConfig.tableSelectCells;
+        if (tableSelectCells) {
+            startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
+            startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
+            endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
+            endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+        }
         for (let row = 0; row < element.data.length; row++) {
             const rowHeight = element.height * element.rowHeights[row];
             cellX = 0;
@@ -153,6 +169,9 @@ export default class Table {
                     });
                     const cellWidth = element.width * widthRatio;
                     const cellHeight = element.height * heightRatio;
+
+                    // 当只存在一格选中时，不做选中绘制处理
+                    const isSelectedCell = row >= startRow && row <= endRow && col >= startCol && col <= endCol && !(startRow === endRow && startCol === endCol);
                     this._drawCell(
                         cellX,
                         cellY,
@@ -160,6 +179,7 @@ export default class Table {
                         cellHeight,
                         cell,
                         row,
+                        isSelectedCell,
                         element.fill,
                         element.outline,
                         theme
