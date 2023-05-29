@@ -134,7 +134,7 @@ export default class ControlStage extends Stage {
     }
 
     private _dblClick(evt: MouseEvent) {
-        const { left, top } = this._getMousePosition(evt);
+        const { left, top } = this.stageConfig.getMousePosition(evt);
         const currentSlide = this.stageConfig.getCurrentSlide();
         const operateElement = this.stageConfig.getMouseInElement(
             left,
@@ -145,7 +145,7 @@ export default class ControlStage extends Stage {
         if (operateElement) {
             if (operateElement.type === "text" || operateElement.type === "shape") {
                 // 点击位置坐标
-                const { left, top } = this._getMousePosition(evt);
+                const { left, top } = this.stageConfig.getMousePosition(evt);
                 // 当元素被选中，且被双击时，开启编辑
                 this.stageConfig.textFocus = true;
                 this.stageConfig.textFocusElementId = operateElement.id;
@@ -215,35 +215,11 @@ export default class ControlStage extends Stage {
         video.controls = false;
     }
 
-    private _getMouseTableCell(element: IPPTTableElement, left: number, top: number) {
-        const x = left - element.left;
-        const y = top - element.top;
-        const rowHeights = element.rowHeights.reduce((heights: number[], curr, index) => {
-            if (heights.length > 0) {
-                heights.push(heights[index - 1] + curr * element.height);
-            } else {
-                heights.push(curr * element.height);
-            }
-            return heights;
-        }, []);
-        const colWidths = element.colWidths.reduce((widths: number[], curr, index) => {
-            if (widths.length > 0) {
-                widths.push(widths[index - 1] + curr * element.width);
-            } else {
-                widths.push(curr * element.width);
-            }
-            return widths;
-        }, []);
-        const row = rowHeights.findIndex((height) => height > y);
-        const col = colWidths.findIndex((width) => width > x);
-        return { row, col };
-    }
-
     private _mousedown(evt: MouseEvent, isContextmenu?: boolean) {
         this._canMoveCanvas = !this.stageConfig.insertElement;
         this._canCreate = !!this.stageConfig.insertElement;
         this._startPoint = [evt.pageX, evt.pageY];
-        const { left, top } = this._getMousePosition(evt);
+        const { left, top } = this.stageConfig.getMousePosition(evt);
         this._startOriginPoint = [left, top];
 
         if (this._videoControlType) {
@@ -297,8 +273,10 @@ export default class ControlStage extends Stage {
                 currentSlide?.elements || []
             ) as IPPTTableElement;
             if (hoverElement && hoverElement.id === this.stageConfig.tableEditElementID) {
-                const { row, col } = this._getMouseTableCell(hoverElement, left, top);
+                if (isContextmenu || evt.button === 2) return;
+                const { row, col } = this.stageConfig.getMouseTableCell(hoverElement, left, top);
                 this.stageConfig.tableSelectCells = [[row, col], [row, col]];
+                this._command.executeRender();
                 this._operateTableCell = true;
                 return;
             }
@@ -443,7 +421,7 @@ export default class ControlStage extends Stage {
                         const cx = element.left + element.width / 2;
                         const cy = element.top + element.height / 2;
 
-                        const { left, top } = this._getMousePosition(evt);
+                        const { left, top } = this.stageConfig.getMousePosition(evt);
                         const currentAngle = Math.atan2(top - cy, left - cx);
 
                         const changeAngle = currentAngle - this._startAngle;
@@ -463,7 +441,7 @@ export default class ControlStage extends Stage {
                     // const element = this.stageConfig.operateElement;
                     const originElement = this._operateCacheElements.find(element => element.id === operateElement.id);
                     if (originElement && originElement.type !== "line") {
-                        const { left, top } = this._getMousePosition(evt);
+                        const { left, top } = this.stageConfig.getMousePosition(evt);
                         const storeData = {
                             ofx: 0,
                             ofy: 0,
@@ -571,7 +549,7 @@ export default class ControlStage extends Stage {
                     }
                 }
             } else if (operateElement.type === "line") {
-                const { left, top } = this._getMousePosition(evt);
+                const { left, top } = this.stageConfig.getMousePosition(evt);
                 // 线条控制
                 if (this.stageConfig.opreateType === "START") {
                     const newElement: IPPTElement = {
@@ -603,7 +581,7 @@ export default class ControlStage extends Stage {
     }
 
     private _hoverCursor(evt: MouseEvent, operateElements: IPPTElement[]) {
-        const { left, top } = this._getMousePosition(evt);
+        const { left, top } = this.stageConfig.getMousePosition(evt);
         this.stageConfig.setOperateType("");
         this._videoControlType = "";
 
@@ -699,7 +677,7 @@ export default class ControlStage extends Stage {
             ) {
                 // 文本选中状态
                 if (this._textClick) {
-                    const { left, top } = this._getMousePosition(evt);
+                    const { left, top } = this.stageConfig.getMousePosition(evt);
                     const x = left - operateElement.left;
                     let y = top - operateElement.top;
                     const renderContent = this.stageConfig.getRenderContent(
@@ -950,8 +928,8 @@ export default class ControlStage extends Stage {
             // 表格选中
             const operateElement = operateElements.find(element => element.id === this.stageConfig.tableEditElementID);
             if (operateElement) {
-                const { left, top } = this._getMousePosition(evt);
-                const { row, col } = this._getMouseTableCell(operateElement as IPPTTableElement, left, top);
+                const { left, top } = this.stageConfig.getMousePosition(evt);
+                const { row, col } = this.stageConfig.getMouseTableCell(operateElement as IPPTTableElement, left, top);
                 this.stageConfig.tableSelectCells[1] = [row, col];
                 this._command.executeRender();
             }
@@ -1030,7 +1008,7 @@ export default class ControlStage extends Stage {
             this._listener.onFontFamilyChange && this._listener.onFontFamilyChange(fontFamily);
         } else {
             // 更新文本框光标位置
-            const { left, top } = this._getMousePosition(evt);
+            const { left, top } = this.stageConfig.getMousePosition(evt);
             const x = left - operateElement.left;
             const y = top - operateElement.top;
             let offsetY = 0;
@@ -1079,13 +1057,6 @@ export default class ControlStage extends Stage {
         this._tableControlType = null;
         this._operateTableControlType = null;
         this._operateTableCell = false;
-        if (
-            this.stageConfig.tableSelectCells &&
-            this.stageConfig.tableSelectCells[0][0] === this.stageConfig.tableSelectCells[1][0] &&
-            this.stageConfig.tableSelectCells[0][1] === this.stageConfig.tableSelectCells[1][1]
-        ) {
-            this.stageConfig.tableSelectCells = null;
-        }
     }
 
     private _mouseLeave(evt: MouseEvent) {
@@ -1127,18 +1098,6 @@ export default class ControlStage extends Stage {
         return { left, top, width, height };
     }
 
-    private _getMousePosition(evt: MouseEvent) {
-        const zoom = this.stageConfig.zoom;
-
-        const { x, y } = this.stageConfig.getStageArea();
-        const { offsetX, offsetY } = this.stageConfig.getCanvasOffset();
-
-        const left = (evt.pageX - x - offsetX) / zoom;
-        const top = (evt.pageY - y - offsetY) / zoom;
-
-        return { left, top };
-    }
-
     private _createElement(evt: MouseEvent) {
         let newElement: IPPTElement | undefined;
         if (this.stageConfig.insertElement && this._canCreate) {
@@ -1159,7 +1118,7 @@ export default class ControlStage extends Stage {
                     break;
                 }
                 case "line": {
-                    const { left, top } = this._getMousePosition(evt);
+                    const { left, top } = this.stageConfig.getMousePosition(evt);
                     const style = {
                         [LINE_TYPE.BEELINE]: "",
                         [LINE_TYPE.ARROW]: "arrow",

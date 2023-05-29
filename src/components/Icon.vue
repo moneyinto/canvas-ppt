@@ -89,7 +89,9 @@ const icons: { [key: string]: string } = {
     leftArrow: new URL("@/assets/icons/leftArrow.svg", import.meta.url).href,
     rightArrow: new URL("@/assets/icons/rightArrow.svg", import.meta.url).href,
     pencil: new URL("@/assets/icons/pencil.svg", import.meta.url).href,
-    table: new URL("@/assets/icons/table.svg", import.meta.url).href
+    table: new URL("@/assets/icons/table.svg", import.meta.url).href,
+    mergeCell: new URL("@/assets/icons/mergeCell.svg", import.meta.url).href,
+    splitCell: new URL("@/assets/icons/splitCell.svg", import.meta.url).href
 };
 
 const iconUrl = computed(() => icons[props.icon]);

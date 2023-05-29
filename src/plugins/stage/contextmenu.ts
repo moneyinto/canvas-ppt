@@ -6,6 +6,7 @@ import Command from "../command";
 import StageConfig from "./config";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 import { PANELS } from "@/utils/panel";
+import { IPPTTableElement } from "@/types/element";
 
 export class Contextmenu {
     private _command: Command;
@@ -35,6 +36,33 @@ export class Contextmenu {
             }
             return false;
         };
+        let isMergeCell = false;
+        let onlyOneCell = false; // 是否只有一个单元格，非合并的单元格
+        if (this._stageConfig.tableSelectCells) {
+            // 单元格选中状态
+            const [start, end] = this._stageConfig.tableSelectCells;
+            const [startRow, startCol] = start;
+            const [endRow, endCol] = end;
+
+            // 先要判断右击是否在选中的单元格内
+            const { left, top } = this._stageConfig.getMousePosition(evt);
+            const opreateElement = operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+            if (opreateElement) {
+                const { row, col } = this._stageConfig.getMouseTableCell(opreateElement as IPPTTableElement, left, top);
+                if (row >= startRow && row <= endRow && col >= startCol && col <= endCol) {
+                    isMergeCell = !(startRow === endRow && startCol === endCol);
+                    if (!isMergeCell) {
+                        const { colspan, rowspan } = opreateElement.data[row][col];
+                        onlyOneCell = colspan === 1 && rowspan === 1;
+                    }
+                } else {
+                    this._stageConfig.tableSelectCells = null;
+                }
+            } else {
+                this._stageConfig.tableSelectCells = null;
+            }
+        }
+        const tableCellEdit = !!this._stageConfig.tableSelectCells;
         const textFocus = this._stageConfig.textFocus;
         const contextmenus: IContextmenuItem[] = [
             {
@@ -263,6 +291,25 @@ export class Contextmenu {
                         }
                     }
                 ]
+            },
+            { divider: true, hide: !tableCellEdit },
+            {
+                hide: !tableCellEdit,
+                disable: !isMergeCell,
+                text: "合并单元格",
+                icon: "mergeCell",
+                handler: () => {
+                    // this._command.executeMergeCell();
+                }
+            },
+            {
+                hide: !tableCellEdit,
+                disable: isMergeCell || onlyOneCell,
+                text: "拆分单元格",
+                icon: "splitCell",
+                handler: () => {
+                    // this._command.executeSplitCell();
+                }
             },
             { divider: true, hide: !selectedElement },
             {

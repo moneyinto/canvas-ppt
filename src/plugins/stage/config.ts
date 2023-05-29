@@ -4,7 +4,7 @@ import { baseFontConfig } from "../config/font";
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import Listener from "../listener";
 import { ICacheImage, IRectParameter } from "@/types";
-import { ICreatingElement, IPPTElement, IPPTShapeElement, IPPTTextElement } from "@/types/element";
+import { ICreatingElement, IPPTElement, IPPTShapeElement, IPPTTableElement, IPPTTextElement } from "@/types/element";
 import { IFontConfig, IFontData, ILineData } from "@/types/font";
 import { ISlide, ISlideBackground } from "@/types/slide";
 
@@ -345,6 +345,42 @@ export default class StageConfig {
             (x1 - x2) * Math.cos(angle) - (y1 - y2) * Math.sin(angle) + x2,
             (x1 - x2) * Math.sin(angle) + (y1 - y2) * Math.cos(angle) + y2
         ];
+    }
+
+    public getMousePosition(evt: MouseEvent) {
+        const zoom = this.zoom;
+
+        const { x, y } = this.getStageArea();
+        const { offsetX, offsetY } = this.getCanvasOffset();
+
+        const left = (evt.pageX - x - offsetX) / zoom;
+        const top = (evt.pageY - y - offsetY) / zoom;
+
+        return { left, top };
+    }
+
+    public getMouseTableCell(element: IPPTTableElement, left: number, top: number) {
+        const x = left - element.left;
+        const y = top - element.top;
+        const rowHeights = element.rowHeights.reduce((heights: number[], curr, index) => {
+            if (heights.length > 0) {
+                heights.push(heights[index - 1] + curr * element.height);
+            } else {
+                heights.push(curr * element.height);
+            }
+            return heights;
+        }, []);
+        const colWidths = element.colWidths.reduce((widths: number[], curr, index) => {
+            if (widths.length > 0) {
+                widths.push(widths[index - 1] + curr * element.width);
+            } else {
+                widths.push(curr * element.width);
+            }
+            return widths;
+        }, []);
+        const row = rowHeights.findIndex((height) => height > y);
+        const col = colWidths.findIndex((width) => width > x);
+        return { row, col };
     }
 
     // 获取鼠标位置的元素
