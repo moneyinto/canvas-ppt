@@ -38,6 +38,9 @@
 
         <ImageEdit :elements="elements" v-if="showImageEdit" />
 
+        <a-divider class="ppt-tool-divider" v-if="showTableCellEdit" type="vertical" />
+        <TableCellEdit v-if="showTableCellEdit" />
+
         <a-divider class="ppt-tool-divider" type="vertical" />
         <Background />
     </div>
@@ -57,6 +60,7 @@ import TextEdit from "./TextEdit/index.vue";
 import Align from "./Align.vue";
 import ImageEdit from "./ImageEdit.vue";
 import Background from "./Background.vue";
+import TableCellEdit from "./TableCellEdit.vue";
 import PPTIcon from "@/components/Icon.vue";
 import Editor from "@/plugins/editor";
 
@@ -76,6 +80,7 @@ const showAlign = ref(false);
 const showTextEidt = ref(false);
 const showImageEdit = ref(false);
 const showFillColor = ref(false);
+const showTableCellEdit = ref(false);
 
 watch(() => props.elements, () => {
     if (props.elements.length > 0) {
@@ -85,6 +90,7 @@ watch(() => props.elements, () => {
         showEvert.value = props.elements.filter(element => element.type === "shape").length > 0;
         showTextEidt.value = props.elements.filter(element => element.type === "text" || element.type === "shape").length > 0;
         showImageEdit.value = props.elements.filter(element => element.type === "image" || element.type === "latex" || element.type === "chart").length > 0;
+        showTableCellEdit.value = props.elements.filter(element => element.type === "table").length > 0;
         showAlign.value = true;
     } else {
         showBorder.value = false;
@@ -93,6 +99,7 @@ watch(() => props.elements, () => {
         showEvert.value = false;
         showTextEidt.value = false;
         showAlign.value = false;
+        showTableCellEdit.value = false;
         showImageEdit.value = false;
     }
 });

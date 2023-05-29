@@ -276,6 +276,8 @@ export default class ControlStage extends Stage {
                 if (isContextmenu || evt.button === 2) return;
                 const { row, col } = this.stageConfig.getMouseTableCell(hoverElement, left, top);
                 this.stageConfig.tableSelectCells = [[row, col], [row, col]];
+                const tableCell = hoverElement.data[row][col];
+                this._listener.onTableCellEditChange && this._listener.onTableCellEditChange(true, tableCell.colspan === 1 && tableCell.rowspan === 1);
                 this._command.executeRender();
                 this._operateTableCell = true;
                 return;
@@ -926,11 +928,22 @@ export default class ControlStage extends Stage {
             this._resizeTable(evt, operateElements);
         } else if (this.stageConfig.tableSelectCells && this._operateTableCell) {
             // 表格选中
-            const operateElement = operateElements.find(element => element.id === this.stageConfig.tableEditElementID);
+            const operateElement = operateElements.find(element => element.id === this.stageConfig.tableEditElementID) as IPPTTableElement;
             if (operateElement) {
                 const { left, top } = this.stageConfig.getMousePosition(evt);
                 const { row, col } = this.stageConfig.getMouseTableCell(operateElement as IPPTTableElement, left, top);
                 this.stageConfig.tableSelectCells[1] = [row, col];
+                let splitDisabled = false;
+                let mergeDisabled = false;
+                if (row === this.stageConfig.tableSelectCells[0][0] && col === this.stageConfig.tableSelectCells[0][1]) {
+                    const tableCell = operateElement.data[row][col];
+                    splitDisabled = tableCell.colspan > 1 || tableCell.rowspan > 1;
+                    mergeDisabled = true;
+                } else {
+                    mergeDisabled = false;
+                    splitDisabled = true;
+                }
+                this._listener.onTableCellEditChange && this._listener.onTableCellEditChange(mergeDisabled, splitDisabled);
                 this._command.executeRender();
             }
         } else if (

@@ -1601,8 +1601,10 @@ export default class Command {
             const tableSelectCells = this._stageConfig.tableSelectCells;
             if (tableSelectCells) {
                 const [start, end] = tableSelectCells;
-                const [startRow, startCol] = start;
-                const [endRow, endCol] = end;
+                const startRow = Math.min(start[0], end[0]);
+                const startCol = Math.min(start[1], end[1]);
+                const endRow = Math.max(start[0], end[0]);
+                const endCol = Math.max(start[1], end[1]);
                 if (!(startRow === endRow && startCol === endCol)) {
                     const tableData = operateElement.data;
                     const tableCell = tableData[startRow][startCol];
@@ -1617,6 +1619,9 @@ export default class Command {
                         }
                     }
                     this.executeUpdateRender([operateElement], true);
+
+                    this._stageConfig.tableSelectCells = [[startRow, startCol], [startRow, startCol]];
+                    this._listener.onTableCellEditChange && this._listener.onTableCellEditChange(true, false);
                 }
             }
         }
@@ -1644,6 +1649,7 @@ export default class Command {
                             }
                         }
                         this.executeUpdateRender([operateElement], true);
+                        this._listener.onTableCellEditChange && this._listener.onTableCellEditChange(true, true);
                     }
                 }
             }

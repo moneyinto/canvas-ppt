@@ -22,3 +22,5 @@ export type IOnFontUnderLineChange = (underline: boolean) => void;
 export type IOnFontStrikoutChange = (strikout: boolean) => void;
 
 export type IOnFontFamilyChange = (fontFamily: string) => void;
+
+export type IOnTableCellEditChange = (mergeDisabled: boolean, splitDisabled: boolean) => void;
