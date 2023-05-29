@@ -165,6 +165,11 @@ export default class ControlStage extends Stage {
                 this._command.executeUpdateFontConfig();
             }
 
+            if (operateElement.type === "table") {
+                this.stageConfig.tableEditElementID = operateElement.id;
+                this.container.style.cursor = "text";
+            }
+
             if (operateElement.type === "latex") {
                 emitter.emit(EmitterEvents.OPEN_LATEX, operateElement);
             }
@@ -348,6 +353,7 @@ export default class ControlStage extends Stage {
 
                 this.stageConfig.setOperateElement(operateElement, evt.ctrlKey || evt.shiftKey || evt.metaKey);
                 this.stageConfig.resetCheckDrawView();
+                this.stageConfig.tableEditElementID = "";
                 if (operateElement) {
                     this._cursor.hideCursor();
                     this.stageConfig.textFocus = false;
@@ -756,6 +762,13 @@ export default class ControlStage extends Stage {
                             break;
                         }
                     }
+                }
+
+                if (
+                    hoverElement.type === "table" &&
+                    this.stageConfig.tableEditElementID === hoverElement.id
+                ) {
+                    this.container.style.cursor = "text";
                 }
 
                 if (

@@ -1,5 +1,4 @@
 import { IRectParameter } from "@/types";
-import { IPPTTableCell } from "@/types/element";
 import SparkMD5 from "spark-md5";
 
 // throttle callback to execute once per animation frame

@@ -32,6 +32,10 @@ export default class StageConfig {
     public textFocusElementId = ""; // 聚焦富文本框元素id
     // [开始字坐标，开始行坐标，结束字坐标，结束行坐标]
     public selectArea: [number, number, number, number] | null = null;
+    // 表格编辑状态
+    public tableEditElementID = "";
+    // 表格选中单元格 [[开始行，开始列], [结束行，结束列]
+    public tableSelectCells: [[number, number], [number, number]] | null = null;
 
     public resetDrawView: (() => void) | null;
     public resetDrawOprate: (() => void) | null;
