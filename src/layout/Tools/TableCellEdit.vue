@@ -22,29 +22,22 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref, inject, ref } from "vue";
+import { Ref, inject } from "vue";
 import PPTIcon from "@/components/Icon.vue";
 import Editor from "@/plugins/editor";
 
 const instance = inject<Ref<Editor>>("instance");
 
-const mergeDisabled = ref(true);
-const splitDisabled = ref(true);
-
-if (instance) {
-    instance.value.listener.onTableCellEditChange = (merge, split) => {
-        mergeDisabled.value = merge;
-        splitDisabled.value = split;
-    };
-}
+const mergeDisabled = inject<Ref<boolean>>("mergeDisabled");
+const splitDisabled = inject<Ref<boolean>>("splitDisabled");
 
 const setMergeCell = () => {
-    if (mergeDisabled.value) return;
+    if (mergeDisabled?.value) return;
     instance?.value.command.executeMergeCell();
 };
 
 const setSplitCell = () => {
-    if (splitDisabled.value) return;
+    if (splitDisabled?.value) return;
     instance?.value.command.executeSplitCell();
 };
 </script>

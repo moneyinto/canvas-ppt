@@ -335,13 +335,42 @@ export default class Command {
                     newElement.type === "text" ||
                     newElement.type === "image" ||
                     newElement.type === "latex" ||
-                    newElement.type === "chart" ||
-                    newElement.type === "table"
+                    newElement.type === "chart"
                 ) {
                     newElement.fill = {
                         ...newElement.fill,
                         ...fill
                     };
+                } else if (newElement.type === "table") {
+                    const tableSelectCells = this._stageConfig.tableSelectCells;
+                    if (tableSelectCells) {
+                        const [start, end] = tableSelectCells;
+                        const [startRow, startCol] = start;
+                        const [endRow, endCol] = end;
+                        for (let i = startRow; i <= endRow; i++) {
+                            for (let j = startCol; j <= endCol; j++) {
+                                if (newElement.data[i][j]) {
+                                    newElement.data[i][j].fill = {
+                                        ...newElement.data[i][j].fill,
+                                        ...fill
+                                    };
+                                }
+                            }
+                        }
+                    } else {
+                        // 先移除单元格的所有颜色配置
+                        for (const row of newElement.data) {
+                            for (const cell of row) {
+                                if (cell) {
+                                    cell.fill = undefined;
+                                }
+                            }
+                        }
+                        newElement.fill = {
+                            ...newElement.fill,
+                            ...fill
+                        };
+                    }
                 }
 
                 newElements.push(newElement);

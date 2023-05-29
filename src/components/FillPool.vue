@@ -40,6 +40,7 @@ import {
     IPPTAudioElement,
     IPPTElement,
     IPPTLineElement,
+    IPPTTableElement,
     IPPTVideoElement
 } from "@/types/element";
 import { STORAGE_FILL_COLOR } from "@/utils/storage";
@@ -81,21 +82,51 @@ const init = () => {
         color: "#000000",
         opacity: 0
     };
+    const tableSelectCells = instance?.value.stageConfig.tableSelectCells;
+    if (tableSelectCells) {
+        // 编辑表格单元格填充色
+        const operateElement = operateElements.find(element => element.id === instance.value.stageConfig.tableEditElementID) as IPPTTableElement;
+        if (operateElement) {
+            const [start, end] = tableSelectCells;
+            const [startRow, startCol] = start;
+            const [endRow, endCol] = end;
+            for (let row = startRow; row <= endRow; row++) {
+                for (let col = startCol; col <= endCol; col++) {
+                    const cell = operateElement.data[row][col];
+                    if (cell.rowspan > 0 && cell.colspan > 0) {
+                        if (row === startRow && col === startCol) {
+                            fill.color = cell.fill?.color || "#000000";
+                            fill.opacity = cell.fill?.opacity || 0;
+                        } else {
+                            if (fill.color !== cell.fill?.color) {
+                                fill.color = "#000000";
+                            }
 
-    for (const [index, operateElement] of operateElements.entries()) {
-        if (index === 0) {
-            fill.color = operateElement.fill?.color || "#000000";
-            fill.opacity = operateElement.fill?.opacity || 0;
-        } else {
-            if (fill.color !== operateElement.fill?.color) {
-                fill.color = "#000000";
+                            if (fill.opacity !== cell.fill?.opacity) {
+                                fill.opacity = 0;
+                            }
+                        }
+                    }
+                }
             }
+        }
+    } else {
+        for (const [index, operateElement] of operateElements.entries()) {
+            if (index === 0) {
+                fill.color = operateElement.fill?.color || "#000000";
+                fill.opacity = operateElement.fill?.opacity || 0;
+            } else {
+                if (fill.color !== operateElement.fill?.color) {
+                    fill.color = "#000000";
+                }
 
-            if (fill.opacity !== operateElement.fill?.opacity) {
-                fill.opacity = 0;
+                if (fill.opacity !== operateElement.fill?.opacity) {
+                    fill.opacity = 0;
+                }
             }
         }
     }
+
     currentColor.value = fill.color;
     noFill.value = !allHasFill;
     opacity.value = fill.opacity;

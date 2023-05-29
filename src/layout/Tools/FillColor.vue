@@ -27,6 +27,7 @@
 
                     <template #content>
                         <FillPool
+                            v-if="showFillColor"
                             :elements="elements"
                             v-model:cacheFillColor="cacheFillColor"
                             v-model:showFillColor="showFillColor"
