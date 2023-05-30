@@ -94,7 +94,9 @@ export default class ControlStage extends Stage {
         this.container.addEventListener(
             "mousewheel",
             throttleRAF(this._mousewheel.bind(this) as (evt: Event) => void),
-            false
+            {
+                passive: false
+            }
         );
         this.container.addEventListener(
             "contextmenu",
@@ -188,6 +190,7 @@ export default class ControlStage extends Stage {
     }
 
     private _mousewheel(evt: WheelEvent) {
+        evt.preventDefault();
         if (evt.ctrlKey || evt.metaKey) {
             if (evt.deltaY > 0) {
                 this._command.executeDecrease();
