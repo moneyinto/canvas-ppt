@@ -91,7 +91,8 @@ const icons: { [key: string]: string } = {
     pencil: new URL("@/assets/icons/pencil.svg", import.meta.url).href,
     table: new URL("@/assets/icons/table.svg", import.meta.url).href,
     mergeCell: new URL("@/assets/icons/mergeCell.svg", import.meta.url).href,
-    splitCell: new URL("@/assets/icons/splitCell.svg", import.meta.url).href
+    splitCell: new URL("@/assets/icons/splitCell.svg", import.meta.url).href,
+    platte: new URL("@/assets/icons/platte.svg", import.meta.url).href
 };
 
 const iconUrl = computed(() => icons[props.icon]);

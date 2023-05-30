@@ -501,7 +501,7 @@ export interface IPPTTableElement extends IPPTBaseElement {
     outline?: IPPTElementOutline;
     shadow?: IPPTElementShadow;
     fill?: IPPTElementFill;
-    theme?: IPPTTableTheme;
+    theme: IPPTTableTheme;
 }
 
 export type IPPTElement =

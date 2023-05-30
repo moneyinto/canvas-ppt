@@ -26,6 +26,7 @@ import {
     IPPTLineElement,
     IPPTShapeElement,
     IPPTTableElement,
+    IPPTTableTheme,
     IPPTTextElement,
     IPPTVideoElement
 } from "@/types/element";
@@ -1684,6 +1685,32 @@ export default class Command {
                     }
                 }
             }
+        }
+    }
+
+    public executeSetTableTheme(theme: Partial<IPPTTableTheme>) {
+        const operateElements = this._stageConfig.operateElements;
+
+        if (operateElements.length > 0) {
+            for (const operateElement of operateElements) {
+                if (operateElement.type === "table") {
+                    const element = operateElement as IPPTTableElement;
+                    if (theme.color) {
+                        element.theme.color = theme.color;
+                        // 清除单元格填充色
+                        for (const row of element.data) {
+                            for (const cell of row) {
+                                cell.fill = undefined;
+                            }
+                        }
+                    }
+                    if ("rowHeader" in theme) {
+                        element.theme.rowHeader = !!theme.rowHeader;
+                    }
+                }
+            }
+
+            this.executeUpdateRender(operateElements, true);
         }
     }
 

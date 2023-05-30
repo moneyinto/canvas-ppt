@@ -43,10 +43,10 @@ export default class Table {
         cellHeight: number,
         cell: IPPTTableCell,
         row: number,
+        theme: ITheme,
         isSelected: boolean,
         fill?: IPPTElementFill,
-        outline?: IPPTElementOutline,
-        theme?: ITheme
+        outline?: IPPTElementOutline
     ) {
         this._ctx.save();
         this._ctx.translate(x + cellWidth / 2, y + cellHeight / 2);
@@ -66,9 +66,9 @@ export default class Table {
                 if (row === 0) {
                     this._fill.draw({ color: theme.headerColor }, path);
                 } else if (row % 2 === 0) {
-                    this._fill.draw({ color: theme.subColor2 }, path);
-                } else {
                     this._fill.draw({ color: theme.subColor1 }, path);
+                } else {
+                    this._fill.draw({ color: theme.subColor2 }, path);
                 }
             } else {
                 if (row % 2 === 0) {
@@ -124,21 +124,18 @@ export default class Table {
         // 平移到元素起始位置
         this._ctx.translate(-element.width / 2, -element.height / 2);
 
-        let theme: ITheme | undefined;
-        if (element.theme) {
-            const themeColor = tinycolor(element.theme.color);
-            const subColor1 = themeColor.setAlpha(0.3).toHex8String();
-            const subColor2 = themeColor.setAlpha(0.1).toHex8String();
+        const themeColor = tinycolor(element.theme.color);
+        const subColor1 = themeColor.setAlpha(0.3).toHex8String();
+        const subColor2 = themeColor.setAlpha(0.1).toHex8String();
 
-            theme = {
-                color: element.theme.color,
-                subColor1,
-                subColor2
-            };
+        const theme: ITheme = {
+            color: element.theme.color,
+            subColor1,
+            subColor2
+        };
 
-            if (element.theme.rowHeader) {
-                theme.headerColor = themeColor.setAlpha(1).toHex8String();
-            }
+        if (element.theme.rowHeader) {
+            theme.headerColor = themeColor.setAlpha(1).toHex8String();
         }
 
         let cellX = 0;
@@ -179,10 +176,10 @@ export default class Table {
                         cellHeight,
                         cell,
                         row,
+                        theme,
                         isSelectedCell,
                         element.fill,
-                        element.outline,
-                        theme
+                        element.outline
                     );
                     cellX += cellWidth;
                 }
