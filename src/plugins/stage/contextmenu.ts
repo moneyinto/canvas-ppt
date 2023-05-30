@@ -59,6 +59,16 @@ export class Contextmenu {
                 mouseCol = col;
                 if (row >= startRow && row <= endRow && col >= startCol && col <= endCol) {
                     isMergeCell = !(startRow === endRow && startCol === endCol);
+                    // 如果存在合并的单元格，禁止合并
+                    for (let i = startRow; i <= endRow; i++) {
+                        for (let j = startCol; j <= endCol; j++) {
+                            const { colspan, rowspan } = opreateElement.data[i][j];
+                            if (colspan > 1 || rowspan > 1) {
+                                isMergeCell = false;
+                                break;
+                            }
+                        }
+                    }
                     if (!isMergeCell) {
                         const { colspan, rowspan } = opreateElement.data[row][col];
                         onlyOneCell = colspan === 1 && rowspan === 1;
