@@ -156,15 +156,19 @@ export default class Table {
             cellX = 0;
             for (let col = 0; col < element.data[row].length; col++) {
                 const cell = element.data[row][col];
-                if (cell.colspan > 0 && cell.rowspan > 0) {
+                let cellWidth = 0;
+                if (cell.colspan > 0) {
                     // 可能存在浮点溢出
                     const widthRatio = element.colWidths.slice(col, col + cell.colspan).reduce((acr, cur) => {
                         return acr + cur;
                     });
+
+                    cellWidth = element.width * widthRatio;
+                }
+                if (cell.colspan > 0 && cell.rowspan > 0) {
                     const heightRatio = element.rowHeights.slice(row, row + cell.rowspan).reduce((acr, cur) => {
                         return acr + cur;
                     });
-                    const cellWidth = element.width * widthRatio;
                     const cellHeight = element.height * heightRatio;
 
                     // 当只存在一格选中时，不做选中绘制处理
@@ -181,8 +185,8 @@ export default class Table {
                         element.fill,
                         element.outline
                     );
-                    cellX += cellWidth;
                 }
+                cellX += cellWidth;
             }
             cellY += rowHeight;
         }

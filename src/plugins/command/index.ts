@@ -1645,8 +1645,11 @@ export default class Command {
                     tableCell.rowspan = endRow - startRow + 1;
                     for (let i = startRow; i <= endRow; i++) {
                         for (let j = startCol; j <= endCol; j++) {
-                            if (!(i === startRow && j === startCol)) {
+                            if (i === startRow && j !== startCol) {
                                 tableData[i][j].colspan = 0;
+                                tableData[i][j].rowspan = 1;
+                            } else if (i !== startRow) {
+                                tableData[i][j].colspan = 1;
                                 tableData[i][j].rowspan = 0;
                             }
                         }

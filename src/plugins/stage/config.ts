@@ -371,11 +371,14 @@ export default class StageConfig {
             let totalWidth = 0;
             let rowHeight = 0;
             for (const [colIndex, cellData] of rowData.entries()) {
-                if (cellData.colspan > 0 && cellData.rowspan > 0) {
-                    const colWidth = colWidths.slice(colIndex, colIndex + cellData.colspan).reduce((total, curr) => total + curr, 0);
+                if (cellData.rowspan > 0) {
                     rowHeight = totalHeight + rowHeights.slice(rowIndex, rowIndex + cellData.rowspan).reduce((total, curr) => total + curr, 0);
+                }
+                if (cellData.colspan > 0) {
+                    const colWidth = colWidths.slice(colIndex, colIndex + cellData.colspan).reduce((total, curr) => total + curr, 0);
                     totalWidth += colWidth;
                 }
+
                 if (x < totalWidth && y < rowHeight) {
                     col = colIndex;
                     row = rowIndex;
@@ -385,6 +388,7 @@ export default class StageConfig {
             totalHeight += rowHeights[rowIndex];
             if (col >= 0 && row >= 0) break;
         }
+
         return { row, col };
     }
 
