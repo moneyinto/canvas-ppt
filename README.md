@@ -138,10 +138,10 @@ npm run dev
 - [x] 表格宽高调整
 - [x] 合并和拆分单元格
 - [x] 主题色设置
-- [ ] 插入行
-- [ ] 插入列
-- [ ] 删除行
-- [ ] 删除列
+- [x] 插入行
+- [x] 插入列
+- [x] 删除行
+- [x] 删除列
 
 #### 视频
 - [x] [研究canvas播放视频](https://github.com/moneyinto/canvas-video)

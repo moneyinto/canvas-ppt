@@ -25,6 +25,7 @@ import {
     IPPTElementShadow,
     IPPTLineElement,
     IPPTShapeElement,
+    IPPTTableCell,
     IPPTTableElement,
     IPPTTableTheme,
     IPPTTextElement,
@@ -1688,6 +1689,7 @@ export default class Command {
         }
     }
 
+    // 设置表格主题色
     public executeSetTableTheme(theme: Partial<IPPTTableTheme>) {
         const operateElements = this._stageConfig.operateElements;
 
@@ -1711,6 +1713,85 @@ export default class Command {
             }
 
             this.executeUpdateRender(operateElements, true);
+        }
+    }
+
+    // 表格插入行
+    public executeInsertRow(rowIndex: number) {
+        const operateElement = this._stageConfig.operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+        if (operateElement) {
+            const tableData = operateElement.data;
+            const newRow: IPPTTableCell[] = tableData[rowIndex].map(() => {
+                return {
+                    id: createRandomCode(),
+                    colspan: 1,
+                    rowspan: 1,
+                    content: [],
+                    wordSpace: 1,
+                    lineHeight: 1.2,
+                    align: "center"
+                };
+            });
+            const rowHeights = operateElement.rowHeights.map(item => item * operateElement.height);
+            operateElement.height += 60;
+            rowHeights.splice(rowIndex, 0, 60);
+            tableData.splice(rowIndex, 0, newRow);
+            operateElement.rowHeights = rowHeights.map(item => item / operateElement.height);
+            this.executeUpdateRender([operateElement], true);
+        }
+    }
+
+    // 表格插入列
+    public executeInsertCol(colIndex: number) {
+        const operateElement = this._stageConfig.operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+        if (operateElement) {
+            const tableData = operateElement.data;
+            const colWidths = operateElement.colWidths.map(item => item * operateElement.width);
+            operateElement.width += 120;
+            colWidths.splice(colIndex, 0, 120);
+            operateElement.colWidths = colWidths.map(item => item / operateElement.width);
+            for (const row of tableData) {
+                row.splice(colIndex, 0, {
+                    id: createRandomCode(),
+                    colspan: 1,
+                    rowspan: 1,
+                    content: [],
+                    wordSpace: 1,
+                    lineHeight: 1.2,
+                    align: "center"
+                });
+            }
+            this.executeUpdateRender([operateElement], true);
+        }
+    }
+
+    // 表格删除行
+    public executeDeleteRow(rowIndex: number) {
+        const operateElement = this._stageConfig.operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+        if (operateElement) {
+            const tableData = operateElement.data;
+            const rowHeights = operateElement.rowHeights.map(item => item * operateElement.height);
+            operateElement.height -= rowHeights[rowIndex];
+            rowHeights.splice(rowIndex, 1);
+            tableData.splice(rowIndex, 1);
+            operateElement.rowHeights = rowHeights.map(item => item / operateElement.height);
+            this.executeUpdateRender([operateElement], true);
+        }
+    }
+
+    // 表格删除列
+    public executeDeleteCol(colIndex: number) {
+        const operateElement = this._stageConfig.operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+        if (operateElement) {
+            const tableData = operateElement.data;
+            const colWidths = operateElement.colWidths.map(item => item * operateElement.width);
+            operateElement.width -= colWidths[colIndex];
+            colWidths.splice(colIndex, 1);
+            operateElement.colWidths = colWidths.map(item => item / operateElement.width);
+            for (const row of tableData) {
+                row.splice(colIndex, 1);
+            }
+            this.executeUpdateRender([operateElement], true);
         }
     }
 

@@ -38,6 +38,10 @@ export class Contextmenu {
         };
         let isMergeCell = false;
         let onlyOneCell = false; // 是否只有一个单元格，非合并的单元格
+        let onlyOneRow = false;
+        let onlyOneCol = false;
+        let mouseRow = 0;
+        let mouseCol = 0;
         if (this._stageConfig.tableSelectCells) {
             // 单元格选中状态
             const [start, end] = this._stageConfig.tableSelectCells;
@@ -50,7 +54,9 @@ export class Contextmenu {
             const { left, top } = this._stageConfig.getMousePosition(evt);
             const opreateElement = operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
             if (opreateElement) {
-                const { row, col } = this._stageConfig.getMouseTableCell(opreateElement as IPPTTableElement, left, top);
+                const { row, col } = this._stageConfig.getMouseTableCell(opreateElement, left, top);
+                mouseRow = row;
+                mouseCol = col;
                 if (row >= startRow && row <= endRow && col >= startCol && col <= endCol) {
                     isMergeCell = !(startRow === endRow && startCol === endCol);
                     if (!isMergeCell) {
@@ -60,6 +66,9 @@ export class Contextmenu {
                 } else {
                     this._stageConfig.tableSelectCells = null;
                 }
+
+                onlyOneRow = opreateElement.rowHeights.length === 1;
+                onlyOneCol = opreateElement.colWidths.length === 1;
             } else {
                 this._stageConfig.tableSelectCells = null;
             }
@@ -295,6 +304,58 @@ export class Contextmenu {
                 ]
             },
             { divider: true, hide: !tableCellEdit },
+            {
+                hide: !tableCellEdit,
+                text: "插入行",
+                children: [
+                    {
+                        text: "上方插入",
+                        handler: () => {
+                            this._command.executeInsertRow(mouseRow);
+                        }
+                    },
+                    {
+                        text: "下方插入",
+                        handler: () => {
+                            this._command.executeInsertRow(mouseRow + 1);
+                        }
+                    }
+                ]
+            },
+            {
+                hide: !tableCellEdit,
+                text: "插入列",
+                children: [
+                    {
+                        text: "左侧插入",
+                        handler: () => {
+                            this._command.executeInsertCol(mouseCol);
+                        }
+                    },
+                    {
+                        text: "右侧插入",
+                        handler: () => {
+                            this._command.executeInsertCol(mouseCol + 1);
+                        }
+                    }
+                ]
+            },
+            {
+                hide: !tableCellEdit,
+                text: "删除行",
+                disable: onlyOneRow,
+                handler: () => {
+                    this._command.executeDeleteRow(mouseRow);
+                }
+            },
+            {
+                hide: !tableCellEdit,
+                text: "删除列",
+                disable: onlyOneCol,
+                handler: () => {
+                    this._command.executeDeleteCol(mouseCol);
+                }
+            },
             {
                 hide: !tableCellEdit,
                 disable: !isMergeCell,
