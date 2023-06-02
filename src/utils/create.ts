@@ -281,7 +281,14 @@ export const createTableElement = (row: number, col: number) => {
                 id: createRandomCode(),
                 colspan: 1,
                 rowspan: 1,
-                content: [],
+                content: [
+                    {
+                        value: "\n",
+                        ...baseFontConfig,
+                        width: 0,
+                        height: 0
+                    }
+                ],
                 wordSpace: 1,
                 lineHeight: 1.2,
                 align: "center"

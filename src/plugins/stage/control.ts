@@ -145,7 +145,12 @@ export default class ControlStage extends Stage {
             currentSlide?.elements || []
         );
         if (operateElement) {
-            if (operateElement.type === "text" || operateElement.type === "shape") {
+            if (
+                operateElement.type === "text" ||
+                operateElement.type === "shape" ||
+                operateElement.type === "table"
+            ) {
+                if (operateElement.type === "table" && this.stageConfig.tableEditElementID) return;
                 // 点击位置坐标
                 const { left, top } = this.stageConfig.getMousePosition(evt);
                 // 当元素被选中，且被双击时，开启编辑
@@ -154,24 +159,35 @@ export default class ControlStage extends Stage {
                 this.container.style.cursor = "text";
 
                 let offsetY = 0;
+                let x = left - operateElement.left;
+                let y = top - operateElement.top;
                 if (operateElement.type === "shape") {
                     const height = this.stageConfig.getTextHeight(operateElement);
                     offsetY = operateElement.height / 2 - height / 2;
                 }
 
+                if (operateElement.type === "table") {
+                    this.stageConfig.tableEditElementID = operateElement.id;
+                    this.container.style.cursor = "text";
+                    const { row, col } = this.stageConfig.getMouseTableCell(operateElement, left, top);
+                    this.stageConfig.tableSelectCells = [[row, col], [row, col]];
+                    const tableCell = operateElement.data[row][col];
+                    this._listener.onTableCellEditChange && this._listener.onTableCellEditChange(true, tableCell.colspan === 1 && tableCell.rowspan === 1);
+                    const { tableCellLeft, tableCellTop, tableCellHeight } = this.stageConfig.getTableCellData(operateElement, row, col);
+                    x = x - tableCellLeft;
+                    y = y - tableCellTop;
+                    const height = this.stageConfig.getTextHeight(operateElement);
+                    offsetY = tableCellHeight / 2 - height / 2;
+                }
+
                 // 聚焦光标到点击位置
                 this._cursor.focus(
-                    left - operateElement.left,
-                    top - operateElement.top,
+                    x,
+                    y,
                     offsetY
                 );
 
                 this._command.executeUpdateFontConfig();
-            }
-
-            if (operateElement.type === "table") {
-                this.stageConfig.tableEditElementID = operateElement.id;
-                this.container.style.cursor = "text";
             }
 
             if (operateElement.type === "latex") {
@@ -283,7 +299,6 @@ export default class ControlStage extends Stage {
                 this._listener.onTableCellEditChange && this._listener.onTableCellEditChange(true, tableCell.colspan === 1 && tableCell.rowspan === 1);
                 this._command.executeRender();
                 this._operateTableCell = true;
-                return;
             }
         }
 
@@ -340,15 +355,24 @@ export default class ControlStage extends Stage {
                 ) {
                     if (this.stageConfig.textFocus && operateElement.id === this.stageConfig.textFocusElementId) {
                         if (!isContextmenu) this._cursor.hideCursor();
-                        const x = left - operateElement.left;
+                        let x = left - operateElement.left;
                         let y = top - operateElement.top;
                         const renderContent = this.stageConfig.getRenderContent(
-                            operateElement as (IPPTTextElement | IPPTShapeElement)
+                            operateElement as (IPPTTextElement | IPPTShapeElement | IPPTTableElement)
                         );
 
-                        if (operateElement.type === "shape") {
+                        if (operateElement.type === "shape" || operateElement.type === "table") {
                             const height = this.stageConfig.getTextHeight(operateElement);
-                            const offsetY = operateElement.height / 2 - height / 2;
+                            let offsetY = operateElement.height / 2 - height / 2;
+                            if (operateElement.type === "table" && this.stageConfig.tableSelectCells && this.stageConfig.tableSelectCells.length > 0) {
+                                const { row, col } = this.stageConfig.getMouseTableCell(operateElement, left, top);
+                                this.stageConfig.tableSelectCells = [[row, col], [row, col]];
+                                const { tableCellHeight, tableCellLeft, tableCellTop } = this.stageConfig.getTableCellData(operateElement, row, col);
+                                x = x - tableCellLeft;
+                                y = y - tableCellTop;
+                                offsetY = tableCellHeight / 2 - height / 2;
+                            }
+
                             if (y < offsetY) {
                                 y = 4;
                             } else {
@@ -960,7 +984,7 @@ export default class ControlStage extends Stage {
     }
 
     // 文本框数据显示处理
-    private _dealSelectText(evt: MouseEvent, operateElement: IPPTTextElement | IPPTShapeElement) {
+    private _dealSelectText(evt: MouseEvent, operateElement: IPPTTextElement | IPPTShapeElement | IPPTTableElement) {
         const selectArea = this.stageConfig.selectArea;
         if (selectArea && !(selectArea[0] === selectArea[2] && selectArea[1] === selectArea[3])) {
             let first = true;
@@ -1025,12 +1049,21 @@ export default class ControlStage extends Stage {
         } else {
             // 更新文本框光标位置
             const { left, top } = this.stageConfig.getMousePosition(evt);
-            const x = left - operateElement.left;
-            const y = top - operateElement.top;
+            let x = left - operateElement.left;
+            let y = top - operateElement.top;
             let offsetY = 0;
-            if (operateElement.type === "shape") {
+            if (operateElement.type === "shape" || operateElement.type === "table") {
                 const height = this.stageConfig.getTextHeight(operateElement);
                 offsetY = operateElement.height / 2 - height / 2;
+
+                if (operateElement.type === "table" && this.stageConfig.tableSelectCells && this.stageConfig.tableSelectCells.length > 0) {
+                    const { row, col } = this.stageConfig.getMouseTableCell(operateElement, left, top);
+                    this.stageConfig.tableSelectCells = [[row, col], [row, col]];
+                    const { tableCellHeight, tableCellLeft, tableCellTop } = this.stageConfig.getTableCellData(operateElement, row, col);
+                    x = x - tableCellLeft;
+                    y = y - tableCellTop;
+                    offsetY = tableCellHeight / 2 - height / 2;
+                }
             }
             this._cursor.focus(x, y, offsetY);
             this._command.executeUpdateFontConfig();
@@ -1058,7 +1091,7 @@ export default class ControlStage extends Stage {
         } else if (!isMouseOut && this.stageConfig.textFocus && operateElements.length > 0) {
             const operateElement = operateElements.find(element => element.id === this.stageConfig.textFocusElementId);
             if (operateElement) {
-                this._dealSelectText(evt, operateElement as (IPPTTextElement | IPPTShapeElement));
+                this._dealSelectText(evt, operateElement as (IPPTTextElement | IPPTShapeElement | IPPTTableElement));
             }
         } else if (this._operateTableControlType) {
             this._command.executeUpdateRender(deepClone(operateElements), true);

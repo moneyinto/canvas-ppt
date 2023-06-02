@@ -1,5 +1,5 @@
 import { IFontData, ILineData } from "@/types/font";
-import { IPPTShapeElement, IPPTTextElement } from "@/types/element";
+import { IPPTShapeElement, IPPTTableCell, IPPTTableElement, IPPTTextElement } from "@/types/element";
 import StageConfig, { TEXT_MARGIN } from "./config";
 import { Textarea } from "./textarea";
 
@@ -40,7 +40,7 @@ export class Cursor {
     }
 
     get opreateElement() {
-        return this._stageConfig.textFocus ? this._stageConfig.operateElements.find(opreateElement => opreateElement.id === this._stageConfig.textFocusElementId) as (IPPTTextElement | IPPTShapeElement) : null;
+        return this._stageConfig.textFocus ? this._stageConfig.operateElements.find(opreateElement => opreateElement.id === this._stageConfig.textFocusElementId) as (IPPTTextElement | IPPTShapeElement | IPPTTableElement) : null;
     }
 
     get config() {
@@ -85,8 +85,17 @@ export class Cursor {
             }
         });
 
-        const left = (element.left + this._left) * this.zoom + x;
-        const top = (element.top + this._top) * this.zoom + y;
+        let left = (element.left + this._left) * this.zoom + x;
+        let top = (element.top + this._top) * this.zoom + y;
+
+        if (element.type === "table" && this._stageConfig.tableSelectCells && this._stageConfig.tableSelectCells.length > 0) {
+            const row = this._stageConfig.tableSelectCells[0][0];
+            const col = this._stageConfig.tableSelectCells[0][1];
+            const { tableCellLeft, tableCellTop } = this._stageConfig.getTableCellData(element, row, col);
+            left += tableCellLeft * this.zoom;
+            top += tableCellTop * this.zoom;
+        }
+
         const height = this._height * this.zoom;
         this._cursor.style.left = `${left}px`;
         this._cursor.style.top = `${top}px`;
@@ -109,7 +118,6 @@ export class Cursor {
         const { left, textX } = this._getTextXCursorPosition(lineData, x - offsetX);
 
         this._renderDataPosition = [textY, textX];
-
         return { left: left + offsetX, textX, top, textY };
     }
 
@@ -124,7 +132,6 @@ export class Cursor {
             y -= offsetY;
         }
         const { left, textX, top, textY } = this.getCursorPosition(x, y, renderContent);
-
         this._top = top + offsetY;
         this._left = left;
 
@@ -152,8 +159,16 @@ export class Cursor {
     private _getLineCursorPositionByData() {
         const element = this.opreateElement;
         if (!element) return { top: 0, left: 0 };
+        let textElement: IPPTTextElement | IPPTShapeElement | IPPTTableCell | null = null;
+        if (element.type === "table" && this._stageConfig.tableSelectCells && this._stageConfig.tableSelectCells.length > 0) {
+            const row = this._stageConfig.tableSelectCells[0][0];
+            const col = this._stageConfig.tableSelectCells[0][1];
+            textElement = element.data[row][col];
+        } else {
+            textElement = element as IPPTTextElement | IPPTShapeElement;
+        }
         let top = TEXT_MARGIN - COMPENSTATE_LEN / 2 + 1;
-        let left = TEXT_MARGIN - element.wordSpace / 2 - 0.5;
+        let left = TEXT_MARGIN - textElement.wordSpace / 2 - 0.5;
         const renderContent = this._stageConfig.getRenderContent(element);
 
         if (renderContent.length > 0) {
@@ -161,7 +176,7 @@ export class Cursor {
                 if (this._renderDataPosition[0] === lineY) {
                     break;
                 } else {
-                    top = top + line.height * element.lineHeight;
+                    top = top + line.height * textElement.lineHeight;
                 }
             }
             const line = renderContent[this._renderDataPosition[0]];
@@ -172,7 +187,7 @@ export class Cursor {
                     if (this._renderDataPosition[1] < lineX) {
                         break;
                     } else {
-                        left = left + data.width + element.wordSpace;
+                        left = left + data.width + textElement.wordSpace;
                     }
                 }
 
@@ -188,16 +203,24 @@ export class Cursor {
     private _getTextYCursorPosition(renderContent: ILineData[], y: number) {
         const element = this.opreateElement;
         if (!element) return { top: 0, textY: 0 };
+        let textElement: IPPTTextElement | IPPTShapeElement | IPPTTableCell | null = null;
+        if (element.type === "table" && this._stageConfig.tableSelectCells && this._stageConfig.tableSelectCells.length > 0) {
+            const row = this._stageConfig.tableSelectCells[0][0];
+            const col = this._stageConfig.tableSelectCells[0][1];
+            textElement = element.data[row][col];
+        } else {
+            textElement = element as IPPTTextElement | IPPTShapeElement;
+        }
         let top = TEXT_MARGIN - COMPENSTATE_LEN / 2 + 1;
         let textY = 0;
         const len = renderContent.length;
         for (const [index, line] of renderContent.entries()) {
-            if (y < top + line.height * element.lineHeight) {
+            if (y < top + line.height * textElement.lineHeight) {
                 break;
             } else {
                 if (index + 1 < len) {
                     textY++;
-                    top = top + line.height * element.lineHeight;
+                    top = top + line.height * textElement.lineHeight;
                 }
             }
         }
@@ -207,14 +230,22 @@ export class Cursor {
     private _getTextXCursorPosition(lineData: IFontData[], x: number) {
         const element = this.opreateElement;
         if (!element) return { left: 0, textX: 0 };
-        let left = TEXT_MARGIN - element.wordSpace / 2 - 0.5;
+        let textElement: IPPTTextElement | IPPTShapeElement | IPPTTableCell | null = null;
+        if (element.type === "table" && this._stageConfig.tableSelectCells && this._stageConfig.tableSelectCells.length > 0) {
+            const row = this._stageConfig.tableSelectCells[0][0];
+            const col = this._stageConfig.tableSelectCells[0][1];
+            textElement = element.data[row][col];
+        } else {
+            textElement = element as IPPTTextElement | IPPTShapeElement;
+        }
+        let left = TEXT_MARGIN - textElement.wordSpace / 2 - 0.5;
         let textX = -1;
         for (const data of lineData) {
             if (x < left + data.width / 2) {
                 break;
             } else {
                 textX++;
-                left = left + data.width + element.wordSpace;
+                left = left + data.width + textElement.wordSpace;
             }
         }
         // 处于最右一位的时候因为回车符减掉1
@@ -225,7 +256,17 @@ export class Cursor {
     setCursorHeight(height: number) {
         const element = this.opreateElement;
         if (!element) return;
-        this._height = height * element.lineHeight;
+
+        if (element.type === "table") {
+            if (this._stageConfig.tableSelectCells && this._stageConfig.tableSelectCells.length > 0) {
+                const row = this._stageConfig.tableSelectCells[0][0];
+                const col = this._stageConfig.tableSelectCells[0][1];
+                const tableCell = element.data[row][col];
+                this._height = height + tableCell.lineHeight;
+            }
+        } else {
+            this._height = height * element.lineHeight;
+        }
     }
 
     setRenderDataPosition() {
@@ -254,7 +295,16 @@ export class Cursor {
 
     setDataPosition(position: number) {
         const element = this.opreateElement;
-        if (!element || position < -1 || position >= element.content.length - 1) return;
+        if (!element || position < -1) return;
+        if (element.type === "table") {
+            if (this._stageConfig.tableSelectCells && this._stageConfig.tableSelectCells.length > 0) {
+                const row = this._stageConfig.tableSelectCells[0][0];
+                const col = this._stageConfig.tableSelectCells[0][1];
+                const tableCell = element.data[row][col];
+                if (position >= tableCell.content.length - 1) return;
+            }
+        }
+        if (element.type !== "table" && position >= element.content.length - 1) return;
         this._dataPosition = position;
         this.setRenderDataPosition();
     }
