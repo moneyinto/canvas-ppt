@@ -821,52 +821,55 @@ export default class ControlStage extends Stage {
                     this.container.style.cursor = "text";
                 }
 
-                if (
-                    hoverElement.type === "table" &&
-                    operateElements.find((item) => item.id === hoverElement.id) &&
-                    !this._operateTableControlType
-                ) {
-                    this._tableControlType = null;
+                // 当表格处于编辑状态，不执行以下方法
+                if (!this.stageConfig.tableEditElementID && !this.stageConfig.tableSelectCells) {
+                    if (
+                        hoverElement.type === "table" &&
+                        operateElements.find((item) => item.id === hoverElement.id) &&
+                        !this._operateTableControlType
+                    ) {
+                        this._tableControlType = null;
 
-                    // 当元素是表格时，区分单元格 悬浮状态
-                    const tableRect: {
-                        ROWS: IRectParameter[];
-                        COLS: IRectParameter[];
-                    } = getTableElementControlPoints(
-                        hoverElement.left,
-                        hoverElement.top,
-                        hoverElement.width,
-                        hoverElement.height,
-                        hoverElement.rowHeights,
-                        hoverElement.colWidths
-                    );
+                        // 当元素是表格时，区分单元格 悬浮状态
+                        const tableRect: {
+                            ROWS: IRectParameter[];
+                            COLS: IRectParameter[];
+                        } = getTableElementControlPoints(
+                            hoverElement.left,
+                            hoverElement.top,
+                            hoverElement.width,
+                            hoverElement.height,
+                            hoverElement.rowHeights,
+                            hoverElement.colWidths
+                        );
 
-                    const cx = hoverElement.left + hoverElement.width / 2;
-                    const cy = hoverElement.top + hoverElement.height / 2;
+                        const cx = hoverElement.left + hoverElement.width / 2;
+                        const cy = hoverElement.top + hoverElement.height / 2;
 
-                    for (const key in tableRect) {
-                        const rects: IRectParameter[] = tableRect[key];
+                        for (const key in tableRect) {
+                            const rects: IRectParameter[] = tableRect[key];
 
-                        for (const [index, rect] of rects.entries()) {
-                            if (
-                                this.stageConfig.checkPointInRect(
-                                    left,
-                                    top,
-                                    rect,
-                                    cx,
-                                    cy,
-                                    (hoverElement.rotate / 180) * Math.PI
-                                )
-                            ) {
-                                this.container.style.cursor = key === "COLS" ? "col-resize" : "row-resize";
-                                this._tableControlType = [hoverElement.id, key as "ROWS" | "COLS", index];
-                                break;
+                            for (const [index, rect] of rects.entries()) {
+                                if (
+                                    this.stageConfig.checkPointInRect(
+                                        left,
+                                        top,
+                                        rect,
+                                        cx,
+                                        cy,
+                                        (hoverElement.rotate / 180) * Math.PI
+                                    )
+                                ) {
+                                    this.container.style.cursor = key === "COLS" ? "col-resize" : "row-resize";
+                                    this._tableControlType = [hoverElement.id, key as "ROWS" | "COLS", index];
+                                    break;
+                                }
                             }
                         }
+                    } else if (this._operateTableControlType) {
+                        const key = this._operateTableControlType[1];
+                        this.container.style.cursor = key === "COLS" ? "col-resize" : "row-resize";
                     }
-                } else if (this._operateTableControlType) {
-                    const key = this._operateTableControlType[1];
-                    this.container.style.cursor = key === "COLS" ? "col-resize" : "row-resize";
                 }
             } else {
                 if (this.container.style.cursor !== "default") {
