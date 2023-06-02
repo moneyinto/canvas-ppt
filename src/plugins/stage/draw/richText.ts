@@ -1,5 +1,5 @@
 import { SHAPE_TYPE } from "@/plugins/config/shapes";
-import { IPPTShapeElement, IPPTTextElement } from "@/types/element";
+import { IPPTShapeElement, IPPTTableElement, IPPTTextElement } from "@/types/element";
 import { IFontData } from "@/types/font";
 import { getShapePath } from "@/utils/shape";
 import StageConfig, { TEXT_MARGIN } from "../config";
@@ -61,31 +61,45 @@ export class RichText {
         this._ctx.restore();
     }
 
-    public renderContent(element: IPPTTextElement | IPPTShapeElement) {
+    public renderContent(element: IPPTTextElement | IPPTShapeElement | IPPTTableElement, tableCellPosition?: [number, number]) {
         // 绘制text
-        const lineTexts = this._stageConfig.getRenderContent(element);
+        const lineTexts = this._stageConfig.getRenderContent(element, tableCellPosition);
         let textX = TEXT_MARGIN;
         let textY = TEXT_MARGIN;
+        let lineHeight = 2;
+        let wordSpace = 0;
+        if (element.type === "table") {
+            if (tableCellPosition) {
+                const row = tableCellPosition[0];
+                const col = tableCellPosition[1];
+                const tableCell = element.data[row][col];
+                lineHeight = tableCell.lineHeight;
+                wordSpace = tableCell.wordSpace;
+            }
+        } else {
+            lineHeight = element.lineHeight;
+            wordSpace = element.wordSpace;
+        }
         lineTexts.forEach(lineData => {
-            const lineHeight = lineData.height * element.lineHeight;
-            const offsetX = this._stageConfig.getAlignOffsetX(lineData, element);
+            const textLineHeight = lineData.height * lineHeight;
+            const offsetX = this._stageConfig.getAlignOffsetX(lineData, element, tableCellPosition);
             lineData.texts.forEach(text => {
                 // 排除换行情况
                 if (text.value !== "\n") {
                     if (text.underline) {
-                        this._drawUnderLine(text, textX + offsetX, textY, lineData.height, element.lineHeight, element.wordSpace);
+                        this._drawUnderLine(text, textX + offsetX, textY, lineData.height, lineHeight, wordSpace);
                     }
 
                     if (text.strikout) {
-                        this._drawStrikout(text, textX + offsetX, textY, lineData.height, element.lineHeight, element.wordSpace);
+                        this._drawStrikout(text, textX + offsetX, textY, lineData.height, lineHeight, wordSpace);
                     }
 
-                    this._fillText(text, textX + offsetX, textY, lineData.height, element.lineHeight);
-                    textX = textX + text.width + element.wordSpace;
+                    this._fillText(text, textX + offsetX, textY, lineData.height, lineHeight);
+                    textX = textX + text.width + wordSpace;
                 }
             });
             textX = TEXT_MARGIN;
-            textY = textY + lineHeight;
+            textY = textY + textLineHeight;
         });
     }
 

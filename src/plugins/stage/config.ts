@@ -551,17 +551,16 @@ export default class StageConfig {
     }
 
     // 获取文本变更后文本框高度
-    public getTextHeight(operateElement: IPPTTextElement | IPPTShapeElement | IPPTTableElement) {
-        const renderContent = this.getRenderContent(operateElement);
+    public getTextHeight(operateElement: IPPTTextElement | IPPTShapeElement | IPPTTableElement, tableCellPosition?: [number, number]) {
+        const renderContent = this.getRenderContent(operateElement, tableCellPosition);
         let height = TEXT_MARGIN * 2;
         let textElement: IPPTTextElement | IPPTShapeElement | IPPTTableCell | null = null;
         if (
             operateElement.type === "table" &&
-            this.tableSelectCells &&
-            this.tableSelectCells.length > 0
+            ((this.tableSelectCells && this.tableSelectCells.length > 0) || tableCellPosition)
         ) {
-            const row = this.tableSelectCells[0][0];
-            const col = this.tableSelectCells[0][1];
+            const row = tableCellPosition ? tableCellPosition[0] : this.tableSelectCells![0][0];
+            const col = tableCellPosition ? tableCellPosition[1] : this.tableSelectCells![0][1];
             const tableCell = operateElement.data[row][col];
             textElement = tableCell;
         } else {
@@ -573,7 +572,7 @@ export default class StageConfig {
         return height;
     }
 
-    public getRenderContent(element: IPPTTextElement | IPPTShapeElement | IPPTTableElement) {
+    public getRenderContent(element: IPPTTextElement | IPPTShapeElement | IPPTTableElement, tableCellPosition?: [number, number]) {
         // ！！！文本可能由于TEXT_MARGIN的原因，导致宽度不够，需要换行, 但是没有边距，又会有点贴边，后面进行调整
         let width = element.width - TEXT_MARGIN * 2;
 
@@ -581,11 +580,10 @@ export default class StageConfig {
 
         if (
             element.type === "table" &&
-            this.tableSelectCells &&
-            this.tableSelectCells.length > 0
+            ((this.tableSelectCells && this.tableSelectCells.length > 0) || tableCellPosition)
         ) {
-            const row = this.tableSelectCells[0][0];
-            const col = this.tableSelectCells[0][1];
+            const row = tableCellPosition ? tableCellPosition[0] : this.tableSelectCells![0][0];
+            const col = tableCellPosition ? tableCellPosition[1] : this.tableSelectCells![0][1];
             const tableCell = element.data[row][col];
             const { tableCellWidth } = this.getTableCellData(element, row, col);
             width = tableCellWidth - TEXT_MARGIN * 2;
@@ -632,18 +630,23 @@ export default class StageConfig {
         return renderContent;
     }
 
-    public getAlignOffsetX(line: ILineData, element: IPPTTextElement | IPPTShapeElement | IPPTTableElement) {
+    public getAlignOffsetX(line: ILineData, element: IPPTTextElement | IPPTShapeElement | IPPTTableElement, tableCellPosition?: [number, number]) {
         let align: "left" | "center" | "right" = "center";
         let width = 0;
         if (element.type === "table") {
-            if (this.tableSelectCells && this.tableSelectCells.length > 0) {
-                const row = this.tableSelectCells[0][0];
-                const col = this.tableSelectCells[0][1];
-                const tableCell = element.data[row][col];
-                const { tableCellWidth } = this.getTableCellData(element, row, col);
-                align = tableCell.align || "center";
-                width = tableCellWidth;
+            let row = 0;
+            let col = 0;
+            if (tableCellPosition) {
+                row = tableCellPosition[0];
+                col = tableCellPosition[1];
+            } else if (this.tableSelectCells && this.tableSelectCells.length > 0) {
+                row = this.tableSelectCells[0][0];
+                col = this.tableSelectCells[0][1];
             }
+            const tableCell = element.data[row][col];
+            const { tableCellWidth } = this.getTableCellData(element, row, col);
+            align = tableCell.align || "center";
+            width = tableCellWidth;
         } else {
             align = element.align || "center";
             width = element.width;

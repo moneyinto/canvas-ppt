@@ -11,6 +11,7 @@ import {
 import { SHAPE_TYPE } from "@/plugins/config/shapes";
 import { getShapePath } from "@/utils/shape";
 import tinycolor from "tinycolor2";
+import { RichText } from "./richText";
 
 interface ITheme {
     color: string;
@@ -25,6 +26,7 @@ export default class Table {
     private _shadow: Shadow;
     private _fill: Fill;
     private _outline: OutLine;
+    private _richText: RichText;
     constructor(
         stageConfig: StageConfig,
         ctx: CanvasRenderingContext2D
@@ -34,6 +36,7 @@ export default class Table {
         this._shadow = new Shadow(this._ctx);
         this._fill = new Fill(this._ctx);
         this._outline = new OutLine(this._ctx);
+        this._richText = new RichText(stageConfig, ctx);
     }
 
     private _drawCell(
@@ -41,8 +44,10 @@ export default class Table {
         y: number,
         cellWidth: number,
         cellHeight: number,
+        element: IPPTTableElement,
         cell: IPPTTableCell,
         row: number,
+        col: number,
         theme: ITheme,
         isSelected: boolean,
         fill?: IPPTElementFill,
@@ -85,6 +90,13 @@ export default class Table {
 
         if (outline) {
             this._outline.draw(outline, path);
+        }
+
+        if (cell.content && cell.content.length > 0) {
+            const height = this._stageConfig.getTextHeight(element, [row, col]);
+            const offsetY = (cellHeight - height) / 2;
+            this._ctx.translate(-cellWidth / 2, -cellHeight / 2 + offsetY);
+            this._richText.renderContent(element, [row, col]);
         }
 
         this._ctx.restore();
@@ -178,8 +190,10 @@ export default class Table {
                         cellY,
                         cellWidth,
                         cellHeight,
+                        element,
                         cell,
                         row,
+                        col,
                         theme,
                         isSelectedCell,
                         element.fill,
