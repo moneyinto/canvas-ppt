@@ -8,5 +8,5 @@
 !macroend
 
 !macro customUnInstall
-  DeleteRegKey HKCR "m'p'p't'x"
+  DeleteRegKey HKCR "mpptx"
 !macroend
