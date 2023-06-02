@@ -148,9 +148,16 @@ export class Cursor {
         if (!element) return;
         const { top, left } = this._getLineCursorPositionByData();
         let offsetY = 0;
-        if (element.type === "shape") {
+        if (element.type === "shape" || element.type === "table") {
+            let rectHeight = element.height;
+            if (element.type === "table" && this._stageConfig.tableSelectCells && this._stageConfig.tableSelectCells.length > 0) {
+                const row = this._stageConfig.tableSelectCells[0][0];
+                const col = this._stageConfig.tableSelectCells[0][1];
+                const { tableCellHeight } = this._stageConfig.getTableCellData(element, row, col);
+                rectHeight = tableCellHeight;
+            }
             const height = this._stageConfig.getTextHeight(element);
-            offsetY = (element.height - height) / 2;
+            offsetY = (rectHeight - height) / 2;
         }
         this._left = left;
         this._top = top + offsetY;

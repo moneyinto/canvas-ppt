@@ -1029,8 +1029,17 @@ export default class Command {
         const operateElement = operateElements.find(
             (element) => element.id === this._stageConfig.textFocusElementId
         );
-        if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
-            operateElement.content.splice(position, 0, text);
+        if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
+            if (operateElement.type === "table") {
+                if (this._stageConfig.tableSelectCells && this._stageConfig.tableSelectCells.length > 0) {
+                    const row = this._stageConfig.tableSelectCells[0][0];
+                    const col = this._stageConfig.tableSelectCells[0][1];
+                    const tableCell = operateElement.data[row][col];
+                    tableCell.content.splice(position, 0, text);
+                }
+            } else {
+                operateElement.content.splice(position, 0, text);
+            }
             if (operateElement.type === "text") {
                 operateElement.height = this._stageConfig.getTextHeight(operateElement);
             }

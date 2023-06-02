@@ -82,7 +82,6 @@ export class Text {
         const currentDataPosition = this._cursor.getDataPosition();
 
         this._command.executeAddText(text, currentDataPosition + 1);
-
         this._cursor.setDataPosition(currentDataPosition + 1);
         this._cursor.setCursorPositionByData();
         this._cursor.updateCursor();
