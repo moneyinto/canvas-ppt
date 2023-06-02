@@ -787,7 +787,7 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
                 // 光标移动
                 switch (direction) {
                     case KeyMap.Up: {
