@@ -1015,7 +1015,7 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
                 if (this._cursor.getTextareaText()) return;
                 const config = this._stageConfig.fontConfig;
                 const text: IFontData = {
