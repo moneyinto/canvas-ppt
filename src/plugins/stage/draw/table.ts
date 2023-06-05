@@ -184,7 +184,13 @@ export default class Table {
                     const cellHeight = element.height * heightRatio;
 
                     // 当只存在一格选中时，不做选中绘制处理
-                    const isSelectedCell = row >= startRow && row <= endRow && col >= startCol && col <= endCol && !(startRow === endRow && startCol === endCol);
+                    const isSelectedCell =
+                        this._stageConfig.tableEditElementID === element.id &&
+                        row >= startRow &&
+                        row <= endRow &&
+                        col >= startCol &&
+                        col <= endCol &&
+                        !(startRow === endRow && startCol === endCol);
                     this._drawCell(
                         cellX,
                         cellY,
