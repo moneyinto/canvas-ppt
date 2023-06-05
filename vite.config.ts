@@ -69,7 +69,15 @@ export default defineConfig(({ mode, command }) => {
         renderer()
     ];
 
+    const version = require("./package.json").version;
+
     const defaultOptions: UserConfig = {
+        define: {
+            __APP_MPPTX__: {
+                name,
+                version
+            }
+        },
         base: "./",
         plugins,
         resolve: {

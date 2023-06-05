@@ -83,7 +83,7 @@
 <script lang="ts" setup>
 import { inject, onMounted, onUnmounted, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
-import { IPPTElement, IPPTShapeElement, IPPTTextElement } from "@/types/element";
+import { IPPTElement, IPPTShapeElement, IPPTTableElement, IPPTTextElement } from "@/types/element";
 import PPTIcon from "@/components/Icon.vue";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 
@@ -101,15 +101,60 @@ const hoverAlignPool = ref(false);
 const alignment = ref("left");
 
 const init = () => {
-    const operateElements = props.elements.filter(element => (element.type === "text" || element.type === "shape")) as (IPPTTextElement | IPPTShapeElement)[];
+    const operateElements = props.elements.filter(element => (element.type === "text" || element.type === "shape" || element.type === "table")) as (IPPTTextElement | IPPTShapeElement | IPPTTableElement)[];
     if (operateElements.length > 0) {
         for (const [index, operateElement] of operateElements.entries()) {
-            if (index === 0) {
-                alignment.value = operateElement.align || "center";
+            if (operateElement.type === "table") {
+                const tableSelectCells = instance?.value.stageConfig.tableSelectCells;
+                if (tableSelectCells) {
+                    const startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    const endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    const startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
+                    const endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+                    let isDifferent = false;
+                    for (let row = startRow; row <= endRow; row++) {
+                        for (let col = startCol; col <= endCol; col++) {
+                            if (index === 0 && row === startRow && col === startCol) {
+                                alignment.value = operateElement.data[row][col].align || "center";
+                            } else {
+                                if (alignment.value !== operateElement.data[row][col].align) {
+                                    alignment.value = "left";
+                                    isDifferent = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (isDifferent) {
+                            break;
+                        }
+                    }
+                } else {
+                    let isDifferent = false;
+                    for (let row = 0; row < operateElement.data.length; row++) {
+                        for (let col = 0; col < operateElement.data[row].length; col++) {
+                            if (index === 0 && row === 0 && col === 0) {
+                                alignment.value = operateElement.data[row][col].align || "center";
+                            } else {
+                                if (alignment.value !== operateElement.data[row][col].align) {
+                                    alignment.value = "left";
+                                    isDifferent = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (isDifferent) {
+                            break;
+                        }
+                    }
+                }
             } else {
-                if (alignment.value !== operateElement.align) {
-                    alignment.value = "left";
-                    break;
+                if (index === 0) {
+                    alignment.value = operateElement.align || "center";
+                } else {
+                    if (alignment.value !== operateElement.align) {
+                        alignment.value = "left";
+                        break;
+                    }
                 }
             }
         }

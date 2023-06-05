@@ -25,7 +25,7 @@ const instance = inject<Ref<Editor>>("instance");
 if (instance?.value) {
     instance.value.listener.onFontStyleChange = (italic) => {
         isItalic.value = italic;
-    emitter.emit(EmitterEvents.FONT_ITALIC_CHANGE, italic);
+        emitter.emit(EmitterEvents.FONT_ITALIC_CHANGE, italic);
     };
 }
 

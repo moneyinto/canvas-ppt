@@ -3,9 +3,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, toRefs } from "vue";
+import { computed } from "vue";
 
-const porps = defineProps({
+const props = defineProps({
     size: {
         type: Number,
         default: 24
@@ -16,8 +16,6 @@ const porps = defineProps({
         required: true
     }
 });
-
-const { size, icon } = toRefs(porps);
 
 const icons: { [key: string]: string } = {
     undo: new URL("@/assets/icons/undo.svg", import.meta.url).href,
@@ -90,10 +88,14 @@ const icons: { [key: string]: string } = {
     endPreview: new URL("@/assets/icons/endPreview.svg", import.meta.url).href,
     leftArrow: new URL("@/assets/icons/leftArrow.svg", import.meta.url).href,
     rightArrow: new URL("@/assets/icons/rightArrow.svg", import.meta.url).href,
-    pencil: new URL("@/assets/icons/pencil.svg", import.meta.url).href
+    pencil: new URL("@/assets/icons/pencil.svg", import.meta.url).href,
+    table: new URL("@/assets/icons/table.svg", import.meta.url).href,
+    mergeCell: new URL("@/assets/icons/mergeCell.svg", import.meta.url).href,
+    splitCell: new URL("@/assets/icons/splitCell.svg", import.meta.url).href,
+    platte: new URL("@/assets/icons/platte.svg", import.meta.url).href
 };
 
-const iconUrl = computed(() => icons[icon.value]);
+const iconUrl = computed(() => icons[props.icon]);
 </script>
 
 <style scoped>

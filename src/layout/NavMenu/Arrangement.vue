@@ -218,14 +218,12 @@ const props = defineProps({
     }
 });
 
-const elements = computed(() => props.elements);
-
 const instance = inject<Ref<Editor>>("instance");
 
 const arrangementVisible = ref(false);
 
 const flipDisabled = computed(() => {
-    return elements.value.filter(element => element.type === "shape" || element.type === "image" || element.type === "latex" || element.type === "chart").length === 0;
+    return props.elements.filter(element => element.type === "shape" || element.type === "image" || element.type === "latex" || element.type === "chart").length === 0;
 });
 
 const setAlignType = (

@@ -7,17 +7,15 @@
 <script lang="ts" setup>
 import { PANELS } from "@/utils/panel";
 import emitter, { EmitterEvents } from "@/utils/emitter";
-import { computed, onMounted, onUnmounted, ref, toRefs } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import Background from "./Background.vue";
 
-const props = defineProps({
+defineProps({
     visible: {
         type: Boolean,
         required: true
     }
 });
-
-const { visible } = toRefs(props);
 
 const panel = ref<PANELS | "">("");
 

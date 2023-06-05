@@ -4,7 +4,7 @@ import { baseFontConfig } from "../config/font";
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import Listener from "../listener";
 import { ICacheImage, IRectParameter } from "@/types";
-import { ICreatingElement, IPPTElement, IPPTShapeElement, IPPTTextElement } from "@/types/element";
+import { ICreatingElement, IPPTElement, IPPTShapeElement, IPPTTableCell, IPPTTableElement, IPPTTextElement } from "@/types/element";
 import { IFontConfig, IFontData, ILineData } from "@/types/font";
 import { ISlide, ISlideBackground } from "@/types/slide";
 
@@ -32,6 +32,10 @@ export default class StageConfig {
     public textFocusElementId = ""; // 聚焦富文本框元素id
     // [开始字坐标，开始行坐标，结束字坐标，结束行坐标]
     public selectArea: [number, number, number, number] | null = null;
+    // 表格编辑状态
+    public tableEditElementID = "";
+    // 表格选中单元格 [[开始行，开始列], [结束行，结束列]
+    public tableSelectCells: [[number, number], [number, number]] | null = null;
 
     public resetDrawView: (() => void) | null;
     public resetDrawOprate: (() => void) | null;
@@ -343,6 +347,55 @@ export default class StageConfig {
         ];
     }
 
+    public getMousePosition(evt: MouseEvent) {
+        const zoom = this.zoom;
+
+        const { x, y } = this.getStageArea();
+        const { offsetX, offsetY } = this.getCanvasOffset();
+
+        const left = (evt.pageX - x - offsetX) / zoom;
+        const top = (evt.pageY - y - offsetY) / zoom;
+
+        return { left, top };
+    }
+
+    public getMouseTableCell(element: IPPTTableElement, left: number, top: number) {
+        const x = left - element.left;
+        const y = top - element.top;
+        const rowHeights = element.rowHeights.map(item => item * element.height);
+        const colWidths = element.colWidths.map(item => item * element.width);
+        let row = -1;
+        let col = -1;
+        let totalHeight = 0;
+        for (const [rowIndex, rowData] of element.data.entries()) {
+            row = -1;
+            col = -1;
+            let totalWidth = 0;
+            let rowHeight = 0;
+            for (const [colIndex, cellData] of rowData.entries()) {
+                if (cellData.rowspan > 0) {
+                    rowHeight = totalHeight + rowHeights.slice(rowIndex, rowIndex + cellData.rowspan).reduce((total, curr) => total + curr, 0);
+                }
+                if (cellData.colspan > 0) {
+                    const colWidth = colWidths.slice(colIndex, colIndex + cellData.colspan).reduce((total, curr) => total + curr, 0);
+                    totalWidth += colWidth;
+                }
+
+                if (x < totalWidth) {
+                    col = colIndex;
+                    break;
+                }
+            }
+            if (y < rowHeight) {
+                row = rowIndex;
+            }
+            totalHeight += rowHeights[rowIndex];
+            if (col >= 0 && row >= 0) break;
+        }
+
+        return { row, col };
+    }
+
     // 获取鼠标位置的元素
     public getMouseInElement(left: number, top: number, ctx: CanvasRenderingContext2D, checkElements: IPPTElement[]) {
         // 当存在操作选中元素是时，因为选中元素处于层级最高，优先判断选中元素
@@ -483,18 +536,61 @@ export default class StageConfig {
         );
     }
 
+    // 获取表格对应单元格数据
+    public getTableCellData(element: IPPTTableElement, row: number, col: number) {
+        const tableCell = element.data[row][col];
+        const rowHeights = element.rowHeights.map(item => item * element.height);
+        const colWidths = element.colWidths.map(item => item * element.width);
+        const tableCellLeft = colWidths.slice(0, col).reduce((a, b) => a + b, 0);
+        const tableCellTop = rowHeights.slice(0, row).reduce((a, b) => a + b, 0);
+        const tableCellWidth = colWidths.slice(col, col + tableCell.colspan).reduce((a, b) => a + b, 0);
+        const tableCellHeight = rowHeights.slice(row, row + tableCell.rowspan).reduce((a, b) => a + b, 0);
+        return { tableCellLeft, tableCellTop, tableCellWidth, tableCellHeight };
+    }
+
     // 获取文本变更后文本框高度
-    public getTextHeight(operateElement: IPPTTextElement | IPPTShapeElement) {
-        const renderContent = this.getRenderContent(operateElement);
+    public getTextHeight(operateElement: IPPTTextElement | IPPTShapeElement | IPPTTableElement, tableCellPosition?: [number, number]) {
+        const renderContent = this.getRenderContent(operateElement, tableCellPosition);
         let height = TEXT_MARGIN * 2;
+        let textElement: IPPTTextElement | IPPTShapeElement | IPPTTableCell | null = null;
+        if (
+            operateElement.type === "table" &&
+            ((this.tableSelectCells && this.tableSelectCells.length > 0) || tableCellPosition)
+        ) {
+            const row = tableCellPosition ? tableCellPosition[0] : this.tableSelectCells![0][0];
+            const col = tableCellPosition ? tableCellPosition[1] : this.tableSelectCells![0][1];
+            const tableCell = operateElement.data[row][col];
+            textElement = tableCell;
+        } else {
+            textElement = operateElement as IPPTTextElement | IPPTShapeElement;
+        }
         renderContent.forEach((line) => {
-            height += line.height * operateElement.lineHeight;
+            height += line.height * textElement!.lineHeight;
         });
         return height;
     }
 
-    public getRenderContent(element: IPPTTextElement | IPPTShapeElement) {
-        const width = element.width - TEXT_MARGIN * 2;
+    public getRenderContent(element: IPPTTextElement | IPPTShapeElement | IPPTTableElement, tableCellPosition?: [number, number]) {
+        // ！！！文本可能由于TEXT_MARGIN的原因，导致宽度不够，需要换行, 但是没有边距，又会有点贴边，后面进行调整
+        let width = element.width - TEXT_MARGIN * 2;
+
+        let textElement: IPPTTextElement | IPPTShapeElement | IPPTTableCell | null = null;
+
+        if (
+            element.type === "table" &&
+            ((this.tableSelectCells && this.tableSelectCells.length > 0) || tableCellPosition)
+        ) {
+            const row = tableCellPosition ? tableCellPosition[0] : this.tableSelectCells![0][0];
+            const col = tableCellPosition ? tableCellPosition[1] : this.tableSelectCells![0][1];
+            const tableCell = element.data[row][col];
+            const { tableCellWidth } = this.getTableCellData(element, row, col);
+            width = tableCellWidth - TEXT_MARGIN * 2;
+
+            textElement = tableCell;
+        } else {
+            textElement = element as IPPTTextElement | IPPTShapeElement;
+        }
+
         const renderContent: ILineData[] = [];
         let lineData: ILineData = {
             height: 0,
@@ -502,7 +598,7 @@ export default class StageConfig {
             texts: []
         };
         let countWidth = 0;
-        element.content.forEach((text) => {
+        textElement.content.forEach((text) => {
             if (lineData.height === 0) lineData.height = text.fontSize;
             if (text.value === "\n") {
                 lineData.texts.push(text);
@@ -517,7 +613,7 @@ export default class StageConfig {
                 // 一行数据可以摆得下
                 lineData.texts.push(text);
                 if (lineData.height < text.fontSize) lineData.height = text.fontSize;
-                countWidth = countWidth + text.width + element.wordSpace;
+                countWidth = countWidth + text.width + textElement!.wordSpace;
                 lineData.width = countWidth;
             } else {
                 renderContent.push(lineData);
@@ -526,22 +622,42 @@ export default class StageConfig {
                     width: text.width,
                     texts: [text]
                 };
-                countWidth = text.width + element.wordSpace;
+                countWidth = text.width + textElement!.wordSpace;
             }
         });
         return renderContent;
     }
 
-    public getAlignOffsetX(line: ILineData, element: IPPTTextElement | IPPTShapeElement) {
-        const align = element.align || "center";
+    public getAlignOffsetX(line: ILineData, element: IPPTTextElement | IPPTShapeElement | IPPTTableElement, tableCellPosition?: [number, number]) {
+        let align: "left" | "center" | "right" = "center";
+        let width = 0;
+        if (element.type === "table") {
+            let row = 0;
+            let col = 0;
+            if (tableCellPosition) {
+                row = tableCellPosition[0];
+                col = tableCellPosition[1];
+            } else if (this.tableSelectCells && this.tableSelectCells.length > 0) {
+                row = this.tableSelectCells[0][0];
+                col = this.tableSelectCells[0][1];
+            }
+            const tableCell = element.data[row][col];
+            const { tableCellWidth } = this.getTableCellData(element, row, col);
+            align = tableCell.align || "center";
+            width = tableCellWidth;
+        } else {
+            align = element.align || "center";
+            width = element.width;
+        }
+
         return {
             left: 0,
-            center: (element.width - TEXT_MARGIN * 2 - line.width) / 2,
-            right: element.width - TEXT_MARGIN * 2 - line.width
+            center: (width - TEXT_MARGIN * 2 - line.width) / 2,
+            right: width - TEXT_MARGIN * 2 - line.width
         }[align];
     }
 
-    public getSelectArea(selectArea: [number, number, number, number], element: IPPTTextElement | IPPTShapeElement) {
+    public getSelectArea(selectArea: [number, number, number, number], element: IPPTTextElement | IPPTShapeElement | IPPTTableElement) {
         const renderContent = this.getRenderContent(element);
         let startX = 0;
         let endX = 0;
@@ -577,8 +693,17 @@ export default class StageConfig {
         lineData: ILineData,
         index: number,
         selectArea: [number, number, number, number],
-        element: IPPTTextElement | IPPTShapeElement
+        element: IPPTTextElement | IPPTShapeElement | IPPTTableElement,
+        tableCellPosition?: [number, number]
     ) {
+        let textElement: IPPTTextElement | IPPTShapeElement | IPPTTableCell | null = null;
+        if (element.type === "table" && tableCellPosition) {
+            const tableCell = element.data[tableCellPosition[0]][tableCellPosition[1]];
+            textElement = tableCell;
+        } else {
+            textElement = element as IPPTTextElement | IPPTShapeElement;
+        }
+
         if (index >= selectArea[1] && index <= selectArea[3]) {
             let startX = 0;
             let endX = 0;
@@ -608,7 +733,7 @@ export default class StageConfig {
                     .slice(0, startX)
                     .map((text) => text.width)
                     .reduce((acr, cur) => {
-                        return acr + cur + element.wordSpace;
+                        return acr + cur + textElement!.wordSpace;
                     });
             }
 
@@ -616,22 +741,28 @@ export default class StageConfig {
                 .slice(startX, endX)
                 .map((text) => text.width)
                 .reduce((acr, cur) => {
-                    return acr + cur + element.wordSpace;
+                    return acr + cur + textElement!.wordSpace;
                 });
 
-            const offsetX = this.getAlignOffsetX(lineData, element);
+            let offsetX = this.getAlignOffsetX(lineData, element);
 
             let offsetY = 0;
-            if (element.type === "shape") {
-                const height = this.getTextHeight(element);
+            if (element.type === "shape" || element.type === "table") {
+                const height = this.getTextHeight(element, tableCellPosition);
                 offsetY = (element.height - height) / 2;
+                if (element.type === "table" && tableCellPosition) {
+                    const [row, col] = tableCellPosition;
+                    const { tableCellHeight, tableCellLeft, tableCellTop } = this.getTableCellData(element, row, col);
+                    offsetX += tableCellLeft;
+                    offsetY = tableCellHeight / 2 - height / 2 + tableCellTop;
+                }
             }
 
             return {
                 x: x + offsetX,
                 y: y + offsetY,
-                width: width + element.wordSpace,
-                height: lineData.height * element.lineHeight
+                width: width + textElement!.wordSpace,
+                height: lineData.height * textElement!.lineHeight
             };
         }
         return undefined;

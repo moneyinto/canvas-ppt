@@ -117,20 +117,18 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, PropType, ref, Ref, toRefs } from "vue";
+import { computed, inject, PropType, ref, Ref } from "vue";
 import Editor from "@/plugins/editor";
 import { IElementAlignType } from "@/types";
 import { IPPTElement } from "@/types/element";
 import PPTIcon from "@/components/Icon.vue";
 
-const props = defineProps({
+defineProps({
     elements: {
         type: Object as PropType<IPPTElement[]>,
         required: true
     }
 });
-
-const { elements } = toRefs(props);
 
 const instance = inject<Ref<Editor>>("instance");
 

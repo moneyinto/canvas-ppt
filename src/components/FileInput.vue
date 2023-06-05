@@ -6,16 +6,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, toRefs } from "vue";
+import { ref } from "vue";
 
-const props = defineProps({
+defineProps({
     accept: {
         type: String,
         default: ""
     }
 });
-
-const { accept } = toRefs(props);
 
 const emit = defineEmits(["change"]);
 

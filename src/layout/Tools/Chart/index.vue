@@ -164,7 +164,7 @@
 
 <script lang="ts" setup>
 import { ChartData, ChartType, IPPTChartElement } from "@/types/element";
-import { PropType, nextTick, ref, toRefs, watch } from "vue";
+import { PropType, nextTick, ref, watch } from "vue";
 import ChartRender from "./ChartRender.vue";
 import ResizePointer from "@/components/ResizePointer.vue";
 import useResizeHandler from "@/hooks/useResizeHandler";
@@ -196,8 +196,6 @@ const props = defineProps({
     }
 });
 
-const { visible, axisTransformation } = toRefs(props);
-
 const focusCell = ref<[number, number] | null>(null);
 const { labels, legends, series } = deepClone(baseChartData);
 const chartSet = ref({
@@ -211,6 +209,7 @@ const chartRenderRef = ref();
 const legend = ref<"" | "top" | "bottom">("");
 const title = ref("");
 const stack = ref(false);
+const chartAxisTransformation = ref(props.axisTransformation);
 
 const initData = () => {
     const _data: string[][] = [];
@@ -274,7 +273,7 @@ watch(
                 chartHeight.value = props.element.height;
                 legend.value = props.element.legend || "";
                 title.value = props.element.title || "";
-                axisTransformation.value = props.element.axisTransformation;
+                chartAxisTransformation.value = props.element.axisTransformation;
                 stack.value = !!props.element.stack;
             } else {
                 const { labels, legends, series } = deepClone(baseChartData);
@@ -309,7 +308,7 @@ const sure = () => {
             legends: chartSet.value.legends,
             series: chartSet.value.series
         },
-        axisTransformation: axisTransformation.value,
+        axisTransformation: chartAxisTransformation.value,
         src,
         title: title.value,
         stack: stack.value

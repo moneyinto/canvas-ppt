@@ -45,7 +45,7 @@
 <script lang="ts" setup>
 import { inject, onMounted, onUnmounted, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
-import { IPPTElement, IPPTShapeElement, IPPTTextElement } from "@/types/element";
+import { IPPTElement, IPPTShapeElement, IPPTTableElement, IPPTTextElement } from "@/types/element";
 import PPTIcon from "@/components/Icon.vue";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 
@@ -64,15 +64,60 @@ const lineHeight = ref(2);
 const lineHeightList = ref([1, 1.2, 1.6, 2, 2.4, 2.8, 3.2, 4]);
 
 const init = () => {
-    const operateElements = props.elements.filter(element => (element.type === "text" || element.type === "shape")) as (IPPTTextElement | IPPTShapeElement)[];
+    const operateElements = props.elements.filter(element => (element.type === "text" || element.type === "shape" || element.type === "table")) as (IPPTTextElement | IPPTShapeElement | IPPTTableElement)[];
     if (operateElements.length > 0) {
         for (const [index, operateElement] of operateElements.entries()) {
-            if (index === 0) {
-                lineHeight.value = operateElement.lineHeight;
+            if (operateElement.type === "table") {
+                const tableSelectCells = instance?.value.stageConfig.tableSelectCells;
+                if (tableSelectCells) {
+                    const startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    const endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    const startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
+                    const endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+                    let isDifferent = false;
+                    for (let row = startRow; row <= endRow; row++) {
+                        for (let col = startCol; col <= endCol; col++) {
+                            if (index === 0 && row === startRow && col === startCol) {
+                                lineHeight.value = operateElement.data[row][col].lineHeight || 1.2;
+                            } else {
+                                if (lineHeight.value !== operateElement.data[row][col].lineHeight) {
+                                    lineHeight.value = 1.2;
+                                    isDifferent = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (isDifferent) {
+                            break;
+                        }
+                    }
+                } else {
+                    let isDifferent = false;
+                    for (let row = 0; row < operateElement.data.length; row++) {
+                        for (let col = 0; col < operateElement.data[row].length; col++) {
+                            if (index === 0 && row === 0 && col === 0) {
+                                lineHeight.value = operateElement.data[row][col].lineHeight || 1.2;
+                            } else {
+                                if (lineHeight.value !== operateElement.data[row][col].lineHeight) {
+                                    lineHeight.value = 1.2;
+                                    isDifferent = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (isDifferent) {
+                            break;
+                        }
+                    }
+                }
             } else {
-                if (lineHeight.value !== operateElement.lineHeight) {
-                    lineHeight.value = 2;
-                    break;
+                if (index === 0) {
+                    lineHeight.value = operateElement.lineHeight;
+                } else {
+                    if (lineHeight.value !== operateElement.lineHeight) {
+                        lineHeight.value = 2;
+                        break;
+                    }
                 }
             }
         }

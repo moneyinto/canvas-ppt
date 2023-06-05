@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, inject, Ref, watch, toRefs, onMounted } from "vue";
+import { ref, inject, Ref, watch, onMounted } from "vue";
 import { SHORTCUT } from "@/plugins/config/shortcut";
 import Editor from "@/plugins/editor";
 import PPTIcon from "@/components/Icon.vue";
@@ -62,8 +62,6 @@ const props = defineProps({
         default: 0
     }
 });
-
-const { total, current } = toRefs(props);
 
 const emit = defineEmits(["onZoomChange", "onPreview"]);
 
@@ -85,7 +83,7 @@ watch(instance!, () => {
 });
 
 const preview = () => {
-    emit("onPreview", current.value);
+    emit("onPreview", props.current);
 };
 
 const fitZoom = () => {

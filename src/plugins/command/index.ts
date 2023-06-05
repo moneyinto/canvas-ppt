@@ -25,6 +25,9 @@ import {
     IPPTElementShadow,
     IPPTLineElement,
     IPPTShapeElement,
+    IPPTTableCell,
+    IPPTTableElement,
+    IPPTTableTheme,
     IPPTTextElement,
     IPPTVideoElement
 } from "@/types/element";
@@ -340,6 +343,36 @@ export default class Command {
                         ...newElement.fill,
                         ...fill
                     };
+                } else if (newElement.type === "table") {
+                    const tableSelectCells = this._stageConfig.tableSelectCells;
+                    if (tableSelectCells) {
+                        const [start, end] = tableSelectCells;
+                        const [startRow, startCol] = start;
+                        const [endRow, endCol] = end;
+                        for (let i = startRow; i <= endRow; i++) {
+                            for (let j = startCol; j <= endCol; j++) {
+                                if (newElement.data[i][j]) {
+                                    newElement.data[i][j].fill = {
+                                        ...newElement.data[i][j].fill,
+                                        ...fill
+                                    };
+                                }
+                            }
+                        }
+                    } else {
+                        // 先移除单元格的所有颜色配置
+                        for (const row of newElement.data) {
+                            for (const cell of row) {
+                                if (cell) {
+                                    cell.fill = undefined;
+                                }
+                            }
+                        }
+                        newElement.fill = {
+                            ...newElement.fill,
+                            ...fill
+                        };
+                    }
                 }
 
                 newElements.push(newElement);
@@ -417,14 +450,29 @@ export default class Command {
             if (selectArea) {
                 const operateElement = operateElements.find(
                     (element) => element.id === this._stageConfig.textFocusElementId
-                );
+                ) as (IPPTTextElement | IPPTShapeElement | IPPTTableElement);
                 const { startX, endX } = this._stageConfig.getSelectArea(
                     selectArea,
-                    operateElement as IPPTTextElement
+                    operateElement
                 );
-                const copyContent = (
-                    operateElement as IPPTTextElement
-                ).content.slice(startX, endX);
+                let copyContent: IFontData[] = [];
+                if (operateElement.type === "table") {
+                    const tableSelectCells = this._stageConfig.tableSelectCells;
+                    if (tableSelectCells) {
+                        const startRow = tableSelectCells[0][0];
+                        const startCol = tableSelectCells[0][1];
+                        const endRow = tableSelectCells[1][0];
+                        const endCol = tableSelectCells[1][1];
+                        if (startRow === endRow && startCol === endCol) {
+                            copyContent = operateElement.data[startRow][startCol].content.slice(
+                                startX,
+                                endX
+                            );
+                        }
+                    }
+                } else {
+                    copyContent = operateElement.content.slice(startX, endX);
+                }
                 await copyText(
                     encrypt(
                         `${CLIPBOARD_STRING_TYPE.TEXT}${JSON.stringify(
@@ -507,7 +555,7 @@ export default class Command {
                         element.id === this._stageConfig.textFocusElementId
                 );
 
-                if (operateElement && operateElement.type === "text") {
+                if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
                     const selectArea = this._stageConfig.selectArea;
                     if (selectArea) {
                         // 选中区域存在替换选中区域
@@ -516,12 +564,31 @@ export default class Command {
 
                     // 光标位置粘贴
                     const position = this._cursor.getDataPosition();
-                    operateElement.content.splice(
-                        position + 1,
-                        0,
-                        ...elementContent
-                    );
-                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    if (operateElement.type === "table") {
+                        const tableSelectCells = this._stageConfig.tableSelectCells;
+                        if (tableSelectCells) {
+                            const startRow = tableSelectCells[0][0];
+                            const startCol = tableSelectCells[0][1];
+                            const endRow = tableSelectCells[1][0];
+                            const endCol = tableSelectCells[1][1];
+                            if (startRow === endRow && startCol === endCol) {
+                                operateElement.data[startRow][startCol].content.splice(
+                                    position + 1,
+                                    0,
+                                    ...elementContent
+                                );
+                            }
+                        }
+                    } else {
+                        operateElement.content.splice(
+                            position + 1,
+                            0,
+                            ...elementContent
+                        );
+                    }
+                    if (operateElement.type === "text") {
+                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    }
                     const cursorPosition = position + elementContent.length;
                     this.executeUpdateRender(operateElements, true);
                     this._updateCursor(cursorPosition);
@@ -702,12 +769,26 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
                 const { startX, endX } = this._stageConfig.getSelectArea(
                     selectArea,
                     operateElement
                 );
-                operateElement.content.splice(startX, endX - startX);
+                if (operateElement.type === "table") {
+                    const tableSelectCells = this._stageConfig.tableSelectCells;
+                    if (tableSelectCells) {
+                        const startRow = tableSelectCells[0][0];
+                        const startCol = tableSelectCells[0][1];
+                        const endRow = tableSelectCells[1][0];
+                        const endCol = tableSelectCells[1][1];
+                        if (startRow === endRow && startCol === endCol) {
+                            operateElement.data[startRow][startCol].content.splice(startX, endX - startX);
+                        }
+                    }
+                } else {
+                    operateElement.content.splice(startX, endX - startX);
+                }
+
                 if (operateElement.type === "text") {
                     operateElement.height = this._stageConfig.getTextHeight(operateElement);
                 }
@@ -727,12 +808,31 @@ export default class Command {
         const operateElement = operateElements.find(
             (element) => element.id === this._stageConfig.textFocusElementId
         );
-        if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
-            if (
-                position >= operateElement.content.length - 1 ||
-                position === -1
-            ) return false;
-            operateElement.content.splice(position, 1);
+        if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
+            if (operateElement.type === "table") {
+                const tableSelectCells = this._stageConfig.tableSelectCells;
+                if (tableSelectCells) {
+                    const startRow = tableSelectCells[0][0];
+                    const startCol = tableSelectCells[0][1];
+                    const endRow = tableSelectCells[1][0];
+                    const endCol = tableSelectCells[1][1];
+                    if (startRow === endRow && startCol === endCol) {
+                        const content = operateElement.data[startRow][startCol].content;
+                        if (
+                            position >= content.length - 1 ||
+                            position === -1
+                        ) return false;
+                        content.splice(position, 1);
+                    }
+                }
+            } else {
+                if (
+                    position >= operateElement.content.length - 1 ||
+                    position === -1
+                ) return false;
+                operateElement.content.splice(position, 1);
+            }
+
             if (operateElement.type === "text") {
                 operateElement.height = this._stageConfig.getTextHeight(operateElement);
             }
@@ -752,7 +852,7 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
                 // 光标移动
                 switch (direction) {
                     case KeyMap.Up: {
@@ -915,7 +1015,7 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
                 if (this._cursor.getTextareaText()) return;
                 const config = this._stageConfig.fontConfig;
                 const text: IFontData = {
@@ -994,8 +1094,17 @@ export default class Command {
         const operateElement = operateElements.find(
             (element) => element.id === this._stageConfig.textFocusElementId
         );
-        if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
-            operateElement.content.splice(position, 0, text);
+        if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
+            if (operateElement.type === "table") {
+                if (this._stageConfig.tableSelectCells && this._stageConfig.tableSelectCells.length > 0) {
+                    const row = this._stageConfig.tableSelectCells[0][0];
+                    const col = this._stageConfig.tableSelectCells[0][1];
+                    const tableCell = operateElement.data[row][col];
+                    tableCell.content.splice(position, 0, text);
+                }
+            } else {
+                operateElement.content.splice(position, 0, text);
+            }
             if (operateElement.type === "text") {
                 operateElement.height = this._stageConfig.getTextHeight(operateElement);
             }
@@ -1018,7 +1127,7 @@ export default class Command {
 
     // 循环选中文本
     private _forSelectTexts(
-        element: IPPTTextElement | IPPTShapeElement,
+        element: IPPTTextElement | IPPTShapeElement | IPPTTableElement,
         selectArea: [number, number, number, number],
         callback: (text: IFontData) => void
     ) {
@@ -1056,9 +1165,39 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
                 const selectArea = this._stageConfig.selectArea;
-                if (selectArea) {
+                const tableSelectCells = this._stageConfig.tableSelectCells;
+                let startRow = -1;
+                let endRow = -1;
+                let startCol = -1;
+                let endCol = -1;
+                if (tableSelectCells) {
+                    startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
+                    endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+                }
+
+                if (startRow !== -1 && !(startRow === endRow && startCol === endCol) && operateElement.type === "table") {
+                    for (let row = startRow; row <= endRow; row++) {
+                        for (let col = startCol; col <= endCol; col++) {
+                            const tableCell = operateElement.data[row][col];
+                            tableCell.content.forEach((text) => {
+                                text.fontSize = !type
+                                    ? fontSize
+                                    : type === "plus"
+                                    ? text.fontSize + fontSize
+                                    : text.fontSize - fontSize;
+                                this._resetTextFontSize(text);
+                            });
+                        }
+                    }
+
+                    this.executeUpdateRender(operateElements);
+
+                    this._debounceLog();
+                } else if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
                         text.fontSize = !type
                             ? fontSize
@@ -1106,6 +1245,19 @@ export default class Command {
                     if (operateElement.type === "text") {
                         operateElement.height = this._stageConfig.getTextHeight(operateElement);
                     }
+                } else if (operateElement.type === "table") {
+                    operateElement.data.forEach((row) => {
+                        row.forEach((col) => {
+                            col.content.forEach((text) => {
+                                text.fontSize = !type
+                                    ? fontSize
+                                    : type === "plus"
+                                    ? text.fontSize + fontSize
+                                    : text.fontSize - fontSize;
+                                this._resetTextFontSize(text);
+                            });
+                        });
+                    });
                 }
             }
 
@@ -1122,9 +1274,35 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
                 const selectArea = this._stageConfig.selectArea;
-                if (selectArea) {
+                const tableSelectCells = this._stageConfig.tableSelectCells;
+                let startRow = -1;
+                let endRow = -1;
+                let startCol = -1;
+                let endCol = -1;
+                if (tableSelectCells) {
+                    startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
+                    endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+                }
+
+                if (startRow !== -1 && !(startRow === endRow && startCol === endCol) && operateElement.type === "table") {
+                    for (let row = startRow; row <= endRow; row++) {
+                        for (let col = startCol; col <= endCol; col++) {
+                            const tableCell = operateElement.data[row][col];
+                            tableCell.content.forEach((text) => {
+                                text.fontWeight = bold ? "bold" : "normal";
+                                this._resetTextFontSize(text);
+                            });
+                        }
+                    }
+
+                    this.executeUpdateRender(operateElements);
+
+                    this._debounceLog();
+                } else if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
                         text.fontWeight = bold ? "bold" : "normal";
                         this._resetTextFontSize(text);
@@ -1160,6 +1338,15 @@ export default class Command {
                     if (operateElement.type === "text") {
                         operateElement.height = this._stageConfig.getTextHeight(operateElement);
                     }
+                } else if (operateElement.type === "table") {
+                    operateElement.data.forEach((row) => {
+                        row.forEach((col) => {
+                            col.content.forEach((text) => {
+                                text.fontWeight = bold ? "bold" : "normal";
+                                this._resetTextFontSize(text);
+                            });
+                        });
+                    });
                 }
             }
 
@@ -1176,9 +1363,35 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
                 const selectArea = this._stageConfig.selectArea;
-                if (selectArea) {
+                const tableSelectCells = this._stageConfig.tableSelectCells;
+                let startRow = -1;
+                let endRow = -1;
+                let startCol = -1;
+                let endCol = -1;
+                if (tableSelectCells) {
+                    startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
+                    endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+                }
+
+                if (startRow !== -1 && !(startRow === endRow && startCol === endCol) && operateElement.type === "table") {
+                    for (let row = startRow; row <= endRow; row++) {
+                        for (let col = startCol; col <= endCol; col++) {
+                            const tableCell = operateElement.data[row][col];
+                            tableCell.content.forEach((text) => {
+                                text.fontStyle = italic ? "italic" : "normal";
+                                this._resetTextFontSize(text);
+                            });
+                        }
+                    }
+
+                    this.executeUpdateRender(operateElements);
+
+                    this._debounceLog();
+                } else if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
                         text.fontStyle = italic ? "italic" : "normal";
                         this._resetTextFontSize(text);
@@ -1214,6 +1427,15 @@ export default class Command {
                     if (operateElement.type === "text") {
                         operateElement.height = this._stageConfig.getTextHeight(operateElement);
                     }
+                } else if (operateElement.type === "table") {
+                    operateElement.data.forEach((row) => {
+                        row.forEach((col) => {
+                            col.content.forEach((text) => {
+                                text.fontStyle = italic ? "italic" : "normal";
+                                this._resetTextFontSize(text);
+                            });
+                        });
+                    });
                 }
             }
 
@@ -1230,9 +1452,35 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
                 const selectArea = this._stageConfig.selectArea;
-                if (selectArea) {
+                const tableSelectCells = this._stageConfig.tableSelectCells;
+                let startRow = -1;
+                let endRow = -1;
+                let startCol = -1;
+                let endCol = -1;
+                if (tableSelectCells) {
+                    startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
+                    endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+                }
+
+                if (startRow !== -1 && !(startRow === endRow && startCol === endCol) && operateElement.type === "table") {
+                    for (let row = startRow; row <= endRow; row++) {
+                        for (let col = startCol; col <= endCol; col++) {
+                            const tableCell = operateElement.data[row][col];
+                            tableCell.content.forEach((text) => {
+                                text.underline = underline;
+                                this._resetTextFontSize(text);
+                            });
+                        }
+                    }
+
+                    this.executeUpdateRender(operateElements);
+
+                    this._debounceLog();
+                } else if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
                         text.underline = underline;
                         this._resetTextFontSize(text);
@@ -1268,6 +1516,15 @@ export default class Command {
                     if (operateElement.type === "text") {
                         operateElement.height = this._stageConfig.getTextHeight(operateElement);
                     }
+                } else if (operateElement.type === "table") {
+                    operateElement.data.forEach((row) => {
+                        row.forEach((col) => {
+                            col.content.forEach((text) => {
+                                text.underline = underline;
+                                this._resetTextFontSize(text);
+                            });
+                        });
+                    });
                 }
             }
 
@@ -1284,9 +1541,35 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
                 const selectArea = this._stageConfig.selectArea;
-                if (selectArea) {
+                const tableSelectCells = this._stageConfig.tableSelectCells;
+                let startRow = -1;
+                let endRow = -1;
+                let startCol = -1;
+                let endCol = -1;
+                if (tableSelectCells) {
+                    startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
+                    endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+                }
+
+                if (startRow !== -1 && !(startRow === endRow && startCol === endCol) && operateElement.type === "table") {
+                    for (let row = startRow; row <= endRow; row++) {
+                        for (let col = startCol; col <= endCol; col++) {
+                            const tableCell = operateElement.data[row][col];
+                            tableCell.content.forEach((text) => {
+                                text.strikout = strikout;
+                                this._resetTextFontSize(text);
+                            });
+                        }
+                    }
+
+                    this.executeUpdateRender(operateElements);
+
+                    this._debounceLog();
+                } else if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
                         text.strikout = strikout;
                         this._resetTextFontSize(text);
@@ -1322,6 +1605,15 @@ export default class Command {
                     if (operateElement.type === "text") {
                         operateElement.height = this._stageConfig.getTextHeight(operateElement);
                     }
+                } else if (operateElement.type === "table") {
+                    operateElement.data.forEach((row) => {
+                        row.forEach((col) => {
+                            col.content.forEach((text) => {
+                                text.strikout = strikout;
+                                this._resetTextFontSize(text);
+                            });
+                        });
+                    });
                 }
             }
 
@@ -1338,9 +1630,34 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
                 const selectArea = this._stageConfig.selectArea;
-                if (selectArea) {
+                const tableSelectCells = this._stageConfig.tableSelectCells;
+                let startRow = -1;
+                let endRow = -1;
+                let startCol = -1;
+                let endCol = -1;
+                if (tableSelectCells) {
+                    startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
+                    endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+                }
+
+                if (startRow !== -1 && !(startRow === endRow && startCol === endCol) && operateElement.type === "table") {
+                    for (let row = startRow; row <= endRow; row++) {
+                        for (let col = startCol; col <= endCol; col++) {
+                            const tableCell = operateElement.data[row][col];
+                            tableCell.content.forEach((text) => {
+                                text.fontColor = fontColor;
+                            });
+                        }
+                    }
+
+                    this.executeUpdateRender(operateElements);
+
+                    this._debounceLog();
+                } else if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
                         text.fontColor = fontColor;
                     });
@@ -1374,6 +1691,14 @@ export default class Command {
                     if (operateElement.type === "text") {
                         operateElement.height = this._stageConfig.getTextHeight(operateElement);
                     }
+                } else if (operateElement.type === "table") {
+                    operateElement.data.forEach((row) => {
+                        row.forEach((col) => {
+                            col.content.forEach((text) => {
+                                text.fontColor = fontColor;
+                            });
+                        });
+                    });
                 }
             }
 
@@ -1390,11 +1715,38 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
                 const selectArea = this._stageConfig.selectArea;
-                if (selectArea) {
+                const tableSelectCells = this._stageConfig.tableSelectCells;
+                let startRow = -1;
+                let endRow = -1;
+                let startCol = -1;
+                let endCol = -1;
+                if (tableSelectCells) {
+                    startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
+                    endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+                }
+
+                if (startRow !== -1 && !(startRow === endRow && startCol === endCol) && operateElement.type === "table") {
+                    for (let row = startRow; row <= endRow; row++) {
+                        for (let col = startCol; col <= endCol; col++) {
+                            const tableCell = operateElement.data[row][col];
+                            tableCell.content.forEach((text) => {
+                                text.fontFamily = fontFamily;
+                                this._resetTextFontSize(text);
+                            });
+                        }
+                    }
+
+                    this.executeUpdateRender(operateElements);
+
+                    this._debounceLog();
+                } else if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
                         text.fontFamily = fontFamily;
+                        this._resetTextFontSize(text);
                     });
 
                     if (operateElement.type === "text") {
@@ -1421,11 +1773,21 @@ export default class Command {
                     // 未聚焦文本框，直接设置整个文本框内容字体
                     operateElement.content.forEach((text) => {
                         text.fontFamily = fontFamily;
+                        this._resetTextFontSize(text);
                     });
 
                     if (operateElement.type === "text") {
                         operateElement.height = this._stageConfig.getTextHeight(operateElement);
                     }
+                } else if (operateElement.type === "table") {
+                    operateElement.data.forEach((row) => {
+                        row.forEach((col) => {
+                            col.content.forEach((text) => {
+                                text.fontFamily = fontFamily;
+                                this._resetTextFontSize(text);
+                            });
+                        });
+                    });
                 }
             }
 
@@ -1440,8 +1802,36 @@ export default class Command {
         const operateElements = this._stageConfig.operateElements;
 
         for (const operateElement of operateElements) {
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
-                operateElement.align = align;
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
+                if (operateElement.type === "table") {
+                    const tableSelectCells = this._stageConfig.tableSelectCells;
+                    let startRow = -1;
+                    let endRow = -1;
+                    let startCol = -1;
+                    let endCol = -1;
+                    if (tableSelectCells) {
+                        startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
+                        endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
+                        startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
+                        endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+
+                        for (let row = startRow; row <= endRow; row++) {
+                            for (let col = startCol; col <= endCol; col++) {
+                                const tableCell = operateElement.data[row][col];
+                                tableCell.align = align;
+                            }
+                        }
+                    } else {
+                        for (let row = 0; row < operateElement.data.length; row++) {
+                            for (let col = 0; col < operateElement.data[row].length; col++) {
+                                const tableCell = operateElement.data[row][col];
+                                tableCell.align = align;
+                            }
+                        }
+                    }
+                } else {
+                    operateElement.align = align;
+                }
             }
         }
 
@@ -1460,10 +1850,38 @@ export default class Command {
         const operateElements = this._stageConfig.operateElements;
 
         for (const operateElement of operateElements) {
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
-                operateElement.lineHeight = lineHeight;
-                if (operateElement.type === "text") {
-                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
+                if (operateElement.type === "table") {
+                    const tableSelectCells = this._stageConfig.tableSelectCells;
+                    let startRow = -1;
+                    let endRow = -1;
+                    let startCol = -1;
+                    let endCol = -1;
+                    if (tableSelectCells) {
+                        startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
+                        endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
+                        startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
+                        endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+
+                        for (let row = startRow; row <= endRow; row++) {
+                            for (let col = startCol; col <= endCol; col++) {
+                                const tableCell = operateElement.data[row][col];
+                                tableCell.lineHeight = lineHeight;
+                            }
+                        }
+                    } else {
+                        for (let row = 0; row < operateElement.data.length; row++) {
+                            for (let col = 0; col < operateElement.data[row].length; col++) {
+                                const tableCell = operateElement.data[row][col];
+                                tableCell.lineHeight = lineHeight;
+                            }
+                        }
+                    }
+                } else {
+                    operateElement.lineHeight = lineHeight;
+                    if (operateElement.type === "text") {
+                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    }
                 }
             }
         }
@@ -1590,6 +2008,177 @@ export default class Command {
         }
 
         if (operateElements.length > 0) this.executeUpdateRender(elements, true);
+    }
+
+    // 合并单元格
+    public executeMergeCell() {
+        const operateElement = this._stageConfig.operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+        if (operateElement) {
+            const tableSelectCells = this._stageConfig.tableSelectCells;
+            if (tableSelectCells) {
+                const [start, end] = tableSelectCells;
+                const startRow = Math.min(start[0], end[0]);
+                const startCol = Math.min(start[1], end[1]);
+                const endRow = Math.max(start[0], end[0]);
+                const endCol = Math.max(start[1], end[1]);
+                if (!(startRow === endRow && startCol === endCol)) {
+                    const tableData = operateElement.data;
+                    const tableCell = tableData[startRow][startCol];
+                    tableCell.colspan = endCol - startCol + 1;
+                    tableCell.rowspan = endRow - startRow + 1;
+                    for (let i = startRow; i <= endRow; i++) {
+                        for (let j = startCol; j <= endCol; j++) {
+                            if (i === startRow && j !== startCol) {
+                                tableData[i][j].colspan = 0;
+                                tableData[i][j].rowspan = 1;
+                            } else if (i !== startRow) {
+                                tableData[i][j].colspan = 1;
+                                tableData[i][j].rowspan = 0;
+                            }
+                        }
+                    }
+                    this.executeUpdateRender([operateElement], true);
+
+                    this._stageConfig.tableSelectCells = [[startRow, startCol], [startRow, startCol]];
+                    this._listener.onTableCellEditChange && this._listener.onTableCellEditChange(true, false);
+                }
+            }
+        }
+    }
+
+    // 拆分单元格
+    public executeSplitCell() {
+        const operateElement = this._stageConfig.operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+        if (operateElement) {
+            const tableSelectCells = this._stageConfig.tableSelectCells;
+            if (tableSelectCells) {
+                const [start, end] = tableSelectCells;
+                const [startRow, startCol] = start;
+                const [endRow, endCol] = end;
+                if (startRow === endRow && startCol === endCol) {
+                    const tableData = operateElement.data;
+                    const tableCell = tableData[startRow][startCol];
+                    const colspan = tableCell.colspan;
+                    const rowspan = tableCell.rowspan;
+                    if (colspan > 1 || rowspan > 1) {
+                        for (let i = startRow; i <= startRow + rowspan; i++) {
+                            for (let j = startCol; j <= startCol + colspan; j++) {
+                                tableData[i][j].colspan = 1;
+                                tableData[i][j].rowspan = 1;
+                            }
+                        }
+                        this.executeUpdateRender([operateElement], true);
+                        this._listener.onTableCellEditChange && this._listener.onTableCellEditChange(true, true);
+                    }
+                }
+            }
+        }
+    }
+
+    // 设置表格主题色
+    public executeSetTableTheme(theme: Partial<IPPTTableTheme>) {
+        const operateElements = this._stageConfig.operateElements;
+
+        if (operateElements.length > 0) {
+            for (const operateElement of operateElements) {
+                if (operateElement.type === "table") {
+                    const element = operateElement as IPPTTableElement;
+                    if (theme.color) {
+                        element.theme.color = theme.color;
+                        // 清除单元格填充色
+                        for (const row of element.data) {
+                            for (const cell of row) {
+                                cell.fill = undefined;
+                            }
+                        }
+                    }
+                    if ("rowHeader" in theme) {
+                        element.theme.rowHeader = !!theme.rowHeader;
+                    }
+                }
+            }
+
+            this.executeUpdateRender(operateElements, true);
+        }
+    }
+
+    // 表格插入行
+    public executeInsertRow(rowIndex: number) {
+        const operateElement = this._stageConfig.operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+        if (operateElement) {
+            const tableData = operateElement.data;
+            const newRow: IPPTTableCell[] = tableData[rowIndex].map(() => {
+                return {
+                    id: createRandomCode(),
+                    colspan: 1,
+                    rowspan: 1,
+                    content: [],
+                    wordSpace: 1,
+                    lineHeight: 1.2,
+                    align: "center"
+                };
+            });
+            const rowHeights = operateElement.rowHeights.map(item => item * operateElement.height);
+            operateElement.height += 60;
+            rowHeights.splice(rowIndex, 0, 60);
+            tableData.splice(rowIndex, 0, newRow);
+            operateElement.rowHeights = rowHeights.map(item => item / operateElement.height);
+            this.executeUpdateRender([operateElement], true);
+        }
+    }
+
+    // 表格插入列
+    public executeInsertCol(colIndex: number) {
+        const operateElement = this._stageConfig.operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+        if (operateElement) {
+            const tableData = operateElement.data;
+            const colWidths = operateElement.colWidths.map(item => item * operateElement.width);
+            operateElement.width += 120;
+            colWidths.splice(colIndex, 0, 120);
+            operateElement.colWidths = colWidths.map(item => item / operateElement.width);
+            for (const row of tableData) {
+                row.splice(colIndex, 0, {
+                    id: createRandomCode(),
+                    colspan: 1,
+                    rowspan: 1,
+                    content: [],
+                    wordSpace: 1,
+                    lineHeight: 1.2,
+                    align: "center"
+                });
+            }
+            this.executeUpdateRender([operateElement], true);
+        }
+    }
+
+    // 表格删除行
+    public executeDeleteRow(rowIndex: number) {
+        const operateElement = this._stageConfig.operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+        if (operateElement) {
+            const tableData = operateElement.data;
+            const rowHeights = operateElement.rowHeights.map(item => item * operateElement.height);
+            operateElement.height -= rowHeights[rowIndex];
+            rowHeights.splice(rowIndex, 1);
+            tableData.splice(rowIndex, 1);
+            operateElement.rowHeights = rowHeights.map(item => item / operateElement.height);
+            this.executeUpdateRender([operateElement], true);
+        }
+    }
+
+    // 表格删除列
+    public executeDeleteCol(colIndex: number) {
+        const operateElement = this._stageConfig.operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+        if (operateElement) {
+            const tableData = operateElement.data;
+            const colWidths = operateElement.colWidths.map(item => item * operateElement.width);
+            operateElement.width -= colWidths[colIndex];
+            colWidths.splice(colIndex, 1);
+            operateElement.colWidths = colWidths.map(item => item / operateElement.width);
+            for (const row of tableData) {
+                row.splice(colIndex, 1);
+            }
+            this.executeUpdateRender([operateElement], true);
+        }
     }
 
     private _updateCursor(position: number) {

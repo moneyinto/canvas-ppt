@@ -9,4 +9,8 @@ declare module "*.vue" {
 
 declare interface Window {
     MathJax: any;
+    __APP_MPPTX__: {
+        name: string;
+        version: string;
+    }
 }

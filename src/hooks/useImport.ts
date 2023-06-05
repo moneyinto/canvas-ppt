@@ -12,7 +12,7 @@ import { message } from "ant-design-vue";
 import JSZip from "jszip";
 
 export default (
-    instance: Ref<Editor | undefined> | undefined,
+    instance: Ref<Editor | undefined>,
     importing: Ref<boolean>,
     importPercent: Ref<number>
 ) => {

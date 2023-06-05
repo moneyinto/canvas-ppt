@@ -38,7 +38,7 @@
         <a-divider style="margin: 12px 0" />
 
         <a-menu class="ppt-border-menu">
-            <a-sub-menu class="ppt-sub-popup">
+            <a-sub-menu class="ppt-sub-popup" :disabled="borderStyleDisabled">
                 <template #icon>
                     <PPTIcon icon="borderStyle" :size="30" />
                 </template>
@@ -129,9 +129,11 @@ const noBorder = ref(true);
 const opacity = ref(0);
 const borderStyle = ref("solid");
 const borderWidth = ref(2);
+const borderStyleDisabled = ref(false);
 
 const init = () => {
     const operateElements = props.elements.filter(element => element.type !== "video" && element.type !== "audio") as Exclude<IPPTElement, IPPTVideoElement | IPPTAudioElement>[];
+    borderStyleDisabled.value = operateElements.filter(element => element.type === "table").length > 0;
     const allHasOutline = operateElements.filter(element => element.type === "line" || !!element.outline).length === operateElements.length;
     let outline: Required<IPPTElementOutline> = {
         color: THEME_COLOR,

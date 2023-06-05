@@ -63,8 +63,8 @@ const percent = ref(0);
 const inputMPPTXRef = ref();
 const inputPPTXRef = ref();
 
-const { outputMPPTX, outputPPTX, getMPPTXContent } = useExport(instance, loading, percent);
-const { importMPPTX, importPPTX } = useImport(instance, loading, percent);
+const { outputMPPTX, outputPPTX, getMPPTXContent } = useExport(instance!, loading, percent);
+const { importMPPTX, importPPTX } = useImport(instance!, loading, percent);
 
 const handleDropdown = (e: MenuInfo) => {
     fileVisible.value = false;

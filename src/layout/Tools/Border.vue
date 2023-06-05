@@ -40,7 +40,7 @@
 
 <script lang="ts" setup>
 import { THEME_COLOR } from "@/plugins/config/stage";
-import { inject, PropType, Ref, ref, toRefs } from "vue";
+import { inject, PropType, Ref, ref } from "vue";
 import PPTIcon from "@/components/Icon.vue";
 import { IPPTElement } from "@/types/element";
 import { STORAGE_BORDER_COLOR } from "@/utils/storage";
@@ -59,7 +59,7 @@ const props = defineProps({
 const cacheBorderColor = ref(
     localStorage.getItem(STORAGE_BORDER_COLOR) || THEME_COLOR
 );
-const { elements } = toRefs(props);
+
 const showBorder = ref(false);
 const hoverBorder = ref(false);
 

@@ -6,6 +6,7 @@ import Command from "../command";
 import StageConfig from "./config";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 import { PANELS } from "@/utils/panel";
+import { IPPTTableElement } from "@/types/element";
 
 export class Contextmenu {
     private _command: Command;
@@ -28,13 +29,61 @@ export class Contextmenu {
         const isMac = checkIsMac();
         const operateElements = this._stageConfig.operateElements;
         const selectedElement = operateElements.length > 0;
-        const canFlip = operateElements.filter(element => (element.type === "line" || element.type === "video" || element.type === "text")).length === 0;
+        const canFlip = operateElements.filter(element => (element.type === "shape" || element.type === "image" || element.type === "latex" || element.type === "chart")).length > 0;
         const isTextCutCopyDisabled = () => {
             if (operateElements.length > 0 && operateElements.filter(element => element.type === "text").length > 0 && this._stageConfig.textFocus) {
                 return !this._stageConfig.selectArea;
             }
             return false;
         };
+        let isMergeCell = false;
+        let onlyOneCell = false; // 是否只有一个单元格，非合并的单元格
+        let onlyOneRow = false;
+        let onlyOneCol = false;
+        let mouseRow = 0;
+        let mouseCol = 0;
+        if (this._stageConfig.tableSelectCells) {
+            // 单元格选中状态
+            const [start, end] = this._stageConfig.tableSelectCells;
+            const startRow = Math.min(start[0], end[0]);
+            const startCol = Math.min(start[1], end[1]);
+            const endRow = Math.max(start[0], end[0]);
+            const endCol = Math.max(start[1], end[1]);
+
+            // 先要判断右击是否在选中的单元格内
+            const { left, top } = this._stageConfig.getMousePosition(evt);
+            const opreateElement = operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+            if (opreateElement) {
+                const { row, col } = this._stageConfig.getMouseTableCell(opreateElement, left, top);
+                mouseRow = row;
+                mouseCol = col;
+                if (row >= startRow && row <= endRow && col >= startCol && col <= endCol) {
+                    isMergeCell = !(startRow === endRow && startCol === endCol);
+                    // 如果存在合并的单元格，禁止合并
+                    for (let i = startRow; i <= endRow; i++) {
+                        for (let j = startCol; j <= endCol; j++) {
+                            const { colspan, rowspan } = opreateElement.data[i][j];
+                            if (colspan > 1 || rowspan > 1) {
+                                isMergeCell = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (!isMergeCell) {
+                        const { colspan, rowspan } = opreateElement.data[row][col];
+                        onlyOneCell = colspan === 1 && rowspan === 1;
+                    }
+                } else {
+                    this._stageConfig.tableSelectCells = null;
+                }
+
+                onlyOneRow = opreateElement.rowHeights.length === 1;
+                onlyOneCol = opreateElement.colWidths.length === 1;
+            } else {
+                this._stageConfig.tableSelectCells = null;
+            }
+        }
+        const tableCellEdit = !!this._stageConfig.tableSelectCells;
         const textFocus = this._stageConfig.textFocus;
         const contextmenus: IContextmenuItem[] = [
             {
@@ -263,6 +312,77 @@ export class Contextmenu {
                         }
                     }
                 ]
+            },
+            { divider: true, hide: !tableCellEdit },
+            {
+                hide: !tableCellEdit,
+                text: "插入行",
+                children: [
+                    {
+                        text: "上方插入",
+                        handler: () => {
+                            this._command.executeInsertRow(mouseRow);
+                        }
+                    },
+                    {
+                        text: "下方插入",
+                        handler: () => {
+                            this._command.executeInsertRow(mouseRow + 1);
+                        }
+                    }
+                ]
+            },
+            {
+                hide: !tableCellEdit,
+                text: "插入列",
+                children: [
+                    {
+                        text: "左侧插入",
+                        handler: () => {
+                            this._command.executeInsertCol(mouseCol);
+                        }
+                    },
+                    {
+                        text: "右侧插入",
+                        handler: () => {
+                            this._command.executeInsertCol(mouseCol + 1);
+                        }
+                    }
+                ]
+            },
+            {
+                hide: !tableCellEdit,
+                text: "删除行",
+                disable: onlyOneRow,
+                handler: () => {
+                    this._command.executeDeleteRow(mouseRow);
+                }
+            },
+            {
+                hide: !tableCellEdit,
+                text: "删除列",
+                disable: onlyOneCol,
+                handler: () => {
+                    this._command.executeDeleteCol(mouseCol);
+                }
+            },
+            {
+                hide: !tableCellEdit,
+                disable: !isMergeCell,
+                text: "合并单元格",
+                icon: "mergeCell",
+                handler: () => {
+                    this._command.executeMergeCell();
+                }
+            },
+            {
+                hide: !tableCellEdit,
+                disable: isMergeCell || onlyOneCell,
+                text: "拆分单元格",
+                icon: "splitCell",
+                handler: () => {
+                    this._command.executeSplitCell();
+                }
             },
             { divider: true, hide: !selectedElement },
             {

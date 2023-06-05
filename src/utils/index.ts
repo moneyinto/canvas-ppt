@@ -264,3 +264,42 @@ export const getVideoElementControlPoints = (
         FULLSCREEN_BTN
     };
 };
+
+export const getTableElementControlPoints = (
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    rowHeights: number[],
+    colWidths: number[]
+) => {
+    const widthArr = colWidths.map((item) => item * width);
+    const heightArr = rowHeights.map((item) => item * height);
+    const COLS: IRectParameter[] = [];
+    for (const [colIndex] of widthArr.entries()) {
+        if (colIndex < widthArr.length - 1) {
+            COLS.push([
+                x + widthArr.slice(0, colIndex + 1).reduce((a, b) => a + b, 0) - 2,
+                y,
+                4,
+                height
+            ]);
+        }
+    }
+
+    const ROWS: IRectParameter[] = [];
+    for (const [rowIndex] of heightArr.entries()) {
+        if (rowIndex < heightArr.length - 1) {
+            ROWS.push([
+                x,
+                y + heightArr.slice(0, rowIndex + 1).reduce((a, b) => a + b, 0) - 2,
+                width,
+                4
+            ]);
+        }
+    }
+    return {
+        COLS,
+        ROWS
+    };
+};

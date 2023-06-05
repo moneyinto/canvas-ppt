@@ -444,6 +444,66 @@ export interface IPPTChartElement extends IPPTBaseElement {
     fill?: IPPTElementFill;
 }
 
+/**
+ * 表格单元格
+ *
+ * id: 单元格ID
+ *
+ * colspan: 合并列数
+ *
+ * rowspan: 合并行数
+ */
+export interface IPPTTableCell {
+    id: string;
+    colspan: number;
+    rowspan: number;
+    content: IFontData[];
+    wordSpace: number;
+    lineHeight: number;
+    align: "left" | "center" | "right";
+    fill?: IPPTElementFill;
+}
+
+/**
+ * 表格主题
+ *
+ * color: 主题色
+ *
+ * rowHeader: 标题行
+ */
+export interface IPPTTableTheme {
+    color: string;
+    rowHeader: boolean;
+}
+
+/**
+ * 表格元素
+ *
+ * type: 元素类型（table）
+ *
+ * outline: 边框
+ *
+ * theme?: 主题
+ *
+ * colWidths: 列宽数组，如[30, 50, 20]表示三列宽度分别为30%, 50%, 20%
+ *
+ * rowHeights: 行高数组，如[30, 50, 20]表示三行高度分别为30%, 50%, 20%
+ *
+ * data: 表格数据
+ */
+export interface IPPTTableElement extends IPPTBaseElement {
+    type: "table";
+    fixedRatio: boolean;
+    rotate: number;
+    colWidths: number[];
+    rowHeights: number[];
+    data: IPPTTableCell[][];
+    outline?: IPPTElementOutline;
+    shadow?: IPPTElementShadow;
+    fill?: IPPTElementFill;
+    theme: IPPTTableTheme;
+}
+
 export type IPPTElement =
     | IPPTShapeElement
     | IPPTLineElement
@@ -452,7 +512,8 @@ export type IPPTElement =
     | IPPTVideoElement
     | IPPTAudioElement
     | IPPTLatexElement
-    | IPPTChartElement;
+    | IPPTChartElement
+    | IPPTTableElement;
 
 export interface ICreatingTextElement {
     type: "text";

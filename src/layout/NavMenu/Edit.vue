@@ -55,7 +55,7 @@
 
 <script lang="ts" setup>
 import Editor from "@/plugins/editor";
-import { inject, Ref, computed, toRefs, PropType } from "vue";
+import { inject, Ref, computed, PropType } from "vue";
 import { throttleRAF } from "@/utils";
 import { IPPTElement } from "@/types/element";
 import emitter, { EmitterEvents } from "@/utils/emitter";
@@ -72,32 +72,30 @@ const props = defineProps({
     }
 });
 
-const { slideFocus, elements } = toRefs(props);
-
 const disabledCut = computed(() => {
-    return !slideFocus.value && elements.value.length === 0;
+    return !props.slideFocus && props.elements.length === 0;
 });
 
 const instance = inject<Ref<Editor>>("instance");
 
 const cut = () => {
-    if (slideFocus.value) {
+    if (props.slideFocus) {
         emitter.emit(EmitterEvents.CUT_SLIDE);
-    } else if (elements.value.length > 0) {
+    } else if (props.elements.length > 0) {
         instance?.value.command.executeCut();
     }
 };
 
 const copy = () => {
-    if (slideFocus.value) {
+    if (props.slideFocus) {
         emitter.emit(EmitterEvents.COPY_SLIDE);
-    } else if (elements.value.length > 0) {
+    } else if (props.elements.length > 0) {
         instance?.value.command.executeCopy();
     }
 };
 
 const paste = () => {
-    if (slideFocus.value) {
+    if (props.slideFocus) {
         emitter.emit(EmitterEvents.PASTE_SLIDE);
     } else {
         instance?.value.command.executePaste();

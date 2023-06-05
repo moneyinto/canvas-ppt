@@ -37,6 +37,7 @@ export class Text {
     }
 
     getFontSize(text: IFontData) {
+        if (text.value === "\n") return { width: 0, height: 0 };
         this._ctx.font = `${text.fontStyle} ${text.fontWeight} ${text.fontSize}px ${text.fontFamily}`;
         const metrics = this._ctx.measureText(text.value);
         const width = metrics.width;
@@ -82,20 +83,11 @@ export class Text {
         const currentDataPosition = this._cursor.getDataPosition();
 
         this._command.executeAddText(text, currentDataPosition + 1);
-
         this._cursor.setDataPosition(currentDataPosition + 1);
         this._cursor.setCursorPositionByData();
         this._cursor.updateCursor();
 
         // 清除textarea中的值
         this._textarea.value = "";
-    }
-
-    renderRange({ x, y, width, height }: any) {
-        this._ctx.save();
-        this._ctx.globalAlpha = 0.6;
-        this._ctx.fillStyle = "#AECBFA";
-        this._ctx.fillRect(x, y, width, height);
-        this._ctx.restore();
     }
 }

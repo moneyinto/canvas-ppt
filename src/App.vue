@@ -97,13 +97,17 @@ const total = computed(() => viewSlides.value.length);
 const historyCursor = ref(0);
 const historyLength = ref(0);
 
+const mergeDisabled = ref(true);
+const splitDisabled = ref(true);
+
 const showPanel = ref(false);
 const showPreview = ref(false);
 
 provide("instance", instance);
 provide("historyCursor", historyCursor);
 provide("historyLength", historyLength);
-provide("historyLength", historyLength);
+provide("mergeDisabled", mergeDisabled);
+provide("splitDisabled", splitDisabled);
 
 const {
     slideIndex,
@@ -186,6 +190,11 @@ nextTick(async () => {
             elements: IPPTElement[]
         ) => {
             currentElements.value = elements;
+        };
+
+        instance.value.listener.onTableCellEditChange = (merge, split) => {
+            mergeDisabled.value = merge;
+            splitDisabled.value = split;
         };
 
         emitter.on(EmitterEvents.INIT_SLIDE, initSlide);

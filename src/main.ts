@@ -4,6 +4,7 @@ import AntDesign, { message } from "ant-design-vue";
 import "ant-design-vue/dist/antd.css";
 import "./assets/styles/index.scss";
 import mwhiteboard from "mwhiteboard";
+import "./console";
 
 const app = createApp(App);
 app.component("MWhiteboard", mwhiteboard);

@@ -26,10 +26,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, toRefs } from "vue";
+import { ref } from "vue";
 import PPTIcon from "@/components/Icon.vue";
 
-const props = defineProps({
+defineProps({
     current: {
         type: Number,
         default: 0
@@ -37,8 +37,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["onPreview"]);
-
-const { current } = toRefs(props);
 
 const demonstrateVisible = ref(false);
 

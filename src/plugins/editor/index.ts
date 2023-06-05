@@ -20,6 +20,8 @@ export default class Editor {
     private _textarea: Textarea;
     private _viewStage: ViewStage;
     private _controlStage: ControlStage;
+    private _resizeObserver: ResizeObserver | null;
+    private _container: HTMLDivElement;
 
     constructor(container: HTMLDivElement, slides: ISlide[]) {
         // 禁止右击系统菜单
@@ -72,7 +74,10 @@ export default class Editor {
             this.listener
         );
 
-        window.addEventListener("resize", throttleRAF(this._reset.bind(this)));
+        this._container = container;
+        this._resizeObserver = new ResizeObserver(throttleRAF(this._reset.bind(this)));
+        this._resizeObserver.observe(container);
+        // window.addEventListener("resize", throttleRAF(this._reset.bind(this)));
 
         // 快捷键
         // eslint-disable-next-line
@@ -84,5 +89,9 @@ export default class Editor {
         this._viewStage.resetStage();
 
         this.stageConfig.resetBaseZoom();
+    }
+
+    public destory() {
+        this._resizeObserver?.unobserve(this._container);
     }
 }

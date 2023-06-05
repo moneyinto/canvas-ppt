@@ -7,6 +7,7 @@ import { Picture } from "./draw/picture";
 import Video from "./draw/video";
 import History from "../editor/history";
 import { Music } from "./draw/music";
+import Table from "./draw/table";
 
 export default class Stage {
     public canvas: HTMLCanvasElement;
@@ -21,6 +22,7 @@ export default class Stage {
     private _picture: Picture | null;
     private _video: Video | null;
     private _music: Music | null;
+    private _table: Table | null;
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
@@ -41,6 +43,7 @@ export default class Stage {
         this._picture = null;
         this._video = null;
         this._music = null;
+        this._table = null;
     }
 
     public resetStage() {
@@ -120,6 +123,11 @@ export default class Stage {
             case "chart": {
                 if (!this._picture && this.history) this._picture = new Picture(this.stageConfig, this.ctx, this.history);
                 await this._picture?.draw(element);
+                break;
+            }
+            case "table": {
+                if (!this._table && this.history) this._table = new Table(this.stageConfig, this.ctx);
+                await this._table?.draw(element);
                 break;
             }
         }
