@@ -450,14 +450,29 @@ export default class Command {
             if (selectArea) {
                 const operateElement = operateElements.find(
                     (element) => element.id === this._stageConfig.textFocusElementId
-                );
+                ) as (IPPTTextElement | IPPTShapeElement | IPPTTableElement);
                 const { startX, endX } = this._stageConfig.getSelectArea(
                     selectArea,
-                    operateElement as IPPTTextElement
+                    operateElement
                 );
-                const copyContent = (
-                    operateElement as IPPTTextElement
-                ).content.slice(startX, endX);
+                let copyContent: IFontData[] = [];
+                if (operateElement.type === "table") {
+                    const tableSelectCells = this._stageConfig.tableSelectCells;
+                    if (tableSelectCells) {
+                        const startRow = tableSelectCells[0][0];
+                        const startCol = tableSelectCells[0][1];
+                        const endRow = tableSelectCells[1][0];
+                        const endCol = tableSelectCells[1][1];
+                        if (startRow === endRow && startCol === endCol) {
+                            copyContent = operateElement.data[startRow][startCol].content.slice(
+                                startX,
+                                endX
+                            );
+                        }
+                    }
+                } else {
+                    copyContent = operateElement.content.slice(startX, endX);
+                }
                 await copyText(
                     encrypt(
                         `${CLIPBOARD_STRING_TYPE.TEXT}${JSON.stringify(
@@ -540,7 +555,7 @@ export default class Command {
                         element.id === this._stageConfig.textFocusElementId
                 );
 
-                if (operateElement && operateElement.type === "text") {
+                if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
                     const selectArea = this._stageConfig.selectArea;
                     if (selectArea) {
                         // 选中区域存在替换选中区域
@@ -549,12 +564,31 @@ export default class Command {
 
                     // 光标位置粘贴
                     const position = this._cursor.getDataPosition();
-                    operateElement.content.splice(
-                        position + 1,
-                        0,
-                        ...elementContent
-                    );
-                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    if (operateElement.type === "table") {
+                        const tableSelectCells = this._stageConfig.tableSelectCells;
+                        if (tableSelectCells) {
+                            const startRow = tableSelectCells[0][0];
+                            const startCol = tableSelectCells[0][1];
+                            const endRow = tableSelectCells[1][0];
+                            const endCol = tableSelectCells[1][1];
+                            if (startRow === endRow && startCol === endCol) {
+                                operateElement.data[startRow][startCol].content.splice(
+                                    position + 1,
+                                    0,
+                                    ...elementContent
+                                );
+                            }
+                        }
+                    } else {
+                        operateElement.content.splice(
+                            position + 1,
+                            0,
+                            ...elementContent
+                        );
+                    }
+                    if (operateElement.type === "text") {
+                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    }
                     const cursorPosition = position + elementContent.length;
                     this.executeUpdateRender(operateElements, true);
                     this._updateCursor(cursorPosition);
@@ -683,8 +717,6 @@ export default class Command {
                     this._updateCursor(position - 1);
                 }
             }
-        } else if (this._stageConfig.tableEditElementID) {
-            // 删除表格文本
         } else {
             const operateElements = this._stageConfig.operateElements;
             this.executeDeleteRender(operateElements);
@@ -737,12 +769,26 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
                 const { startX, endX } = this._stageConfig.getSelectArea(
                     selectArea,
                     operateElement
                 );
-                operateElement.content.splice(startX, endX - startX);
+                if (operateElement.type === "table") {
+                    const tableSelectCells = this._stageConfig.tableSelectCells;
+                    if (tableSelectCells) {
+                        const startRow = tableSelectCells[0][0];
+                        const startCol = tableSelectCells[0][1];
+                        const endRow = tableSelectCells[1][0];
+                        const endCol = tableSelectCells[1][1];
+                        if (startRow === endRow && startCol === endCol) {
+                            operateElement.data[startRow][startCol].content.splice(startX, endX - startX);
+                        }
+                    }
+                } else {
+                    operateElement.content.splice(startX, endX - startX);
+                }
+
                 if (operateElement.type === "text") {
                     operateElement.height = this._stageConfig.getTextHeight(operateElement);
                 }
@@ -762,12 +808,31 @@ export default class Command {
         const operateElement = operateElements.find(
             (element) => element.id === this._stageConfig.textFocusElementId
         );
-        if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
-            if (
-                position >= operateElement.content.length - 1 ||
-                position === -1
-            ) return false;
-            operateElement.content.splice(position, 1);
+        if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
+            if (operateElement.type === "table") {
+                const tableSelectCells = this._stageConfig.tableSelectCells;
+                if (tableSelectCells) {
+                    const startRow = tableSelectCells[0][0];
+                    const startCol = tableSelectCells[0][1];
+                    const endRow = tableSelectCells[1][0];
+                    const endCol = tableSelectCells[1][1];
+                    if (startRow === endRow && startCol === endCol) {
+                        const content = operateElement.data[startRow][startCol].content;
+                        if (
+                            position >= content.length - 1 ||
+                            position === -1
+                        ) return false;
+                        content.splice(position, 1);
+                    }
+                }
+            } else {
+                if (
+                    position >= operateElement.content.length - 1 ||
+                    position === -1
+                ) return false;
+                operateElement.content.splice(position, 1);
+            }
+
             if (operateElement.type === "text") {
                 operateElement.height = this._stageConfig.getTextHeight(operateElement);
             }

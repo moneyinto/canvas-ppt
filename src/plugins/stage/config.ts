@@ -659,7 +659,7 @@ export default class StageConfig {
         }[align];
     }
 
-    public getSelectArea(selectArea: [number, number, number, number], element: IPPTTextElement | IPPTShapeElement) {
+    public getSelectArea(selectArea: [number, number, number, number], element: IPPTTextElement | IPPTShapeElement | IPPTTableElement) {
         const renderContent = this.getRenderContent(element);
         let startX = 0;
         let endX = 0;
