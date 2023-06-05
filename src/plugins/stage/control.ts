@@ -700,22 +700,36 @@ export default class ControlStage extends Stage {
             }
 
             if (
-                (operateElement.type === "text" || operateElement.type === "shape") &&
+                (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table") &&
                 operateElement.id === this.stageConfig.textFocusElementId &&
                 this.stageConfig.textFocus
             ) {
                 // 文本选中状态
                 if (this._textClick) {
                     const { left, top } = this.stageConfig.getMousePosition(evt);
-                    const x = left - operateElement.left;
+                    let x = left - operateElement.left;
                     let y = top - operateElement.top;
                     const renderContent = this.stageConfig.getRenderContent(
                         operateElement as (IPPTTextElement | IPPTShapeElement)
                     );
 
-                    if (operateElement.type === "shape") {
+                    if (operateElement.type === "shape" || operateElement.type === "table") {
                         const height = this.stageConfig.getTextHeight(operateElement);
-                        const offsetY = operateElement.height / 2 - height / 2;
+                        let offsetY = operateElement.height / 2 - height / 2;
+                        if (operateElement.type === "table") {
+                            const { row, col } = this.stageConfig.getMouseTableCell(operateElement, left, top);
+                            const { tableCellHeight, tableCellLeft, tableCellTop } = this.stageConfig.getTableCellData(operateElement, row, col);
+                            x = x - tableCellLeft;
+                            y = y - tableCellTop;
+                            offsetY = tableCellHeight / 2 - height / 2;
+                            if (this.stageConfig.tableSelectCells) {
+                                if (!(this.stageConfig.tableSelectCells[0][0] === row && this.stageConfig.tableSelectCells[0][1] === col)) {
+                                    return;
+                                }
+                            } else {
+                                return;
+                            }
+                        }
                         if (y < offsetY) {
                             y = 4;
                         } else {
@@ -976,6 +990,8 @@ export default class ControlStage extends Stage {
                 this._listener.onTableCellEditChange && this._listener.onTableCellEditChange(mergeDisabled, splitDisabled);
                 this._command.executeRender();
             }
+
+            this._hoverCursor(evt, operateElements);
         } else if (
             !this.stageConfig.insertElement &&
             !this.stageConfig.canMove &&
@@ -1360,21 +1376,42 @@ export default class ControlStage extends Stage {
                 if (
                     selectArea &&
                     this.stageConfig.textFocus &&
-                    (element.type === "text" || element.type === "shape")
+                    (element.type === "text" || element.type === "shape" || element.type === "table")
                 ) {
                     // 存在文本选中状态
-                    const lineTexts = this.stageConfig.getRenderContent(element);
+                    const tableSelectCells = this.stageConfig.tableSelectCells;
+                    let tableCellPosition: [number, number] | undefined;
+                    if (tableSelectCells) {
+                        const startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
+                        const startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
+                        const endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
+                        const endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+                        if (startRow === endRow && startCol === endCol) {
+                            tableCellPosition = [startRow, startCol];
+                        }
+                    }
+                    const lineTexts = this.stageConfig.getRenderContent(element, tableCellPosition);
                     const x = TEXT_MARGIN;
                     let y = TEXT_MARGIN;
+                    let textLineHeight = 2;
+                    if (element.type === "table") {
+                        if (tableCellPosition) {
+                            textLineHeight = element.data[tableCellPosition[0]][tableCellPosition[1]].lineHeight;
+                        }
+                    } else {
+                        textLineHeight = element.lineHeight;
+                    }
+
                     lineTexts.forEach((lineData, index) => {
-                        const lineHeight = lineData.height * element.lineHeight;
+                        const lineHeight = lineData.height * textLineHeight;
                         const rangeRecord = this.stageConfig.getRenderSelect(
                             x,
                             y,
                             lineData,
                             index,
                             selectArea,
-                            element
+                            element,
+                            tableCellPosition
                         );
                         if (rangeRecord) this._renderRange(rangeRecord);
                         y = y + lineHeight;

@@ -695,13 +695,12 @@ export default class StageConfig {
         lineData: ILineData,
         index: number,
         selectArea: [number, number, number, number],
-        element: IPPTTextElement | IPPTShapeElement | IPPTTableElement
+        element: IPPTTextElement | IPPTShapeElement | IPPTTableElement,
+        tableCellPosition?: [number, number]
     ) {
         let textElement: IPPTTextElement | IPPTShapeElement | IPPTTableCell | null = null;
-        if (element.type === "table" && this.tableSelectCells && this.tableSelectCells.length > 0) {
-            const row = this.tableSelectCells![0][0];
-            const col = this.tableSelectCells![0][1];
-            const tableCell = element.data[row][col];
+        if (element.type === "table" && tableCellPosition) {
+            const tableCell = element.data[tableCellPosition[0]][tableCellPosition[1]];
             textElement = tableCell;
         } else {
             textElement = element as IPPTTextElement | IPPTShapeElement;
@@ -747,12 +746,18 @@ export default class StageConfig {
                     return acr + cur + textElement!.wordSpace;
                 });
 
-            const offsetX = this.getAlignOffsetX(lineData, element);
+            let offsetX = this.getAlignOffsetX(lineData, element);
 
             let offsetY = 0;
-            if (element.type === "shape") {
-                const height = this.getTextHeight(element);
+            if (element.type === "shape" || element.type === "table") {
+                const height = this.getTextHeight(element, tableCellPosition);
                 offsetY = (element.height - height) / 2;
+                if (element.type === "table" && tableCellPosition) {
+                    const [row, col] = tableCellPosition;
+                    const { tableCellHeight, tableCellLeft, tableCellTop } = this.getTableCellData(element, row, col);
+                    offsetX += tableCellLeft;
+                    offsetY = tableCellHeight / 2 - height / 2 + tableCellTop;
+                }
             }
 
             return {

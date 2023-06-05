@@ -89,12 +89,4 @@ export class Text {
         // 清除textarea中的值
         this._textarea.value = "";
     }
-
-    renderRange({ x, y, width, height }: any) {
-        this._ctx.save();
-        this._ctx.globalAlpha = 0.6;
-        this._ctx.fillStyle = "#AECBFA";
-        this._ctx.fillRect(x, y, width, height);
-        this._ctx.restore();
-    }
 }
