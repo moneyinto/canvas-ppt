@@ -37,6 +37,7 @@ export class Text {
     }
 
     getFontSize(text: IFontData) {
+        if (text.value === "\n") return { width: 0, height: 0 };
         this._ctx.font = `${text.fontStyle} ${text.fontWeight} ${text.fontSize}px ${text.fontFamily}`;
         const metrics = this._ctx.measureText(text.value);
         const width = metrics.width;
