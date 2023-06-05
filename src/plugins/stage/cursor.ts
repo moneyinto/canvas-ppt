@@ -269,7 +269,7 @@ export class Cursor {
                 const row = this._stageConfig.tableSelectCells[0][0];
                 const col = this._stageConfig.tableSelectCells[0][1];
                 const tableCell = element.data[row][col];
-                this._height = height + tableCell.lineHeight;
+                this._height = height * tableCell.lineHeight;
             }
         } else {
             this._height = height * element.lineHeight;

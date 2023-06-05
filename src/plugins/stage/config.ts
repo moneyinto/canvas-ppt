@@ -538,13 +538,11 @@ export default class StageConfig {
 
     // 获取表格对应单元格数据
     public getTableCellData(element: IPPTTableElement, row: number, col: number) {
-        // 边框线宽度处理
-        const borderWidth = (element.outline?.width || 0) / 2;
         const tableCell = element.data[row][col];
         const rowHeights = element.rowHeights.map(item => item * element.height);
         const colWidths = element.colWidths.map(item => item * element.width);
         const tableCellLeft = colWidths.slice(0, col).reduce((a, b) => a + b, 0);
-        const tableCellTop = rowHeights.slice(0, row).reduce((a, b) => a + b, 0) + borderWidth;
+        const tableCellTop = rowHeights.slice(0, row).reduce((a, b) => a + b, 0);
         const tableCellWidth = colWidths.slice(col, col + tableCell.colspan).reduce((a, b) => a + b, 0);
         const tableCellHeight = rowHeights.slice(row, row + tableCell.rowspan).reduce((a, b) => a + b, 0);
         return { tableCellLeft, tableCellTop, tableCellWidth, tableCellHeight };
