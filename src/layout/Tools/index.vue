@@ -29,7 +29,7 @@
         <Evert v-if="showEvert || showImageEdit" />
 
         <a-divider class="ppt-tool-divider" v-if="showTextEidt" type="vertical" />
-        <TextEdit v-if="showTextEidt" :elements="elements" />
+        <TextEdit v-if="showTextEidt || showTableCellEdit" :elements="elements" />
 
         <a-divider class="ppt-tool-divider" v-if="showBorder || showTextEidt || showFillColor || showShadowColor" type="vertical" />
         <Border v-if="showBorder" :elements="elements" />

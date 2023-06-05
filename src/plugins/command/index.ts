@@ -1127,7 +1127,7 @@ export default class Command {
 
     // 循环选中文本
     private _forSelectTexts(
-        element: IPPTTextElement | IPPTShapeElement,
+        element: IPPTTextElement | IPPTShapeElement | IPPTTableElement,
         selectArea: [number, number, number, number],
         callback: (text: IFontData) => void
     ) {
@@ -1165,9 +1165,39 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
                 const selectArea = this._stageConfig.selectArea;
-                if (selectArea) {
+                const tableSelectCells = this._stageConfig.tableSelectCells;
+                let startRow = -1;
+                let endRow = -1;
+                let startCol = -1;
+                let endCol = -1;
+                if (tableSelectCells) {
+                    startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
+                    endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+                }
+
+                if (startRow !== -1 && !(startRow === endRow && startCol === endCol) && operateElement.type === "table") {
+                    for (let row = startRow; row <= endRow; row++) {
+                        for (let col = startCol; col <= endCol; col++) {
+                            const tableCell = operateElement.data[row][col];
+                            tableCell.content.forEach((text) => {
+                                text.fontSize = !type
+                                    ? fontSize
+                                    : type === "plus"
+                                    ? text.fontSize + fontSize
+                                    : text.fontSize - fontSize;
+                                this._resetTextFontSize(text);
+                            });
+                        }
+                    }
+
+                    this.executeUpdateRender(operateElements);
+
+                    this._debounceLog();
+                } else if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
                         text.fontSize = !type
                             ? fontSize
@@ -1215,6 +1245,19 @@ export default class Command {
                     if (operateElement.type === "text") {
                         operateElement.height = this._stageConfig.getTextHeight(operateElement);
                     }
+                } else if (operateElement.type === "table") {
+                    operateElement.data.forEach((row) => {
+                        row.forEach((col) => {
+                            col.content.forEach((text) => {
+                                text.fontSize = !type
+                                    ? fontSize
+                                    : type === "plus"
+                                    ? text.fontSize + fontSize
+                                    : text.fontSize - fontSize;
+                                this._resetTextFontSize(text);
+                            });
+                        });
+                    });
                 }
             }
 
