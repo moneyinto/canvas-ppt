@@ -1802,8 +1802,36 @@ export default class Command {
         const operateElements = this._stageConfig.operateElements;
 
         for (const operateElement of operateElements) {
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape")) {
-                operateElement.align = align;
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
+                if (operateElement.type === "table") {
+                    const tableSelectCells = this._stageConfig.tableSelectCells;
+                    let startRow = -1;
+                    let endRow = -1;
+                    let startCol = -1;
+                    let endCol = -1;
+                    if (tableSelectCells) {
+                        startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
+                        endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
+                        startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
+                        endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+
+                        for (let row = startRow; row <= endRow; row++) {
+                            for (let col = startCol; col <= endCol; col++) {
+                                const tableCell = operateElement.data[row][col];
+                                tableCell.align = align;
+                            }
+                        }
+                    } else {
+                        for (let row = 0; row < operateElement.data.length; row++) {
+                            for (let col = 0; col < operateElement.data[row].length; col++) {
+                                const tableCell = operateElement.data[row][col];
+                                tableCell.align = align;
+                            }
+                        }
+                    }
+                } else {
+                    operateElement.align = align;
+                }
             }
         }
 
