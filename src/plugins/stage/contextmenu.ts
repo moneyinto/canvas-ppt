@@ -148,14 +148,13 @@ export class Contextmenu {
                     emitter.emit(EmitterEvents.DELETE_SLIDE);
                 }
             },
-            { divider: true, hide: selectedElement },
+            { divider: true, hide: !selectedElement },
             {
-                text: "背景设置",
-                hide: selectedElement,
-                icon: "background",
+                text: "删除",
+                subText: "Delete",
+                hide: !selectedElement,
                 handler: () => {
-                    emitter.emit(EmitterEvents.SHOW_PANELS, true);
-                    emitter.emit(EmitterEvents.PANELS_TYPE, PANELS.BACKGROUND);
+                    this._command.executeDelete();
                 }
             },
             { divider: true, hide: !selectedElement },
@@ -384,13 +383,22 @@ export class Contextmenu {
                     this._command.executeSplitCell();
                 }
             },
-            { divider: true, hide: !selectedElement },
+            { divider: true },
             {
-                text: "删除",
-                subText: "Delete",
-                hide: !selectedElement,
+                text: "背景设置",
+                hide: selectedElement,
+                icon: "background",
                 handler: () => {
-                    this._command.executeDelete();
+                    emitter.emit(EmitterEvents.SHOW_PANELS, true);
+                    emitter.emit(EmitterEvents.PANELS_TYPE, PANELS.BACKGROUND);
+                }
+            },
+            {
+                text: "元素动画",
+                icon: "animation",
+                handler: () => {
+                    emitter.emit(EmitterEvents.SHOW_PANELS, true);
+                    emitter.emit(EmitterEvents.PANELS_TYPE, PANELS.ANIMATION);
                 }
             }
         ];

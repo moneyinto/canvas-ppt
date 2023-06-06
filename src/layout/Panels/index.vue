@@ -9,6 +9,7 @@ import { PANELS } from "@/utils/panel";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import Background from "./Background.vue";
+import Animation from "./Animation.vue";
 
 defineProps({
     visible: {
@@ -21,7 +22,8 @@ const panel = ref<PANELS | "">("");
 
 const PanelComponent = computed(() => {
     const PanelMap: any = {
-        [PANELS.BACKGROUND]: Background
+        [PANELS.BACKGROUND]: Background,
+        [PANELS.ANIMATION]: Animation
     };
 
     return panel.value ? PanelMap[panel.value] : null;
