@@ -10,7 +10,7 @@
                     class="ppt-tool-block"
                     @click="setBorderColor(cacheBorderColor)"
                 >
-                    <PPTIcon icon="borderColor" :size="26" />
+                    <SvgIcon name="borderColor" :size="26" />
                     <div
                         class="border-color-line"
                         :style="{ background: cacheBorderColor }"
@@ -22,7 +22,7 @@
                         class="ppt-tool-dropdown"
                         @click="showBorder = !showBorder"
                     >
-                        <PPTIcon icon="down" :size="6" />
+                        <SvgIcon name="down" :size="6" />
                     </div>
 
                     <template #content>
@@ -41,7 +41,7 @@
 <script lang="ts" setup>
 import { THEME_COLOR } from "@/plugins/config/stage";
 import { inject, PropType, Ref, ref } from "vue";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import { IPPTElement } from "@/types/element";
 import { STORAGE_BORDER_COLOR } from "@/utils/storage";
 import Editor from "@/plugins/editor";

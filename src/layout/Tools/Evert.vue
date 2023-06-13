@@ -7,7 +7,7 @@
                 @mouseleave="hoverEvert = false"
             >
                 <div class="ppt-tool-block" @click="setFlip(flip)">
-                    <PPTIcon :icon="flip" :size="26" />
+                    <SvgIcon :name="flip" :size="26" />
                 </div>
 
                 <a-popover trigger="click" v-model:visible="showEvert">
@@ -15,17 +15,17 @@
                         class="ppt-tool-dropdown"
                         @click="showEvert = !showEvert"
                     >
-                        <PPTIcon icon="down" :size="6" />
+                        <SvgIcon name="down" :size="6" />
                     </div>
 
                     <template #content>
                         <div class="ppt-evert-content" @keydown.stop="" tabindex="0">
                             <div class="ppt-flip-item" @click="setFlip('flipH')">
-                                <PPTIcon icon="flipH" :size="28" />
+                                <SvgIcon name="flipH" :size="28" />
                                 <div class="ppt-flip-text">水平翻转</div>
                             </div>
                             <div class="ppt-flip-item" @click="setFlip('flipV')">
-                                <PPTIcon icon="flipV" :size="28" />
+                                <SvgIcon name="flipV" :size="28" />
                                 <div class="ppt-flip-text">垂直翻转</div>
                             </div>
                         </div>
@@ -40,7 +40,7 @@
 import { computed, inject, ref, Ref } from "vue";
 import { STORAGE_FLIP } from "@/utils/storage";
 import Editor from "@/plugins/editor";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 
 const instance = inject<Ref<Editor>>("instance");
 

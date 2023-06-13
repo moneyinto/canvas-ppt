@@ -6,7 +6,7 @@
                 :class="!canUndo && 'disabled'"
                 @click="undo()"
             >
-                <PPTIcon icon="undo" :size="28" />
+                <SvgIcon name="undo" :size="28" />
             </div>
         </a-tooltip>
 
@@ -16,7 +16,7 @@
                 :class="!canRedo && 'disabled'"
                 @click="redo()"
             >
-                <PPTIcon icon="redo" :size="28" />
+                <SvgIcon name="redo" :size="28" />
             </div>
         </a-tooltip>
     </div>
@@ -26,7 +26,7 @@
 import Editor from "@/plugins/editor";
 import { computed, inject, Ref } from "vue";
 import { throttleRAF } from "@/utils";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 
 const historyCursor = inject<Ref<number>>("historyCursor");
 const historyLength = inject<Ref<number>>("historyLength");

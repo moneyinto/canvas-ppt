@@ -10,12 +10,12 @@
                     @mouseover="hoverLineHeightPool = true"
                     @mouseleave="hoverLineHeightPool = false"
                 >
-                    <PPTIcon
-                        icon="lineHeight"
+                    <SvgIcon
+                        name="lineHeight"
                         :size="28"
                     />
 
-                    <PPTIcon icon="down" :size="6" />
+                    <SvgIcon name="down" :size="6" />
                 </div>
             </a-tooltip>
 
@@ -27,10 +27,10 @@
                         :key="height"
                         @click="setLineHeight(height)"
                     >
-                        <PPTIcon
+                        <SvgIcon
                             class="font-line-height-checked"
                             :class="lineHeight === height && 'active'"
-                            icon="checked"
+                            name="checked"
                             :size="28"
                         />
 
@@ -46,7 +46,7 @@
 import { inject, onMounted, onUnmounted, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
 import { IPPTElement, IPPTShapeElement, IPPTTableElement, IPPTTextElement } from "@/types/element";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const instance = inject<Ref<Editor>>("instance");

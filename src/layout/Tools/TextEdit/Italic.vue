@@ -6,7 +6,7 @@
                 :class="isItalic && 'active'"
                 @click="setFontStyle()"
             >
-                <PPTIcon icon="italicFont" :size="28" />
+                <SvgIcon name="italicFont" :size="28" />
             </div>
         </a-tooltip>
     </div>
@@ -17,7 +17,7 @@ import { inject, onMounted, onUnmounted, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
 import { IPPTElement, IPPTShapeElement, IPPTTextElement } from "@/types/element";
 import { IFontData } from "@/types/font";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const instance = inject<Ref<Editor>>("instance");

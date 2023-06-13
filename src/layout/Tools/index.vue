@@ -11,7 +11,7 @@
                         @click="save()"
                     >
                         &nbsp;
-                        <PPTIcon icon="save" :size="16" />
+                        <SvgIcon name="save" :size="16" />
                         &nbsp;
                     </div>
                 </a-tooltip>
@@ -63,7 +63,7 @@ import ImageEdit from "./ImageEdit.vue";
 import Background from "./Background.vue";
 import Animation from "./Animation.vue";
 import TableCellEdit from "./TableCellEdit.vue";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import Editor from "@/plugins/editor";
 
 const props = defineProps({

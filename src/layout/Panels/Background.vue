@@ -2,13 +2,13 @@
     <div class="ppt-background-panel">
         <div class="ppt-panel-header">
             <div class="ppt-panel-title">
-                <PPTIcon icon="background" :size="32" />
+                <SvgIcon name="background" :size="32" />
                 背景设置
             </div>
-            <PPTIcon
+            <SvgIcon
                 class="ppt-close-btn"
                 @click="closePanel()"
-                icon="close"
+                name="close"
                 :size="18"
             />
         </div>
@@ -57,7 +57,7 @@
                         class="content"
                         :style="{ backgroundImage: `url(${backgroundImage})` }"
                     >
-                        <PPTIcon icon="plus" :size="24" />
+                        <SvgIcon name="plus" :size="24" />
                     </div>
                 </div>
             </FileInput>
@@ -108,11 +108,11 @@
                 </div>
 
                 <div class="ppt-gradient-color" @click="addGradient">
-                    <PPTIcon icon="plus" />
+                    <SvgIcon name="plus" />
                 </div>
 
                 <div class="ppt-gradient-color" @click="reduceGradient">
-                    <PPTIcon icon="minus" />
+                    <SvgIcon name="minus" />
                 </div>
             </div>
 
@@ -179,7 +179,7 @@
 import { inject, ref, Ref, watch } from "vue";
 import ColorBoard from "@/components/ColorBoard.vue";
 import FileInput from "@/components/FileInput.vue";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import Editor from "@/plugins/editor";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 import { ISlideBackground } from "@/types/slide";

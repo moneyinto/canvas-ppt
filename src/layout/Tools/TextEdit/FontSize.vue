@@ -22,7 +22,7 @@
                         class="ppt-tool-dropdown"
                         @click="showFontSize = !showFontSize"
                     >
-                        <PPTIcon icon="down" :size="6" />
+                        <SvgIcon name="down" :size="6" />
                     </div>
 
                     <template #content>
@@ -37,10 +37,10 @@
                                 :key="size"
                                 @click="setFontSize(size)"
                             >
-                                <PPTIcon
+                                <SvgIcon
                                     class="font-size-checked"
                                     :class="fontSize == size && 'active'"
-                                    icon="checked"
+                                    name="checked"
                                     :size="28"
                                 />
                                 {{ size }}
@@ -56,7 +56,7 @@
                 class="ppt-tool-btn"
                 @click="plusSize()"
             >
-                <PPTIcon icon="plusSize" :size="28" />
+                <SvgIcon name="plusSize" :size="28" />
             </div>
         </a-tooltip>
 
@@ -65,7 +65,7 @@
                 class="ppt-tool-btn"
                 @click="minusSize()"
             >
-                <PPTIcon icon="minusSize" :size="28" />
+                <SvgIcon name="minusSize" :size="28" />
             </div>
         </a-tooltip>
     </div>
@@ -77,7 +77,7 @@ import Editor from "@/plugins/editor";
 import { throttleRAF } from "@/utils";
 import { IPPTElement, IPPTShapeElement, IPPTTextElement } from "@/types/element";
 import { IFontData } from "@/types/font";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const instance = inject<Ref<Editor>>("instance");

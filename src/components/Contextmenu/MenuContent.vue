@@ -16,7 +16,7 @@
                     v-if="!menu.divider"
                 >
                     <div class="menu-icon-box">
-                        <PPTIcon v-if="menu.icon" :icon="menu.icon" :size="28" />
+                        <SvgIcon v-if="menu.icon" :name="menu.icon" :size="28" />
                     </div>
                     <span class="menu-text">{{ menu.text }}</span>
                     <span
@@ -41,7 +41,7 @@
 <script lang="ts" setup>
 import { IContextmenuItem } from "@/types/contextmenu";
 import { PropType, toRefs } from "vue";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 
 const props = defineProps({
     menus: {

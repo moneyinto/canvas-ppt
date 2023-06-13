@@ -14,7 +14,7 @@
                         {{ font || "字体" }}
                     </div>
 
-                    <PPTIcon icon="down" :size="6" />
+                    <SvgIcon name="down" :size="6" />
                 </div>
             </a-tooltip>
 
@@ -27,10 +27,10 @@
                         @click="setFontFamily(font.value)"
                     >
                         {{ font.label }}
-                        <PPTIcon
+                        <SvgIcon
                             class="font-family-checked"
                             :class="fontFamily == font.value && 'active'"
-                            icon="checked"
+                            name="checked"
                             :size="28"
                         />
                     </div>
@@ -44,7 +44,7 @@
 import { computed, inject, onMounted, onUnmounted, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
 import { IPPTElement, IPPTShapeElement, IPPTTextElement } from "@/types/element";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import { IFontData } from "@/types/font";
 import { SYS_FONTS } from "@/plugins/config/font";
 import { isSupportFont } from "@/utils";

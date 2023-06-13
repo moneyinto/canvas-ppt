@@ -17,7 +17,7 @@
                             class="ppt-menu-option"
                             @click="executeMoveTop()"
                         >
-                            <PPTIcon icon="top" :size="28" />
+                            <SvgIcon name="top" :size="28" />
                             置于顶层
                         </div>
                     </a-menu-item>
@@ -26,7 +26,7 @@
                             class="ppt-menu-option"
                             @click="executeMoveBottom()"
                         >
-                            <PPTIcon icon="bottom" :size="28" />
+                            <SvgIcon name="bottom" :size="28" />
                             置于底层
                         </div>
                     </a-menu-item>
@@ -35,7 +35,7 @@
                             class="ppt-menu-option"
                             @click="executeMoveUp()"
                         >
-                            <PPTIcon icon="moveUp" :size="28" />
+                            <SvgIcon name="moveUp" :size="28" />
                             上移一层
                         </div>
                     </a-menu-item>
@@ -44,7 +44,7 @@
                             class="ppt-menu-option"
                             @click="executeMoveDown()"
                         >
-                            <PPTIcon icon="moveDown" :size="28" />
+                            <SvgIcon name="moveDown" :size="28" />
                             下移一层
                         </div>
                     </a-menu-item>
@@ -58,7 +58,7 @@
                             class="ppt-menu-option"
                             @click="setAlignType('alignLeft')"
                         >
-                            <PPTIcon icon="canvasAlignLeft" :size="28" />
+                            <SvgIcon name="canvasAlignLeft" :size="28" />
                             水平居左
                         </div>
                     </a-menu-item>
@@ -67,7 +67,7 @@
                             class="ppt-menu-option"
                             @click="setAlignType('alignCenter')"
                         >
-                            <PPTIcon icon="canvasAlignCenter" :size="28" />
+                            <SvgIcon name="canvasAlignCenter" :size="28" />
                             水平居中
                         </div>
                     </a-menu-item>
@@ -76,7 +76,7 @@
                             class="ppt-menu-option"
                             @click="setAlignType('alignRight')"
                         >
-                            <PPTIcon icon="canvasAlignRight" :size="28" />
+                            <SvgIcon name="canvasAlignRight" :size="28" />
                             水平居右
                         </div>
                     </a-menu-item>
@@ -86,7 +86,7 @@
                             class="ppt-menu-option"
                             @click="setAlignType('verticalTop')"
                         >
-                            <PPTIcon icon="canvasVerticalTop" :size="28" />
+                            <SvgIcon name="canvasVerticalTop" :size="28" />
                             垂直居上
                         </div>
                     </a-menu-item>
@@ -95,8 +95,8 @@
                             class="ppt-menu-option"
                             @click="setAlignType('verticalCenter')"
                         >
-                            <PPTIcon
-                                icon="canvasVerticalCenter"
+                            <SvgIcon
+                                name="canvasVerticalCenter"
                                 :size="28"
                             />
                             水平居中
@@ -107,8 +107,8 @@
                             class="ppt-menu-option"
                             @click="setAlignType('verticalBottom')"
                         >
-                            <PPTIcon
-                                icon="canvasVerticalBottom"
+                            <SvgIcon
+                                name="canvasVerticalBottom"
                                 :size="28"
                             />
                             垂直居下
@@ -121,8 +121,8 @@
                             :class="elements.length > 1 && 'disabled'"
                             @click="setAlignType('oneAlignCenter', elements.length > 1)"
                         >
-                            <PPTIcon
-                                icon="canvasOneAlignCenter"
+                            <SvgIcon
+                                name="canvasOneAlignCenter"
                                 :size="28"
                             />
                             水平分布
@@ -134,8 +134,8 @@
                             :class="elements.length > 1 && 'disabled'"
                             @click="setAlignType('oneVerticalCenter', elements.length > 1)"
                         >
-                            <PPTIcon
-                                icon="canvasOneVerticalCenter"
+                            <SvgIcon
+                                name="canvasOneVerticalCenter"
                                 :size="28"
                             />
                             垂直分布
@@ -148,7 +148,7 @@
                             :class="elements.length > 1 && 'disabled'"
                             @click="setAlignType('center', elements.length > 1)"
                         >
-                            <PPTIcon icon="canvasCenter" :size="28" />
+                            <SvgIcon name="canvasCenter" :size="28" />
                             中央对齐
                         </div>
                     </a-menu-item>
@@ -162,7 +162,7 @@
                             class="ppt-menu-option"
                             @click="executeClockwise()"
                         >
-                            <PPTIcon icon="clockwise" :size="28" />
+                            <SvgIcon name="clockwise" :size="28" />
                             顺时针旋转90°
                         </div>
                     </a-menu-item>
@@ -171,7 +171,7 @@
                             class="ppt-menu-option"
                             @click="executeAntiClockwise()"
                         >
-                            <PPTIcon icon="anticlockwise" :size="28" />
+                            <SvgIcon name="anticlockwise" :size="28" />
                             逆时针旋转90°
                         </div>
                     </a-menu-item>
@@ -185,7 +185,7 @@
                             class="ppt-menu-option"
                             @click="executeFlipH()"
                         >
-                            <PPTIcon icon="flipH" :size="28" />
+                            <SvgIcon name="flipH" :size="28" />
                             水平翻转
                         </div>
                     </a-menu-item>
@@ -194,7 +194,7 @@
                             class="ppt-menu-option"
                             @click="executeFlipV()"
                         >
-                            <PPTIcon icon="flipV" :size="28" />
+                            <SvgIcon name="flipV" :size="28" />
                             垂直翻转
                         </div>
                     </a-menu-item>
@@ -209,7 +209,7 @@ import Editor from "@/plugins/editor";
 import { IElementAlignType } from "@/types";
 import { IPPTElement } from "@/types/element";
 import { PropType, Ref, computed, inject, ref } from "vue";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 
 const props = defineProps({
     elements: {

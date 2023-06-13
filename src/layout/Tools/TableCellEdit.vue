@@ -6,7 +6,7 @@
                 :class="mergeDisabled && 'disabled'"
                 @click="setMergeCell()"
             >
-                <PPTIcon icon="mergeCell" :size="28" />
+                <SvgIcon name="mergeCell" :size="28" />
             </div>
         </a-tooltip>
         <a-tooltip title="拆分单元格">
@@ -15,7 +15,7 @@
                 :class="splitDisabled && 'disabled'"
                 @click="setSplitCell()"
             >
-                <PPTIcon icon="splitCell" :size="28" />
+                <SvgIcon name="splitCell" :size="28" />
             </div>
         </a-tooltip>
     </div>
@@ -23,7 +23,7 @@
 
 <script lang="ts" setup>
 import { Ref, inject } from "vue";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import Editor from "@/plugins/editor";
 
 const instance = inject<Ref<Editor>>("instance");

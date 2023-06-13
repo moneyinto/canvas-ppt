@@ -6,7 +6,7 @@
         <div class="ppt-zoom-control">
             <a-tooltip title="从当前页预览">
                 <a-button class="ppt-zoom-btn" type="text" @click="preview()">
-                    <PPTIcon icon="preview" :size="20" />
+                    <SvgIcon name="preview" :size="20" />
                 </a-button>
             </a-tooltip>
             <a-tooltip :title="fullScreen ? '退出全屏' : '进入全屏'">
@@ -15,8 +15,8 @@
                     type="text"
                     @click="switchFullScreen()"
                 >
-                    <PPTIcon
-                        :icon="fullScreen ? 'offScreen' : 'fullScreen'"
+                    <SvgIcon
+                        :name="fullScreen ? 'offScreen' : 'fullScreen'"
                         :size="20"
                     />
                 </a-button>
@@ -24,12 +24,12 @@
             <a-divider style="margin-top: 1px" type="vertical" />
             <a-tooltip title="适合页面">
                 <a-button class="ppt-zoom-btn" type="text" @click="fitZoom()">
-                    <PPTIcon icon="fit" :size="20" />
+                    <SvgIcon name="fit" :size="20" />
                 </a-button>
             </a-tooltip>
             <a-tooltip :title="'缩小  ' + SHORTCUT.DECREASE">
                 <a-button class="ppt-zoom-btn" type="text" @click="decrease()">
-                    <PPTIcon icon="minus" :size="20" />
+                    <SvgIcon name="minus" :size="20" />
                 </a-button>
             </a-tooltip>
             <div class="ppt-zoom-view">{{ zoom }}%</div>
@@ -38,7 +38,7 @@
                 :title="'放大  ' + SHORTCUT.INCREASE"
             >
                 <a-button class="ppt-zoom-btn" type="text" @click="increase()">
-                    <PPTIcon icon="plus" :size="20" />
+                    <SvgIcon name="plus" :size="20" />
                 </a-button>
             </a-tooltip>
         </div>
@@ -49,7 +49,7 @@
 import { ref, inject, Ref, watch, onMounted } from "vue";
 import { SHORTCUT } from "@/plugins/config/shortcut";
 import Editor from "@/plugins/editor";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import { enterFullScreen, exitFullScreen, isFullScreen } from "@/utils";
 
 const props = defineProps({

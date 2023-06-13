@@ -10,12 +10,12 @@
                     @mouseover="hoverAlignPool = true"
                     @mouseleave="hoverAlignPool = false"
                 >
-                    <PPTIcon
-                        :icon="{left: 'alignLeft', center: 'alignCenter', right: 'alignRight'}[alignment] || 'alignLeft'"
+                    <SvgIcon
+                        :name="{left: 'alignLeft', center: 'alignCenter', right: 'alignRight'}[alignment] || 'alignLeft'"
                         :size="28"
                     />
 
-                    <PPTIcon icon="down" :size="6" />
+                    <SvgIcon name="down" :size="6" />
                 </div>
             </a-tooltip>
 
@@ -25,16 +25,16 @@
                         class="ppt-align-item"
                         @click="setAlign('left')"
                     >
-                        <PPTIcon
+                        <SvgIcon
                             class="font-alignment"
-                            icon="alignLeft"
+                            name="alignLeft"
                             :size="28"
                         />
                         左对齐
-                        <PPTIcon
+                        <SvgIcon
                             class="font-align-checked"
                             :class="alignment === 'left' && 'active'"
-                            icon="checked"
+                            name="checked"
                             :size="28"
                         />
                     </div>
@@ -43,16 +43,16 @@
                         class="ppt-align-item"
                         @click="setAlign('center')"
                     >
-                        <PPTIcon
+                        <SvgIcon
                             class="font-alignment"
-                            icon="alignCenter"
+                            name="alignCenter"
                             :size="28"
                         />
                         居中对齐
-                        <PPTIcon
+                        <SvgIcon
                             class="font-align-checked"
                             :class="alignment === 'center' && 'active'"
-                            icon="checked"
+                            name="checked"
                             :size="28"
                         />
                     </div>
@@ -61,16 +61,16 @@
                         class="ppt-align-item"
                         @click="setAlign('right')"
                     >
-                        <PPTIcon
+                        <SvgIcon
                             class="font-alignment"
-                            icon="alignRight"
+                            name="alignRight"
                             :size="28"
                         />
                         右对齐
-                        <PPTIcon
+                        <SvgIcon
                             class="font-align-checked"
                             :class="alignment === 'right' && 'active'"
-                            icon="checked"
+                            name="checked"
                             :size="28"
                         />
                     </div>
@@ -84,7 +84,7 @@
 import { inject, onMounted, onUnmounted, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
 import { IPPTElement, IPPTShapeElement, IPPTTableElement, IPPTTextElement } from "@/types/element";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const instance = inject<Ref<Editor>>("instance");

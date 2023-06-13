@@ -10,24 +10,24 @@
             :class="hiddenTool && 'hidden-preview-tools'"
         >
             <div class="preview-tools-btn" @click="prev()">
-                <PPTIcon icon="leftArrow" :size="11" />
+                <SvgIcon name="leftArrow" color="#eee" :size="11" />
             </div>
             <div class="ppt-preview-size">
                 {{ previewSlideIndex + 1 }} / {{ props.slides.length }}
             </div>
             <div class="preview-tools-btn" @click="next()">
-                <PPTIcon icon="rightArrow" :size="11" />
+                <SvgIcon name="rightArrow" color="#eee" :size="11" />
             </div>
             <div
                 class="preview-tools-btn"
                 :class="whiteboardVisible && 'active'"
                 @click="whiteboardVisible = !whiteboardVisible"
             >
-                <PPTIcon style="color: #eee" icon="pencil" :size="20" />
+                <SvgIcon style="color: #eee;" name="pencil" :size="20" />
                 <div class="preview-tools-text">画笔</div>
             </div>
             <div class="preview-tools-btn" @click="endPreview()">
-                <PPTIcon icon="endPreview" :size="24" />
+                <SvgIcon name="endPreview" color="#CD4747" :size="24" />
                 <div class="preview-tools-text">结束</div>
             </div>
         </div>
@@ -60,7 +60,7 @@ import Screen from "@/plugins/screen";
 import { KeyMap } from "@/plugins/shortCut/keyMap";
 import { message } from "ant-design-vue";
 import Editor from "@/plugins/editor";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import { OPTION_TYPE, IElement } from "mwhiteboard";
 
 const emit = defineEmits(["endPreview"]);

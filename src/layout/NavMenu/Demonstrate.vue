@@ -10,13 +10,13 @@
             <a-menu triggerSubMenuAction="click">
                 <a-menu-item>
                     <div class="ppt-menu-option" @click="preview(0)">
-                        <PPTIcon icon="demonstrate" :size="28" />
+                        <SvgIcon name="demonstrate" :size="28" />
                         &nbsp;&nbsp;从头演示
                     </div>
                 </a-menu-item>
                 <a-menu-item>
                     <div class="ppt-menu-option" @click="preview(current)">
-                        &nbsp;<PPTIcon icon="preview" :size="22" />
+                        &nbsp;<SvgIcon name="preview" :size="22" />
                         &nbsp;&nbsp;&nbsp;从当前页演示
                     </div>
                 </a-menu-item>
@@ -27,7 +27,7 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 
 defineProps({
     current: {

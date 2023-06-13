@@ -2,13 +2,13 @@
     <div class="ppt-background-panel">
         <div class="ppt-panel-header">
             <div class="ppt-panel-title">
-                <PPTIcon icon="background" :size="32" />
+                <SvgIcon name="background" :size="32" />
                 元素动画
             </div>
-            <PPTIcon
+            <SvgIcon
                 class="ppt-close-btn"
                 @click="closePanel()"
-                icon="close"
+                name="close"
                 :size="18"
             />
         </div>
@@ -23,13 +23,13 @@
                 <div class="ppt-animation-btns">
                     <a-tooltip title="预览全部">
                         <div class="ppt-animation-btn">
-                            <PPTIcon icon="play" :size="8" />
+                            <SvgIcon name="play" :size="8" />
                         </div>
                     </a-tooltip>
                     <a-divider class="ppt-tool-divider" type="vertical" />
                     <a-tooltip title="删除全部">
                         <div class="ppt-animation-btn">
-                            <PPTIcon icon="delete" :size="14" />
+                            <SvgIcon name="delete" :size="14" />
                         </div>
                     </a-tooltip>
                 </div>
@@ -48,14 +48,14 @@
                     <div class="ppt-animation-name">{{ ani.name }}</div>
                     <div class="ppt-animation-btns">
                         <div class="ppt-animation-btn" @click="preview(ani)">
-                            <PPTIcon icon="play" :size="8" />
+                            <SvgIcon name="play" :size="8" />
                         </div>
                         <a-divider class="ppt-tool-divider" type="vertical" />
                         <div
                             class="ppt-animation-btn"
                             @click="deleteAnimation(ani)"
                         >
-                            <PPTIcon icon="delete" :size="14" />
+                            <SvgIcon name="delete" :size="14" />
                         </div>
                     </div>
                 </div>
@@ -63,7 +63,7 @@
                 <div class="ppt-add-animation">
                     <a-button type="link" :disabled="addBtnDisabled">
                         <div class="ppt-add-button" :class="!addBtnDisabled && 'active'">
-                            <PPTIcon icon="addCircle" :size="18" />
+                            <SvgIcon name="addCircle" :color="addBtnDisabled ? '#8B8E91' : '#1890ff'" :size="18" />
                             <div class="ppt-add-animation-text">添加动画</div>
                         </div>
                     </a-button>
@@ -75,7 +75,7 @@
 
 <script lang="ts" setup>
 import { inject, PropType, ref, Ref, watch } from "vue";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import Editor from "@/plugins/editor";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 import { IPPTAnimation } from "@/types/slide";
