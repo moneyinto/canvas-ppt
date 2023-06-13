@@ -2206,6 +2206,16 @@ export default class Command {
         this._history.add();
     }
 
+    // 新增动画
+    public executeAddAnimation(anis: IPPTAnimation[]) {
+        const animations = this._stageConfig.getAnimations();
+        const newAnimations = animations.concat(anis);
+        this._stageConfig.setAnimations(newAnimations);
+
+        this._listener.onAnimationsChange && this._listener.onAnimationsChange();
+        this._history.add();
+    }
+
     private _updateCursor(position: number) {
         this._cursor.showCursor();
         this._cursor.setDataPosition(position);

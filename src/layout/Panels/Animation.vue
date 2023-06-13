@@ -1,5 +1,5 @@
 <template>
-    <div class="ppt-background-panel">
+    <div class="ppt-background-panel" @click="outsideClick">
         <div class="ppt-panel-header">
             <div class="ppt-panel-title">
                 <SvgIcon name="background" :size="32" />
@@ -27,7 +27,7 @@
                         </div>
                     </a-tooltip>
                     <a-divider class="ppt-tool-divider" type="vertical" />
-                    <a-tooltip title="删除全部">
+                    <a-tooltip placement="topRight" title="删除全部">
                         <div class="ppt-animation-btn">
                             <SvgIcon name="delete" :size="14" />
                         </div>
@@ -39,7 +39,12 @@
                 <div
                     class="ppt-animation-item"
                     v-for="(ani, index) in animations"
+                    :class="{
+                        active: elements.some((el) => el.id === ani.elId),
+                        selected: selectedAnimationId === ani.id
+                    }"
                     :key="ani.id"
+                    @click.stop="selectAnimation(ani)"
                 >
                     <div class="ppt-animation-index">{{ index + 1 }}</div>
                     <div class="ppt-element-type">
@@ -47,13 +52,13 @@
                     </div>
                     <div class="ppt-animation-name">{{ ani.name }}</div>
                     <div class="ppt-animation-btns">
-                        <div class="ppt-animation-btn" @click="preview(ani)">
+                        <div class="ppt-animation-btn" @click.stop="preview(ani)">
                             <SvgIcon name="play" :size="8" />
                         </div>
                         <a-divider class="ppt-tool-divider" type="vertical" />
                         <div
                             class="ppt-animation-btn"
-                            @click="deleteAnimation(ani)"
+                            @click.stop="deleteAnimation(ani)"
                         >
                             <SvgIcon name="delete" :size="14" />
                         </div>
@@ -61,13 +66,42 @@
                 </div>
 
                 <div class="ppt-add-animation">
-                    <a-button type="link" :disabled="addBtnDisabled">
-                        <div class="ppt-add-button" :class="!addBtnDisabled && 'active'">
-                            <SvgIcon name="addCircle" :color="addBtnDisabled ? '#8B8E91' : '#1890ff'" :size="18" />
-                            <div class="ppt-add-animation-text">添加动画</div>
-                        </div>
-                    </a-button>
+                    <a-popover
+                        v-model:visible="showAnimationPanel"
+                        trigger="click"
+                        placement="topRight"
+                        arrow-point-at-center
+                    >
+                        <template #content>
+                            <AnimationPool @add-animation="addAnimation" />
+                        </template>
+                        <a-button
+                            type="link"
+                            :disabled="addBtnDisabled"
+                            @click.stop="showAnimationPanel = true"
+                        >
+                            <div
+                                class="ppt-add-button"
+                                :class="!addBtnDisabled && 'active'"
+                            >
+                                <SvgIcon
+                                    name="addCircle"
+                                    :color="
+                                        addBtnDisabled ? '#8B8E91' : '#1890ff'
+                                    "
+                                    :size="18"
+                                />
+                                <div class="ppt-add-animation-text">
+                                    添加动画
+                                </div>
+                            </div>
+                        </a-button>
+                    </a-popover>
                 </div>
+            </div>
+
+            <div class="ppt-animation-tip" v-if="addBtnDisabled">
+                选中元素后可添加和设置元素动画
             </div>
         </div>
     </div>
@@ -80,6 +114,8 @@ import Editor from "@/plugins/editor";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 import { IPPTAnimation } from "@/types/slide";
 import { IPPTElement } from "@/types/element";
+import AnimationPool from "@/components/AnimationPool.vue";
+import { createRandomCode } from "@/utils/create";
 
 const props = defineProps({
     elements: {
@@ -92,6 +128,7 @@ const instance = inject<Ref<Editor>>("instance");
 
 const animations = ref<IPPTAnimation[]>([]);
 const addBtnDisabled = ref(true);
+const selectedAnimationId = ref("");
 
 const init = async () => {
     if (instance?.value) {
@@ -100,6 +137,8 @@ const init = async () => {
         instance.value.listener.onAnimationsChange = () => {
             animations.value = instance.value.stageConfig.getAnimations();
         };
+
+        addBtnDisabled.value = props.elements.length === 0;
     }
 };
 
@@ -107,9 +146,12 @@ init();
 
 watch(instance!, init);
 
-watch(() => props.elements, () => {
-    addBtnDisabled.value = props.elements.length === 0;
-});
+watch(
+    () => props.elements,
+    () => {
+        addBtnDisabled.value = props.elements.length === 0;
+    }
+);
 
 const closePanel = () => {
     emitter.emit(EmitterEvents.SHOW_PANELS, false);
@@ -128,6 +170,32 @@ const preview = (ani?: IPPTAnimation) => {
 
 const deleteAnimation = (ani?: IPPTAnimation) => {
     instance?.value?.command.executeDeleteAnimation(ani);
+};
+
+const selectAnimation = (ani: IPPTAnimation) => {
+    selectedAnimationId.value = ani.id;
+};
+
+const showAnimationPanel = ref(false);
+const addAnimation = (type: string, animation: { name: string; value: string; duration: number; }) => {
+    showAnimationPanel.value = false;
+    const newAnimations: IPPTAnimation[] = props.elements.map((el) => {
+        return {
+            id: createRandomCode(),
+            elId: el.id,
+            ani: animation.value,
+            name: animation.name,
+            type,
+            duration: animation.duration,
+            trigger: "click"
+        } as IPPTAnimation;
+    });
+    instance?.value?.command.executeAddAnimation(newAnimations);
+};
+
+const outsideClick = () => {
+    showAnimationPanel.value = false;
+    selectedAnimationId.value = "";
 };
 </script>
 
@@ -208,8 +276,17 @@ const deleteAnimation = (ani?: IPPTAnimation) => {
             font-size: 12px;
             display: flex;
             align-items: center;
+            margin-bottom: 8px;
             .ppt-animation-btns {
                 display: none;
+            }
+
+            &.active {
+                background-color: rgb(231, 243, 253);
+            }
+
+            &.selected {
+                border: 1px solid rgb(91, 157, 244);
             }
 
             &:hover {
@@ -245,7 +322,9 @@ const deleteAnimation = (ani?: IPPTAnimation) => {
             display: flex;
             justify-content: center;
             padding: 20px 0;
-
+            position: sticky;
+            bottom: 0;
+            background-color: rgb(250, 250, 250);
             .ppt-add-button {
                 display: flex;
                 align-items: center;
@@ -256,6 +335,14 @@ const deleteAnimation = (ani?: IPPTAnimation) => {
                 }
             }
         }
+    }
+
+    .ppt-animation-tip {
+        text-align: center;
+        margin: 10px 0px 26px;
+        color: rgba(65, 70, 75, 0.9);
+        opacity: 0.5;
+        font-size: 12px;
     }
 }
 </style>
