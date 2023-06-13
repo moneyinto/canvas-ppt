@@ -34,7 +34,7 @@ import {
 import { IFontData } from "@/types/font";
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import { IElementAlignType } from "@/types";
-import { ISlideBackground } from "@/types/slide";
+import { IPPTAnimation, ISlideBackground } from "@/types/slide";
 import { OPTION_TYPE } from "../config/options";
 
 export default class Command {
@@ -2179,6 +2179,31 @@ export default class Command {
             }
             this.executeUpdateRender([operateElement], true);
         }
+    }
+
+    // 预览动画
+    public executePreviewAnimation(ani?: IPPTAnimation) {
+        if (ani) {
+            // 预览某个元素动画
+        } else {
+            // 预览所有动画
+        }
+    }
+
+    // 删除动画
+    public executeDeleteAnimation(ani?: IPPTAnimation) {
+        if (ani) {
+            // 删除某个元素动画
+            const animations = this._stageConfig.getAnimations();
+            const newAnimations = animations.filter(item => item.id !== ani.id);
+            this._stageConfig.setAnimations(newAnimations);
+        } else {
+            // 删除所有动画
+            this._stageConfig.setAnimations([]);
+        }
+
+        this._listener.onAnimationsChange && this._listener.onAnimationsChange();
+        this._history.add();
     }
 
     private _updateCursor(position: number) {

@@ -234,6 +234,17 @@ export const slides: ISlide[] = [
                 rotate: 0,
                 align: "left"
             }
+        ],
+        animations: [
+            {
+                id: "4bdkme",
+                elId: "4bdkmJ",
+                ani: "",
+                name: "飞入",
+                type: "in",
+                duration: 1,
+                trigger: "auto"
+            }
         ]
     },
     {

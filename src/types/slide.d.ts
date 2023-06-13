@@ -29,6 +29,37 @@ export interface ISlideBackground {
 }
 
 /**
+ * 元素动画
+ *
+ * id: 动画ID
+ *
+ * elId: 元素ID
+ *
+ * ani: 动画
+ *
+ * name: 动画名称
+ *
+ * type: 动画类型（入场、出场、强调）
+ *
+ * duration: 动画时长
+ *
+ * path?: 路径动画路径（自定义动画）
+ *
+ * trigger: 动画触发方式（点击、同时、自动）
+ */
+export interface IPPTAnimation {
+    id: string;
+    elId: string;
+    ani: string;
+    name: string;
+    type: "in" | "out" | "attention";
+    duration: number;
+    path?: string;
+    trigger: "click" | "meantime" | "auto";
+}
+
+
+/**
  * 幻灯片页面
  *
  * id: 页面ID
@@ -46,4 +77,5 @@ export interface ISlide {
     viewportRatio?: number;
     elements: IPPTElement[];
     background?: ISlideBackground;
+    animations?: IPPTAnimation[]
 }

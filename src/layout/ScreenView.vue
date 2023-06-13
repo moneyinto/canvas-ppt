@@ -266,6 +266,6 @@ onUnmounted(() => {
     pointer-events: all;
 }
 .white-board-box.ppt-can-write canvas {
-    cursor: url(@/assets/icons/cursor.png) 7 7, default !important;
+    cursor: url(@/assets/images/cursor.png) 7 7, default !important;
 }
 </style>

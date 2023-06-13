@@ -1,5 +1,5 @@
 import { ICreatingElement, IPPTElement } from "./element";
-import { ISlide } from "./slide";
+import { IPPTAnimation, ISlide } from "./slide";
 
 export type IOnZoomChange = (zoom: number) => void;
 
@@ -24,3 +24,5 @@ export type IOnFontStrikoutChange = (strikout: boolean) => void;
 export type IOnFontFamilyChange = (fontFamily: string) => void;
 
 export type IOnTableCellEditChange = (mergeDisabled: boolean, splitDisabled: boolean) => void;
+
+export type IOnAnimationsChange = () => void;

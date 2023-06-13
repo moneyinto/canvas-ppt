@@ -6,7 +6,7 @@ import Listener from "../listener";
 import { ICacheImage, IRectParameter } from "@/types";
 import { ICreatingElement, IPPTElement, IPPTShapeElement, IPPTTableCell, IPPTTableElement, IPPTTextElement } from "@/types/element";
 import { IFontConfig, IFontData, ILineData } from "@/types/font";
-import { ISlide, ISlideBackground } from "@/types/slide";
+import { IPPTAnimation, ISlide, ISlideBackground } from "@/types/slide";
 
 export const TEXT_MARGIN = 5;
 
@@ -314,6 +314,11 @@ export default class StageConfig {
 
     public getCurrentSlide() {
         return this.slides.find((slide) => this.slideId === slide.id);
+    }
+
+    public getElementById(id: string) {
+        const slide = this.getCurrentSlide();
+        return slide?.elements.find((element) => element.id === id);
     }
 
     public addCacheImage(cacheImage: ICacheImage) {
@@ -781,5 +786,17 @@ export default class StageConfig {
     stopVideoRender() {
         this.autoVideoRender = false;
         this.resetCheckDrawView();
+    }
+
+    getAnimations() {
+        const currentSlide = this.getCurrentSlide();
+        if (!currentSlide) return [];
+        return currentSlide.animations || [];
+    }
+
+    setAnimations(animations: IPPTAnimation[]) {
+        const currentSlide = this.getCurrentSlide();
+        if (!currentSlide) return;
+        currentSlide.animations = animations;
     }
 }
