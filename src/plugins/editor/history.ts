@@ -127,5 +127,7 @@ export default class History {
         }
         this._stageConfig.hideCursor && this._stageConfig.hideCursor();
         this._listener.onEditChange && this._listener.onEditChange(this.cursor, this.length, history.slideId as string);
+        // 撤销通知动画变更
+        this._listener.onAnimationsChange && this._listener.onAnimationsChange();
     }
 }

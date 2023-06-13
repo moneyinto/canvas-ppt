@@ -131,7 +131,7 @@
                     <div class="ppt-animation-set-value">
                         <a-select
                             v-model:value="selectedAnimation.trigger"
-                            @change="animationChange"
+                            @change="animationChange()"
                         >
                             <a-select-option value="click">
                                 单击鼠标时
@@ -152,7 +152,8 @@
                         <a-input-number
                             v-model:value="selectedAnimation.duration"
                             min="0"
-                            @input="animationChange"
+                            @input="animationChange()"
+                            @change="animationChange()"
                         />
                     </div>
                 </div>
@@ -194,6 +195,11 @@ const init = async () => {
 
         instance.value.listener.onAnimationsChange = () => {
             animations.value = instance.value.stageConfig.getAnimations();
+            if (selectedAnimation.value) {
+                selectedAnimation.value = animations.value.find(
+                    (ani) => ani.id === selectedAnimation.value?.id
+                ) || null;
+            }
         };
 
         addBtnDisabled.value = props.elements.length === 0;
@@ -232,6 +238,7 @@ const deleteAnimation = (ani?: IPPTAnimation) => {
 
 const selectAnimation = (ani: IPPTAnimation) => {
     selectedAnimation.value = ani;
+    instance?.value?.command.executeSelectElements([ani.elId]);
 };
 
 const showAnimationPanel = ref(false);

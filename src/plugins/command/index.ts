@@ -700,6 +700,14 @@ export default class Command {
         this.executeRender();
     }
 
+    // 选中元素
+    public executeSelectElements(elementIds: string[]) {
+        const slide = this._stageConfig.getCurrentSlide();
+        const selectedElements = slide?.elements.filter((element) => elementIds.includes(element.id));
+        this._stageConfig.updateOperateElements(selectedElements || []);
+        this.executeRender();
+    }
+
     // 删除元素 或 删除文本
     public executeDelete(direction = 0) {
         if (this._stageConfig.textFocus) {
@@ -2221,7 +2229,7 @@ export default class Command {
         this._stageConfig.setAnimations(anis);
 
         this._listener.onAnimationsChange && this._listener.onAnimationsChange();
-        this._history.add();
+        this._debounceLog();
     }
 
     private _updateCursor(position: number) {
