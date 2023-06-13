@@ -159,7 +159,7 @@
                 </div>
             </div>
 
-            <div class="ppt-animation-tip" v-if="addBtnDisabled">
+            <div class="ppt-animation-tip" v-if="addBtnDisabled && !selectedAnimation">
                 选中元素后可添加和设置元素动画
             </div>
         </div>
