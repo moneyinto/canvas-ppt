@@ -45,7 +45,7 @@ export interface ISlideBackground {
  *
  * path?: 路径动画路径（自定义动画）
  *
- * trigger: 动画触发方式（点击、同时、自动）
+ * trigger: 动画触发方式（点击、同时、之后）
  */
 export interface IPPTAnimation {
     id: string;
@@ -55,7 +55,7 @@ export interface IPPTAnimation {
     type: "in" | "out" | "attention";
     duration: number;
     path?: string;
-    trigger: "click" | "meantime" | "auto";
+    trigger: "click" | "meantime" | "after";
 }
 
 

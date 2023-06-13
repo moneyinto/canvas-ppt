@@ -41,7 +41,7 @@
                     v-for="(ani, index) in animations"
                     :class="{
                         active: elements.some((el) => el.id === ani.elId),
-                        selected: selectedAnimationId === ani.id
+                        selected: selectedAnimation?.id === ani.id
                     }"
                     :key="ani.id"
                     @click.stop="selectAnimation(ani)"
@@ -52,7 +52,10 @@
                     </div>
                     <div class="ppt-animation-name">{{ ani.name }}</div>
                     <div class="ppt-animation-btns">
-                        <div class="ppt-animation-btn" @click.stop="preview(ani)">
+                        <div
+                            class="ppt-animation-btn"
+                            @click.stop="preview(ani)"
+                        >
                             <SvgIcon name="play" :size="8" />
                         </div>
                         <a-divider class="ppt-tool-divider" type="vertical" />
@@ -73,7 +76,7 @@
                         arrow-point-at-center
                     >
                         <template #content>
-                            <AnimationPool @add-animation="addAnimation" />
+                            <AnimationPool @change="addAnimation" />
                         </template>
                         <a-button
                             type="link"
@@ -97,6 +100,61 @@
                             </div>
                         </a-button>
                     </a-popover>
+                </div>
+            </div>
+
+            <div class="ppt-animation-set" v-if="selectedAnimation" @click.stop>
+                <div class="ppt-animation-set-title">动画设置</div>
+
+                <div class="ppt-animation-set-line">
+                    <div class="ppt-animation-set-label">动画</div>
+                    <div class="ppt-animation-set-value">
+                        <a-popover
+                            v-model:visible="showSetAnimationPanel"
+                            trigger="click"
+                            placement="topRight"
+                            arrow-point-at-center
+                        >
+                            <template #content>
+                                <AnimationPool @change="editAnimation" />
+                            </template>
+                            <a-input
+                                readonly="readonly"
+                                v-model:value="selectedAnimation.name"
+                            />
+                        </a-popover>
+                    </div>
+                </div>
+
+                <div class="ppt-animation-set-line">
+                    <div class="ppt-animation-set-label">时机</div>
+                    <div class="ppt-animation-set-value">
+                        <a-select
+                            v-model:value="selectedAnimation.trigger"
+                            @change="animationChange"
+                        >
+                            <a-select-option value="click">
+                                单击鼠标时
+                            </a-select-option>
+                            <a-select-option value="meantime">
+                                与上个动画同时
+                            </a-select-option>
+                            <a-select-option value="after">
+                                在上个动画之后
+                            </a-select-option>
+                        </a-select>
+                    </div>
+                </div>
+
+                <div class="ppt-animation-set-line">
+                    <div class="ppt-animation-set-label">速度</div>
+                    <div class="ppt-animation-set-value">
+                        <a-input-number
+                            v-model:value="selectedAnimation.duration"
+                            min="0"
+                            @input="animationChange"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -128,7 +186,7 @@ const instance = inject<Ref<Editor>>("instance");
 
 const animations = ref<IPPTAnimation[]>([]);
 const addBtnDisabled = ref(true);
-const selectedAnimationId = ref("");
+const selectedAnimation = ref<IPPTAnimation | null>(null);
 
 const init = async () => {
     if (instance?.value) {
@@ -173,11 +231,14 @@ const deleteAnimation = (ani?: IPPTAnimation) => {
 };
 
 const selectAnimation = (ani: IPPTAnimation) => {
-    selectedAnimationId.value = ani.id;
+    selectedAnimation.value = ani;
 };
 
 const showAnimationPanel = ref(false);
-const addAnimation = (type: string, animation: { name: string; value: string; duration: number; }) => {
+const addAnimation = (
+    type: string,
+    animation: { name: string; value: string; duration: number }
+) => {
     showAnimationPanel.value = false;
     const newAnimations: IPPTAnimation[] = props.elements.map((el) => {
         return {
@@ -193,9 +254,29 @@ const addAnimation = (type: string, animation: { name: string; value: string; du
     instance?.value?.command.executeAddAnimation(newAnimations);
 };
 
+const showSetAnimationPanel = ref(false);
+const editAnimation = (type: "in" | "out" | "attention", animation: { name: string; value: string; duration: number }) => {
+    showSetAnimationPanel.value = false;
+    if (!selectedAnimation.value) return;
+    selectedAnimation.value.name = animation.name;
+    selectedAnimation.value.ani = animation.value;
+    selectedAnimation.value.duration = animation.duration;
+    selectedAnimation.value.type = type;
+    animationChange();
+};
+
+const animationChange = () => {
+    if (!selectedAnimation.value) return;
+    const index = animations.value.findIndex(
+        (ani) => ani.id === selectedAnimation.value?.id
+    );
+    animations.value.splice(index, 1, selectedAnimation.value);
+    instance?.value?.command.executeEditAnimation(animations.value);
+};
+
 const outsideClick = () => {
     showAnimationPanel.value = false;
-    selectedAnimationId.value = "";
+    selectedAnimation.value = null;
 };
 </script>
 
@@ -343,6 +424,42 @@ const outsideClick = () => {
         color: rgba(65, 70, 75, 0.9);
         opacity: 0.5;
         font-size: 12px;
+    }
+}
+
+.ppt-animation-set {
+    border-top: 1px solid #eee;
+    padding: 0 3px 15px;
+    .ppt-animation-set-title {
+        font-size: 12px;
+        font-weight: 600;
+        padding: 10px 0;
+    }
+
+    .ppt-animation-set-line {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        .ppt-animation-set-label {
+            font-size: 12px;
+            margin-right: 20px;
+        }
+        .ppt-animation-set-value {
+            flex: 1;
+            :deep(.ant-input) {
+                cursor: pointer;
+                font-size: 12px;
+                padding: 6px 11px;
+            }
+
+            :deep(.ant-select) {
+                width: 100%;
+            }
+
+            :deep(.ant-input-number) {
+                width: 100%;
+            }
+        }
     }
 }
 </style>

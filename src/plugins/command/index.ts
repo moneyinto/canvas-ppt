@@ -2216,6 +2216,14 @@ export default class Command {
         this._history.add();
     }
 
+    // 编辑动画
+    public executeEditAnimation(anis: IPPTAnimation[]) {
+        this._stageConfig.setAnimations(anis);
+
+        this._listener.onAnimationsChange && this._listener.onAnimationsChange();
+        this._history.add();
+    }
+
     private _updateCursor(position: number) {
         this._cursor.showCursor();
         this._cursor.setDataPosition(position);

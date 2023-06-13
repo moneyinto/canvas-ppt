@@ -116,13 +116,13 @@ import {
 } from "@/plugins/config/animation";
 import "animate.css";
 
-const emit = defineEmits(["addAnimation"]);
+const emit = defineEmits(["change"]);
 
 const animationType = ref("in");
 const hoverPreviewAnimation = ref("");
 
 const addAnimation = (animation: { name: string; value: string; duration: number; }) => {
-    emit("addAnimation", animationType.value, animation);
+    emit("change", animationType.value, animation);
 };
 </script>
 
