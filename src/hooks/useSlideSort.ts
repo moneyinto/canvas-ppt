@@ -34,16 +34,11 @@ export default (
         if (sortIndex.value !== -1 && sortType.value) {
             if (
                 (sortTartIndex.value === sortIndex.value + 1 && sortType.value === "bottom") ||
-                (sortTartIndex.value === sortIndex.value && sortType.value === "top")
+                (sortTartIndex.value === sortIndex.value)
             ) return onDragEnd();
             const targetSlide = viewSlides.value[sortTartIndex.value];
             viewSlides.value.splice(sortTartIndex.value, 1);
-            const spliceIndex =
-                sortType.value === "top"
-                    ? sortIndex.value - 1 === -1
-                        ? 0
-                        : sortIndex.value - 1
-                    : sortIndex.value;
+            const spliceIndex = sortIndex.value === 0 && sortType.value === "bottom" ? 1 : sortIndex.value;
             viewSlides.value.splice(spliceIndex, 0, targetSlide);
             instance.value?.stageConfig.setSlides(viewSlides.value);
             instance.value?.history.add(OPTION_TYPE.SORT_SLIDE);

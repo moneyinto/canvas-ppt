@@ -188,14 +188,14 @@ const onKeydown = (event: KeyboardEvent) => {
 <style lang="scss" scoped>
 .ppt-thumbnail {
     outline: 0;
-    width: 200px;
+    width: 201px;
     border-right: 1px solid #d1d1d1;
     background-color: #fafafa;
-    padding: 15px 0;
+    padding: 8px 0;
     .ppt-thumbnail-body {
         height: 100%;
         overflow-y: auto;
-        padding: 2px 0;
+        padding: 8px 0;
     }
 
     .ppt-thumbnail-index {
