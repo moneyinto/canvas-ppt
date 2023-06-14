@@ -35,7 +35,11 @@
                 </div>
             </div>
 
-            <div class="ppt-animation-list">
+            <div
+                class="ppt-animation-list"
+                @dragend="onDragEnd"
+                @dragover.prevent
+            >
                 <div
                     class="ppt-animation-item"
                     v-for="(ani, index) in animations"
@@ -45,6 +49,9 @@
                     }"
                     :key="ani.id"
                     @click.stop="selectAnimation(ani)"
+                    @dragstart="onDragStart(index)"
+                    @dragenter="onDragEnter(index)"
+                    :draggable="animations.length > 1"
                 >
                     <div class="ppt-animation-index">{{ index + 1 }}</div>
                     <div class="ppt-element-type">
@@ -67,6 +74,17 @@
                         </div>
                     </div>
                 </div>
+
+                <div
+                    class="drag-line"
+                    :style="{ top: dragSortIndex * 48 + 5 + 'px' }"
+                    v-if="dragSortIndex > -1"
+                ></div>
+
+                <div
+                    class="ppt-animation-item-footer"
+                    @dragenter="onDragEnter(animations.length)"
+                ></div>
 
                 <div class="ppt-add-animation">
                     <a-popover
@@ -159,7 +177,10 @@
                 </div>
             </div>
 
-            <div class="ppt-animation-tip" v-if="addBtnDisabled && !selectedAnimation">
+            <div
+                class="ppt-animation-tip"
+                v-if="addBtnDisabled && !selectedAnimation"
+            >
                 选中元素后可添加和设置元素动画
             </div>
         </div>
@@ -194,11 +215,18 @@ const init = async () => {
         animations.value = instance.value.stageConfig.getAnimations();
 
         instance.value.listener.onAnimationsChange = () => {
-            animations.value = instance.value.stageConfig.getAnimations();
+            const newAnimations = instance.value.stageConfig.getAnimations();
+            if (
+                JSON.stringify(newAnimations) !==
+                JSON.stringify(animations.value)
+            ) {
+                animations.value = newAnimations;
+            }
             if (selectedAnimation.value) {
-                selectedAnimation.value = animations.value.find(
-                    (ani) => ani.id === selectedAnimation.value?.id
-                ) || null;
+                selectedAnimation.value =
+                    animations.value.find(
+                        (ani) => ani.id === selectedAnimation.value?.id
+                    ) || null;
             }
         };
 
@@ -262,7 +290,10 @@ const addAnimation = (
 };
 
 const showSetAnimationPanel = ref(false);
-const editAnimation = (type: "in" | "out" | "attention", animation: { name: string; value: string; duration: number }) => {
+const editAnimation = (
+    type: "in" | "out" | "attention",
+    animation: { name: string; value: string; duration: number }
+) => {
     showSetAnimationPanel.value = false;
     if (!selectedAnimation.value) return;
     selectedAnimation.value.name = animation.name;
@@ -282,8 +313,38 @@ const animationChange = () => {
 };
 
 const outsideClick = () => {
-    showAnimationPanel.value = false;
+    // showAnimationPanel.value = false;
     selectedAnimation.value = null;
+};
+
+const dragSortIndex = ref(-1);
+const dragStartIndex = ref(-1);
+const onDragStart = (index: number) => {
+    dragSortIndex.value = index;
+    dragStartIndex.value = index;
+};
+
+const onDragEnter = (index: number) => {
+    dragSortIndex.value = index;
+};
+
+const onDragEnd = () => {
+    if (
+        dragSortIndex.value !== -1 &&
+        dragStartIndex.value !== -1 &&
+        dragSortIndex.value !== dragStartIndex.value &&
+        (dragSortIndex.value - dragStartIndex.value > 1 ||
+            dragSortIndex.value - dragStartIndex.value < 0)
+    ) {
+        const ani = animations.value[dragStartIndex.value];
+        animations.value.splice(dragStartIndex.value, 1);
+        const offset = dragSortIndex.value - dragStartIndex.value > 0 ? -1 : 0;
+        animations.value.splice(dragSortIndex.value + offset, 0, ani);
+        instance?.value?.command.executeEditAnimation(animations.value);
+    }
+
+    dragSortIndex.value = -1;
+    dragStartIndex.value = -1;
 };
 </script>
 
@@ -348,6 +409,8 @@ const outsideClick = () => {
     }
 
     .ppt-animation-list {
+        position: relative;
+        padding-top: 10px;
         flex: 1;
         overflow-y: auto;
         min-height: 0;
@@ -365,6 +428,7 @@ const outsideClick = () => {
             display: flex;
             align-items: center;
             margin-bottom: 8px;
+            position: relative;
             .ppt-animation-btns {
                 display: none;
             }
@@ -387,6 +451,18 @@ const outsideClick = () => {
                     display: none;
                 }
             }
+        }
+
+        .drag-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            border-top: 2px solid #1890ff;
+        }
+
+        .ppt-animation-item-footer {
+            position: relative;
+            height: 20px;
         }
 
         .ppt-animation-index {
