@@ -133,11 +133,12 @@ export default class Stage {
         }
     }
 
-    public async drawElements(elements: IPPTElement[], isThumbnail?: boolean) {
+    public async drawElements(elements: IPPTElement[], isThumbnail?: boolean, isScreen?: boolean) {
         for (const element of elements) {
             // if (!this.stageConfig.operateElement || this.stageConfig.operateElement.id !== element.id) {
             //     this.drawElement(element);
             // }
+            if (isScreen && this.stageConfig.animationHideElements.indexOf(element.id) !== -1) continue;
             await this.drawElement(element, isThumbnail);
         }
     }

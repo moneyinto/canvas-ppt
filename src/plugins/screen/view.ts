@@ -14,17 +14,22 @@ export default class View {
     private _resizeObserver: ResizeObserver | null;
     private _resize: boolean;
     private _isThumbnail: boolean;
+    private _isScreen: boolean;
 
-    constructor(container: HTMLDivElement, slide: ISlide, history: History, resize?: boolean, isThumbnail?: boolean) {
+    constructor(container: HTMLDivElement, slide: ISlide, history: History, resize?: boolean, isThumbnail?: boolean, isScreen?: boolean) {
         this.slide = slide;
 
         this.container = container;
         this._resizeObserver = null;
         this._resize = !!resize;
         this._isThumbnail = !!isThumbnail;
+        this._isScreen = !!isScreen;
 
         // 画板配置
         this.stageConfig = new StageConfig(container);
+
+        // 初始化页面动画状态
+        this._isScreen && this.stageConfig.initSlideAnimation(slide);
 
         // 创建展示画板
         this._stage = new Stage(container, this.stageConfig, history);
@@ -57,10 +62,11 @@ export default class View {
     private async _drawPage() {
         this._stage.clear();
         await this._background.draw(this.slide.background);
-        await this._stage.drawElements(this.slide.elements, this._isThumbnail);
+        await this._stage.drawElements(this.slide.elements, this._isThumbnail, this._isScreen);
     }
 
     public updateSlide(slide: ISlide) {
+        this._isScreen && this.stageConfig.initSlideAnimation(slide);
         this.slide = slide;
         this._drawPage();
     }

@@ -42,6 +42,11 @@ export default class StageConfig {
     public hideCursor: (() => void) | null;
     public getFontSize: ((text: IFontData) => { width: number, height: number }) | null;
 
+    // 动画执行指针
+    public animationIndex = -1;
+    // 动画元素隐藏集合
+    public animationHideElements: string[] = [];
+
     private _container: HTMLDivElement;
     private _listener: Listener | undefined;
 
@@ -771,6 +776,25 @@ export default class StageConfig {
             };
         }
         return undefined;
+    }
+
+    // 初始化动画指针及隐藏元素的集合
+    initSlideAnimation(currentSlide: ISlide) {
+        this.animationIndex = -1;
+        const animations = currentSlide.animations || [];
+        const inElIds: string[] = [];
+        const outElIds: string[] = [];
+        animations.forEach((animation) => {
+            const inIndex = inElIds.indexOf(animation.elId);
+            const outIndex = outElIds.indexOf(animation.elId);
+            if (animation.type === "in" && inIndex === -1 && outIndex === -1) {
+                inElIds.push(animation.elId);
+            } else if (animation.type === "out" && outIndex === -1) {
+                outElIds.push(animation.elId);
+            }
+        });
+
+        this.animationHideElements = inElIds;
     }
 
     startVideoRender() {

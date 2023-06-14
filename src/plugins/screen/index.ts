@@ -10,7 +10,7 @@ export default class Screen extends View {
     private _audioControlType = "";
     private _history: History;
     constructor(container: HTMLDivElement, slide: ISlide, history: History) {
-        super(container, slide, history, true);
+        super(container, slide, history, true, false, true);
         this._history = history;
         this.container.addEventListener(
             "mousedown",
