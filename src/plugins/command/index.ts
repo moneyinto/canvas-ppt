@@ -31,7 +31,7 @@ import {
     IPPTTextElement,
     IPPTVideoElement
 } from "@/types/element";
-import { IFontData } from "@/types/font";
+import { IFontData, ITextStyle } from "@/types/font";
 import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import { IElementAlignType } from "@/types";
 import { IPPTAnimation, ISlideBackground } from "@/types/slide";
@@ -110,15 +110,37 @@ export default class Command {
             for (const operateElement of operateElements) {
                 if (operateElement.type === "line") {
                     const start = [operateElement.left, operateElement.top];
-                    const end = [operateElement.left + operateElement.end[0], operateElement.top + operateElement.end[1]];
-                    const center = [(start[0] + end[0]) / 2, (start[1] + end[1]) / 2];
-                    const startResult = this._stageConfig.rotate(start[0], start[1], center[0], center[1], rotate * direction / 180 * Math.PI);
-                    const endResult = this._stageConfig.rotate(end[0], end[1], center[0], center[1], rotate * direction / 180 * Math.PI);
+                    const end = [
+                        operateElement.left + operateElement.end[0],
+                        operateElement.top + operateElement.end[1]
+                    ];
+                    const center = [
+                        (start[0] + end[0]) / 2,
+                        (start[1] + end[1]) / 2
+                    ];
+                    const startResult = this._stageConfig.rotate(
+                        start[0],
+                        start[1],
+                        center[0],
+                        center[1],
+                        ((rotate * direction) / 180) * Math.PI
+                    );
+                    const endResult = this._stageConfig.rotate(
+                        end[0],
+                        end[1],
+                        center[0],
+                        center[1],
+                        ((rotate * direction) / 180) * Math.PI
+                    );
                     operateElement.left = startResult[0];
                     operateElement.top = startResult[1];
-                    operateElement.end = [endResult[0] - startResult[0], endResult[1] - startResult[1]];
+                    operateElement.end = [
+                        endResult[0] - startResult[0],
+                        endResult[1] - startResult[1]
+                    ];
                 } else {
-                    operateElement.rotate = operateElement.rotate + rotate * direction;
+                    operateElement.rotate =
+                        operateElement.rotate + rotate * direction;
                 }
             }
             this.executeLogRender();
@@ -132,14 +154,15 @@ export default class Command {
             const slide = this._stageConfig.getCurrentSlide();
             // 对多选元素先进行排序
             // 不然相邻的元素会出现不变化的现象
-            const sortElements = slide?.elements
-                .filter(
-                    (element) =>
-                        operateElements.findIndex(
-                            (ele) => ele.id === element.id
-                        ) > -1
-                )
-                .reverse() || [];
+            const sortElements =
+                slide?.elements
+                    .filter(
+                        (element) =>
+                            operateElements.findIndex(
+                                (ele) => ele.id === element.id
+                            ) > -1
+                    )
+                    .reverse() || [];
             let isChange = false;
             for (const operateElement of sortElements) {
                 const zIndex = slide?.elements.findIndex(
@@ -170,14 +193,15 @@ export default class Command {
         if (operateElements.length > 0) {
             const slide = this._stageConfig.getCurrentSlide();
             let isChange = false;
-            const sortElements = slide?.elements
-                .filter(
-                    (element) =>
-                        operateElements.findIndex(
-                            (ele) => ele.id === element.id
-                        ) > -1
-                )
-                .reverse() || [];
+            const sortElements =
+                slide?.elements
+                    .filter(
+                        (element) =>
+                            operateElements.findIndex(
+                                (ele) => ele.id === element.id
+                            ) > -1
+                    )
+                    .reverse() || [];
             for (const operateElement of sortElements) {
                 const zIndex = slide?.elements.findIndex(
                     (element) => element.id === operateElement.id
@@ -449,8 +473,9 @@ export default class Command {
             const selectArea = this._stageConfig.selectArea;
             if (selectArea) {
                 const operateElement = operateElements.find(
-                    (element) => element.id === this._stageConfig.textFocusElementId
-                ) as (IPPTTextElement | IPPTShapeElement | IPPTTableElement);
+                    (element) =>
+                        element.id === this._stageConfig.textFocusElementId
+                ) as IPPTTextElement | IPPTShapeElement | IPPTTableElement;
                 const { startX, endX } = this._stageConfig.getSelectArea(
                     selectArea,
                     operateElement
@@ -464,10 +489,9 @@ export default class Command {
                         const endRow = tableSelectCells[1][0];
                         const endCol = tableSelectCells[1][1];
                         if (startRow === endRow && startCol === endCol) {
-                            copyContent = operateElement.data[startRow][startCol].content.slice(
-                                startX,
-                                endX
-                            );
+                            copyContent = operateElement.data[startRow][
+                                startCol
+                            ].content.slice(startX, endX);
                         }
                     }
                 } else {
@@ -555,7 +579,12 @@ export default class Command {
                         element.id === this._stageConfig.textFocusElementId
                 );
 
-                if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
+                if (
+                    operateElement &&
+                    (operateElement.type === "text" ||
+                        operateElement.type === "shape" ||
+                        operateElement.type === "table")
+                ) {
                     const selectArea = this._stageConfig.selectArea;
                     if (selectArea) {
                         // 选中区域存在替换选中区域
@@ -565,14 +594,17 @@ export default class Command {
                     // 光标位置粘贴
                     const position = this._cursor.getDataPosition();
                     if (operateElement.type === "table") {
-                        const tableSelectCells = this._stageConfig.tableSelectCells;
+                        const tableSelectCells =
+                            this._stageConfig.tableSelectCells;
                         if (tableSelectCells) {
                             const startRow = tableSelectCells[0][0];
                             const startCol = tableSelectCells[0][1];
                             const endRow = tableSelectCells[1][0];
                             const endCol = tableSelectCells[1][1];
                             if (startRow === endRow && startCol === endCol) {
-                                operateElement.data[startRow][startCol].content.splice(
+                                operateElement.data[startRow][
+                                    startCol
+                                ].content.splice(
                                     position + 1,
                                     0,
                                     ...elementContent
@@ -587,7 +619,8 @@ export default class Command {
                         );
                     }
                     if (operateElement.type === "text") {
-                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                        operateElement.height =
+                            this._stageConfig.getTextHeight(operateElement);
                     }
                     const cursorPosition = position + elementContent.length;
                     this.executeUpdateRender(operateElements, true);
@@ -652,7 +685,8 @@ export default class Command {
                             0,
                             ...elementContent
                         );
-                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                        operateElement.height =
+                            this._stageConfig.getTextHeight(operateElement);
                         const cursorPosition = position + elementContent.length;
                         this.executeUpdateRender(operateElements, true);
                         this._updateCursor(cursorPosition);
@@ -686,7 +720,8 @@ export default class Command {
                     });
                     newElement.content.splice(0, 0, ...pasteContent);
                     newElement.width = contentWidth;
-                    newElement.height = this._stageConfig.getTextHeight(newElement);
+                    newElement.height =
+                        this._stageConfig.getTextHeight(newElement);
                     this.executeAddRender([newElement]);
                 }
             }
@@ -703,7 +738,9 @@ export default class Command {
     // 选中元素
     public executeSelectElements(elementIds: string[]) {
         const slide = this._stageConfig.getCurrentSlide();
-        const selectedElements = slide?.elements.filter((element) => elementIds.includes(element.id));
+        const selectedElements = slide?.elements.filter((element) =>
+            elementIds.includes(element.id)
+        );
         this._stageConfig.updateOperateElements(selectedElements || []);
         this.executeRender();
     }
@@ -759,12 +796,22 @@ export default class Command {
                 };
                 this._stageConfig.setFontConfig(config);
 
-                this._listener.onFontSizeChange && this._listener.onFontSizeChange(config.fontSize);
-                this._listener.onFontWeightChange && this._listener.onFontWeightChange(config.fontWeight === "bold");
-                this._listener.onFontStyleChange && this._listener.onFontStyleChange(config.fontStyle === "italic");
-                this._listener.onFontUnderLineChange && this._listener.onFontUnderLineChange(config.underline);
-                this._listener.onFontStrikoutChange && this._listener.onFontStrikoutChange(config.strikout);
-                this._listener.onFontFamilyChange && this._listener.onFontFamilyChange(config.fontFamily);
+                this._listener.onFontSizeChange &&
+                    this._listener.onFontSizeChange(config.fontSize);
+                this._listener.onFontWeightChange &&
+                    this._listener.onFontWeightChange(
+                        config.fontWeight === "bold"
+                    );
+                this._listener.onFontStyleChange &&
+                    this._listener.onFontStyleChange(
+                        config.fontStyle === "italic"
+                    );
+                this._listener.onFontUnderLineChange &&
+                    this._listener.onFontUnderLineChange(config.underline);
+                this._listener.onFontStrikoutChange &&
+                    this._listener.onFontStrikoutChange(config.strikout);
+                this._listener.onFontFamilyChange &&
+                    this._listener.onFontFamilyChange(config.fontFamily);
             }
         }
     }
@@ -777,7 +824,12 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
+            if (
+                operateElement &&
+                (operateElement.type === "text" ||
+                    operateElement.type === "shape" ||
+                    operateElement.type === "table")
+            ) {
                 const { startX, endX } = this._stageConfig.getSelectArea(
                     selectArea,
                     operateElement
@@ -790,7 +842,9 @@ export default class Command {
                         const endRow = tableSelectCells[1][0];
                         const endCol = tableSelectCells[1][1];
                         if (startRow === endRow && startCol === endCol) {
-                            operateElement.data[startRow][startCol].content.splice(startX, endX - startX);
+                            operateElement.data[startRow][
+                                startCol
+                            ].content.splice(startX, endX - startX);
                         }
                     }
                 } else {
@@ -798,7 +852,8 @@ export default class Command {
                 }
 
                 if (operateElement.type === "text") {
-                    operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                    operateElement.height =
+                        this._stageConfig.getTextHeight(operateElement);
                 }
 
                 this._stageConfig.setSelectArea(null);
@@ -816,7 +871,12 @@ export default class Command {
         const operateElement = operateElements.find(
             (element) => element.id === this._stageConfig.textFocusElementId
         );
-        if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
+        if (
+            operateElement &&
+            (operateElement.type === "text" ||
+                operateElement.type === "shape" ||
+                operateElement.type === "table")
+        ) {
             if (operateElement.type === "table") {
                 const tableSelectCells = this._stageConfig.tableSelectCells;
                 if (tableSelectCells) {
@@ -826,10 +886,7 @@ export default class Command {
                     const endCol = tableSelectCells[1][1];
                     if (startRow === endRow && startCol === endCol) {
                         const content = operateElement.data[startRow][startCol].content;
-                        if (
-                            position >= content.length - 1 ||
-                            position === -1
-                        ) return false;
+                        if (position >= content.length - 1 || position === -1) return false;
                         content.splice(position, 1);
                     }
                 }
@@ -842,7 +899,8 @@ export default class Command {
             }
 
             if (operateElement.type === "text") {
-                operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                operateElement.height =
+                    this._stageConfig.getTextHeight(operateElement);
             }
 
             this.executeUpdateRender(operateElements);
@@ -860,7 +918,12 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
+            if (
+                operateElement &&
+                (operateElement.type === "text" ||
+                    operateElement.type === "shape" ||
+                    operateElement.type === "table")
+            ) {
                 // 光标移动
                 switch (direction) {
                     case KeyMap.Up: {
@@ -1023,7 +1086,12 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
+            if (
+                operateElement &&
+                (operateElement.type === "text" ||
+                    operateElement.type === "shape" ||
+                    operateElement.type === "table")
+            ) {
                 if (this._cursor.getTextareaText()) return;
                 const config = this._stageConfig.fontConfig;
                 const text: IFontData = {
@@ -1102,9 +1170,17 @@ export default class Command {
         const operateElement = operateElements.find(
             (element) => element.id === this._stageConfig.textFocusElementId
         );
-        if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
+        if (
+            operateElement &&
+            (operateElement.type === "text" ||
+                operateElement.type === "shape" ||
+                operateElement.type === "table")
+        ) {
             if (operateElement.type === "table") {
-                if (this._stageConfig.tableSelectCells && this._stageConfig.tableSelectCells.length > 0) {
+                if (
+                    this._stageConfig.tableSelectCells &&
+                    this._stageConfig.tableSelectCells.length > 0
+                ) {
                     const row = this._stageConfig.tableSelectCells[0][0];
                     const col = this._stageConfig.tableSelectCells[0][1];
                     const tableCell = operateElement.data[row][col];
@@ -1114,12 +1190,17 @@ export default class Command {
                 operateElement.content.splice(position, 0, text);
             }
             if (operateElement.type === "text") {
-                operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                operateElement.height =
+                    this._stageConfig.getTextHeight(operateElement);
             }
 
             const currentDate = new Date();
             if (this._addTextRenderThrottle) {
-                if (currentDate.getTime() - this._addTextRenderThrottle.getTime() >= 100) {
+                if (
+                    currentDate.getTime() -
+                        this._addTextRenderThrottle.getTime() >=
+                    100
+                ) {
                     // 渲染过快导致重叠问题进行节流操作
                     this.executeUpdateRender(operateElements);
                     this._addTextRenderThrottle = currentDate;
@@ -1166,643 +1247,166 @@ export default class Command {
         text.height = height;
     }
 
-    // 设置文本字体大小
-    public executeSetFontSize(fontSize: number, type?: "plus" | "minus") {
+    private _setTextStyle(textStyle: Partial<ITextStyle>, type?: "plus" | "minus") {
         const operateElements = this._stageConfig.operateElements;
-        if (this._stageConfig.textFocus) {
+        const textFocus = this._stageConfig.textFocus;
+        const textFocusElementId = this._stageConfig.textFocusElementId;
+        const selectArea = this._stageConfig.selectArea;
+        const tableSelectCells = this._stageConfig.tableSelectCells;
+
+        if (textFocus) {
             const operateElement = operateElements.find(
-                (element) => element.id === this._stageConfig.textFocusElementId
+                (element) => element.id === textFocusElementId
             );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
-                const selectArea = this._stageConfig.selectArea;
-                const tableSelectCells = this._stageConfig.tableSelectCells;
+
+            if (
+                operateElement &&
+                (operateElement.type === "text" ||
+                    operateElement.type === "shape" ||
+                    operateElement.type === "table")
+            ) {
                 let startRow = -1;
                 let endRow = -1;
                 let startCol = -1;
                 let endCol = -1;
+
                 if (tableSelectCells) {
-                    startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
-                    endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
-                    startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
-                    endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+                    startRow = Math.min(
+                        tableSelectCells[0][0],
+                        tableSelectCells[1][0]
+                    );
+                    endRow = Math.max(
+                        tableSelectCells[0][0],
+                        tableSelectCells[1][0]
+                    );
+                    startCol = Math.min(
+                        tableSelectCells[0][1],
+                        tableSelectCells[1][1]
+                    );
+                    endCol = Math.max(
+                        tableSelectCells[0][1],
+                        tableSelectCells[1][1]
+                    );
                 }
 
-                if (startRow !== -1 && !(startRow === endRow && startCol === endCol) && operateElement.type === "table") {
+                if (
+                    startRow !== -1 &&
+                    !(startRow === endRow && startCol === endCol) &&
+                    operateElement.type === "table"
+                ) {
                     for (let row = startRow; row <= endRow; row++) {
                         for (let col = startCol; col <= endCol; col++) {
                             const tableCell = operateElement.data[row][col];
                             tableCell.content.forEach((text) => {
-                                text.fontSize = !type
-                                    ? fontSize
-                                    : type === "plus"
-                                    ? text.fontSize + fontSize
-                                    : text.fontSize - fontSize;
-                                this._resetTextFontSize(text);
+                                this._applyTextStyle(text, textStyle, type);
                             });
                         }
                     }
-
-                    this.executeUpdateRender(operateElements);
-
-                    this._debounceLog();
                 } else if (selectArea) {
                     this._forSelectTexts(operateElement, selectArea, (text) => {
-                        text.fontSize = !type
-                            ? fontSize
-                            : type === "plus"
-                            ? text.fontSize + fontSize
-                            : text.fontSize - fontSize;
-                        this._resetTextFontSize(text);
+                        this._applyTextStyle(text, textStyle, type);
                     });
 
                     if (operateElement.type === "text") {
-                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                        operateElement.height =
+                            this._stageConfig.getTextHeight(operateElement);
                     }
-
-                    this.executeUpdateRender(operateElements);
-
-                    this._debounceLog();
                 } else {
-                    // 聚焦但未选中文本，只修改字体样式配置
                     const config = this._stageConfig.fontConfig;
                     this._stageConfig.setFontConfig({
                         ...config,
-                        fontSize: (config.fontSize = !type
-                            ? fontSize
-                            : type === "plus"
-                            ? config.fontSize + fontSize
-                            : config.fontSize - fontSize)
+                        ...textStyle
                     });
                 }
-                // 设置完后 文本框聚焦
-                this._cursor.setInputFocus();
             }
         } else {
             for (const operateElement of operateElements) {
-                if (operateElement.type === "text" || operateElement.type === "shape") {
-                    // 未聚焦文本框，直接设置整个文本框内容字体大小
+                if (
+                    operateElement.type === "text" ||
+                    operateElement.type === "shape"
+                ) {
                     operateElement.content.forEach((text) => {
-                        text.fontSize = !type
-                            ? fontSize
-                            : type === "plus"
-                            ? text.fontSize + fontSize
-                            : text.fontSize - fontSize;
-                        this._resetTextFontSize(text);
+                        this._applyTextStyle(text, textStyle, type);
                     });
 
                     if (operateElement.type === "text") {
-                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                        operateElement.height =
+                            this._stageConfig.getTextHeight(operateElement);
                     }
                 } else if (operateElement.type === "table") {
                     operateElement.data.forEach((row) => {
                         row.forEach((col) => {
                             col.content.forEach((text) => {
-                                text.fontSize = !type
-                                    ? fontSize
-                                    : type === "plus"
-                                    ? text.fontSize + fontSize
-                                    : text.fontSize - fontSize;
-                                this._resetTextFontSize(text);
+                                this._applyTextStyle(text, textStyle, type);
                             });
                         });
                     });
                 }
             }
-
-            this.executeUpdateRender(operateElements);
-
-            this._debounceLog();
         }
+
+        this.executeUpdateRender(operateElements);
+        this._debounceLog();
+    }
+
+    private _applyTextStyle(text: IFontData, textStyle: Partial<ITextStyle>, type?: "plus" | "minus") {
+        text.fontSize = textStyle.fontSize !== undefined ? (!type ? textStyle.fontSize : type === "plus" ? text.fontSize + textStyle.fontSize : text.fontSize - textStyle.fontSize) : text.fontSize;
+        text.fontWeight = textStyle.fontWeight !== undefined ? textStyle.fontWeight : text.fontWeight;
+        text.fontStyle = textStyle.fontStyle !== undefined ? textStyle.fontStyle : text.fontStyle;
+        text.underline = textStyle.underline !== undefined ? textStyle.underline : text.underline;
+        text.strikout = textStyle.strikout !== undefined ? textStyle.strikout : text.strikout;
+        text.fontColor = textStyle.fontColor !== undefined ? textStyle.fontColor : text.fontColor;
+        text.fontFamily = textStyle.fontFamily !== undefined ? textStyle.fontFamily : text.fontFamily;
+        this._resetTextFontSize(text);
+    }
+
+    // 设置文本字体大小
+    public executeSetFontSize(fontSize: number, type?: "plus" | "minus") {
+        this._setTextStyle({
+            fontSize
+        }, type);
     }
 
     // 设置字体粗细
     public executeSetFontWeight(bold: boolean) {
-        const operateElements = this._stageConfig.operateElements;
-        if (this._stageConfig.textFocus) {
-            const operateElement = operateElements.find(
-                (element) => element.id === this._stageConfig.textFocusElementId
-            );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
-                const selectArea = this._stageConfig.selectArea;
-                const tableSelectCells = this._stageConfig.tableSelectCells;
-                let startRow = -1;
-                let endRow = -1;
-                let startCol = -1;
-                let endCol = -1;
-                if (tableSelectCells) {
-                    startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
-                    endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
-                    startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
-                    endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
-                }
-
-                if (startRow !== -1 && !(startRow === endRow && startCol === endCol) && operateElement.type === "table") {
-                    for (let row = startRow; row <= endRow; row++) {
-                        for (let col = startCol; col <= endCol; col++) {
-                            const tableCell = operateElement.data[row][col];
-                            tableCell.content.forEach((text) => {
-                                text.fontWeight = bold ? "bold" : "normal";
-                                this._resetTextFontSize(text);
-                            });
-                        }
-                    }
-
-                    this.executeUpdateRender(operateElements);
-
-                    this._debounceLog();
-                } else if (selectArea) {
-                    this._forSelectTexts(operateElement, selectArea, (text) => {
-                        text.fontWeight = bold ? "bold" : "normal";
-                        this._resetTextFontSize(text);
-                    });
-
-                    if (operateElement.type === "text") {
-                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
-                    }
-
-                    this.executeUpdateRender(operateElements);
-
-                    this._debounceLog();
-                } else {
-                    // 聚焦但未选中文本，只修改字体样式配置
-                    const config = this._stageConfig.fontConfig;
-                    this._stageConfig.setFontConfig({
-                        ...config,
-                        fontWeight: bold ? "bold" : "normal"
-                    });
-                }
-                // 设置完后 文本框聚焦
-                this._cursor.setInputFocus();
-            }
-        } else {
-            for (const operateElement of operateElements) {
-                if (operateElement.type === "text" || operateElement.type === "shape") {
-                    // 未聚焦文本框，直接设置整个文本框内容字体
-                    operateElement.content.forEach((text) => {
-                        text.fontWeight = bold ? "bold" : "normal";
-                        this._resetTextFontSize(text);
-                    });
-
-                    if (operateElement.type === "text") {
-                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
-                    }
-                } else if (operateElement.type === "table") {
-                    operateElement.data.forEach((row) => {
-                        row.forEach((col) => {
-                            col.content.forEach((text) => {
-                                text.fontWeight = bold ? "bold" : "normal";
-                                this._resetTextFontSize(text);
-                            });
-                        });
-                    });
-                }
-            }
-
-            this.executeUpdateRender(operateElements);
-
-            this._debounceLog();
-        }
+        this._setTextStyle({
+            fontWeight: bold ? "bold" : "normal"
+        });
     }
 
     // 设置字体斜体
     public executeSetFontStyle(italic: boolean) {
-        const operateElements = this._stageConfig.operateElements;
-        if (this._stageConfig.textFocus) {
-            const operateElement = operateElements.find(
-                (element) => element.id === this._stageConfig.textFocusElementId
-            );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
-                const selectArea = this._stageConfig.selectArea;
-                const tableSelectCells = this._stageConfig.tableSelectCells;
-                let startRow = -1;
-                let endRow = -1;
-                let startCol = -1;
-                let endCol = -1;
-                if (tableSelectCells) {
-                    startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
-                    endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
-                    startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
-                    endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
-                }
-
-                if (startRow !== -1 && !(startRow === endRow && startCol === endCol) && operateElement.type === "table") {
-                    for (let row = startRow; row <= endRow; row++) {
-                        for (let col = startCol; col <= endCol; col++) {
-                            const tableCell = operateElement.data[row][col];
-                            tableCell.content.forEach((text) => {
-                                text.fontStyle = italic ? "italic" : "normal";
-                                this._resetTextFontSize(text);
-                            });
-                        }
-                    }
-
-                    this.executeUpdateRender(operateElements);
-
-                    this._debounceLog();
-                } else if (selectArea) {
-                    this._forSelectTexts(operateElement, selectArea, (text) => {
-                        text.fontStyle = italic ? "italic" : "normal";
-                        this._resetTextFontSize(text);
-                    });
-
-                    if (operateElement.type === "text") {
-                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
-                    }
-
-                    this.executeUpdateRender(operateElements);
-
-                    this._debounceLog();
-                } else {
-                    // 聚焦但未选中文本，只修改字体样式配置
-                    const config = this._stageConfig.fontConfig;
-                    this._stageConfig.setFontConfig({
-                        ...config,
-                        fontStyle: italic ? "italic" : "normal"
-                    });
-                }
-                // 设置完后 文本框聚焦
-                this._cursor.setInputFocus();
-            }
-        } else {
-            for (const operateElement of operateElements) {
-                if (operateElement.type === "text" || operateElement.type === "shape") {
-                    // 未聚焦文本框，直接设置整个文本框内容字体
-                    operateElement.content.forEach((text) => {
-                        text.fontStyle = italic ? "italic" : "normal";
-                        this._resetTextFontSize(text);
-                    });
-
-                    if (operateElement.type === "text") {
-                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
-                    }
-                } else if (operateElement.type === "table") {
-                    operateElement.data.forEach((row) => {
-                        row.forEach((col) => {
-                            col.content.forEach((text) => {
-                                text.fontStyle = italic ? "italic" : "normal";
-                                this._resetTextFontSize(text);
-                            });
-                        });
-                    });
-                }
-            }
-
-            this.executeUpdateRender(operateElements);
-
-            this._debounceLog();
-        }
+        this._setTextStyle({
+            fontStyle: italic ? "italic" : "normal"
+        });
     }
 
     // 设置字体下划线
     public executeSetFontUnderLine(underline: boolean) {
-        const operateElements = this._stageConfig.operateElements;
-        if (this._stageConfig.textFocus) {
-            const operateElement = operateElements.find(
-                (element) => element.id === this._stageConfig.textFocusElementId
-            );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
-                const selectArea = this._stageConfig.selectArea;
-                const tableSelectCells = this._stageConfig.tableSelectCells;
-                let startRow = -1;
-                let endRow = -1;
-                let startCol = -1;
-                let endCol = -1;
-                if (tableSelectCells) {
-                    startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
-                    endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
-                    startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
-                    endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
-                }
-
-                if (startRow !== -1 && !(startRow === endRow && startCol === endCol) && operateElement.type === "table") {
-                    for (let row = startRow; row <= endRow; row++) {
-                        for (let col = startCol; col <= endCol; col++) {
-                            const tableCell = operateElement.data[row][col];
-                            tableCell.content.forEach((text) => {
-                                text.underline = underline;
-                                this._resetTextFontSize(text);
-                            });
-                        }
-                    }
-
-                    this.executeUpdateRender(operateElements);
-
-                    this._debounceLog();
-                } else if (selectArea) {
-                    this._forSelectTexts(operateElement, selectArea, (text) => {
-                        text.underline = underline;
-                        this._resetTextFontSize(text);
-                    });
-
-                    if (operateElement.type === "text") {
-                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
-                    }
-
-                    this.executeUpdateRender(operateElements);
-
-                    this._debounceLog();
-                } else {
-                    // 聚焦但未选中文本，只修改字体样式配置
-                    const config = this._stageConfig.fontConfig;
-                    this._stageConfig.setFontConfig({
-                        ...config,
-                        underline
-                    });
-                }
-                // 设置完后 文本框聚焦
-                this._cursor.setInputFocus();
-            }
-        } else {
-            for (const operateElement of operateElements) {
-                if (operateElement.type === "text" || operateElement.type === "shape") {
-                    // 未聚焦文本框，直接设置整个文本框内容字体
-                    operateElement.content.forEach((text) => {
-                        text.underline = underline;
-                        this._resetTextFontSize(text);
-                    });
-
-                    if (operateElement.type === "text") {
-                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
-                    }
-                } else if (operateElement.type === "table") {
-                    operateElement.data.forEach((row) => {
-                        row.forEach((col) => {
-                            col.content.forEach((text) => {
-                                text.underline = underline;
-                                this._resetTextFontSize(text);
-                            });
-                        });
-                    });
-                }
-            }
-
-            this.executeUpdateRender(operateElements);
-
-            this._debounceLog();
-        }
+        this._setTextStyle({
+            underline
+        });
     }
 
     // 设置字体删除线
     public executeSetFontStrikout(strikout: boolean) {
-        const operateElements = this._stageConfig.operateElements;
-        if (this._stageConfig.textFocus) {
-            const operateElement = operateElements.find(
-                (element) => element.id === this._stageConfig.textFocusElementId
-            );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
-                const selectArea = this._stageConfig.selectArea;
-                const tableSelectCells = this._stageConfig.tableSelectCells;
-                let startRow = -1;
-                let endRow = -1;
-                let startCol = -1;
-                let endCol = -1;
-                if (tableSelectCells) {
-                    startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
-                    endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
-                    startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
-                    endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
-                }
-
-                if (startRow !== -1 && !(startRow === endRow && startCol === endCol) && operateElement.type === "table") {
-                    for (let row = startRow; row <= endRow; row++) {
-                        for (let col = startCol; col <= endCol; col++) {
-                            const tableCell = operateElement.data[row][col];
-                            tableCell.content.forEach((text) => {
-                                text.strikout = strikout;
-                                this._resetTextFontSize(text);
-                            });
-                        }
-                    }
-
-                    this.executeUpdateRender(operateElements);
-
-                    this._debounceLog();
-                } else if (selectArea) {
-                    this._forSelectTexts(operateElement, selectArea, (text) => {
-                        text.strikout = strikout;
-                        this._resetTextFontSize(text);
-                    });
-
-                    if (operateElement.type === "text") {
-                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
-                    }
-
-                    this.executeUpdateRender(operateElements);
-
-                    this._debounceLog();
-                } else {
-                    // 聚焦但未选中文本，只修改字体样式配置
-                    const config = this._stageConfig.fontConfig;
-                    this._stageConfig.setFontConfig({
-                        ...config,
-                        strikout
-                    });
-                }
-                // 设置完后 文本框聚焦
-                this._cursor.setInputFocus();
-            }
-        } else {
-            for (const operateElement of operateElements) {
-                if (operateElement.type === "text" || operateElement.type === "shape") {
-                    // 未聚焦文本框，直接设置整个文本框内容字体
-                    operateElement.content.forEach((text) => {
-                        text.strikout = strikout;
-                        this._resetTextFontSize(text);
-                    });
-
-                    if (operateElement.type === "text") {
-                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
-                    }
-                } else if (operateElement.type === "table") {
-                    operateElement.data.forEach((row) => {
-                        row.forEach((col) => {
-                            col.content.forEach((text) => {
-                                text.strikout = strikout;
-                                this._resetTextFontSize(text);
-                            });
-                        });
-                    });
-                }
-            }
-
-            this.executeUpdateRender(operateElements);
-
-            this._debounceLog();
-        }
+        this._setTextStyle({
+            strikout
+        });
     }
 
     // 设置字体颜色
     public executeSetFontColor(fontColor: string) {
-        const operateElements = this._stageConfig.operateElements;
-        if (this._stageConfig.textFocus) {
-            const operateElement = operateElements.find(
-                (element) => element.id === this._stageConfig.textFocusElementId
-            );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
-                const selectArea = this._stageConfig.selectArea;
-                const tableSelectCells = this._stageConfig.tableSelectCells;
-                let startRow = -1;
-                let endRow = -1;
-                let startCol = -1;
-                let endCol = -1;
-                if (tableSelectCells) {
-                    startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
-                    endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
-                    startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
-                    endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
-                }
-
-                if (startRow !== -1 && !(startRow === endRow && startCol === endCol) && operateElement.type === "table") {
-                    for (let row = startRow; row <= endRow; row++) {
-                        for (let col = startCol; col <= endCol; col++) {
-                            const tableCell = operateElement.data[row][col];
-                            tableCell.content.forEach((text) => {
-                                text.fontColor = fontColor;
-                            });
-                        }
-                    }
-
-                    this.executeUpdateRender(operateElements);
-
-                    this._debounceLog();
-                } else if (selectArea) {
-                    this._forSelectTexts(operateElement, selectArea, (text) => {
-                        text.fontColor = fontColor;
-                    });
-
-                    if (operateElement.type === "text") {
-                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
-                    }
-
-                    this.executeUpdateRender(operateElements);
-
-                    this._debounceLog();
-                } else {
-                    // 聚焦但未选中文本，只修改字体样式配置
-                    const config = this._stageConfig.fontConfig;
-                    this._stageConfig.setFontConfig({
-                        ...config,
-                        fontColor
-                    });
-                }
-                // 设置完后 文本框聚焦
-                this._cursor.setInputFocus();
-            }
-        } else {
-            for (const operateElement of operateElements) {
-                if (operateElement.type === "text" || operateElement.type === "shape") {
-                    // 未聚焦文本框，直接设置整个文本框内容字体
-                    operateElement.content.forEach((text) => {
-                        text.fontColor = fontColor;
-                    });
-
-                    if (operateElement.type === "text") {
-                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
-                    }
-                } else if (operateElement.type === "table") {
-                    operateElement.data.forEach((row) => {
-                        row.forEach((col) => {
-                            col.content.forEach((text) => {
-                                text.fontColor = fontColor;
-                            });
-                        });
-                    });
-                }
-            }
-
-            this.executeUpdateRender(operateElements);
-
-            this._debounceLog();
-        }
+        this._setTextStyle({
+            fontColor
+        });
     }
 
     // 设置字体
     public executeSetFontFamily(fontFamily: string) {
-        const operateElements = this._stageConfig.operateElements;
-        if (this._stageConfig.textFocus) {
-            const operateElement = operateElements.find(
-                (element) => element.id === this._stageConfig.textFocusElementId
-            );
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
-                const selectArea = this._stageConfig.selectArea;
-                const tableSelectCells = this._stageConfig.tableSelectCells;
-                let startRow = -1;
-                let endRow = -1;
-                let startCol = -1;
-                let endCol = -1;
-                if (tableSelectCells) {
-                    startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
-                    endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
-                    startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
-                    endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
-                }
-
-                if (startRow !== -1 && !(startRow === endRow && startCol === endCol) && operateElement.type === "table") {
-                    for (let row = startRow; row <= endRow; row++) {
-                        for (let col = startCol; col <= endCol; col++) {
-                            const tableCell = operateElement.data[row][col];
-                            tableCell.content.forEach((text) => {
-                                text.fontFamily = fontFamily;
-                                this._resetTextFontSize(text);
-                            });
-                        }
-                    }
-
-                    this.executeUpdateRender(operateElements);
-
-                    this._debounceLog();
-                } else if (selectArea) {
-                    this._forSelectTexts(operateElement, selectArea, (text) => {
-                        text.fontFamily = fontFamily;
-                        this._resetTextFontSize(text);
-                    });
-
-                    if (operateElement.type === "text") {
-                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
-                    }
-
-                    this.executeUpdateRender(operateElements);
-
-                    this._debounceLog();
-                } else {
-                    // 聚焦但未选中文本，只修改字体样式配置
-                    const config = this._stageConfig.fontConfig;
-                    this._stageConfig.setFontConfig({
-                        ...config,
-                        fontFamily
-                    });
-                }
-                // 设置完后 文本框聚焦
-                this._cursor.setInputFocus();
-            }
-        } else {
-            for (const operateElement of operateElements) {
-                if (operateElement.type === "text" || operateElement.type === "shape") {
-                    // 未聚焦文本框，直接设置整个文本框内容字体
-                    operateElement.content.forEach((text) => {
-                        text.fontFamily = fontFamily;
-                        this._resetTextFontSize(text);
-                    });
-
-                    if (operateElement.type === "text") {
-                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
-                    }
-                } else if (operateElement.type === "table") {
-                    operateElement.data.forEach((row) => {
-                        row.forEach((col) => {
-                            col.content.forEach((text) => {
-                                text.fontFamily = fontFamily;
-                                this._resetTextFontSize(text);
-                            });
-                        });
-                    });
-                }
-            }
-
-            this.executeUpdateRender(operateElements);
-
-            this._debounceLog();
-        }
+        this._setTextStyle({
+            fontFamily
+        });
     }
 
     // 设置文本对齐方式
@@ -1810,7 +1414,12 @@ export default class Command {
         const operateElements = this._stageConfig.operateElements;
 
         for (const operateElement of operateElements) {
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
+            if (
+                operateElement &&
+                (operateElement.type === "text" ||
+                    operateElement.type === "shape" ||
+                    operateElement.type === "table")
+            ) {
                 if (operateElement.type === "table") {
                     const tableSelectCells = this._stageConfig.tableSelectCells;
                     let startRow = -1;
@@ -1818,10 +1427,22 @@ export default class Command {
                     let startCol = -1;
                     let endCol = -1;
                     if (tableSelectCells) {
-                        startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
-                        endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
-                        startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
-                        endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+                        startRow = Math.min(
+                            tableSelectCells[0][0],
+                            tableSelectCells[1][0]
+                        );
+                        endRow = Math.max(
+                            tableSelectCells[0][0],
+                            tableSelectCells[1][0]
+                        );
+                        startCol = Math.min(
+                            tableSelectCells[0][1],
+                            tableSelectCells[1][1]
+                        );
+                        endCol = Math.max(
+                            tableSelectCells[0][1],
+                            tableSelectCells[1][1]
+                        );
 
                         for (let row = startRow; row <= endRow; row++) {
                             for (let col = startCol; col <= endCol; col++) {
@@ -1830,8 +1451,16 @@ export default class Command {
                             }
                         }
                     } else {
-                        for (let row = 0; row < operateElement.data.length; row++) {
-                            for (let col = 0; col < operateElement.data[row].length; col++) {
+                        for (
+                            let row = 0;
+                            row < operateElement.data.length;
+                            row++
+                        ) {
+                            for (
+                                let col = 0;
+                                col < operateElement.data[row].length;
+                                col++
+                            ) {
                                 const tableCell = operateElement.data[row][col];
                                 tableCell.align = align;
                             }
@@ -1858,7 +1487,12 @@ export default class Command {
         const operateElements = this._stageConfig.operateElements;
 
         for (const operateElement of operateElements) {
-            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
+            if (
+                operateElement &&
+                (operateElement.type === "text" ||
+                    operateElement.type === "shape" ||
+                    operateElement.type === "table")
+            ) {
                 if (operateElement.type === "table") {
                     const tableSelectCells = this._stageConfig.tableSelectCells;
                     let startRow = -1;
@@ -1866,10 +1500,22 @@ export default class Command {
                     let startCol = -1;
                     let endCol = -1;
                     if (tableSelectCells) {
-                        startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
-                        endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
-                        startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
-                        endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+                        startRow = Math.min(
+                            tableSelectCells[0][0],
+                            tableSelectCells[1][0]
+                        );
+                        endRow = Math.max(
+                            tableSelectCells[0][0],
+                            tableSelectCells[1][0]
+                        );
+                        startCol = Math.min(
+                            tableSelectCells[0][1],
+                            tableSelectCells[1][1]
+                        );
+                        endCol = Math.max(
+                            tableSelectCells[0][1],
+                            tableSelectCells[1][1]
+                        );
 
                         for (let row = startRow; row <= endRow; row++) {
                             for (let col = startCol; col <= endCol; col++) {
@@ -1878,8 +1524,16 @@ export default class Command {
                             }
                         }
                     } else {
-                        for (let row = 0; row < operateElement.data.length; row++) {
-                            for (let col = 0; col < operateElement.data[row].length; col++) {
+                        for (
+                            let row = 0;
+                            row < operateElement.data.length;
+                            row++
+                        ) {
+                            for (
+                                let col = 0;
+                                col < operateElement.data[row].length;
+                                col++
+                            ) {
                                 const tableCell = operateElement.data[row][col];
                                 tableCell.lineHeight = lineHeight;
                             }
@@ -1888,7 +1542,8 @@ export default class Command {
                 } else {
                     operateElement.lineHeight = lineHeight;
                     if (operateElement.type === "text") {
-                        operateElement.height = this._stageConfig.getTextHeight(operateElement);
+                        operateElement.height =
+                            this._stageConfig.getTextHeight(operateElement);
                     }
                 }
             }
@@ -1901,8 +1556,14 @@ export default class Command {
         operateElement: IPPTElement,
         align: IElementAlignType
     ) {
-        const width = operateElement.type === "line" ? operateElement.end[0] - operateElement.start[0] : operateElement.width;
-        const height = operateElement.type === "line" ? operateElement.end[1] - operateElement.start[1] : operateElement.height;
+        const width =
+            operateElement.type === "line"
+                ? operateElement.end[0] - operateElement.start[0]
+                : operateElement.width;
+        const height =
+            operateElement.type === "line"
+                ? operateElement.end[1] - operateElement.start[1]
+                : operateElement.height;
         switch (align) {
             case "alignLeft": {
                 operateElement.left = 0;
@@ -1952,11 +1613,18 @@ export default class Command {
         align: IElementAlignType,
         boundary: number[]
     ) {
-        const width = operateElement.type === "line" ? operateElement.end[0] - operateElement.start[0] : operateElement.width;
-        const height = operateElement.type === "line" ? operateElement.end[1] - operateElement.start[1] : operateElement.height;
+        const width =
+            operateElement.type === "line"
+                ? operateElement.end[0] - operateElement.start[0]
+                : operateElement.width;
+        const height =
+            operateElement.type === "line"
+                ? operateElement.end[1] - operateElement.start[1]
+                : operateElement.height;
         const viewSizeWight = boundary[2] - boundary[0];
         const viewSizeHeight = boundary[3] - boundary[1];
-        const elementBoundary = this._stageConfig.getElementBoundary(operateElement);
+        const elementBoundary =
+            this._stageConfig.getElementBoundary(operateElement);
         switch (align) {
             case "alignLeft": {
                 const offsetX = elementBoundary[0] - boundary[0];
@@ -1973,7 +1641,8 @@ export default class Command {
             }
             case "center": {
                 operateElement.left = boundary[0] + (viewSizeWight - width) / 2;
-                operateElement.top = boundary[1] + (viewSizeHeight - height) / 2;
+                operateElement.top =
+                    boundary[1] + (viewSizeHeight - height) / 2;
                 break;
             }
             case "verticalTop": {
@@ -1982,7 +1651,8 @@ export default class Command {
                 break;
             }
             case "verticalCenter": {
-                operateElement.top = boundary[1] + (viewSizeHeight - height) / 2;
+                operateElement.top =
+                    boundary[1] + (viewSizeHeight - height) / 2;
                 break;
             }
             case "verticalBottom": {
@@ -1999,7 +1669,8 @@ export default class Command {
         const elements: IPPTElement[] = [];
         if (operateElements.length > 1) {
             // 相对于元素对齐
-            const boundary = this._stageConfig.getOperateElementsBoundary(operateElements);
+            const boundary =
+                this._stageConfig.getOperateElementsBoundary(operateElements);
             for (const operateElement of operateElements) {
                 const element = this._setElementAlignByElement(
                     operateElement,
@@ -2020,7 +1691,9 @@ export default class Command {
 
     // 合并单元格
     public executeMergeCell() {
-        const operateElement = this._stageConfig.operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+        const operateElement = this._stageConfig.operateElements.find(
+            (element) => element.id === this._stageConfig.tableEditElementID
+        ) as IPPTTableElement;
         if (operateElement) {
             const tableSelectCells = this._stageConfig.tableSelectCells;
             if (tableSelectCells) {
@@ -2047,8 +1720,12 @@ export default class Command {
                     }
                     this.executeUpdateRender([operateElement], true);
 
-                    this._stageConfig.tableSelectCells = [[startRow, startCol], [startRow, startCol]];
-                    this._listener.onTableCellEditChange && this._listener.onTableCellEditChange(true, false);
+                    this._stageConfig.tableSelectCells = [
+                        [startRow, startCol],
+                        [startRow, startCol]
+                    ];
+                    this._listener.onTableCellEditChange &&
+                        this._listener.onTableCellEditChange(true, false);
                 }
             }
         }
@@ -2056,7 +1733,9 @@ export default class Command {
 
     // 拆分单元格
     public executeSplitCell() {
-        const operateElement = this._stageConfig.operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+        const operateElement = this._stageConfig.operateElements.find(
+            (element) => element.id === this._stageConfig.tableEditElementID
+        ) as IPPTTableElement;
         if (operateElement) {
             const tableSelectCells = this._stageConfig.tableSelectCells;
             if (tableSelectCells) {
@@ -2070,13 +1749,18 @@ export default class Command {
                     const rowspan = tableCell.rowspan;
                     if (colspan > 1 || rowspan > 1) {
                         for (let i = startRow; i <= startRow + rowspan; i++) {
-                            for (let j = startCol; j <= startCol + colspan; j++) {
+                            for (
+                                let j = startCol;
+                                j <= startCol + colspan;
+                                j++
+                            ) {
                                 tableData[i][j].colspan = 1;
                                 tableData[i][j].rowspan = 1;
                             }
                         }
                         this.executeUpdateRender([operateElement], true);
-                        this._listener.onTableCellEditChange && this._listener.onTableCellEditChange(true, true);
+                        this._listener.onTableCellEditChange &&
+                            this._listener.onTableCellEditChange(true, true);
                     }
                 }
             }
@@ -2112,7 +1796,9 @@ export default class Command {
 
     // 表格插入行
     public executeInsertRow(rowIndex: number) {
-        const operateElement = this._stageConfig.operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+        const operateElement = this._stageConfig.operateElements.find(
+            (element) => element.id === this._stageConfig.tableEditElementID
+        ) as IPPTTableElement;
         if (operateElement) {
             const tableData = operateElement.data;
             const newRow: IPPTTableCell[] = tableData[rowIndex].map(() => {
@@ -2126,24 +1812,34 @@ export default class Command {
                     align: "center"
                 };
             });
-            const rowHeights = operateElement.rowHeights.map(item => item * operateElement.height);
+            const rowHeights = operateElement.rowHeights.map(
+                (item) => item * operateElement.height
+            );
             operateElement.height += 60;
             rowHeights.splice(rowIndex, 0, 60);
             tableData.splice(rowIndex, 0, newRow);
-            operateElement.rowHeights = rowHeights.map(item => item / operateElement.height);
+            operateElement.rowHeights = rowHeights.map(
+                (item) => item / operateElement.height
+            );
             this.executeUpdateRender([operateElement], true);
         }
     }
 
     // 表格插入列
     public executeInsertCol(colIndex: number) {
-        const operateElement = this._stageConfig.operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+        const operateElement = this._stageConfig.operateElements.find(
+            (element) => element.id === this._stageConfig.tableEditElementID
+        ) as IPPTTableElement;
         if (operateElement) {
             const tableData = operateElement.data;
-            const colWidths = operateElement.colWidths.map(item => item * operateElement.width);
+            const colWidths = operateElement.colWidths.map(
+                (item) => item * operateElement.width
+            );
             operateElement.width += 120;
             colWidths.splice(colIndex, 0, 120);
-            operateElement.colWidths = colWidths.map(item => item / operateElement.width);
+            operateElement.colWidths = colWidths.map(
+                (item) => item / operateElement.width
+            );
             for (const row of tableData) {
                 row.splice(colIndex, 0, {
                     id: createRandomCode(),
@@ -2161,27 +1857,39 @@ export default class Command {
 
     // 表格删除行
     public executeDeleteRow(rowIndex: number) {
-        const operateElement = this._stageConfig.operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+        const operateElement = this._stageConfig.operateElements.find(
+            (element) => element.id === this._stageConfig.tableEditElementID
+        ) as IPPTTableElement;
         if (operateElement) {
             const tableData = operateElement.data;
-            const rowHeights = operateElement.rowHeights.map(item => item * operateElement.height);
+            const rowHeights = operateElement.rowHeights.map(
+                (item) => item * operateElement.height
+            );
             operateElement.height -= rowHeights[rowIndex];
             rowHeights.splice(rowIndex, 1);
             tableData.splice(rowIndex, 1);
-            operateElement.rowHeights = rowHeights.map(item => item / operateElement.height);
+            operateElement.rowHeights = rowHeights.map(
+                (item) => item / operateElement.height
+            );
             this.executeUpdateRender([operateElement], true);
         }
     }
 
     // 表格删除列
     public executeDeleteCol(colIndex: number) {
-        const operateElement = this._stageConfig.operateElements.find(element => element.id === this._stageConfig.tableEditElementID) as IPPTTableElement;
+        const operateElement = this._stageConfig.operateElements.find(
+            (element) => element.id === this._stageConfig.tableEditElementID
+        ) as IPPTTableElement;
         if (operateElement) {
             const tableData = operateElement.data;
-            const colWidths = operateElement.colWidths.map(item => item * operateElement.width);
+            const colWidths = operateElement.colWidths.map(
+                (item) => item * operateElement.width
+            );
             operateElement.width -= colWidths[colIndex];
             colWidths.splice(colIndex, 1);
-            operateElement.colWidths = colWidths.map(item => item / operateElement.width);
+            operateElement.colWidths = colWidths.map(
+                (item) => item / operateElement.width
+            );
             for (const row of tableData) {
                 row.splice(colIndex, 1);
             }
@@ -2203,14 +1911,17 @@ export default class Command {
         if (ani) {
             // 删除某个元素动画
             const animations = this._stageConfig.getAnimations();
-            const newAnimations = animations.filter(item => item.id !== ani.id);
+            const newAnimations = animations.filter(
+                (item) => item.id !== ani.id
+            );
             this._stageConfig.setAnimations(newAnimations);
         } else {
             // 删除所有动画
             this._stageConfig.setAnimations([]);
         }
 
-        this._listener.onAnimationsChange && this._listener.onAnimationsChange();
+        this._listener.onAnimationsChange &&
+            this._listener.onAnimationsChange();
         this._history.add();
     }
 
@@ -2220,7 +1931,8 @@ export default class Command {
         const newAnimations = animations.concat(anis);
         this._stageConfig.setAnimations(newAnimations);
 
-        this._listener.onAnimationsChange && this._listener.onAnimationsChange();
+        this._listener.onAnimationsChange &&
+            this._listener.onAnimationsChange();
         this._history.add();
     }
 
@@ -2228,7 +1940,8 @@ export default class Command {
     public executeEditAnimation(anis: IPPTAnimation[]) {
         this._stageConfig.setAnimations(anis);
 
-        this._listener.onAnimationsChange && this._listener.onAnimationsChange();
+        this._listener.onAnimationsChange &&
+            this._listener.onAnimationsChange();
         this._debounceLog();
     }
 

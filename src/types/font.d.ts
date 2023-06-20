@@ -26,3 +26,13 @@ export interface ILineData {
     width: number;
     texts: IFontData[];
 }
+
+export interface ITextStyle {
+    fontSize: number;
+    fontWeight: string;
+    fontFamily: string;
+    fontColor: string;
+    fontStyle: string;
+    underline: boolean;
+    strikout: boolean;
+}

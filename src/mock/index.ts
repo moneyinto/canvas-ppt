@@ -6,40 +6,6 @@ export const slides: ISlide[] = [
         id: "C1Pysl",
         elements: [
             {
-                name: "形状",
-                type: "shape",
-                shape: SHAPE_TYPE.RIGHT_TRIANGLE,
-                id: "9Hvcq8",
-                left: 0,
-                top: 0,
-                width: 368.64818228165814,
-                height: 324.42074651494625,
-                fill: { color: "#5b9bd5" },
-                fixedRatio: false,
-                rotate: 0,
-                flipV: -1,
-                lineHeight: 2,
-                wordSpace: 1,
-                content: []
-            },
-            {
-                name: "形状",
-                type: "shape",
-                shape: SHAPE_TYPE.RIGHT_TRIANGLE,
-                id: "OxVslP",
-                left: 0,
-                top: 114,
-                width: 647.2152452434033,
-                height: 605.4924114671163,
-                fill: { color: "#5b9bd5", opacity: 30 },
-                fixedRatio: false,
-                rotate: 0,
-                flipV: 1,
-                lineHeight: 2,
-                wordSpace: 1,
-                content: []
-            },
-            {
                 name: "文本",
                 type: "text",
                 content: [
@@ -233,6 +199,65 @@ export const slides: ISlide[] = [
                 height: 126,
                 rotate: 0,
                 align: "left"
+            },
+            {
+                name: "形状",
+                type: "shape",
+                shape: SHAPE_TYPE.RIGHT_TRIANGLE,
+                id: "LCzmJe",
+                left: 0,
+                top: 0,
+                width: 318.23204419889504,
+                height: 300.5524861878453,
+                fill: { color: "#5b9bd5", opacity: 0 },
+                fixedRatio: false,
+                rotate: 0,
+                wordSpace: 1,
+                lineHeight: 2,
+                content: [
+                    {
+                        value: "\n",
+                        fontSize: 24,
+                        fontWeight: "normal",
+                        fontFamily: "楷体",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        underline: false,
+                        strikout: false,
+                        width: 0,
+                        height: 0
+                    }
+                ],
+                flipV: -1
+            },
+            {
+                name: "形状",
+                type: "shape",
+                shape: SHAPE_TYPE.RIGHT_TRIANGLE,
+                id: "VTY4UA",
+                left: 0,
+                top: 194,
+                width: 706.0036832412524,
+                height: 525.6721915285451,
+                fill: { color: "#5b9bd5", opacity: 43 },
+                fixedRatio: false,
+                rotate: 0,
+                wordSpace: 1,
+                lineHeight: 2,
+                content: [
+                    {
+                        value: "\n",
+                        fontSize: 24,
+                        fontWeight: "normal",
+                        fontFamily: "楷体",
+                        fontColor: "#444",
+                        fontStyle: "normal",
+                        underline: false,
+                        strikout: false,
+                        width: 0,
+                        height: 0
+                    }
+                ]
             }
         ],
         animations: [
@@ -243,9 +268,10 @@ export const slides: ISlide[] = [
                 name: "飞入",
                 type: "in",
                 duration: 1,
-                trigger: "auto"
+                trigger: "click"
             }
-        ]
+        ],
+        background: { type: "solid", color: "#ffffff" }
     },
     {
         id: "C2Pysl",
