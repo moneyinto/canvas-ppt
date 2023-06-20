@@ -851,14 +851,27 @@ export default class Command {
             const operateElement = operateElements.find(
                 (element) => element.id === this._stageConfig.textFocusElementId
             );
-            if (operateElement && operateElement.type === "text") {
+            if (operateElement && (operateElement.type === "text" || operateElement.type === "shape" || operateElement.type === "table")) {
                 const currentDataPosition = this._cursor.getDataPosition();
-                const content = operateElement.content;
+                let content: IFontData[] = [];
+
+                if (operateElement.type === "table") {
+                    const tableSelectCells = this._stageConfig.tableSelectCells;
+                    if (tableSelectCells) {
+                        const startRow = tableSelectCells[0][0];
+                        const startCol = tableSelectCells[0][1];
+                        const endRow = tableSelectCells[1][0];
+                        const endCol = tableSelectCells[1][1];
+                        if (startRow === endRow && startCol === endCol) {
+                            content = operateElement.data[startRow][startCol].content;
+                        }
+                    }
+                } else {
+                    content = operateElement.content;
+                }
+
                 // 前面一个字没有，获取后面一个回车符的字样
-                const text =
-                    currentDataPosition === -1
-                        ? content[0]
-                        : content[currentDataPosition];
+                const text = currentDataPosition === -1 ? content[0] : content[currentDataPosition];
 
                 const config = {
                     fontSize: text.fontSize,
@@ -871,22 +884,12 @@ export default class Command {
                 };
                 this._stageConfig.setFontConfig(config);
 
-                this._listener.onFontSizeChange &&
-                    this._listener.onFontSizeChange(config.fontSize);
-                this._listener.onFontWeightChange &&
-                    this._listener.onFontWeightChange(
-                        config.fontWeight === "bold"
-                    );
-                this._listener.onFontStyleChange &&
-                    this._listener.onFontStyleChange(
-                        config.fontStyle === "italic"
-                    );
-                this._listener.onFontUnderLineChange &&
-                    this._listener.onFontUnderLineChange(config.underline);
-                this._listener.onFontStrikoutChange &&
-                    this._listener.onFontStrikoutChange(config.strikout);
-                this._listener.onFontFamilyChange &&
-                    this._listener.onFontFamilyChange(config.fontFamily);
+                this._listener.onFontSizeChange && this._listener.onFontSizeChange(config.fontSize);
+                this._listener.onFontWeightChange && this._listener.onFontWeightChange(config.fontWeight === "bold");
+                this._listener.onFontStyleChange && this._listener.onFontStyleChange(config.fontStyle === "italic");
+                this._listener.onFontUnderLineChange && this._listener.onFontUnderLineChange(config.underline);
+                this._listener.onFontStrikoutChange && this._listener.onFontStrikoutChange(config.strikout);
+                this._listener.onFontFamilyChange && this._listener.onFontFamilyChange(config.fontFamily);
             }
         }
     }
