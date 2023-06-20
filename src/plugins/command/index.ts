@@ -78,26 +78,35 @@ export default class Command {
         this._history.redo();
     }
 
-    // 适配
+    /**
+     * 适配
+     */
     public executeFitZoom() {
         this._stageConfig.resetBaseZoom();
     }
 
-    // 设置背景
+    /**
+     * 设置背景
+     * @param background
+     */
     public executeSetBackground(background: ISlideBackground | undefined) {
         this._stageConfig.setBackground(background);
 
         this.executeLogRender();
     }
 
-    // 设置背景到全部
+    /**
+     * 设置背景到全部
+     */
     public executeApplyBackgroundAll() {
         this._stageConfig.applyBackgroundAll();
 
         this._history.add(OPTION_TYPE.APPLY_BACKGROUND_ALL);
     }
 
-    // 缩小
+    /**
+     * 缩小
+     */
     public executeDecrease() {
         const minZoom = this._stageConfig.getFitZoom();
         const zoom = this.getZoom();
@@ -109,7 +118,9 @@ export default class Command {
         }
     }
 
-    // 放大
+    /**
+     * 放大
+     */
     public executeIncrease() {
         const zoom = this.getZoom();
 
@@ -117,7 +128,11 @@ export default class Command {
         this._stageConfig.setZoom(zoom + 0.05);
     }
 
-    // 旋转
+    /**
+     * 旋转
+     * @param rotate
+     * @param direction
+     */
     public executeRotate(rotate: number, direction: 1 | -1) {
         const operateElements = this._stageConfig.operateElements;
         if (operateElements.length > 0) {
@@ -161,7 +176,10 @@ export default class Command {
         }
     }
 
-    // 上移一层
+    /**
+     * 上移一层
+     * @returns
+     */
     public executeMoveUp() {
         const operateElements = this._stageConfig.operateElements;
         if (operateElements.length > 0) {
@@ -201,7 +219,10 @@ export default class Command {
         }
     }
 
-    // 下移一层
+    /**
+     * 下移一层
+     * @returns
+     */
     public executeMoveDown() {
         const operateElements = this._stageConfig.operateElements;
         if (operateElements.length > 0) {
@@ -239,7 +260,10 @@ export default class Command {
         }
     }
 
-    // 置于顶层
+    /**
+     * 置于顶层
+     * @returns
+     */
     public executeMoveTop() {
         const operateElements = this._stageConfig.operateElements;
         if (operateElements.length > 0) {
@@ -268,7 +292,10 @@ export default class Command {
         }
     }
 
-    // 置于底层
+    /**
+     * 置于底层
+     * @returns
+     */
     public executeMoveBottom() {
         const operateElements = this._stageConfig.operateElements;
         if (operateElements.length > 0) {
@@ -297,7 +324,9 @@ export default class Command {
         }
     }
 
-    // 水平翻转
+    /**
+     * 水平翻转
+     */
     public executeFlipH() {
         const operateElements = this._stageConfig.operateElements;
         const newElements: IPPTElement[] = [];
@@ -319,7 +348,9 @@ export default class Command {
         this.executeUpdateRender(newElements, true);
     }
 
-    // 垂直翻转
+    /**
+     * 垂直翻转
+     */
     public executeFlipV() {
         const operateElements = this._stageConfig.operateElements;
         const newElements: IPPTElement[] = [];
@@ -341,7 +372,10 @@ export default class Command {
         this.executeUpdateRender(newElements, true);
     }
 
-    // 设置阴影
+    /**
+     * 设置阴影
+     * @param shadow
+     */
     public executeShadow(shadow: IPPTElementShadow | undefined) {
         const operateElements = this._stageConfig.operateElements;
         const newElements: IPPTElement[] = [];
@@ -360,7 +394,10 @@ export default class Command {
         this._debounceLog();
     }
 
-    // 设置填充色
+    /**
+     * 设置填充色
+     * @param fill
+     */
     public executeFill(fill?: IPPTElementFill) {
         const operateElements = this._stageConfig.operateElements;
         const newElements: IPPTElement[] = [];
@@ -419,7 +456,10 @@ export default class Command {
         this.executeUpdateRender(newElements, true);
     }
 
-    // 透明度设置
+    /**
+     * 透明度设置
+     * @param value
+     */
     public executeImageOpacity(value: number) {
         const operateElements = this._stageConfig.operateElements;
         const newElements: IPPTElement[] = [];
@@ -441,7 +481,10 @@ export default class Command {
         this.executeUpdateRender(newElements, true);
     }
 
-    // 修改边框
+    /**
+     * 修改边框
+     * @param outline
+     */
     public executeOutline(outline?: IPPTElementOutline) {
         const operateElements = this._stageConfig.operateElements;
         const newElements: IPPTElement[] = [];
@@ -479,7 +522,9 @@ export default class Command {
         this.executeUpdateRender(newElements, true);
     }
 
-    // 复制
+    /**
+     * 复制
+     */
     public async executeCopy() {
         const operateElements = this._stageConfig.operateElements;
         // 选中文本框元素内容
@@ -531,13 +576,18 @@ export default class Command {
         }
     }
 
-    // 剪切
+    /**
+     * 剪切
+     */
     public async executeCut() {
         await this.executeCopy();
         await this.executeDelete();
     }
 
-    // 粘贴
+    /**
+     * 粘贴
+     * @returns
+     */
     public async executePaste() {
         const content = await readClipboard();
         if (content.indexOf(CLIPBOARD_STRING_TYPE.SLIDE) > -1) return;
@@ -742,14 +792,19 @@ export default class Command {
         }
     }
 
-    // 全选
+    /**
+     * 全选
+     */
     public executeSelectAll() {
         const slide = this._stageConfig.getCurrentSlide();
         this._stageConfig.updateOperateElements(slide?.elements || []);
         this.executeRender();
     }
 
-    // 选中元素
+    /**
+     * 选中元素
+     * @param elementIds
+     */
     public executeSelectElements(elementIds: string[]) {
         const slide = this._stageConfig.getCurrentSlide();
         const selectedElements = slide?.elements.filter((element) =>
@@ -759,7 +814,11 @@ export default class Command {
         this.executeRender();
     }
 
-    // 删除元素 或 删除文本
+    /**
+     * 删除元素 或 删除文本
+     * @param direction
+     * @returns
+     */
     public executeDelete(direction = 0) {
         if (this._stageConfig.textFocus) {
             if (this._cursor.getTextareaText()) return;
@@ -782,7 +841,9 @@ export default class Command {
         }
     }
 
-    // 选中位置字体更新字体样式配置
+    /**
+     * 选中位置字体更新字体样式配置
+     */
     public executeUpdateFontConfig() {
         // 获取前一个字的样式，设置config
         if (this._stageConfig.textFocus) {
@@ -830,7 +891,9 @@ export default class Command {
         }
     }
 
-    // 删除选中文本
+    /**
+     * 删除选中文本
+     */
     private _deleteSelectText() {
         const selectArea = this._stageConfig.selectArea;
         if (selectArea) {
@@ -879,7 +942,11 @@ export default class Command {
         }
     }
 
-    // 删除文本内容
+    /**
+     * 删除文本内容
+     * @param position
+     * @returns
+     */
     private _deleteText(position: number) {
         const operateElements = this._stageConfig.operateElements;
         const operateElement = operateElements.find(
@@ -925,7 +992,10 @@ export default class Command {
         return false;
     }
 
-    // 元素移动 及 光标移动
+    /**
+     * 元素移动 及 光标移动
+     * @param direction
+     */
     public executeMove(direction: string) {
         const operateElements = this._stageConfig.operateElements;
         if (this._stageConfig.textFocus) {
@@ -1092,7 +1162,10 @@ export default class Command {
         }
     }
 
-    // 回车键
+    /**
+     * 回车键
+     * @returns
+     */
     public executeEnter() {
         // 文本框编辑时回车
         if (this._stageConfig.textFocus) {
@@ -1127,20 +1200,28 @@ export default class Command {
         }
     }
 
-    // 渲染
+    /**
+     * 渲染
+     */
     public executeRender() {
         this._stageConfig.resetCheckDrawOprate();
         this._stageConfig.resetCheckDrawView();
     }
 
-    // 元素历史记录并渲染
+    /**
+     * 元素历史记录并渲染
+     */
     public executeLogRender() {
         this._history.add();
 
         this.executeRender();
     }
 
-    // 元素更新及渲染
+    /**
+     * 元素更新及渲染
+     * @param elements
+     * @param addHistory
+     */
     public executeUpdateRender(elements: IPPTElement[], addHistory?: boolean) {
         this._stageConfig.updateOperateElements(elements);
         this._stageConfig.updateElements(elements);
@@ -1152,7 +1233,10 @@ export default class Command {
         }
     }
 
-    // 元素新增及渲染
+    /**
+     * 元素新增及渲染
+     * @param elements
+     */
     public executeAddRender(elements: IPPTElement[]) {
         for (const element of elements) {
             this._stageConfig.addElement(element);
@@ -1163,7 +1247,10 @@ export default class Command {
         this.executeLogRender();
     }
 
-    // 元素删除及渲染
+    /**
+     * 元素删除及渲染
+     * @param elements
+     */
     public executeDeleteRender(elements: IPPTElement[]) {
         const slide = this._stageConfig.getCurrentSlide();
         if (slide && slide.elements) {
@@ -1178,7 +1265,11 @@ export default class Command {
         }
     }
 
-    // 文本输入
+    /**
+     * 文本输入
+     * @param text
+     * @param position
+     */
     public executeAddText(text: IFontData, position: number) {
         const operateElements = this._stageConfig.operateElements;
         const operateElement = operateElements.find(
@@ -1228,7 +1319,12 @@ export default class Command {
         }
     }
 
-    // 循环选中文本
+    /**
+     * 循环选中文本
+     * @param element
+     * @param selectArea
+     * @param callback
+     */
     private _forSelectTexts(
         element: IPPTTextElement | IPPTShapeElement | IPPTTableElement,
         selectArea: [number, number, number, number],
@@ -1254,7 +1350,10 @@ export default class Command {
         });
     }
 
-    // 重置text中字体宽高数据
+    /**
+     * 重置text中字体宽高数据
+     * @param text
+     */
     private _resetTextFontSize(text: IFontData) {
         const { width, height } = this._stageConfig.getFontSize!(text);
         text.width = width;
@@ -1374,56 +1473,81 @@ export default class Command {
         this._resetTextFontSize(text);
     }
 
-    // 设置文本字体大小
+    /**
+     * 设置文本字体大小
+     * @param fontSize
+     * @param type
+     */
     public executeSetFontSize(fontSize: number, type?: "plus" | "minus") {
         this._setTextStyle({
             fontSize
         }, type);
     }
 
-    // 设置字体粗细
+    /**
+     * 设置字体粗细
+     * @param bold
+     */
     public executeSetFontWeight(bold: boolean) {
         this._setTextStyle({
             fontWeight: bold ? "bold" : "normal"
         });
     }
 
-    // 设置字体斜体
+    /**
+     * 设置字体斜体
+     * @param italic
+     */
     public executeSetFontStyle(italic: boolean) {
         this._setTextStyle({
             fontStyle: italic ? "italic" : "normal"
         });
     }
 
-    // 设置字体下划线
+    /**
+     * 设置字体下划线
+     * @param underline
+     */
     public executeSetFontUnderLine(underline: boolean) {
         this._setTextStyle({
             underline
         });
     }
 
-    // 设置字体删除线
+    /**
+     * 设置字体删除线
+     * @param strikout
+     */
     public executeSetFontStrikout(strikout: boolean) {
         this._setTextStyle({
             strikout
         });
     }
 
-    // 设置字体颜色
+    /**
+     * 设置字体颜色
+     * @param fontColor
+     */
     public executeSetFontColor(fontColor: string) {
         this._setTextStyle({
             fontColor
         });
     }
 
-    // 设置字体
+    /**
+     * 设置字体
+     * @param fontFamily
+     */
     public executeSetFontFamily(fontFamily: string) {
         this._setTextStyle({
             fontFamily
         });
     }
 
-    // 设置文本对齐方式
+    /**
+     * 设置文本对齐方式
+     * @param align
+     */
     public executeSetFontAlign(align: "left" | "center" | "right") {
         const operateElements = this._stageConfig.operateElements;
 
@@ -1496,7 +1620,10 @@ export default class Command {
         }
     }
 
-    // 设置文本行距
+    /**
+     * 设置文本行距
+     * @param lineHeight
+     */
     public executeSetLineHeight(lineHeight: number) {
         const operateElements = this._stageConfig.operateElements;
 
@@ -1677,7 +1804,10 @@ export default class Command {
         return operateElement;
     }
 
-    // 设置元素对齐
+    /**
+     * 设置元素对齐
+     * @param align
+     */
     public executeSetElementAlign(align: IElementAlignType) {
         const operateElements = this._stageConfig.operateElements;
         const elements: IPPTElement[] = [];
@@ -1703,7 +1833,9 @@ export default class Command {
         if (operateElements.length > 0) this.executeUpdateRender(elements, true);
     }
 
-    // 合并单元格
+    /**
+     * 合并单元格
+     */
     public executeMergeCell() {
         const operateElement = this._stageConfig.operateElements.find(
             (element) => element.id === this._stageConfig.tableEditElementID
@@ -1745,7 +1877,9 @@ export default class Command {
         }
     }
 
-    // 拆分单元格
+    /**
+     * 拆分单元格
+     */
     public executeSplitCell() {
         const operateElement = this._stageConfig.operateElements.find(
             (element) => element.id === this._stageConfig.tableEditElementID
@@ -1781,7 +1915,10 @@ export default class Command {
         }
     }
 
-    // 设置表格主题色
+    /**
+     * 设置表格主题色
+     * @param theme
+     */
     public executeSetTableTheme(theme: Partial<IPPTTableTheme>) {
         const operateElements = this._stageConfig.operateElements;
 
@@ -1808,7 +1945,10 @@ export default class Command {
         }
     }
 
-    // 表格插入行
+    /**
+     * 表格插入行
+     * @param rowIndex
+     */
     public executeInsertRow(rowIndex: number) {
         const operateElement = this._stageConfig.operateElements.find(
             (element) => element.id === this._stageConfig.tableEditElementID
@@ -1839,7 +1979,10 @@ export default class Command {
         }
     }
 
-    // 表格插入列
+    /**
+     * 表格插入列
+     * @param colIndex
+     */
     public executeInsertCol(colIndex: number) {
         const operateElement = this._stageConfig.operateElements.find(
             (element) => element.id === this._stageConfig.tableEditElementID
@@ -1869,7 +2012,10 @@ export default class Command {
         }
     }
 
-    // 表格删除行
+    /**
+     * 表格删除行
+     * @param rowIndex
+     */
     public executeDeleteRow(rowIndex: number) {
         const operateElement = this._stageConfig.operateElements.find(
             (element) => element.id === this._stageConfig.tableEditElementID
@@ -1889,7 +2035,10 @@ export default class Command {
         }
     }
 
-    // 表格删除列
+    /**
+     * 表格删除列
+     * @param colIndex
+     */
     public executeDeleteCol(colIndex: number) {
         const operateElement = this._stageConfig.operateElements.find(
             (element) => element.id === this._stageConfig.tableEditElementID
@@ -1911,7 +2060,10 @@ export default class Command {
         }
     }
 
-    // 预览动画
+    /**
+     * 预览动画
+     * @param ani
+     */
     public executePreviewAnimation(ani?: IPPTAnimation) {
         if (ani) {
             // 预览某个元素动画
@@ -1920,7 +2072,10 @@ export default class Command {
         }
     }
 
-    // 删除动画
+    /**
+     * 删除动画
+     * @param ani
+     */
     public executeDeleteAnimation(ani?: IPPTAnimation) {
         if (ani) {
             // 删除某个元素动画
@@ -1939,7 +2094,10 @@ export default class Command {
         this._history.add();
     }
 
-    // 新增动画
+    /**
+     * 新增动画
+     * @param anis
+     */
     public executeAddAnimation(anis: IPPTAnimation[]) {
         const animations = this._stageConfig.getAnimations();
         const newAnimations = animations.concat(anis);
@@ -1950,7 +2108,10 @@ export default class Command {
         this._history.add();
     }
 
-    // 编辑动画
+    /**
+     * 编辑动画
+     * @param anis
+     */
     public executeEditAnimation(anis: IPPTAnimation[]) {
         this._stageConfig.setAnimations(anis);
 
