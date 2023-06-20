@@ -64,6 +64,20 @@ export default class Command {
         return this._stageConfig.zoom;
     }
 
+    /**
+     * 撤销
+     */
+    public executeUndo() {
+        this._history.undo();
+    }
+
+    /**
+     * 恢复
+     */
+    public executeRedo() {
+        this._history.redo();
+    }
+
     // 适配
     public executeFitZoom() {
         this._stageConfig.resetBaseZoom();
