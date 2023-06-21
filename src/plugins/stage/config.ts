@@ -46,6 +46,14 @@ export default class StageConfig {
     public animationIndex = -1;
     // 动画元素隐藏集合
     public animationHideElements: string[] = [];
+    // 当前执行的动画集合
+    public actionAnimations: IPPTAnimation[][] = [];
+    // 判断动画是否正在执行
+    public isAnimation = false;
+    // 动画执行时间
+    public animationTime = 0;
+    // 动画执行累计时间
+    public animationCountTime = 0;
 
     private _container: HTMLDivElement;
     private _listener: Listener | undefined;

@@ -50,7 +50,7 @@ npm run dev
 - [x] 页面背景设置
 - [x] 导出
 - [x] 导入
-- [ ] [快捷键](./doc/HOT_KEY.md)
+- [x] [快捷键](./doc/HOT_KEY.md)
 
 ### 幻灯片元素编辑
 - [x] 元素添加
