@@ -24,8 +24,8 @@ export const HOTKEY_DOC = [
             { label: "放大画布", value: "Ctrl + =" },
             { label: "缩小画布", value: "Ctrl + -" },
             { label: "移动画布", value: "Space + 鼠标拖拽" },
-            { label: "上一页（缩略图列表聚焦）", value: "↑" },
-            { label: "下一页（缩略图列表聚焦）", value: "↓" }
+            { label: "上一页（幻灯片列表聚焦）", value: "↑" },
+            { label: "下一页（幻灯片列表聚焦）", value: "↓" }
         ]
     },
     {
