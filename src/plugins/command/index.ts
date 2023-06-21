@@ -1262,6 +1262,17 @@ export default class Command {
                     elements.findIndex((element) => element.id === ele.id) ===
                     -1
             );
+
+            // 删除元素处理与元素相关的动画数据
+            const ids = elements.map((element) => element.id);
+            if (slide.animations) {
+                slide.animations = slide.animations.filter(
+                    (animation) => ids.indexOf(animation.elId) === -1
+                );
+
+                this._listener.onAnimationsChange && this._listener.onAnimationsChange();
+            }
+
             this._stageConfig.setOperateElement(null, false);
 
             this.executeLogRender();
