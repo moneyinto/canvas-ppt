@@ -172,7 +172,7 @@ export default class ControlStage extends Stage {
                     const { row, col } = this.stageConfig.getMouseTableCell(operateElement, left, top);
                     this.stageConfig.tableSelectCells = [[row, col], [row, col]];
                     const tableCell = operateElement.data[row][col];
-                    this._listener.onTableCellEditChange && this._listener.onTableCellEditChange(true, tableCell.colspan === 1 && tableCell.rowspan === 1);
+                    this._listener.onTableCellEditChange(true, tableCell.colspan === 1 && tableCell.rowspan === 1);
                     const { tableCellLeft, tableCellTop, tableCellHeight } = this.stageConfig.getTableCellData(operateElement, row, col);
                     x = x - tableCellLeft;
                     y = y - tableCellTop;
@@ -296,7 +296,7 @@ export default class ControlStage extends Stage {
                 const { row, col } = this.stageConfig.getMouseTableCell(hoverElement, left, top);
                 this.stageConfig.tableSelectCells = [[row, col], [row, col]];
                 const tableCell = hoverElement.data[row][col];
-                this._listener.onTableCellEditChange && this._listener.onTableCellEditChange(true, tableCell.colspan === 1 && tableCell.rowspan === 1);
+                this._listener.onTableCellEditChange(true, tableCell.colspan === 1 && tableCell.rowspan === 1);
                 this._command.executeRender();
                 this._operateTableCell = true;
             }
@@ -987,7 +987,7 @@ export default class ControlStage extends Stage {
                     mergeDisabled = false;
                     splitDisabled = true;
                 }
-                this._listener.onTableCellEditChange && this._listener.onTableCellEditChange(mergeDisabled, splitDisabled);
+                this._listener.onTableCellEditChange(mergeDisabled, splitDisabled);
                 this._command.executeRender();
             }
 
@@ -1059,12 +1059,12 @@ export default class ControlStage extends Stage {
                     }
                 }
             });
-            this._listener.onFontSizeChange && this._listener.onFontSizeChange(fontSize);
-            this._listener.onFontWeightChange && this._listener.onFontWeightChange(isBold);
-            this._listener.onFontStyleChange && this._listener.onFontStyleChange(isItalic);
-            this._listener.onFontUnderLineChange && this._listener.onFontUnderLineChange(underline);
-            this._listener.onFontStrikoutChange && this._listener.onFontStrikoutChange(strikout);
-            this._listener.onFontFamilyChange && this._listener.onFontFamilyChange(fontFamily);
+            this._listener.onFontSizeChange(fontSize);
+            this._listener.onFontWeightChange(isBold);
+            this._listener.onFontStyleChange(isItalic);
+            this._listener.onFontUnderLineChange(underline);
+            this._listener.onFontStrikoutChange(strikout);
+            this._listener.onFontFamilyChange(fontFamily);
         } else {
             // 更新文本框光标位置
             const { left, top } = this.stageConfig.getMousePosition(evt);

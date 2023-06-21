@@ -35,15 +35,9 @@ export default class Editor {
         // 画板配置
         this.stageConfig = new StageConfig(container, this.listener, 40);
         // 防抖，减少渲染叠加
-        this.stageConfig.resetDrawView = async () => {
-            this._viewStage.resetDrawPage();
-        };
-        this.stageConfig.resetDrawOprate = () => {
-            this._controlStage.resetDrawOprate();
-        };
-        this.stageConfig.hideCursor = () => {
-            this._controlStage.hideCursor();
-        };
+        this.stageConfig.resetDrawView = async () => this._viewStage.resetDrawPage();
+        this.stageConfig.resetDrawOprate = () => this._controlStage.resetDrawOprate();
+        this.stageConfig.hideCursor = () => this._controlStage.hideCursor();
         this.stageConfig.getFontSize = (text) => {
             return this._controlStage.getFontSize(text);
         };

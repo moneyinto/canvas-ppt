@@ -51,7 +51,7 @@ export default class History {
 
         this._snapshotKeys = (await this._db.getAllKeys() || []) as number[];
         this.cursor++;
-        this._listener.onEditChange && this._listener.onEditChange(this.cursor, this.length, currentSlide!.id);
+        this._listener.onEditChange(this.cursor, this.length, currentSlide!.id);
     }
 
     get length() {
@@ -74,7 +74,7 @@ export default class History {
         // 更新缩略图 （由于缩略图不一定要更新所有的页面，但是存在需要更新所有的情况，这里为了降低操作性能消耗，后面history中记录当前具体操作类型，根据类型来判断是否要更新所有缩略图）
         if (history.optionType === OPTION_TYPE.APPLY_BACKGROUND_ALL) {
             this._stageConfig.slides.forEach(slide => {
-                this._listener.onUpdateThumbnailSlide && this._listener.onUpdateThumbnailSlide(slide);
+                this._listener.onUpdateThumbnailSlide(slide);
             });
         }
     }
@@ -125,9 +125,9 @@ export default class History {
             this._stageConfig.updateOperateElements(elements?.length === operateElements.length ? elements : []);
             this._stageConfig.resetCheckDrawOprate();
         }
-        this._stageConfig.hideCursor && this._stageConfig.hideCursor();
-        this._listener.onEditChange && this._listener.onEditChange(this.cursor, this.length, history.slideId as string);
+        this._stageConfig.hideCursor();
+        this._listener.onEditChange(this.cursor, this.length, history.slideId as string);
         // 撤销通知动画变更
-        this._listener.onAnimationsChange && this._listener.onAnimationsChange();
+        this._listener.onAnimationsChange();
     }
 }

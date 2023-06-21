@@ -887,12 +887,12 @@ export default class Command {
                 };
                 this._stageConfig.setFontConfig(config);
 
-                this._listener.onFontSizeChange && this._listener.onFontSizeChange(config.fontSize);
-                this._listener.onFontWeightChange && this._listener.onFontWeightChange(config.fontWeight === "bold");
-                this._listener.onFontStyleChange && this._listener.onFontStyleChange(config.fontStyle === "italic");
-                this._listener.onFontUnderLineChange && this._listener.onFontUnderLineChange(config.underline);
-                this._listener.onFontStrikoutChange && this._listener.onFontStrikoutChange(config.strikout);
-                this._listener.onFontFamilyChange && this._listener.onFontFamilyChange(config.fontFamily);
+                this._listener.onFontSizeChange(config.fontSize);
+                this._listener.onFontWeightChange(config.fontWeight === "bold");
+                this._listener.onFontStyleChange(config.fontStyle === "italic");
+                this._listener.onFontUnderLineChange(config.underline);
+                this._listener.onFontStrikoutChange(config.strikout);
+                this._listener.onFontFamilyChange(config.fontFamily);
             }
         }
     }
@@ -1273,7 +1273,7 @@ export default class Command {
                     (animation) => ids.indexOf(animation.elId) === -1
                 );
 
-                this._listener.onAnimationsChange && this._listener.onAnimationsChange();
+                this._listener.onAnimationsChange();
             }
 
             this._stageConfig.setOperateElement(null, false);
@@ -1887,8 +1887,7 @@ export default class Command {
                         [startRow, startCol],
                         [startRow, startCol]
                     ];
-                    this._listener.onTableCellEditChange &&
-                        this._listener.onTableCellEditChange(true, false);
+                    this._listener.onTableCellEditChange(true, false);
                 }
             }
         }
@@ -1924,8 +1923,7 @@ export default class Command {
                             }
                         }
                         this.executeUpdateRender([operateElement], true);
-                        this._listener.onTableCellEditChange &&
-                            this._listener.onTableCellEditChange(true, true);
+                        this._listener.onTableCellEditChange(true, true);
                     }
                 }
             }
@@ -2106,8 +2104,7 @@ export default class Command {
             this._stageConfig.setAnimations([]);
         }
 
-        this._listener.onAnimationsChange &&
-            this._listener.onAnimationsChange();
+        this._listener.onAnimationsChange();
         this._history.add();
     }
 
@@ -2120,8 +2117,7 @@ export default class Command {
         const newAnimations = animations.concat(anis);
         this._stageConfig.setAnimations(newAnimations);
 
-        this._listener.onAnimationsChange &&
-            this._listener.onAnimationsChange();
+        this._listener.onAnimationsChange();
         this._history.add();
     }
 
@@ -2132,8 +2128,7 @@ export default class Command {
     public executeEditAnimation(anis: IPPTAnimation[]) {
         this._stageConfig.setAnimations(anis);
 
-        this._listener.onAnimationsChange &&
-            this._listener.onAnimationsChange();
+        this._listener.onAnimationsChange();
         this._debounceLog();
     }
 

@@ -39,7 +39,7 @@ export default class StageConfig {
 
     public resetDrawView: (() => void) | null;
     public resetDrawOprate: (() => void) | null;
-    public hideCursor: (() => void) | null;
+    public hideCursor: () => void;
     public getFontSize: ((text: IFontData) => { width: number, height: number }) | null;
 
     // 动画执行指针
@@ -76,7 +76,7 @@ export default class StageConfig {
 
         this.resetDrawView = null;
         this.resetDrawOprate = null;
-        this.hideCursor = null;
+        this.hideCursor = () => {};
         this.getFontSize = null;
     }
 
@@ -106,7 +106,7 @@ export default class StageConfig {
         this.resetCheckDrawView();
         this.resetCheckDrawOprate();
 
-        this._listener?.onZoomChange && this._listener.onZoomChange(this.zoom);
+        this._listener?.onZoomChange(this.zoom);
     }
 
     public getWidth() {
@@ -143,7 +143,7 @@ export default class StageConfig {
         this.resetCheckDrawView();
         this.resetCheckDrawOprate();
 
-        this._listener?.onZoomChange && this._listener.onZoomChange(this.zoom);
+        this._listener?.onZoomChange(this.zoom);
     }
 
     public getStageArea() {
@@ -187,7 +187,7 @@ export default class StageConfig {
             this._container.style.cursor = "default";
         }
         this.insertElement = element;
-        this._listener?.onInsertElementChange && this._listener.onInsertElementChange(element);
+        this._listener?.onInsertElementChange(element);
     }
 
     public updateElement(element: IPPTElement) {
@@ -276,12 +276,12 @@ export default class StageConfig {
                 this.operateElements = [operateElement];
             }
         }
-        if (this._listener?.onSelectedChange) this._listener.onSelectedChange(this.operateElements);
+        this._listener?.onSelectedChange(this.operateElements);
     }
 
     public updateOperateElements(elements: IPPTElement[]) {
         this.operateElements = elements;
-        if (this._listener?.onSelectedChange) this._listener.onSelectedChange(this.operateElements);
+        this._listener?.onSelectedChange(this.operateElements);
     }
 
     public setBackground(background: ISlideBackground | undefined) {
@@ -303,7 +303,7 @@ export default class StageConfig {
         if (currentSlide?.background) {
             this.slides.forEach(slide => {
                 slide.background = currentSlide.background;
-                this._listener?.onUpdateThumbnailSlide && this._listener.onUpdateThumbnailSlide(slide);
+                this._listener?.onUpdateThumbnailSlide(slide);
             });
         }
     }
