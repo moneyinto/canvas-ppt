@@ -9,6 +9,7 @@ export default class Screen extends View {
     private _videoControlType = "";
     private _audioControlType = "";
     private _history: History;
+    public mouseSingleClick: () => void = () => {};
     constructor(container: HTMLDivElement, slide: ISlide, history: History) {
         super(container, slide, history, true, false, true);
         this._history = history;
@@ -118,6 +119,8 @@ export default class Screen extends View {
                     }
                 }
             }
+        } else {
+            this.mouseSingleClick();
         }
     }
 

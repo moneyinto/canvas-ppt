@@ -8,6 +8,7 @@
         <div
             class="ppt-preview-tools"
             :class="hiddenTool && 'hidden-preview-tools'"
+            @mousedown.stop
         >
             <div class="preview-tools-btn" @click="prev()">
                 <SvgIcon name="leftArrow" color="#eee" :size="11" />
@@ -104,6 +105,8 @@ nextTick(() => {
             previewSlide.value,
             instance.value.history
         );
+
+        screen.mouseSingleClick = next;
 
         screenRef.value.focus();
     }
