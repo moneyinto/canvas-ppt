@@ -55,7 +55,6 @@ export default class View {
 
     public resetLastAnimationIndex() {
         const animations = this.slide.animations || [];
-        console.log(animations.length);
         this.stageConfig.animationIndex = animations.length - 1;
         this._animation.stop();
     }

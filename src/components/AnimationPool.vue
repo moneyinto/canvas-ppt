@@ -116,9 +116,16 @@ import {
 } from "@/plugins/config/animation";
 import "animate.css";
 
+const props = defineProps({
+    type: {
+        type: String,
+        default: "in"
+    }
+});
+
 const emit = defineEmits(["change"]);
 
-const animationType = ref("in");
+const animationType = ref(props.type);
 const hoverPreviewAnimation = ref("");
 
 const addAnimation = (animation: { name: string; value: string; duration: number; }) => {

@@ -134,7 +134,7 @@
                             arrow-point-at-center
                         >
                             <template #content>
-                                <AnimationPool @change="editAnimation" />
+                                <AnimationPool :type="selectedAnimation.type" @change="editAnimation" />
                             </template>
                             <a-input
                                 readonly="readonly"
@@ -265,6 +265,7 @@ const deleteAnimation = (ani?: IPPTAnimation) => {
 };
 
 const selectAnimation = (ani: IPPTAnimation) => {
+    showSetAnimationPanel.value = false;
     selectedAnimation.value = ani;
     instance?.value?.command.executeSelectElements([ani.elId]);
 };
