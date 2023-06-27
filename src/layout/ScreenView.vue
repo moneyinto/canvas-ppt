@@ -143,7 +143,10 @@ const prev = () => {
 };
 
 const next = () => {
-    if (previewSlideIndex.value < props.slides.length - 1) {
+    const animations = previewSlide.value.animations;
+    if (animations && animations.length > 0 && screen && screen.stageConfig.animationIndex < animations.length - 1) {
+        screen.nextStep();
+    } else if (previewSlideIndex.value < props.slides.length - 1) {
         saveWhiteboardElements();
         previewSlideIndex.value++;
         updateSlide();

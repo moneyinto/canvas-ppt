@@ -51,6 +51,7 @@ export default class Animation {
 
             // 判断整个当前执行动画存储集合是否执行完成（即长度为0），结束动画执行（触发动画终止函数），否则继续触发动画执行函数，采用window.requestAnimationFrame
             if (this._stageConfig.actionAnimations.length === 0) {
+                console.log("动画执行完成");
                 this.stop();
             } else {
                 window.requestAnimationFrame(() => this.action());

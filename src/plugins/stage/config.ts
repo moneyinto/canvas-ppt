@@ -803,6 +803,36 @@ export default class StageConfig {
         });
 
         this.animationHideElements = inElIds;
+
+        // 处理初始化索引值
+        if (animations.length > 0 && animations[0].trigger !== "click") {
+            const nextClick = animations.findIndex((animation) => animation.trigger === "click");
+            if (nextClick === -1) {
+                this.animationIndex = animations.length - 1;
+            } else {
+                this.animationIndex = nextClick - 1;
+                this.setActionAnimationsByIndex(0, this.animationIndex + 1);
+            }
+        }
+    }
+
+    // 根据索引获取动画集合
+    setActionAnimationsByIndex(start: number, end: number) {
+        this.actionAnimations = [];
+        const animations = this.getAnimations();
+        const actionAnimations: IPPTAnimation[][] = [];
+        animations.slice(start, end).forEach((animation, index) => {
+            if (index === 0) {
+                actionAnimations.push([animation]);
+            } else if (animation.trigger === "meantime") {
+                const lastIndex = actionAnimations.length - 1;
+                actionAnimations[lastIndex].push(animation);
+            } else if (animation.trigger === "after") {
+                actionAnimations.push([animation]);
+            }
+        });
+
+        this.actionAnimations = actionAnimations;
     }
 
     startVideoRender() {

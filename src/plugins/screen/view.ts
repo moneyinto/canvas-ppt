@@ -4,6 +4,7 @@ import { ISlide } from "@/types/slide";
 import Background from "../stage/draw/background";
 import History from "../editor/history";
 import { debounce } from "@/utils";
+import Animation from "../command/animation";
 
 export default class View {
     public stageConfig: StageConfig;
@@ -15,6 +16,7 @@ export default class View {
     private _resize: boolean;
     private _isThumbnail: boolean;
     private _isScreen: boolean;
+    private _animation: Animation;
 
     constructor(container: HTMLDivElement, slide: ISlide, history: History, resize?: boolean, isThumbnail?: boolean, isScreen?: boolean) {
         this.slide = slide;
@@ -40,6 +42,12 @@ export default class View {
             await this._drawPage();
         };
 
+        // 为了兼容编辑情况下执行动画
+        this.stageConfig.setSlides([slide]);
+        this.stageConfig.setSlideId(slide.id);
+
+        this._animation = new Animation(this.stageConfig);
+
         if (this._resize) {
             this._resizeObserver = new ResizeObserver(debounce(this._reset.bind(this), 100));
 
@@ -47,6 +55,24 @@ export default class View {
         } else {
             this._drawPage();
         }
+    }
+
+    public nextStep() {
+        this._animation.stop();
+        const animations = this.slide.animations || [];
+        if (this.stageConfig.animationIndex < animations.length - 1) {
+            const start = this.stageConfig.animationIndex + 1;
+            const nextClickIndex = animations.findIndex((item, index) => index > start && item.trigger === "click");
+            const end = nextClickIndex > -1 ? nextClickIndex : animations.length;
+            this.stageConfig.animationIndex = end - 1;
+            this.stageConfig.setActionAnimationsByIndex(start, end);
+        }
+        this._animation.start();
+    }
+
+    public prevStep() {
+        this._animation.stop();
+        // TODO
     }
 
     get ctx() {
