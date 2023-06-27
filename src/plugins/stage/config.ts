@@ -789,6 +789,9 @@ export default class StageConfig {
     // 初始化动画指针及隐藏元素的集合
     initSlideAnimation(currentSlide: ISlide) {
         this.animationIndex = -1;
+        // 为了兼容编辑情况下执行动画
+        this.setSlides([currentSlide]);
+        this.setSlideId(currentSlide.id);
         const animations = currentSlide.animations || [];
         const inElIds: string[] = [];
         const outElIds: string[] = [];

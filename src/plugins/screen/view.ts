@@ -42,10 +42,6 @@ export default class View {
             await this._drawPage();
         };
 
-        // 为了兼容编辑情况下执行动画
-        this.stageConfig.setSlides([slide]);
-        this.stageConfig.setSlideId(slide.id);
-
         this._animation = new Animation(this.stageConfig);
 
         if (this._resize) {
@@ -55,6 +51,13 @@ export default class View {
         } else {
             this._drawPage();
         }
+    }
+
+    public resetLastAnimationIndex() {
+        const animations = this.slide.animations || [];
+        console.log(animations.length);
+        this.stageConfig.animationIndex = animations.length - 1;
+        this._animation.stop();
     }
 
     public nextStep() {
@@ -71,8 +74,13 @@ export default class View {
     }
 
     public prevStep() {
+        if (this.stageConfig.animationIndex > -1) {
+            const animations = this.slide.animations || [];
+            const start = this.stageConfig.animationIndex;
+            const prevClickIndex = animations.slice(0, start + 1).reverse().findIndex((item, index) => item.trigger === "click" && index > 0);
+            this.stageConfig.animationIndex = prevClickIndex > -1 ? start - prevClickIndex : -1;
+        }
         this._animation.stop();
-        // TODO
     }
 
     get ctx() {

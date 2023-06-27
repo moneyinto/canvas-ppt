@@ -132,11 +132,16 @@ const renderWhiteboardElements = () => {
 };
 
 const prev = () => {
-    if (previewSlideIndex.value > 0) {
+    const animations = previewSlide.value.animations || [];
+    const firstClickIndex = animations.findIndex(item => item.trigger === "click");
+    if (screen && screen.stageConfig.animationIndex >= firstClickIndex) {
+        screen.prevStep();
+    } else if (previewSlideIndex.value > 0) {
         saveWhiteboardElements();
         previewSlideIndex.value--;
         updateSlide();
         renderWhiteboardElements();
+        screen && screen.resetLastAnimationIndex();
     } else {
         message.warning("已经是第一页了");
     }
@@ -147,6 +152,7 @@ const next = () => {
     if (animations && animations.length > 0 && screen && screen.stageConfig.animationIndex < animations.length - 1) {
         screen.nextStep();
     } else if (previewSlideIndex.value < props.slides.length - 1) {
+        // 进行翻页后，重置动画索引到最后一步
         saveWhiteboardElements();
         previewSlideIndex.value++;
         updateSlide();
