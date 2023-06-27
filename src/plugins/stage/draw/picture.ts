@@ -7,6 +7,7 @@ import { OutLine } from "./outline";
 import { getShapePath } from "@/utils/shape";
 import { SHAPE_TYPE } from "@/plugins/config/shapes";
 import { defaultImageSrc } from "@/plugins/config";
+import Animation from "./animation";
 
 export class Picture {
     private _stageConfig: StageConfig;
@@ -15,6 +16,7 @@ export class Picture {
     private _shadow: Shadow;
     private _fill: Fill;
     private _outline: OutLine;
+    private _animation: Animation;
     constructor(
         stageConfig: StageConfig,
         ctx: CanvasRenderingContext2D,
@@ -26,6 +28,7 @@ export class Picture {
         this._shadow = new Shadow(this._ctx);
         this._fill = new Fill(this._ctx);
         this._outline = new OutLine(this._ctx);
+        this._animation = new Animation(stageConfig, ctx);
     }
 
     private async _getCacheImage(element: IPPTImageElement | IPPTLatexElement | IPPTChartElement): Promise<HTMLImageElement> {
@@ -75,6 +78,9 @@ export class Picture {
             this._ctx.rotate((element.rotate / 180) * Math.PI);
             // 水平垂直翻转
             this._ctx.scale(element.flipH || 1, element.flipV || 1);
+
+            // 动画
+            this._animation.setElementStatus(element);
 
             const path = getShapePath(SHAPE_TYPE.RECT, element.width, element.height) as Path2D;
             if (element.fill) {

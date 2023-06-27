@@ -6,6 +6,7 @@ import StageConfig, { TEXT_MARGIN } from "../config";
 import { OutLine } from "./outline";
 import { Shadow } from "./shadow";
 import { Fill } from "./fill";
+import Animation from "./animation";
 
 export class RichText {
     private _stageConfig: StageConfig;
@@ -13,12 +14,14 @@ export class RichText {
     private _outline: OutLine;
     private _shadow: Shadow;
     private _fill: Fill;
+    private _animation: Animation;
     constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
         this._outline = new OutLine(this._ctx);
         this._shadow = new Shadow(this._ctx);
         this._fill = new Fill(this._ctx);
+        this._animation = new Animation(stageConfig, ctx);
     }
 
     private _drawStrikout(text: IFontData, x: number, y: number, fontHeight: number, lineHeight: number, wordSpace: number) {
@@ -120,6 +123,9 @@ export class RichText {
 
         // 旋转画布
         this._ctx.rotate((element.rotate / 180) * Math.PI);
+
+        // 动画
+        this._animation.setElementStatus(element);
 
         const path = getShapePath(SHAPE_TYPE.RECT, element.width, element.height) as Path2D;
         if (element.fill) {

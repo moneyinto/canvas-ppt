@@ -1,12 +1,15 @@
 import { IPPTLineElement } from "@/types/element";
 import StageConfig from "../config";
+import Animation from "./animation";
 
 export class Line {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
+    private _animation: Animation;
     constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
+        this._animation = new Animation(stageConfig, ctx);
     }
 
     public draw(element: IPPTLineElement) {
@@ -23,6 +26,10 @@ export class Line {
         this._ctx.strokeStyle = element.color;
         this._ctx.globalAlpha = (100 - element.opacity) / 100;
         this._ctx.lineWidth = element.borderWidth;
+
+        // 动画
+        this._animation.setElementStatus(element);
+
         if (element.style === "dashed") {
             this._ctx.setLineDash([8, 4]);
         }

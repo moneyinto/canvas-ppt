@@ -2,11 +2,13 @@ import History from "@/plugins/editor/history";
 import { IPPTVideoElement } from "@/types/element";
 import { sleep, fomatTime } from "@/utils";
 import StageConfig from "../config";
+import Animation from "./animation";
 
 export default class Video {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
     private _history: History;
+    private _animation: Animation;
     constructor(
         stageConfig: StageConfig,
         ctx: CanvasRenderingContext2D,
@@ -15,6 +17,7 @@ export default class Video {
         this._ctx = ctx;
         this._stageConfig = stageConfig;
         this._history = history;
+        this._animation = new Animation(stageConfig, ctx);
     }
 
     public createVideo(id: string, file: string) {
@@ -116,6 +119,8 @@ export default class Video {
         this._ctx.translate(ox, oy);
         // 旋转画布
         this._ctx.rotate((element.rotate / 180) * Math.PI);
+        // 动画
+        this._animation.setElementStatus(element);
         // 平移坐标原点
         this._ctx.translate(-element.width / 2, -element.height / 2);
 

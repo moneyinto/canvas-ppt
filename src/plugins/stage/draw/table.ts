@@ -12,6 +12,7 @@ import { SHAPE_TYPE } from "@/plugins/config/shapes";
 import { getShapePath } from "@/utils/shape";
 import tinycolor from "tinycolor2";
 import { RichText } from "./richText";
+import Animation from "./animation";
 
 interface ITheme {
     color: string;
@@ -27,6 +28,7 @@ export default class Table {
     private _fill: Fill;
     private _outline: OutLine;
     private _richText: RichText;
+    private _animation: Animation;
     constructor(
         stageConfig: StageConfig,
         ctx: CanvasRenderingContext2D
@@ -37,6 +39,7 @@ export default class Table {
         this._fill = new Fill(this._ctx);
         this._outline = new OutLine(this._ctx);
         this._richText = new RichText(stageConfig, ctx);
+        this._animation = new Animation(stageConfig, ctx);
     }
 
     private _drawCell(
@@ -135,6 +138,9 @@ export default class Table {
 
         // 平移到元素起始位置
         this._ctx.translate(-element.width / 2, -element.height / 2);
+
+        // 动画
+        this._animation.setElementStatus(element);
 
         const themeColor = tinycolor(element.theme.color);
         const subColor1 = themeColor.setAlpha(0.3).toHex8String();
