@@ -51,7 +51,6 @@ export default class Animation {
 
             // 判断整个当前执行动画存储集合是否执行完成（即长度为0），结束动画执行（触发动画终止函数），否则继续触发动画执行函数，采用window.requestAnimationFrame
             if (this._stageConfig.actionAnimations.length === 0) {
-                console.log("动画执行完成");
                 this.stop();
             } else {
                 window.requestAnimationFrame(() => this.action());
@@ -82,7 +81,25 @@ export default class Animation {
                     outElIds.push(animation.elId);
                 }
             });
-        this._stageConfig.animationHideElements = inElIds;
+
+        // 已经执行过的动画的，需要隐藏的元素ID集合
+        const actionOutElIds: string[] = [];
+        animations
+            .slice(0, this._stageConfig.animationIndex + 1)
+            .forEach((animation) => {
+                const outIndex = actionOutElIds.indexOf(animation.elId);
+                if (
+                    animation.type === "out" &&
+                    outIndex === -1
+                ) {
+                    actionOutElIds.push(animation.elId);
+                } else if (animation.type === "in" && outIndex > -1) {
+                    actionOutElIds.splice(outIndex, 1);
+                }
+            });
+
+        // 设置需要隐藏的元素ID集合取并集
+        this._stageConfig.animationHideElements = inElIds.concat(actionOutElIds.filter(id => !inElIds.includes(id)));
 
         // 清空当前执行动画存储集合
         this._stageConfig.actionAnimations = [];

@@ -71,7 +71,7 @@ npm run dev
 - [x] 元素对齐到画布
 - [x] 元素对齐到其他元素
 - [x] 粘贴外部图片
-- [ ] 元素动画
+- [x] 元素动画
 
 #### 文字
 - [x] [研究canvas文本编辑器](https://github.com/moneyinto/canvas-editor)
