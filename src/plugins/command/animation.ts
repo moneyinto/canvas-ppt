@@ -44,9 +44,11 @@ export default class Animation {
             this._stageConfig.animationHideElements = this._stageConfig.animationHideElements.concat(outElIds);
             this._stageConfig.actionAnimations[0] = animations.filter(animation => animation.duration > this._stageConfig.animationCountTime);
 
-            // 判断当前执行动画存储集合的第一个是否全部执行完成（即长度为 0），如果全部执行完，清除当前执行动画存储集合的第一个的删除
+            // 判断当前执行动画存储集合的第一个是否全部执行完成（即长度为 0），如果全部执行完，清除当前执行动画存储集合的第一个的删除，重置动画执行时间和动画执行时长
             if (this._stageConfig.actionAnimations[0].length === 0) {
                 this._stageConfig.actionAnimations.shift();
+                this._stageConfig.animationTime = new Date().getTime();
+                this._stageConfig.animationCountTime = 0;
             }
 
             // 判断整个当前执行动画存储集合是否执行完成（即长度为0），结束动画执行（触发动画终止函数），否则继续触发动画执行函数，采用window.requestAnimationFrame
