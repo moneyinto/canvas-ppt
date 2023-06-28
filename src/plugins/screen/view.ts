@@ -44,6 +44,8 @@ export default class View {
 
         this._animation = new Animation(this.stageConfig);
 
+        this._initAnimations();
+
         if (this._resize) {
             this._resizeObserver = new ResizeObserver(debounce(this._reset.bind(this), 100));
 
@@ -102,6 +104,14 @@ export default class View {
         this._isScreen && this.stageConfig.initSlideAnimation(slide);
         this.slide = slide;
         this._drawPage();
+
+        this._initAnimations();
+    }
+
+    private _initAnimations() {
+        if (this.slide.animations && this.slide.animations.length > 0 && this.slide.animations[0].trigger !== "click") {
+            this._animation.start();
+        }
     }
 
     public destroy() {

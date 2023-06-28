@@ -814,8 +814,9 @@ export default class StageConfig {
                 this.animationIndex = animations.length - 1;
             } else {
                 this.animationIndex = nextClick - 1;
-                this.setActionAnimationsByIndex(0, this.animationIndex + 1);
             }
+
+            this.setActionAnimationsByIndex(0, this.animationIndex + 1);
         }
     }
 
