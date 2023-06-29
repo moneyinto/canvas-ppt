@@ -1,14 +1,14 @@
-import { SHAPE_TYPE } from "@/plugins/config/shapes";
+import { SHAPE_TYPE } from "@/config/shapes";
 import { IPPTShapeElement, IPPTTableElement, IPPTTextElement } from "@/types/element";
 import { IFontData } from "@/types/font";
 import { getShapePath } from "@/utils/shape";
 import StageConfig, { TEXT_MARGIN } from "./config";
-import { OutLine } from "./outline";
-import { Shadow } from "./shadow";
-import { Fill } from "./fill";
+import OutLine from "./outline";
+import Shadow from "./shadow";
+import Fill from "./fill";
 import Animation from "./animation";
 
-export class RichText {
+export default class RichText {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
     private _outline: OutLine;

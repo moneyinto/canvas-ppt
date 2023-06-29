@@ -1,17 +1,17 @@
 import StageConfig from "./config";
-import { Fill } from "./fill";
-import { OutLine } from "./outline";
-import { Shadow } from "./shadow";
+import Fill from "./fill";
+import OutLine from "./outline";
+import Shadow from "./shadow";
 import {
     IPPTElementFill,
     IPPTElementOutline,
     IPPTTableCell,
     IPPTTableElement
 } from "@/types/element";
-import { SHAPE_TYPE } from "@/plugins/config/shapes";
+import { SHAPE_TYPE } from "@/config/shapes";
 import { getShapePath } from "@/utils/shape";
 import tinycolor from "tinycolor2";
-import { RichText } from "./richText";
+import RichText from "./richText";
 import Animation from "./animation";
 
 interface ITheme {

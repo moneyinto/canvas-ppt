@@ -1,19 +1,19 @@
-import { VIEWPORT_SIZE, VIEWRATIO } from "@/plugins/config/stage";
+import { VIEWPORT_SIZE, VIEWRATIO } from "@/config/stage";
 import { ISlideBackground } from "@/types/slide";
 import StageConfig from "./config";
-import History from "@/plugins/editor/history";
+import DB from "@/utils/db";
 import Gradient from "./gradient";
-import { defaultImageSrc } from "@/plugins/config";
+import { defaultImageSrc } from "@/config";
 
 export default class Background {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
-    private _history: History;
+    private _db: DB;
     private _gradient: Gradient;
-    constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D, history: History) {
+    constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D, db: DB) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
-        this._history = history;
+        this._db = db;
         this._gradient = new Gradient(this._ctx);
     }
 
@@ -33,7 +33,7 @@ export default class Background {
                     resolve(cacheImage.image);
                 };
                 try {
-                    this._history.getFile(id).then(file => {
+                    this._db.getFile(id).then(file => {
                         image.src = file || defaultImageSrc;
                     });
                 } catch {

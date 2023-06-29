@@ -1,8 +1,8 @@
 import Listener from "../listener";
 import StageConfig from "../stage/config";
-import DB from "./db";
+import DB from "@/utils/db";
 import { ISlide } from "@/types/slide";
-import { OPTION_TYPE } from "../config/options";
+import { OPTION_TYPE } from "@/config/options";
 
 interface IStorage {
     slideId: string;
@@ -10,16 +10,16 @@ interface IStorage {
 }
 
 export default class History {
-    public storage: IStorage[] = []; // 快照存储 暂时放在缓存中，后面移到db中
+    public storage: IStorage[] = []; // 快照存储 暂时放在缓存中，后面移到_db中
     public cursor = -1; // 快照指针
+    private _db: DB;
     private _stageConfig: StageConfig;
     private _listener: Listener;
-    private _db: DB;
     private _snapshotKeys: number[];
-    constructor(stageConfig: StageConfig, listener: Listener) {
+    constructor(stageConfig: StageConfig, listener: Listener, db: DB) {
         this._stageConfig = stageConfig;
         this._listener = listener;
-        this._db = new DB();
+        this._db = db;
         this._snapshotKeys = [];
     }
 

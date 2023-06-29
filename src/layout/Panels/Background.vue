@@ -185,7 +185,7 @@ import emitter, { EmitterEvents } from "@/utils/emitter";
 import { ISlideBackground } from "@/types/slide";
 import { deepClone, fileMd5 } from "@/utils";
 import { IGradientColor } from "@/types";
-import { THEME_COLOR } from "@/plugins/config/stage";
+import { THEME_COLOR } from "@/config/stage";
 import { message } from "ant-design-vue";
 
 const backgroundType = ref("");

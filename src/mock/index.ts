@@ -1,4 +1,4 @@
-import { SHAPE_TYPE } from "@/plugins/config/shapes";
+import { SHAPE_TYPE } from "@/config/shapes";
 import { ISlide } from "@/types/slide";
 
 export const slides: ISlide[] = [

@@ -306,11 +306,11 @@ import {
 import Editor from "@/plugins/editor";
 import SvgIcon from "@/components/SvgIcon.vue";
 import { IPPTElement } from "@/types/element";
-import { SYS_FONTS } from "@/plugins/config/font";
+import { SYS_FONTS } from "@/config/font";
 import { isSupportFont } from "@/utils";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 import ColorBoard from "@/components/ColorBoard.vue";
-import { THEME_COLOR } from "@/plugins/config/stage";
+import { THEME_COLOR } from "@/config/stage";
 import { STORAGE_FONT_COLOR } from "@/utils/storage";
 import BorderPool from "@/components/BorderPool.vue";
 import FillPool from "@/components/FillPool.vue";

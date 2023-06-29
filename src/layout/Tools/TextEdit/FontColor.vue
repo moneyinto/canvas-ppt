@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts" setup>
-import { THEME_COLOR } from "@/plugins/config/stage";
+import { THEME_COLOR } from "@/config/stage";
 import { inject, onMounted, onUnmounted, Ref, ref } from "vue";
 import ColorBoard from "@/components/ColorBoard.vue";
 import { STORAGE_FONT_COLOR } from "@/utils/storage";

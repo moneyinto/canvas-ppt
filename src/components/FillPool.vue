@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts" setup>
-import { THEME_COLOR } from "@/plugins/config/stage";
+import { THEME_COLOR } from "@/config/stage";
 import ColorBoard from "./ColorBoard.vue";
 import Editor from "@/plugins/editor";
 import {

@@ -1,18 +1,18 @@
-import History from "@/plugins/editor/history";
 import { IPPTChartElement, IPPTImageElement, IPPTLatexElement } from "@/types/element";
 import StageConfig from "./config";
-import { Shadow } from "./shadow";
-import { Fill } from "./fill";
-import { OutLine } from "./outline";
+import Shadow from "./shadow";
+import Fill from "./fill";
+import OutLine from "./outline";
 import { getShapePath } from "@/utils/shape";
-import { SHAPE_TYPE } from "@/plugins/config/shapes";
-import { defaultImageSrc } from "@/plugins/config";
+import { SHAPE_TYPE } from "@/config/shapes";
+import { defaultImageSrc } from "@/config";
 import Animation from "./animation";
+import DB from "@/utils/db";
 
-export class Picture {
+export default class Picture {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
-    private _history: History;
+    private _db: DB;
     private _shadow: Shadow;
     private _fill: Fill;
     private _outline: OutLine;
@@ -20,11 +20,11 @@ export class Picture {
     constructor(
         stageConfig: StageConfig,
         ctx: CanvasRenderingContext2D,
-        history: History
+        db: DB
     ) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
-        this._history = history;
+        this._db = db;
         this._shadow = new Shadow(this._ctx);
         this._fill = new Fill(this._ctx);
         this._outline = new OutLine(this._ctx);
@@ -47,7 +47,7 @@ export class Picture {
                     resolve(cacheImage.image);
                 };
                 try {
-                    this._history.getFile(element.src).then(file => {
+                    this._db.getFile(element.src).then(file => {
                         image.src = file || defaultImageSrc;
                     });
                 } catch {

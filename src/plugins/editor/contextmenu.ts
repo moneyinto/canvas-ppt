@@ -8,7 +8,7 @@ import emitter, { EmitterEvents } from "@/utils/emitter";
 import { PANELS } from "@/utils/panel";
 import { IPPTTableElement } from "@/types/element";
 
-export class Contextmenu {
+export default class Contextmenu {
     private _command: Command;
     private _stageConfig: StageConfig;
     private _menuDom: HTMLDivElement | null;

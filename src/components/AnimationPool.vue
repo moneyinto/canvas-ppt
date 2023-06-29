@@ -113,7 +113,7 @@ import {
     ANIMATION_ATTENTION,
     ANIMATION_IN,
     ANIMATION_OUT
-} from "@/plugins/config/animation";
+} from "@/config/animation";
 import "animate.css";
 
 const props = defineProps({

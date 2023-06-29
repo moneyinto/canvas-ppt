@@ -3,12 +3,13 @@ import Listener from "../listener";
 import Shortcut from "../shortCut";
 import StageConfig from "../stage/config";
 import ControlStage from "./control";
-import { Cursor } from "./cursor";
-import { Textarea } from "./textarea";
+import Cursor from "./cursor";
+import Textarea from "./textarea";
 import ViewStage from "./view";
 import { ISlide } from "@/types/slide";
 import History from "./history";
 import { throttleRAF } from "@/utils";
+import DB from "@/utils/db";
 
 export default class Editor {
     public listener: Listener;
@@ -45,8 +46,9 @@ export default class Editor {
         this.stageConfig.setSlides(slides);
         if (slides.length > 0) this.stageConfig.setSlideId(slides[0].id);
 
+        const db = new DB();
         // 历史数据
-        this.history = new History(this.stageConfig, this.listener);
+        this.history = new History(this.stageConfig, this.listener, db);
 
         this._textarea = new Textarea(container);
         this._cursor = new Cursor(container, this._textarea, this.stageConfig);
@@ -61,7 +63,7 @@ export default class Editor {
         this._controlStage = new ControlStage(
             container,
             this.stageConfig,
-            this.history,
+            db,
             this.command,
             this._cursor,
             this._textarea,

@@ -1,21 +1,21 @@
 import StageConfig from "./config";
 import { IPPTElement } from "@/types/element";
-import { Line } from "./line";
-import { RichText } from "./richText";
-import { Shape } from "./shape";
-import { Picture } from "./picture";
+import Line from "./line";
+import RichText from "./richText";
+import Shape from "./shape";
+import Picture from "./picture";
 import Video from "./video";
-import History from "../editor/history";
-import { Music } from "./music";
+import Music from "./music";
 import Table from "./table";
+import DB from "@/utils/db";
 
 export default class Stage {
     public canvas: HTMLCanvasElement;
     public ctx: CanvasRenderingContext2D;
     public stageConfig: StageConfig;
     public container: HTMLDivElement;
-    public history: History | undefined;
 
+    private _db: DB;
     private _line: Line | null;
     private _richText: RichText | null;
     private _shape: Shape | null;
@@ -26,11 +26,11 @@ export default class Stage {
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
-        history?: History
+        db: DB
     ) {
         this.container = container;
         this.stageConfig = stageConfig;
-        this.history = history;
+        this._db = db;
 
         const { canvas, ctx } = this._createStage();
 
@@ -96,7 +96,7 @@ export default class Stage {
                 break;
             }
             case "image": {
-                if (!this._picture && this.history) this._picture = new Picture(this.stageConfig, this.ctx, this.history);
+                if (!this._picture) this._picture = new Picture(this.stageConfig, this.ctx, this._db);
                 await this._picture?.draw(element);
                 break;
             }
@@ -106,27 +106,27 @@ export default class Stage {
                 break;
             }
             case "video": {
-                if (!this._video && this.history) this._video = new Video(this.stageConfig, this.ctx, this.history);
+                if (!this._video) this._video = new Video(this.stageConfig, this.ctx, this._db);
                 await this._video?.draw(element, !!isThumbnail);
                 break;
             }
             case "latex": {
-                if (!this._picture && this.history) this._picture = new Picture(this.stageConfig, this.ctx, this.history);
+                if (!this._picture) this._picture = new Picture(this.stageConfig, this.ctx, this._db);
                 await this._picture?.draw(element);
                 break;
             }
             case "audio": {
-                if (!this._music && this.history) this._music = new Music(this.stageConfig, this.ctx, this.history);
+                if (!this._music) this._music = new Music(this.stageConfig, this.ctx, this._db);
                 await this._music?.draw(element);
                 break;
             }
             case "chart": {
-                if (!this._picture && this.history) this._picture = new Picture(this.stageConfig, this.ctx, this.history);
+                if (!this._picture) this._picture = new Picture(this.stageConfig, this.ctx, this._db);
                 await this._picture?.draw(element);
                 break;
             }
             case "table": {
-                if (!this._table && this.history) this._table = new Table(this.stageConfig, this.ctx);
+                if (!this._table) this._table = new Table(this.stageConfig, this.ctx);
                 await this._table?.draw(element);
                 break;
             }

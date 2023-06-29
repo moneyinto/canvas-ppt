@@ -15,17 +15,17 @@ import {
     IPPTTextElement,
     IPPTVideoElement
 } from "@/types/element";
-import { ELEMENT_RESIZE, THEME_COLOR } from "../config/stage";
+import { ELEMENT_RESIZE, THEME_COLOR } from "@/config/stage";
 import { IElementOptions, IMouseClick, IRectParameter, IRects } from "@/types";
-import { LINE_TYPE } from "../config/shapes";
+import { LINE_TYPE } from "@/config/shapes";
 import Listener from "../listener";
-import { Text } from "./text";
-import { Cursor } from "./cursor";
-import { Textarea } from "./textarea";
+import Text from "./text";
+import Cursor from "./cursor";
+import Textarea from "./textarea";
 import { IFontData } from "@/types/font";
-import { Contextmenu } from "./contextmenu";
+import Contextmenu from "./contextmenu";
 import emitter, { EmitterEvents } from "@/utils/emitter";
-import History from "./history";
+import DB from "@/utils/db";
 
 export default class ControlStage extends Stage {
     private _command: Command;
@@ -54,13 +54,13 @@ export default class ControlStage extends Stage {
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
-        history: History,
+        db: DB,
         command: Command,
         cursor: Cursor,
         textarea: Textarea,
         listener: Listener
     ) {
-        super(container, stageConfig, history);
+        super(container, stageConfig, db);
 
         this._canMoveCanvas = false;
         this._canCreate = false;

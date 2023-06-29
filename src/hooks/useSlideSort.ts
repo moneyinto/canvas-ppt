@@ -1,6 +1,6 @@
 import Editor from "@/plugins/editor";
 import { ISlide } from "@/types/slide";
-import { OPTION_TYPE } from "@/plugins/config/options";
+import { OPTION_TYPE } from "@/config/options";
 import { ref, Ref } from "vue";
 
 export default (

@@ -1,10 +1,10 @@
-import Command from "@/plugins/command";
+import Command from "../command";
 import { IFontData } from "@/types/font";
 import StageConfig from "../stage/config";
-import { Cursor } from "./cursor";
-import { Textarea } from "./textarea";
+import Cursor from "./cursor";
+import Textarea from "./textarea";
 
-export class Text {
+export default class Text {
     private _stageConfig: StageConfig;
 
     private _textarea: HTMLTextAreaElement;

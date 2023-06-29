@@ -11,12 +11,12 @@ import {
     createTextElement
 } from "@/utils/create";
 import { encrypt } from "@/utils/crypto";
-import { baseFontConfig } from "../config/font";
+import { baseFontConfig } from "@/config/font";
 import History from "../editor/history";
 import Listener from "../listener";
 import { KeyMap } from "../shortCut/keyMap";
 import StageConfig, { TEXT_MARGIN } from "../stage/config";
-import { Cursor } from "../editor/cursor";
+import Cursor from "../editor/cursor";
 import {
     IPPTAudioElement,
     IPPTElement,
@@ -32,10 +32,10 @@ import {
     IPPTVideoElement
 } from "@/types/element";
 import { IFontData, ITextStyle } from "@/types/font";
-import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
+import { VIEWPORT_SIZE, VIEWRATIO } from "@/config/stage";
 import { IElementAlignType } from "@/types";
 import { IPPTAnimation, ISlideBackground } from "@/types/slide";
-import { OPTION_TYPE } from "../config/options";
+import { OPTION_TYPE } from "@/config/options";
 
 export default class Command {
     private _stageConfig: StageConfig;

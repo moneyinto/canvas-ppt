@@ -1,14 +1,14 @@
 import { getShapePath } from "@/utils/shape";
 import { IPPTShapeElement } from "@/types/element";
 import StageConfig from "./config";
-import { OutLine } from "./outline";
-import { Shadow } from "./shadow";
-import { Fill } from "./fill";
+import OutLine from "./outline";
+import Shadow from "./shadow";
+import Fill from "./fill";
 import Gradient from "./gradient";
-import { RichText } from "./richText";
+import RichText from "./richText";
 import Animation from "./animation";
 
-export class Shape {
+export default class Shape {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
     private _outline: OutLine;

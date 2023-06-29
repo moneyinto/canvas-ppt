@@ -1,4 +1,4 @@
-export class Textarea {
+export default class Textarea {
     private _textarea: HTMLTextAreaElement;
     private _container: HTMLDivElement;
     constructor(container: HTMLDivElement) {

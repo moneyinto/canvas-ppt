@@ -1,22 +1,22 @@
-import History from "@/plugins/editor/history";
 import { IPPTVideoElement } from "@/types/element";
 import { sleep, fomatTime } from "@/utils";
 import StageConfig from "./config";
 import Animation from "./animation";
+import DB from "@/utils/db";
 
 export default class Video {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
-    private _history: History;
+    private _db: DB;
     private _animation: Animation;
     constructor(
         stageConfig: StageConfig,
         ctx: CanvasRenderingContext2D,
-        history: History
+        db: DB
     ) {
         this._ctx = ctx;
         this._stageConfig = stageConfig;
-        this._history = history;
+        this._db = db;
         this._animation = new Animation(stageConfig, ctx);
     }
 
@@ -35,7 +35,7 @@ export default class Video {
         return new Promise(resolve => {
             let video = document.getElementById(id);
             if (video) return resolve(video as HTMLVideoElement);
-            this._history.getFile(src).then((file: string) => {
+            this._db.getFile(src).then((file: string) => {
                 video = this.createVideo(id, file);
                 video.oncanplay = async () => {
                     // 延缓处理主图视频无法初始化问题

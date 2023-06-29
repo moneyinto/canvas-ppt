@@ -79,7 +79,7 @@
 </template>
 
 <script lang="ts" setup>
-import { THEME_COLOR } from "@/plugins/config/stage";
+import { THEME_COLOR } from "@/config/stage";
 import { inject, PropType, Ref, ref, watch } from "vue";
 import FillPool from "@/components/FillPool.vue";
 import SvgIcon from "@/components/SvgIcon.vue";

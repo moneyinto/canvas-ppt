@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts" setup>
-import { THEME_COLOR } from "@/plugins/config/stage";
+import { THEME_COLOR } from "@/config/stage";
 import { inject, PropType, Ref, ref } from "vue";
 import SvgIcon from "@/components/SvgIcon.vue";
 import { IPPTElement } from "@/types/element";

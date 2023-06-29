@@ -31,9 +31,6 @@ import FontColor from "./FontColor.vue";
 import FontFamily from "./FontFamily.vue";
 import Align from "./Align.vue";
 import LineHeight from "./LineHeight.vue";
-// import Editor from "@/plugins/editor";
-
-// const instance = inject<Ref<Editor>>("instance");
 
 defineProps({
     elements: {

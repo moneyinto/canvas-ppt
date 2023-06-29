@@ -2,14 +2,15 @@ import Stage from "../stage";
 import StageConfig from "../stage/config";
 import { ISlide } from "@/types/slide";
 import Background from "../stage/background";
-import History from "../editor/history";
 import { debounce } from "@/utils";
 import Animation from "./animation";
+import DB from "@/utils/db";
 
 export default class View {
     public stageConfig: StageConfig;
     public slide: ISlide;
     public container: HTMLDivElement;
+    public db: DB;
     private _stage: Stage;
     private _background: Background;
     private _resizeObserver: ResizeObserver | null;
@@ -18,7 +19,7 @@ export default class View {
     private _isScreen: boolean;
     private _animation: Animation;
 
-    constructor(container: HTMLDivElement, slide: ISlide, history: History, resize?: boolean, isThumbnail?: boolean, isScreen?: boolean) {
+    constructor(container: HTMLDivElement, slide: ISlide, resize?: boolean, isThumbnail?: boolean, isScreen?: boolean) {
         this.slide = slide;
 
         this.container = container;
@@ -27,6 +28,8 @@ export default class View {
         this._isThumbnail = !!isThumbnail;
         this._isScreen = !!isScreen;
 
+        this.db = new DB();
+
         // 画板配置
         this.stageConfig = new StageConfig(container);
 
@@ -34,9 +37,9 @@ export default class View {
         this._isScreen && this.stageConfig.initSlideAnimation(slide);
 
         // 创建展示画板
-        this._stage = new Stage(container, this.stageConfig);
+        this._stage = new Stage(container, this.stageConfig, this.db);
 
-        this._background = new Background(this.stageConfig, this._stage.ctx, history);
+        this._background = new Background(this.stageConfig, this._stage.ctx, this.db);
 
         this.stageConfig.resetDrawView = async () => {
             await this._drawPage();

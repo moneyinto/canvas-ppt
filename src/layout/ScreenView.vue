@@ -49,24 +49,19 @@
 <script lang="ts" setup>
 import {
     computed,
-    inject,
     nextTick,
     onUnmounted,
     PropType,
-    Ref,
     ref
 } from "vue";
 import { ISlide } from "@/types/slide";
 import Screen from "@/plugins/screen";
 import { KeyMap } from "@/plugins/shortCut/keyMap";
 import { message } from "ant-design-vue";
-import Editor from "@/plugins/editor";
 import SvgIcon from "@/components/SvgIcon.vue";
 import { OPTION_TYPE, IElement } from "mwhiteboard";
 
 const emit = defineEmits(["endPreview"]);
-
-const instance = inject<Ref<Editor>>("instance");
 
 const props = defineProps({
     slides: {
@@ -99,11 +94,10 @@ const options = ref({
 
 let screen: Screen | undefined;
 nextTick(() => {
-    if (screenRef.value && instance?.value) {
+    if (screenRef.value) {
         screen = new Screen(
             screenRef.value,
-            previewSlide.value,
-            instance.value.history
+            previewSlide.value
         );
 
         screen.mouseSingleClick = next;

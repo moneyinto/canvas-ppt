@@ -1,11 +1,11 @@
 import { IFontData, ILineData } from "@/types/font";
 import { IPPTShapeElement, IPPTTableCell, IPPTTableElement, IPPTTextElement } from "@/types/element";
 import StageConfig, { TEXT_MARGIN } from "../stage/config";
-import { Textarea } from "./textarea";
+import Textarea from "./textarea";
 
 const COMPENSTATE_LEN = 4;
 
-export class Cursor {
+export default class Cursor {
     private _container: HTMLDivElement;
     private _textarea: Textarea;
     private _cursor: HTMLDivElement | null;

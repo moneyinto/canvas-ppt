@@ -39,7 +39,7 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { HOTKEY_DOC } from "@/plugins/config/shortcut";
+import { HOTKEY_DOC } from "@/config/shortcut";
 
 const visible = ref(false);
 const goIssues = () => {

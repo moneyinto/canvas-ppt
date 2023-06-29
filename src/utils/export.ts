@@ -14,7 +14,7 @@ import Pptxgen from "pptxgenjs";
 import tinycolor from "tinycolor2";
 import { getShapePath } from "./shape";
 import { SvgPoints, toPoints } from "./svgPathParser";
-import { defaultAudioSrc } from "@/plugins/config";
+import { defaultAudioSrc } from "@/config";
 const INCH_PX_RATIO = 100;
 const PT_PX_RATIO = 0.73;
 

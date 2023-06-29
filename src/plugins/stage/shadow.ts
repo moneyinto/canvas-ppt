@@ -1,6 +1,6 @@
 import { IPPTElementShadow } from "@/types/element";
 
-export class Shadow {
+export default class Shadow {
     private _ctx: CanvasRenderingContext2D;
     constructor(ctx: CanvasRenderingContext2D) {
         this._ctx = ctx;

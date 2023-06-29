@@ -1,4 +1,4 @@
-import { OPTION_TYPE } from "../plugins/config/options";
+import { OPTION_TYPE } from "@/config/options";
 import { ISlide } from "./slide";
 
 export type IBoundsCoords = [number, number, number, number];

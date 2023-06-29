@@ -1,4 +1,4 @@
-import { getAnimationStatus } from "@/plugins/config/animationStatus";
+import { getAnimationStatus } from "@/config/animationStatus";
 import StageConfig from "./config";
 import { IPPTElement } from "@/types/element";
 

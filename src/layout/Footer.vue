@@ -47,7 +47,7 @@
 
 <script lang="ts" setup>
 import { ref, inject, Ref, watch, onMounted } from "vue";
-import { SHORTCUT } from "@/plugins/config/shortcut";
+import { SHORTCUT } from "@/config/shortcut";
 import Editor from "@/plugins/editor";
 import SvgIcon from "@/components/SvgIcon.vue";
 import { enterFullScreen, exitFullScreen, isFullScreen } from "@/utils";

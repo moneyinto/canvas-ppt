@@ -1,7 +1,7 @@
 import { deepClone } from "@/utils";
 import { getShapePath } from "@/utils/shape";
-import { baseFontConfig } from "../config/font";
-import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
+import { baseFontConfig } from "@/config/font";
+import { VIEWPORT_SIZE, VIEWRATIO } from "@/config/stage";
 import Listener from "../listener";
 import { ICacheImage, IRectParameter } from "@/types";
 import { ICreatingElement, IPPTElement, IPPTShapeElement, IPPTTableCell, IPPTTableElement, IPPTTextElement } from "@/types/element";

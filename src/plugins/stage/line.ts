@@ -2,7 +2,7 @@ import { IPPTLineElement } from "@/types/element";
 import StageConfig from "./config";
 import Animation from "./animation";
 
-export class Line {
+export default class Line {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
     private _animation: Animation;

@@ -46,7 +46,7 @@ import Editor from "@/plugins/editor";
 import { IPPTElement, IPPTShapeElement, IPPTTableElement, IPPTTextElement } from "@/types/element";
 import SvgIcon from "@/components/SvgIcon.vue";
 import { IFontData } from "@/types/font";
-import { SYS_FONTS } from "@/plugins/config/font";
+import { SYS_FONTS } from "@/config/font";
 import { isSupportFont } from "@/utils";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 
