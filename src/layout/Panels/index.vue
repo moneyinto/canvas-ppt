@@ -11,6 +11,7 @@ import { PropType, computed, onMounted, onUnmounted, ref } from "vue";
 import Background from "./Background.vue";
 import Animation from "./Animation.vue";
 import { IPPTElement } from "@/types/element";
+import PageSwitch from "./PageSwitch.vue";
 
 defineProps({
     visible: {
@@ -28,7 +29,8 @@ const panel = ref<PANELS | "">("");
 const PanelComponent = computed(() => {
     const PanelMap: any = {
         [PANELS.BACKGROUND]: Background,
-        [PANELS.ANIMATION]: Animation
+        [PANELS.ANIMATION]: Animation,
+        [PANELS.PAGE_SWITCH]: PageSwitch
     };
 
     return panel.value ? PanelMap[panel.value] : null;

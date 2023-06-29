@@ -1,8 +1,8 @@
 <template>
-    <div class="ppt-background-panel" @click="outsideClick">
+    <div class="ppt-animation-panel" @click="outsideClick">
         <div class="ppt-panel-header">
             <div class="ppt-panel-title">
-                <SvgIcon name="background" :size="32" />
+                <SvgIcon name="animation" :size="32" />
                 元素动画
             </div>
             <SvgIcon
@@ -350,7 +350,7 @@ const onDragEnd = () => {
 </script>
 
 <style lang="scss" scoped>
-.ppt-background-panel {
+.ppt-animation-panel {
     height: 100%;
     display: flex;
     flex-direction: column;
