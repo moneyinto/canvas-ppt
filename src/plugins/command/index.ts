@@ -36,14 +36,12 @@ import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
 import { IElementAlignType } from "@/types";
 import { IPPTAnimation, ISlideBackground } from "@/types/slide";
 import { OPTION_TYPE } from "../config/options";
-import Animation from "./animation";
 
 export default class Command {
     private _stageConfig: StageConfig;
     private _listener: Listener;
     private _history: History;
     private _cursor: Cursor;
-    private _animation: Animation;
 
     private _updateDebounce: null | number | NodeJS.Timeout;
     private _addTextRenderThrottle: null | Date;
@@ -57,7 +55,6 @@ export default class Command {
         this._listener = listener;
         this._history = history;
         this._cursor = cursor;
-        this._animation = new Animation(stageConfig);
 
         this._updateDebounce = null;
         this._addTextRenderThrottle = null;

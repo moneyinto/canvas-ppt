@@ -4,7 +4,7 @@ import { ISlide } from "@/types/slide";
 import Background from "../stage/draw/background";
 import History from "../editor/history";
 import { debounce } from "@/utils";
-import Animation from "../command/animation";
+import Animation from "./animation";
 
 export default class View {
     public stageConfig: StageConfig;
