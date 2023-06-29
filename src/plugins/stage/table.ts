@@ -1,4 +1,4 @@
-import StageConfig from "../config";
+import StageConfig from "./config";
 import { Fill } from "./fill";
 import { OutLine } from "./outline";
 import { Shadow } from "./shadow";

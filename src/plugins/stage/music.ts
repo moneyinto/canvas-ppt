@@ -1,5 +1,5 @@
 import { IPPTAudioElement } from "@/types/element";
-import StageConfig from "../config";
+import StageConfig from "./config";
 import History from "@/plugins/editor/history";
 import { defaultAudioSrc, defaultImageSrc } from "@/plugins/config";
 import Animation from "./animation";

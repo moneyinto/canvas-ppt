@@ -1,6 +1,6 @@
 import Command from "@/plugins/command";
 import { IFontData } from "@/types/font";
-import StageConfig from "./config";
+import StageConfig from "../stage/config";
 import { Cursor } from "./cursor";
 import { Textarea } from "./textarea";
 

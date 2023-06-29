@@ -2,7 +2,7 @@ import { SHAPE_TYPE } from "@/plugins/config/shapes";
 import { IPPTShapeElement, IPPTTableElement, IPPTTextElement } from "@/types/element";
 import { IFontData } from "@/types/font";
 import { getShapePath } from "@/utils/shape";
-import StageConfig, { TEXT_MARGIN } from "../config";
+import StageConfig, { TEXT_MARGIN } from "./config";
 import { OutLine } from "./outline";
 import { Shadow } from "./shadow";
 import { Fill } from "./fill";

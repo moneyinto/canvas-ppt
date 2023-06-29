@@ -1,6 +1,6 @@
 import { getShapePath } from "@/utils/shape";
 import { IPPTShapeElement } from "@/types/element";
-import StageConfig from "../config";
+import StageConfig from "./config";
 import { OutLine } from "./outline";
 import { Shadow } from "./shadow";
 import { Fill } from "./fill";

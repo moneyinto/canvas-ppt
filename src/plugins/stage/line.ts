@@ -1,5 +1,5 @@
 import { IPPTLineElement } from "@/types/element";
-import StageConfig from "../config";
+import StageConfig from "./config";
 import Animation from "./animation";
 
 export class Line {

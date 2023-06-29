@@ -1,7 +1,7 @@
 import History from "@/plugins/editor/history";
 import { IPPTVideoElement } from "@/types/element";
 import { sleep, fomatTime } from "@/utils";
-import StageConfig from "../config";
+import StageConfig from "./config";
 import Animation from "./animation";
 
 export default class Video {

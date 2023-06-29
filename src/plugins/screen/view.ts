@@ -1,7 +1,7 @@
 import Stage from "../stage";
 import StageConfig from "../stage/config";
 import { ISlide } from "@/types/slide";
-import Background from "../stage/draw/background";
+import Background from "../stage/background";
 import History from "../editor/history";
 import { debounce } from "@/utils";
 import Animation from "./animation";
@@ -34,7 +34,7 @@ export default class View {
         this._isScreen && this.stageConfig.initSlideAnimation(slide);
 
         // 创建展示画板
-        this._stage = new Stage(container, this.stageConfig, history);
+        this._stage = new Stage(container, this.stageConfig);
 
         this._background = new Background(this.stageConfig, this._stage.ctx, history);
 

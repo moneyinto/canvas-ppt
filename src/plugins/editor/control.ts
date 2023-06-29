@@ -1,5 +1,5 @@
-import Stage from ".";
-import StageConfig, { TEXT_MARGIN } from "./config";
+import Stage from "../stage";
+import StageConfig, { TEXT_MARGIN } from "../stage/config";
 import { throttleRAF, deepClone, normalizeAngle, isFullScreen, getVideoElementControlPoints, getTableElementControlPoints } from "@/utils";
 import Command from "../command";
 import {
@@ -25,7 +25,7 @@ import { Textarea } from "./textarea";
 import { IFontData } from "@/types/font";
 import { Contextmenu } from "./contextmenu";
 import emitter, { EmitterEvents } from "@/utils/emitter";
-import History from "../editor/history";
+import History from "./history";
 
 export default class ControlStage extends Stage {
     private _command: Command;

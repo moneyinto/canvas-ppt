@@ -16,7 +16,7 @@ import History from "../editor/history";
 import Listener from "../listener";
 import { KeyMap } from "../shortCut/keyMap";
 import StageConfig, { TEXT_MARGIN } from "../stage/config";
-import { Cursor } from "../stage/cursor";
+import { Cursor } from "../editor/cursor";
 import {
     IPPTAudioElement,
     IPPTElement,

@@ -1,7 +1,7 @@
-import Stage from ".";
-import History from "../editor/history";
-import StageConfig from "./config";
-import Background from "./draw/background";
+import Stage from "../stage";
+import History from "./history";
+import StageConfig from "../stage/config";
+import Background from "../stage/background";
 
 export default class ViewStage extends Stage {
     private _background: Background;

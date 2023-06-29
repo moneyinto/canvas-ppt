@@ -1,13 +1,13 @@
 import StageConfig from "./config";
 import { IPPTElement } from "@/types/element";
-import { Line } from "./draw/line";
-import { RichText } from "./draw/richText";
-import { Shape } from "./draw/shape";
-import { Picture } from "./draw/picture";
-import Video from "./draw/video";
+import { Line } from "./line";
+import { RichText } from "./richText";
+import { Shape } from "./shape";
+import { Picture } from "./picture";
+import Video from "./video";
 import History from "../editor/history";
-import { Music } from "./draw/music";
-import Table from "./draw/table";
+import { Music } from "./music";
+import Table from "./table";
 
 export default class Stage {
     public canvas: HTMLCanvasElement;

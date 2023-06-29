@@ -1,5 +1,5 @@
 import { getAnimationStatus } from "@/plugins/config/animationStatus";
-import StageConfig from "../config";
+import StageConfig from "./config";
 import { IPPTElement } from "@/types/element";
 
 export default class Animation {

@@ -1,6 +1,6 @@
 import { IFontData, ILineData } from "@/types/font";
 import { IPPTShapeElement, IPPTTableCell, IPPTTableElement, IPPTTextElement } from "@/types/element";
-import StageConfig, { TEXT_MARGIN } from "./config";
+import StageConfig, { TEXT_MARGIN } from "../stage/config";
 import { Textarea } from "./textarea";
 
 const COMPENSTATE_LEN = 4;

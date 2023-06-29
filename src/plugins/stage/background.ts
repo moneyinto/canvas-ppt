@@ -1,6 +1,6 @@
 import { VIEWPORT_SIZE, VIEWRATIO } from "@/plugins/config/stage";
 import { ISlideBackground } from "@/types/slide";
-import StageConfig from "../config";
+import StageConfig from "./config";
 import History from "@/plugins/editor/history";
 import Gradient from "./gradient";
 import { defaultImageSrc } from "@/plugins/config";

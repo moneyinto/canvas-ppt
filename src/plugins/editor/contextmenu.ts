@@ -3,7 +3,7 @@ import ContextmenuComponent from "@/components/Contextmenu/index.vue";
 import { createVNode, render } from "vue";
 import { IContextmenuItem } from "@/types/contextmenu";
 import Command from "../command";
-import StageConfig from "./config";
+import StageConfig from "../stage/config";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 import { PANELS } from "@/utils/panel";
 import { IPPTTableElement } from "@/types/element";

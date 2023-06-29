@@ -1,6 +1,6 @@
 import History from "@/plugins/editor/history";
 import { IPPTChartElement, IPPTImageElement, IPPTLatexElement } from "@/types/element";
-import StageConfig from "../config";
+import StageConfig from "./config";
 import { Shadow } from "./shadow";
 import { Fill } from "./fill";
 import { OutLine } from "./outline";
