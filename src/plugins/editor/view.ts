@@ -1,18 +1,18 @@
 import Stage from "../stage";
-import History from "./history";
 import StageConfig from "../stage/config";
 import Background from "../stage/background";
+import DB from "@/utils/db";
 
 export default class ViewStage extends Stage {
     private _background: Background;
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
-        history: History
+        db: DB
     ) {
-        super(container, stageConfig, history);
+        super(container, stageConfig, db);
 
-        this._background = new Background(stageConfig, this.ctx, history);
+        this._background = new Background(stageConfig, this.ctx, db);
         this._drawPage();
     }
 
