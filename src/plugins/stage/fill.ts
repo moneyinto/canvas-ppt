@@ -1,6 +1,6 @@
 import { IPPTElementFill } from "@/types/element";
 
-export class Fill {
+export default class Fill {
     private _ctx: CanvasRenderingContext2D;
     constructor(ctx: CanvasRenderingContext2D) {
         this._ctx = ctx;

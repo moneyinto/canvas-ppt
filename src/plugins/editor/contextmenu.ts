@@ -3,12 +3,12 @@ import ContextmenuComponent from "@/components/Contextmenu/index.vue";
 import { createVNode, render } from "vue";
 import { IContextmenuItem } from "@/types/contextmenu";
 import Command from "../command";
-import StageConfig from "./config";
+import StageConfig from "../stage/config";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 import { PANELS } from "@/utils/panel";
 import { IPPTTableElement } from "@/types/element";
 
-export class Contextmenu {
+export default class Contextmenu {
     private _command: Command;
     private _stageConfig: StageConfig;
     private _menuDom: HTMLDivElement | null;
@@ -148,14 +148,13 @@ export class Contextmenu {
                     emitter.emit(EmitterEvents.DELETE_SLIDE);
                 }
             },
-            { divider: true, hide: selectedElement },
+            { divider: true, hide: !selectedElement },
             {
-                text: "背景设置",
-                hide: selectedElement,
-                icon: "background",
+                text: "删除",
+                subText: "Delete",
+                hide: !selectedElement,
                 handler: () => {
-                    emitter.emit(EmitterEvents.SHOW_PANELS, true);
-                    emitter.emit(EmitterEvents.PANELS_TYPE, PANELS.BACKGROUND);
+                    this._command.executeDelete();
                 }
             },
             { divider: true, hide: !selectedElement },
@@ -384,13 +383,22 @@ export class Contextmenu {
                     this._command.executeSplitCell();
                 }
             },
-            { divider: true, hide: !selectedElement },
+            { divider: true },
             {
-                text: "删除",
-                subText: "Delete",
-                hide: !selectedElement,
+                text: "背景设置",
+                hide: selectedElement,
+                icon: "background",
                 handler: () => {
-                    this._command.executeDelete();
+                    emitter.emit(EmitterEvents.SHOW_PANELS, true);
+                    emitter.emit(EmitterEvents.PANELS_TYPE, PANELS.BACKGROUND);
+                }
+            },
+            {
+                text: "元素动画",
+                icon: "animation",
+                handler: () => {
+                    emitter.emit(EmitterEvents.SHOW_PANELS, true);
+                    emitter.emit(EmitterEvents.PANELS_TYPE, PANELS.ANIMATION);
                 }
             }
         ];

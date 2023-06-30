@@ -1,18 +1,25 @@
 <template>
     <div class="ppt-panel" :class="visible && 'active'">
-        <component :is="PanelComponent"></component>
+        <component :is="PanelComponent" :elements="elements"></component>
     </div>
 </template>
 
 <script lang="ts" setup>
 import { PANELS } from "@/utils/panel";
 import emitter, { EmitterEvents } from "@/utils/emitter";
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { PropType, computed, onMounted, onUnmounted, ref } from "vue";
 import Background from "./Background.vue";
+import Animation from "./Animation.vue";
+import { IPPTElement } from "@/types/element";
+import PageSwitch from "./PageSwitch.vue";
 
 defineProps({
     visible: {
         type: Boolean,
+        required: true
+    },
+    elements: {
+        type: Object as PropType<IPPTElement[]>,
         required: true
     }
 });
@@ -21,7 +28,9 @@ const panel = ref<PANELS | "">("");
 
 const PanelComponent = computed(() => {
     const PanelMap: any = {
-        [PANELS.BACKGROUND]: Background
+        [PANELS.BACKGROUND]: Background,
+        [PANELS.ANIMATION]: Animation,
+        [PANELS.PAGE_SWITCH]: PageSwitch
     };
 
     return panel.value ? PanelMap[panel.value] : null;

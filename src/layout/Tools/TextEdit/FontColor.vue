@@ -10,7 +10,7 @@
                     class="ppt-tool-block"
                     @click="setFontColor(cacheFontColor)"
                 >
-                    <PPTIcon icon="fontColor" :size="26" />
+                    <SvgIcon name="fontColor" :size="26" />
                     <div
                         class="font-color-line"
                         :style="{ background: cacheFontColor }"
@@ -22,7 +22,7 @@
                         class="ppt-tool-dropdown"
                         @click="showFontColor = !showFontColor"
                     >
-                        <PPTIcon icon="down" :size="6" />
+                        <SvgIcon name="down" :size="6" />
                     </div>
 
                     <template #content>
@@ -40,12 +40,12 @@
 </template>
 
 <script lang="ts" setup>
-import { THEME_COLOR } from "@/plugins/config/stage";
+import { THEME_COLOR } from "@/config/stage";
 import { inject, onMounted, onUnmounted, Ref, ref } from "vue";
 import ColorBoard from "@/components/ColorBoard.vue";
 import { STORAGE_FONT_COLOR } from "@/utils/storage";
 import Editor from "@/plugins/editor";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const instance = inject<Ref<Editor>>("instance");

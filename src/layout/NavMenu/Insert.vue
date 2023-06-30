@@ -11,7 +11,7 @@
                 <a-sub-menu key="sub-image">
                     <template #title>
                         <div class="ppt-menu-option">
-                            <PPTIcon icon="image" :size="28" />
+                            <SvgIcon name="image" :size="28" />
                             &nbsp;&nbsp;图片
                         </div>
                     </template>
@@ -21,14 +21,14 @@
                             accept="image/*"
                             @change="insertImageElement"
                         >
-                            <PPTIcon icon="upload" :size="28" />&nbsp;&nbsp;本地上传
+                            <SvgIcon name="upload" :size="28" />&nbsp;&nbsp;本地上传
                         </FileInput>
                     </a-menu-item>
                 </a-sub-menu>
                 <a-sub-menu popupClassName="ppt-shape-box" key="sub-shape">
                     <template #title>
                         <div class="ppt-menu-option">
-                            <PPTIcon icon="shape" :size="28" />
+                            <SvgIcon name="shape" :size="28" />
                             &nbsp;&nbsp;形状
                         </div>
                     </template>
@@ -38,58 +38,58 @@
                 </a-sub-menu>
                 <a-menu-item>
                     <div class="ppt-menu-option" @click="insertTextElement">
-                        <PPTIcon icon="text" :size="28" />
+                        <SvgIcon name="text" :size="28" />
                         &nbsp;&nbsp;文本框
                     </div>
                 </a-menu-item>
                 <a-sub-menu key="sub-chart">
                     <template #title>
                         <div class="ppt-menu-option">
-                            <PPTIcon icon="chart" :size="28" />
+                            <SvgIcon name="chart" :size="28" />
                             &nbsp;&nbsp;图表
                         </div>
                     </template>
                     <a-menu-item>
                         <div class="ppt-menu-option" @click="openChart('bar', true)">
-                            <PPTIcon icon="bar_h" :size="28" />
+                            <SvgIcon name="bar_h" :size="28" />
                             &nbsp;&nbsp;条形图
                         </div>
                     </a-menu-item>
                     <a-menu-item>
                         <div class="ppt-menu-option" @click="openChart('bar')">
-                            <PPTIcon icon="bar_v" :size="28" />
+                            <SvgIcon name="bar_v" :size="28" />
                             &nbsp;&nbsp;柱状图
                         </div>
                     </a-menu-item>
                     <a-menu-item>
                         <div class="ppt-menu-option" @click="openChart('line')">
-                            <PPTIcon icon="line" :size="28" />
+                            <SvgIcon name="line" :size="28" />
                             &nbsp;&nbsp;折线图
                         </div>
                     </a-menu-item>
                     <a-menu-item>
                         <div class="ppt-menu-option" @click="openChart('pie')">
-                            <PPTIcon icon="pie" :size="28" />
+                            <SvgIcon name="pie" :size="28" />
                             &nbsp;&nbsp;饼状图
                         </div>
                     </a-menu-item>
                     <a-menu-item>
                         <div class="ppt-menu-option" @click="openChart('funnel')">
-                            <PPTIcon icon="funnel" :size="28" />
+                            <SvgIcon name="funnel" :size="28" />
                             &nbsp;&nbsp;漏斗图
                         </div>
                     </a-menu-item>
                 </a-sub-menu>
                 <a-menu-item>
                     <div class="ppt-menu-option" @click="openLatex()">
-                        <PPTIcon icon="latex" :size="28" />
+                        <SvgIcon name="latex" :size="28" />
                         &nbsp;&nbsp;公式
                     </div>
                 </a-menu-item>
                 <a-sub-menu key="sub-video">
                     <template #title>
                         <div class="ppt-menu-option">
-                            <PPTIcon icon="video" :size="28" />
+                            <SvgIcon name="video" :size="28" />
                             &nbsp;&nbsp;视频
                         </div>
                     </template>
@@ -99,7 +99,7 @@
                             accept="video/*"
                             @change="insertVideoElement"
                         >
-                            <PPTIcon icon="upload" :size="28" />&nbsp;&nbsp;本地上传
+                            <SvgIcon name="upload" :size="28" />&nbsp;&nbsp;本地上传
                         </FileInput>
                     </a-menu-item>
                 </a-sub-menu>
@@ -107,7 +107,7 @@
                     <template #title>
                         <div class="ppt-menu-option">
                             &nbsp;
-                            <PPTIcon icon="audio" :size="16" />
+                            <SvgIcon name="audio" :size="16" />
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;音频
                         </div>
                     </template>
@@ -117,7 +117,7 @@
                             accept="audio/*"
                             @change="insertAudioElement"
                         >
-                            <PPTIcon icon="upload" :size="28" />&nbsp;&nbsp;本地上传
+                            <SvgIcon name="upload" :size="28" />&nbsp;&nbsp;本地上传
                         </FileInput>
                     </a-menu-item>
                 </a-sub-menu>
@@ -132,7 +132,7 @@ import Editor from "@/plugins/editor";
 import ShapePool from "@/components/ShapePool.vue";
 import FileInput from "@/components/FileInput.vue";
 import useInsertElement from "@/hooks/useInsertElement";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import { ChartType } from "@/types/element";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 

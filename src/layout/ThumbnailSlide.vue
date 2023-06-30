@@ -11,7 +11,7 @@
 
 <script lang="ts" setup>
 import { computed, inject, nextTick, onUnmounted, PropType, Ref, ref } from "vue";
-import { VIEWRATIO } from "@/plugins/config/stage";
+import { VIEWRATIO } from "@/config/stage";
 import { ISlide } from "@/types/slide";
 import Thumbnail from "@/plugins/screen/thumbnail";
 import emitter, { EmitterEvents } from "@/utils/emitter";

@@ -29,7 +29,7 @@
                 <a-menu-divider />
                 <a-menu-item>
                     <div class="ppt-menu-option" @click="setBackground()">
-                        <PPTIcon icon="background" :size="28" />
+                        <SvgIcon name="background" :size="28" />
                         &nbsp;&nbsp;背景设置
                     </div>
                 </a-menu-item>
@@ -42,7 +42,7 @@
 import emitter, { EmitterEvents } from "@/utils/emitter";
 import { PANELS } from "@/utils/panel";
 import { ref } from "vue";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 
 const slideShowVisible = ref(false);
 

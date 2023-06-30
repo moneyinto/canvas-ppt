@@ -10,34 +10,37 @@ import {
     IOnFontUnderLineChange,
     IOnFontStrikoutChange,
     IOnFontFamilyChange,
-    IOnTableCellEditChange
+    IOnTableCellEditChange,
+    IOnAnimationsChange
 } from "@/types/listener";
 
 export default class Listener {
-    public onZoomChange: IOnZoomChange | null;
-    public onEditChange: IOnEditChange | null;
-    public onUpdateThumbnailSlide: IOnUpdateThumbnailSlide | null;
-    public onSelectedChange: IOnSelectedChange | null;
-    public onInsertElementChange: IOnInsertElementChange | null;
-    public onFontSizeChange: IOnFontSizeChange | null;
-    public onFontWeightChange: IOnFontWeightChange | null;
-    public onFontStyleChange: IOnFontStyleChange | null;
-    public onFontUnderLineChange: IOnFontUnderLineChange | null;
-    public onFontStrikoutChange: IOnFontStrikoutChange | null;
-    public onFontFamilyChange: IOnFontFamilyChange | null;
-    public onTableCellEditChange: IOnTableCellEditChange | null;
+    public onZoomChange: IOnZoomChange;
+    public onEditChange: IOnEditChange;
+    public onUpdateThumbnailSlide: IOnUpdateThumbnailSlide;
+    public onSelectedChange: IOnSelectedChange;
+    public onInsertElementChange: IOnInsertElementChange;
+    public onFontSizeChange: IOnFontSizeChange;
+    public onFontWeightChange: IOnFontWeightChange;
+    public onFontStyleChange: IOnFontStyleChange;
+    public onFontUnderLineChange: IOnFontUnderLineChange;
+    public onFontStrikoutChange: IOnFontStrikoutChange;
+    public onFontFamilyChange: IOnFontFamilyChange;
+    public onTableCellEditChange: IOnTableCellEditChange;
+    public onAnimationsChange: IOnAnimationsChange;
     constructor() {
-        this.onZoomChange = null;
-        this.onEditChange = null;
-        this.onUpdateThumbnailSlide = null;
-        this.onSelectedChange = null;
-        this.onInsertElementChange = null;
-        this.onFontSizeChange = null;
-        this.onFontWeightChange = null;
-        this.onFontStyleChange = null;
-        this.onFontUnderLineChange = null;
-        this.onFontStrikoutChange = null;
-        this.onFontFamilyChange = null;
-        this.onTableCellEditChange = null;
+        this.onZoomChange = () => {};
+        this.onEditChange = () => {};
+        this.onUpdateThumbnailSlide = () => {};
+        this.onSelectedChange = () => {};
+        this.onInsertElementChange = () => {};
+        this.onFontSizeChange = () => {};
+        this.onFontWeightChange = () => {};
+        this.onFontStyleChange = () => {};
+        this.onFontUnderLineChange = () => {};
+        this.onFontStrikoutChange = () => {};
+        this.onFontFamilyChange = () => {};
+        this.onTableCellEditChange = () => {};
+        this.onAnimationsChange = () => {};
     }
 }

@@ -10,9 +10,9 @@
                     @mouseover="hoverOpacity = true"
                     @mouseleave="hoverOpacity = false"
                 >
-                    <PPTIcon icon="opacity" :size="26" />
+                    <SvgIcon name="opacity" :size="26" />
 
-                    <PPTIcon icon="down" :size="6" />
+                    <SvgIcon name="down" :size="6" />
                 </div>
             </a-tooltip>
 
@@ -54,7 +54,7 @@ import {
     IPPTLatexElement
 } from "@/types/element";
 import Editor from "@/plugins/editor";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 
 const props = defineProps({
     elements: {

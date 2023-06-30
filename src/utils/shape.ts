@@ -1,4 +1,4 @@
-import { SHAPE_TYPE } from "@/plugins/config/shapes";
+import { SHAPE_TYPE } from "@/config/shapes";
 
 export const getShapePath = (type: SHAPE_TYPE, width: number, height: number, needPathString?: boolean) => {
     const offsetX = -width / 2;

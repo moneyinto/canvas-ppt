@@ -1,6 +1,5 @@
 import { ISlide } from "@/types/slide";
 import View from "./view";
-import History from "../editor/history";
 import { getVideoElementControlPoints, sleep, throttleRAF } from "@/utils";
 import { IRects } from "@/types";
 import { IPPTVideoElement } from "@/types/element";
@@ -8,10 +7,9 @@ import { IPPTVideoElement } from "@/types/element";
 export default class Screen extends View {
     private _videoControlType = "";
     private _audioControlType = "";
-    private _history: History;
-    constructor(container: HTMLDivElement, slide: ISlide, history: History) {
-        super(container, slide, history, true);
-        this._history = history;
+    public mouseSingleClick: () => void = () => {};
+    constructor(container: HTMLDivElement, slide: ISlide) {
+        super(container, slide, true, false, true);
         this.container.addEventListener(
             "mousedown",
             this._mousedown.bind(this),
@@ -39,7 +37,7 @@ export default class Screen extends View {
         return new Promise(resolve => {
             let audio = document.getElementById(id);
             if (audio) return resolve(audio as HTMLAudioElement);
-            this._history.getFile(src).then((file: string) => {
+            this.db.getFile(src).then((file: string) => {
                 audio = this._createAudio(id, file);
                 audio.oncanplay = async () => {
                     await sleep(200);
@@ -118,6 +116,8 @@ export default class Screen extends View {
                     }
                 }
             }
+        } else {
+            this.mouseSingleClick();
         }
     }
 

@@ -35,7 +35,7 @@
                 </div>
             </div>
             <div class="ppt-panel-box" :class="showPanel && 'active'">
-                <Panels :visible="showPanel" />
+                <Panels :visible="showPanel" :elements="currentElements" />
             </div>
         </div>
         <div class="ppt-footer">

@@ -1,12 +1,12 @@
 import { deepClone } from "@/utils";
 import { getShapePath } from "@/utils/shape";
-import { baseFontConfig } from "../config/font";
-import { VIEWPORT_SIZE, VIEWRATIO } from "../config/stage";
+import { baseFontConfig } from "@/config/font";
+import { VIEWPORT_SIZE, VIEWRATIO } from "@/config/stage";
 import Listener from "../listener";
 import { ICacheImage, IRectParameter } from "@/types";
 import { ICreatingElement, IPPTElement, IPPTShapeElement, IPPTTableCell, IPPTTableElement, IPPTTextElement } from "@/types/element";
 import { IFontConfig, IFontData, ILineData } from "@/types/font";
-import { ISlide, ISlideBackground } from "@/types/slide";
+import { IPPTAnimation, ISlide, ISlideBackground } from "@/types/slide";
 
 export const TEXT_MARGIN = 5;
 
@@ -39,8 +39,21 @@ export default class StageConfig {
 
     public resetDrawView: (() => void) | null;
     public resetDrawOprate: (() => void) | null;
-    public hideCursor: (() => void) | null;
+    public hideCursor: () => void;
     public getFontSize: ((text: IFontData) => { width: number, height: number }) | null;
+
+    // 动画执行指针
+    public animationIndex = -1;
+    // 动画元素隐藏集合
+    public animationHideElements: string[] = [];
+    // 当前执行的动画集合
+    public actionAnimations: IPPTAnimation[][] = [];
+    // 判断动画是否正在执行
+    public isAnimation = false;
+    // 动画执行时间
+    public animationTime = 0;
+    // 动画执行累计时间
+    public animationCountTime = 0;
 
     private _container: HTMLDivElement;
     private _listener: Listener | undefined;
@@ -63,7 +76,7 @@ export default class StageConfig {
 
         this.resetDrawView = null;
         this.resetDrawOprate = null;
-        this.hideCursor = null;
+        this.hideCursor = () => {};
         this.getFontSize = null;
     }
 
@@ -93,7 +106,7 @@ export default class StageConfig {
         this.resetCheckDrawView();
         this.resetCheckDrawOprate();
 
-        this._listener?.onZoomChange && this._listener.onZoomChange(this.zoom);
+        this._listener?.onZoomChange(this.zoom);
     }
 
     public getWidth() {
@@ -130,7 +143,7 @@ export default class StageConfig {
         this.resetCheckDrawView();
         this.resetCheckDrawOprate();
 
-        this._listener?.onZoomChange && this._listener.onZoomChange(this.zoom);
+        this._listener?.onZoomChange(this.zoom);
     }
 
     public getStageArea() {
@@ -174,7 +187,7 @@ export default class StageConfig {
             this._container.style.cursor = "default";
         }
         this.insertElement = element;
-        this._listener?.onInsertElementChange && this._listener.onInsertElementChange(element);
+        this._listener?.onInsertElementChange(element);
     }
 
     public updateElement(element: IPPTElement) {
@@ -263,12 +276,12 @@ export default class StageConfig {
                 this.operateElements = [operateElement];
             }
         }
-        if (this._listener?.onSelectedChange) this._listener.onSelectedChange(this.operateElements);
+        this._listener?.onSelectedChange(this.operateElements);
     }
 
     public updateOperateElements(elements: IPPTElement[]) {
         this.operateElements = elements;
-        if (this._listener?.onSelectedChange) this._listener.onSelectedChange(this.operateElements);
+        this._listener?.onSelectedChange(this.operateElements);
     }
 
     public setBackground(background: ISlideBackground | undefined) {
@@ -290,7 +303,7 @@ export default class StageConfig {
         if (currentSlide?.background) {
             this.slides.forEach(slide => {
                 slide.background = currentSlide.background;
-                this._listener?.onUpdateThumbnailSlide && this._listener.onUpdateThumbnailSlide(slide);
+                this._listener?.onUpdateThumbnailSlide(slide);
             });
         }
     }
@@ -314,6 +327,11 @@ export default class StageConfig {
 
     public getCurrentSlide() {
         return this.slides.find((slide) => this.slideId === slide.id);
+    }
+
+    public getElementById(id: string) {
+        const slide = this.getCurrentSlide();
+        return slide?.elements.find((element) => element.id === id);
     }
 
     public addCacheImage(cacheImage: ICacheImage) {
@@ -768,6 +786,59 @@ export default class StageConfig {
         return undefined;
     }
 
+    // 初始化动画指针及隐藏元素的集合
+    initSlideAnimation(currentSlide: ISlide) {
+        this.animationIndex = -1;
+        // 为了兼容编辑情况下执行动画
+        this.setSlides([currentSlide]);
+        this.setSlideId(currentSlide.id);
+        const animations = currentSlide.animations || [];
+        const inElIds: string[] = [];
+        const outElIds: string[] = [];
+        animations.forEach((animation) => {
+            const inIndex = inElIds.indexOf(animation.elId);
+            const outIndex = outElIds.indexOf(animation.elId);
+            if (animation.type === "in" && inIndex === -1 && outIndex === -1) {
+                inElIds.push(animation.elId);
+            } else if (animation.type === "out" && outIndex === -1) {
+                outElIds.push(animation.elId);
+            }
+        });
+
+        this.animationHideElements = inElIds;
+
+        // 处理初始化索引值
+        if (animations.length > 0 && animations[0].trigger !== "click") {
+            const nextClick = animations.findIndex((animation) => animation.trigger === "click");
+            if (nextClick === -1) {
+                this.animationIndex = animations.length - 1;
+            } else {
+                this.animationIndex = nextClick - 1;
+            }
+
+            this.setActionAnimationsByIndex(0, this.animationIndex + 1);
+        }
+    }
+
+    // 根据索引获取动画集合
+    setActionAnimationsByIndex(start: number, end: number) {
+        this.actionAnimations = [];
+        const animations = this.getAnimations();
+        const actionAnimations: IPPTAnimation[][] = [];
+        animations.slice(start, end).forEach((animation, index) => {
+            if (index === 0) {
+                actionAnimations.push([animation]);
+            } else if (animation.trigger === "meantime") {
+                const lastIndex = actionAnimations.length - 1;
+                actionAnimations[lastIndex].push(animation);
+            } else if (animation.trigger === "after") {
+                actionAnimations.push([animation]);
+            }
+        });
+
+        this.actionAnimations = actionAnimations;
+    }
+
     startVideoRender() {
         this.autoVideoRender = true;
         window.requestAnimationFrame(() => {
@@ -781,5 +852,17 @@ export default class StageConfig {
     stopVideoRender() {
         this.autoVideoRender = false;
         this.resetCheckDrawView();
+    }
+
+    getAnimations() {
+        const currentSlide = this.getCurrentSlide();
+        if (!currentSlide) return [];
+        return currentSlide.animations || [];
+    }
+
+    setAnimations(animations: IPPTAnimation[]) {
+        const currentSlide = this.getCurrentSlide();
+        if (!currentSlide) return;
+        currentSlide.animations = animations;
     }
 }

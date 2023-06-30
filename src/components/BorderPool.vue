@@ -40,17 +40,17 @@
         <a-menu class="ppt-border-menu">
             <a-sub-menu class="ppt-sub-popup" :disabled="borderStyleDisabled">
                 <template #icon>
-                    <PPTIcon icon="borderStyle" :size="30" />
+                    <SvgIcon name="borderStyle" :size="30" />
                 </template>
                 <template #title>
                     <div class="ppt-border-title">边框样式</div>
                 </template>
                 <a-menu-item class="ppt-sub-menu" @click="updateStyle('solid')">
                     <div class="ppt-border-solid"></div>
-                    <PPTIcon
+                    <SvgIcon
                         class="border-checked"
                         :class="borderStyle === 'solid' && 'active'"
-                        icon="checked"
+                        name="checked"
                         :size="28"
                     />
                 </a-menu-item>
@@ -59,17 +59,17 @@
                     @click="updateStyle('dashed')"
                 >
                     <div class="ppt-border-dashed"></div>
-                    <PPTIcon
+                    <SvgIcon
                         class="border-checked"
                         :class="borderStyle === 'dashed' && 'active'"
-                        icon="checked"
+                        name="checked"
                         :size="28"
                     />
                 </a-menu-item>
             </a-sub-menu>
             <a-sub-menu>
                 <template #icon>
-                    <PPTIcon icon="borderWidth" :size="30" />
+                    <SvgIcon name="borderWidth" :size="30" />
                 </template>
                 <template #title>
                     <div class="ppt-border-title">边框粗细</div>
@@ -86,10 +86,10 @@
                             borderWidth: width + 'px'
                         }"
                     ></div>
-                    <PPTIcon
+                    <SvgIcon
                         class="border-checked"
                         :class="borderWidth === width && 'active'"
-                        icon="checked"
+                        name="checked"
                         :size="28"
                     />
                 </a-menu-item>
@@ -99,9 +99,9 @@
 </template>
 
 <script lang="ts" setup>
-import { THEME_COLOR } from "@/plugins/config/stage";
+import { THEME_COLOR } from "@/config/stage";
 import ColorBoard from "./ColorBoard.vue";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import Editor from "@/plugins/editor";
 import { PropType, Ref, inject, ref, watch } from "vue";
 import { STORAGE_BORDER_COLOR } from "@/utils/storage";

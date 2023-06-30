@@ -5,46 +5,46 @@
             <a-menu>
                 <a-menu-item :disabled="!canUndo" @click="undo()">
                     <div class="ppt-menu-option">
-                        <PPTIcon :class="!canUndo && 'disabled'" icon="undo" />
+                        <SvgIcon :class="!canUndo && 'disabled'" name="undo" />
                         &nbsp;&nbsp;撤销
                     </div>
                 </a-menu-item>
                 <a-menu-item :disabled="!canRedo" @click="redo()">
                     <div class="ppt-menu-option">
-                        <PPTIcon :class="!canRedo && 'disabled'" icon="redo" />
+                        <SvgIcon :class="!canRedo && 'disabled'" name="redo" />
                         &nbsp;&nbsp;重做
                     </div>
                 </a-menu-item>
                 <a-menu-divider />
                 <a-menu-item :disabled="disabledCut" @click="cut()">
                     <div class="ppt-menu-option">
-                        <PPTIcon icon="cut" />
+                        <SvgIcon name="cut" />
                         &nbsp;&nbsp;剪切
                     </div>
                 </a-menu-item>
                 <a-menu-item :disabled="disabledCut" @click="copy()">
                     <div class="ppt-menu-option">
-                        <PPTIcon icon="copy" />
+                        <SvgIcon name="copy" />
                         &nbsp;&nbsp;复制
                     </div>
                 </a-menu-item>
                 <a-menu-item @click="paste()">
                     <div class="ppt-menu-option">
-                        <PPTIcon icon="paste" />
+                        <SvgIcon name="paste" />
                         &nbsp;&nbsp;粘贴
                     </div>
                 </a-menu-item>
                 <a-menu-divider />
                 <a-menu-item>
                     <div class="ppt-menu-option">
-                        <PPTIcon icon="all" />
+                        <SvgIcon name="all" />
                         &nbsp;&nbsp;全选
                     </div>
                 </a-menu-item>
                 <!-- <a-menu-divider />
                 <a-menu-item>
                     <div class="ppt-menu-option" @click="onSave">
-                        <PPTIcon style="margin: 0 5px" icon="save" :size="14" />
+                        <SvgIcon style="margin: 0 5px" name="save" :size="14" />
                         &nbsp;&nbsp;保存
                     </div>
                 </a-menu-item> -->
@@ -59,7 +59,7 @@ import { inject, Ref, computed, PropType } from "vue";
 import { throttleRAF } from "@/utils";
 import { IPPTElement } from "@/types/element";
 import emitter, { EmitterEvents } from "@/utils/emitter";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 
 const props = defineProps({
     slideFocus: {

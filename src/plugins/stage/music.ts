@@ -1,21 +1,24 @@
 import { IPPTAudioElement } from "@/types/element";
-import StageConfig from "../config";
-import History from "@/plugins/editor/history";
-import { defaultAudioSrc, defaultImageSrc } from "@/plugins/config";
+import StageConfig from "./config";
+import DB from "@/utils/db";
+import { defaultAudioSrc, defaultImageSrc } from "@/config";
+import Animation from "./animation";
 
-export class Music {
+export default class Music {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
     private _image: HTMLImageElement | undefined;
-    private _history: History;
+    private _db: DB;
+    private _animation: Animation;
     constructor(
         stageConfig: StageConfig,
         ctx: CanvasRenderingContext2D,
-        history: History
+        db: DB
     ) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
-        this._history = history;
+        this._db = db;
+        this._animation = new Animation(stageConfig, ctx);
     }
 
     private async _getCacheImage(element: IPPTAudioElement): Promise<HTMLImageElement> {
@@ -35,7 +38,7 @@ export class Music {
                         resolve(cacheImage.image);
                     };
                     try {
-                        this._history.getFile(element.src).then(file => {
+                        this._db.getFile(element.src).then(file => {
                             image.src = file || defaultImageSrc;
                         });
                     } catch {
@@ -75,6 +78,9 @@ export class Music {
             this._ctx.translate(ox, oy);
             // 旋转画布
             this._ctx.rotate((element.rotate / 180) * Math.PI);
+
+            // 动画
+            this._animation.setElementStatus(element);
 
             // 缩放
             let viewWidth = element.width;

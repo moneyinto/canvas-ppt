@@ -1,6 +1,7 @@
 import { defineConfig, Plugin, UserConfig, splitVendorChunkPlugin } from "vite";
 import vue from "@vitejs/plugin-vue";
 import eslintPlugin from "vite-plugin-eslint";
+import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
 import * as path from "path";
 import { rmSync } from "node:fs";
 import electron from "vite-plugin-electron";
@@ -18,6 +19,10 @@ export default defineConfig(({ mode, command }) => {
 
     const plugins: (Plugin | Plugin[])[] = [
         vue(),
+        createSvgIconsPlugin({
+            iconDirs: [path.resolve(process.cwd(), "src/assets/icons")],
+            symbolId: "icon-[name]"
+        }),
         splitVendorChunkPlugin(),
         eslintPlugin({
             include: ["src"]

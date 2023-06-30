@@ -22,7 +22,7 @@
                         class="ppt-tool-dropdown"
                         @click="showFontSize = !showFontSize"
                     >
-                        <PPTIcon icon="down" :size="6" />
+                        <SvgIcon name="down" :size="6" />
                     </div>
 
                     <template #content>
@@ -37,10 +37,10 @@
                                 :key="size"
                                 @click="setFontSize(size)"
                             >
-                                <PPTIcon
+                                <SvgIcon
                                     class="font-size-checked"
                                     :class="fontSize == size && 'active'"
-                                    icon="checked"
+                                    name="checked"
                                     :size="28"
                                 />
                                 {{ size }}
@@ -56,7 +56,7 @@
                 class="ppt-tool-btn"
                 @click="plusSize()"
             >
-                <PPTIcon icon="plusSize" :size="28" />
+                <SvgIcon name="plusSize" :size="28" />
             </div>
         </a-tooltip>
 
@@ -65,7 +65,7 @@
                 class="ppt-tool-btn"
                 @click="minusSize()"
             >
-                <PPTIcon icon="minusSize" :size="28" />
+                <SvgIcon name="minusSize" :size="28" />
             </div>
         </a-tooltip>
     </div>
@@ -75,9 +75,9 @@
 import { inject, onMounted, onUnmounted, PropType, ref, Ref, watch } from "vue";
 import Editor from "@/plugins/editor";
 import { throttleRAF } from "@/utils";
-import { IPPTElement, IPPTShapeElement, IPPTTextElement } from "@/types/element";
+import { IPPTElement, IPPTShapeElement, IPPTTableElement, IPPTTextElement } from "@/types/element";
 import { IFontData } from "@/types/font";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const instance = inject<Ref<Editor>>("instance");
@@ -119,15 +119,60 @@ const getContentFontSize = (texts: IFontData[]) => {
 };
 
 const init = () => {
-    const operateElements = props.elements.filter(element => (element.type === "text" || element.type === "shape")) as (IPPTTextElement | IPPTShapeElement)[];
+    const operateElements = props.elements.filter(element => (element.type === "text" || element.type === "shape" || element.type === "table")) as (IPPTTextElement | IPPTShapeElement | IPPTTableElement)[];
     if (operateElements.length > 0) {
         for (const [index, operateElement] of operateElements.entries()) {
-            if (index === 0) {
-                fontSize.value = getContentFontSize(operateElement.content);
+            if (operateElement.type === "table") {
+                const tableSelectCells = instance?.value.stageConfig.tableSelectCells;
+                if (tableSelectCells) {
+                    const startRow = Math.min(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    const endRow = Math.max(tableSelectCells[0][0], tableSelectCells[1][0]);
+                    const startCol = Math.min(tableSelectCells[0][1], tableSelectCells[1][1]);
+                    const endCol = Math.max(tableSelectCells[0][1], tableSelectCells[1][1]);
+                    let isDifferent = false;
+                    for (let row = startRow; row <= endRow; row++) {
+                        for (let col = startCol; col <= endCol; col++) {
+                            if (index === 0 && row === startRow && col === startCol) {
+                                fontSize.value = getContentFontSize(operateElement.data[row][col].content);
+                            } else {
+                                if (fontSize.value !== getContentFontSize(operateElement.data[row][col].content)) {
+                                    fontSize.value = "";
+                                    isDifferent = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (isDifferent) {
+                            break;
+                        }
+                    }
+                } else {
+                    let isDifferent = false;
+                    for (let row = 0; row < operateElement.data.length; row++) {
+                        for (let col = 0; col < operateElement.data[row].length; col++) {
+                            if (index === 0 && row === 0 && col === 0) {
+                                fontSize.value = getContentFontSize(operateElement.data[row][col].content);
+                            } else {
+                                if (fontSize.value !== getContentFontSize(operateElement.data[row][col].content)) {
+                                    fontSize.value = "";
+                                    isDifferent = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (isDifferent) {
+                            break;
+                        }
+                    }
+                }
             } else {
-                if (fontSize.value !== getContentFontSize(operateElement.content)) {
-                    fontSize.value = "";
-                    break;
+                if (index === 0) {
+                    fontSize.value = getContentFontSize(operateElement.content);
+                } else {
+                    if (fontSize.value !== getContentFontSize(operateElement.content)) {
+                        fontSize.value = "";
+                        break;
+                    }
                 }
             }
         }

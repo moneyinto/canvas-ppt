@@ -1,20 +1,23 @@
-import History from "@/plugins/editor/history";
 import { IPPTVideoElement } from "@/types/element";
 import { sleep, fomatTime } from "@/utils";
-import StageConfig from "../config";
+import StageConfig from "./config";
+import Animation from "./animation";
+import DB from "@/utils/db";
 
 export default class Video {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
-    private _history: History;
+    private _db: DB;
+    private _animation: Animation;
     constructor(
         stageConfig: StageConfig,
         ctx: CanvasRenderingContext2D,
-        history: History
+        db: DB
     ) {
         this._ctx = ctx;
         this._stageConfig = stageConfig;
-        this._history = history;
+        this._db = db;
+        this._animation = new Animation(stageConfig, ctx);
     }
 
     public createVideo(id: string, file: string) {
@@ -32,7 +35,7 @@ export default class Video {
         return new Promise(resolve => {
             let video = document.getElementById(id);
             if (video) return resolve(video as HTMLVideoElement);
-            this._history.getFile(src).then((file: string) => {
+            this._db.getFile(src).then((file: string) => {
                 video = this.createVideo(id, file);
                 video.oncanplay = async () => {
                     // 延缓处理主图视频无法初始化问题
@@ -116,6 +119,8 @@ export default class Video {
         this._ctx.translate(ox, oy);
         // 旋转画布
         this._ctx.rotate((element.rotate / 180) * Math.PI);
+        // 动画
+        this._animation.setElementStatus(element);
         // 平移坐标原点
         this._ctx.translate(-element.width / 2, -element.height / 2);
 

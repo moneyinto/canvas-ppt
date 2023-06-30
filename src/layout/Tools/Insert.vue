@@ -6,7 +6,7 @@
                 accept="image/*"
                 @change="insertImageElement"
             >
-                <PPTIcon icon="image" :size="28" />
+                <SvgIcon name="image" :size="28" />
             </FileInput>
         </a-tooltip>
 
@@ -20,9 +20,9 @@
                     @mouseover="hoverShapePool = true"
                     @mouseleave="hoverShapePool = false"
                 >
-                    <PPTIcon icon="shape" :size="28" />
+                    <SvgIcon name="shape" :size="28" />
                     &nbsp;
-                    <PPTIcon icon="down" :size="6" />
+                    <SvgIcon name="down" :size="6" />
                     &nbsp;
                 </div>
             </a-tooltip>
@@ -38,7 +38,7 @@
                 :class="insertTextActive && 'active'"
                 @click="insertTextElement()"
             >
-                <PPTIcon icon="text" :size="28" />
+                <SvgIcon name="text" :size="28" />
             </div>
         </a-tooltip>
 
@@ -52,9 +52,9 @@
                     @mouseover="hoverChartPool = true"
                     @mouseleave="hoverChartPool = false"
                 >
-                    <PPTIcon icon="chart" :size="28" />
+                    <SvgIcon name="chart" :size="28" />
                     &nbsp;
-                    <PPTIcon icon="down" :size="6" />
+                    <SvgIcon name="down" :size="6" />
                     &nbsp;
                 </div>
             </a-tooltip>
@@ -67,35 +67,35 @@
                             openChart({ args: 'bar', transformation: true })
                         "
                     >
-                        <PPTIcon icon="bar_h" :size="28" />
+                        <SvgIcon name="bar_h" :size="28" />
                         <div class="ppt-chart-text">条形图</div>
                     </div>
                     <div
                         class="ppt-chart-item"
                         @click="openChart({ args: 'bar' })"
                     >
-                        <PPTIcon icon="bar_v" :size="28" />
+                        <SvgIcon name="bar_v" :size="28" />
                         <div class="ppt-chart-text">柱状图</div>
                     </div>
                     <div
                         class="ppt-chart-item"
                         @click="openChart({ args: 'line' })"
                     >
-                        <PPTIcon icon="line" :size="28" />
+                        <SvgIcon name="line" :size="28" />
                         <div class="ppt-chart-text">折线图</div>
                     </div>
                     <div
                         class="ppt-chart-item"
                         @click="openChart({ args: 'pie' })"
                     >
-                        <PPTIcon icon="pie" :size="28" />
+                        <SvgIcon name="pie" :size="28" />
                         <div class="ppt-chart-text">饼状图</div>
                     </div>
                     <div
                         class="ppt-chart-item"
                         @click="openChart({ args: 'funnel' })"
                     >
-                        <PPTIcon icon="funnel" :size="28" />
+                        <SvgIcon name="funnel" :size="28" />
                         <div class="ppt-chart-text">漏斗图</div>
                     </div>
                 </div>
@@ -112,9 +112,9 @@
                     @mouseover="hoverTablePool = true"
                     @mouseleave="hoverTablePool = false"
                 >
-                    <PPTIcon icon="table" :size="28" />
+                    <SvgIcon name="table" :size="28" />
                     &nbsp;
-                    <PPTIcon icon="down" :size="6" />
+                    <SvgIcon name="down" :size="6" />
                     &nbsp;
                 </div>
             </a-tooltip>
@@ -144,7 +144,7 @@
 
         <a-tooltip title="插入公式">
             <div class="ppt-tool-btn" @click="openLatex()">
-                <PPTIcon icon="latex" :size="28" />
+                <SvgIcon name="latex" :size="28" />
             </div>
         </a-tooltip>
 
@@ -168,7 +168,7 @@
                 accept="video/*"
                 @change="insertVideoElement"
             >
-                <PPTIcon icon="video" :size="28" />
+                <SvgIcon name="video" :size="28" />
             </FileInput>
         </a-tooltip>
 
@@ -179,7 +179,7 @@
                 accept="audio/*"
                 @change="insertAudioElement"
             >
-                <PPTIcon icon="audio" :size="16" />
+                <SvgIcon name="audio" :size="16" />
             </FileInput>
         </a-tooltip>
 
@@ -216,7 +216,7 @@ import Editor from "@/plugins/editor";
 import FileInput from "@/components/FileInput.vue";
 import Latex from "./Latex/index.vue";
 import Chart from "./Chart/index.vue";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import ShapePool from "@/components/ShapePool.vue";
 import { inject, onMounted, onUnmounted, ref, Ref, watch } from "vue";
 import {

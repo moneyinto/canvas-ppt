@@ -10,7 +10,7 @@
                     class="ppt-tool-block"
                     @click="setShadowColor(cacheShadowColor)"
                 >
-                    <PPTIcon icon="shadow" :size="16" />
+                    <SvgIcon name="shadow" :size="16" />
                     <div
                         class="shadow-color-line"
                         :style="{ background: cacheShadowColor }"
@@ -22,7 +22,7 @@
                         class="ppt-tool-dropdown"
                         @click="showShadowColor = !showShadowColor"
                     >
-                        <PPTIcon icon="down" :size="6" />
+                        <SvgIcon name="down" :size="6" />
                     </div>
 
                     <template #content>
@@ -87,7 +87,7 @@
 <script lang="ts" setup>
 import { inject, PropType, Ref, ref, watch } from "vue";
 import ColorBoard from "@/components/ColorBoard.vue";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import { IPPTAudioElement, IPPTElement, IPPTLineElement, IPPTVideoElement } from "@/types/element";
 import { STORAGE_SHADOW_COLOR } from "@/utils/storage";
 import Editor from "@/plugins/editor";

@@ -10,7 +10,7 @@
                     class="ppt-tool-block"
                     @click="setFillColor(cacheFillColor)"
                 >
-                    <PPTIcon icon="fillColor" :size="26" />
+                    <SvgIcon name="fillColor" :size="26" />
                     <div
                         class="fill-color-line"
                         :style="{ background: cacheFillColor }"
@@ -22,7 +22,7 @@
                         class="ppt-tool-dropdown"
                         @click="showFillColor = !showFillColor"
                     >
-                        <PPTIcon icon="down" :size="6" />
+                        <SvgIcon name="down" :size="6" />
                     </div>
 
                     <template #content>
@@ -53,7 +53,7 @@
                         style="padding: 0 5px"
                         @click="showThemeColor = !showThemeColor"
                     >
-                        <PPTIcon icon="platte" :size="16" />
+                        <SvgIcon name="platte" :size="16" />
                     </div>
                     <template #content>
                         <ColorBoard
@@ -79,10 +79,10 @@
 </template>
 
 <script lang="ts" setup>
-import { THEME_COLOR } from "@/plugins/config/stage";
+import { THEME_COLOR } from "@/config/stage";
 import { inject, PropType, Ref, ref, watch } from "vue";
 import FillPool from "@/components/FillPool.vue";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import { IPPTElement, IPPTTableElement } from "@/types/element";
 import { STORAGE_FILL_COLOR } from "@/utils/storage";
 import Editor from "@/plugins/editor";

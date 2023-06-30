@@ -1,17 +1,17 @@
 <template>
     <div class="ppt-tool-multifunction">
         <div class="ppt-tool-block" @click="addPPT()">
-            <PPTIcon icon="add" />
+            <SvgIcon name="add" />
             <div class="ppt-tool-text">新建幻灯片</div>
         </div>
         <div class="ppt-tool-dropdown">
-            <PPTIcon icon="down" :size="6" />
+            <SvgIcon name="down" :size="6" />
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 
 const addPPT = () => {
@@ -21,7 +21,6 @@ const addPPT = () => {
 
 <style lang="scss" scoped>
 .ppt-tool-multifunction {
-    width: 114px;
-    min-width: 114px;
+    min-width: 120px;
 }
 </style>

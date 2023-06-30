@@ -8,26 +8,27 @@
         <div
             class="ppt-preview-tools"
             :class="hiddenTool && 'hidden-preview-tools'"
+            @mousedown.stop
         >
             <div class="preview-tools-btn" @click="prev()">
-                <PPTIcon icon="leftArrow" :size="11" />
+                <SvgIcon name="leftArrow" color="#eee" :size="11" />
             </div>
             <div class="ppt-preview-size">
                 {{ previewSlideIndex + 1 }} / {{ props.slides.length }}
             </div>
             <div class="preview-tools-btn" @click="next()">
-                <PPTIcon icon="rightArrow" :size="11" />
+                <SvgIcon name="rightArrow" color="#eee" :size="11" />
             </div>
             <div
                 class="preview-tools-btn"
                 :class="whiteboardVisible && 'active'"
                 @click="whiteboardVisible = !whiteboardVisible"
             >
-                <PPTIcon style="color: #eee" icon="pencil" :size="20" />
+                <SvgIcon style="color: #eee;" name="pencil" :size="20" />
                 <div class="preview-tools-text">画笔</div>
             </div>
             <div class="preview-tools-btn" @click="endPreview()">
-                <PPTIcon icon="endPreview" :size="24" />
+                <SvgIcon name="endPreview" color="#CD4747" :size="24" />
                 <div class="preview-tools-text">结束</div>
             </div>
         </div>
@@ -48,24 +49,19 @@
 <script lang="ts" setup>
 import {
     computed,
-    inject,
     nextTick,
     onUnmounted,
     PropType,
-    Ref,
     ref
 } from "vue";
 import { ISlide } from "@/types/slide";
 import Screen from "@/plugins/screen";
 import { KeyMap } from "@/plugins/shortCut/keyMap";
 import { message } from "ant-design-vue";
-import Editor from "@/plugins/editor";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import { OPTION_TYPE, IElement } from "mwhiteboard";
 
 const emit = defineEmits(["endPreview"]);
-
-const instance = inject<Ref<Editor>>("instance");
 
 const props = defineProps({
     slides: {
@@ -98,12 +94,13 @@ const options = ref({
 
 let screen: Screen | undefined;
 nextTick(() => {
-    if (screenRef.value && instance?.value) {
+    if (screenRef.value) {
         screen = new Screen(
             screenRef.value,
-            previewSlide.value,
-            instance.value.history
+            previewSlide.value
         );
+
+        screen.mouseSingleClick = next;
 
         screenRef.value.focus();
     }
@@ -129,18 +126,27 @@ const renderWhiteboardElements = () => {
 };
 
 const prev = () => {
-    if (previewSlideIndex.value > 0) {
+    const animations = previewSlide.value.animations || [];
+    const firstClickIndex = animations.findIndex(item => item.trigger === "click");
+    if (screen && screen.stageConfig.animationIndex >= firstClickIndex) {
+        screen.prevStep();
+    } else if (previewSlideIndex.value > 0) {
         saveWhiteboardElements();
         previewSlideIndex.value--;
         updateSlide();
         renderWhiteboardElements();
+        screen && screen.resetLastAnimationIndex();
     } else {
         message.warning("已经是第一页了");
     }
 };
 
 const next = () => {
-    if (previewSlideIndex.value < props.slides.length - 1) {
+    const animations = previewSlide.value.animations;
+    if (animations && animations.length > 0 && screen && screen.stageConfig.animationIndex < animations.length - 1) {
+        screen.nextStep();
+    } else if (previewSlideIndex.value < props.slides.length - 1) {
+        // 进行翻页后，重置动画索引到最后一步
         saveWhiteboardElements();
         previewSlideIndex.value++;
         updateSlide();
@@ -266,6 +272,6 @@ onUnmounted(() => {
     pointer-events: all;
 }
 .white-board-box.ppt-can-write canvas {
-    cursor: url(@/assets/icons/cursor.png) 7 7, default !important;
+    cursor: url(@/assets/images/cursor.png) 7 7, default !important;
 }
 </style>

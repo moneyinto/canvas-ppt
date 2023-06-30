@@ -1,5 +1,5 @@
-import Stage from ".";
-import StageConfig, { TEXT_MARGIN } from "./config";
+import Stage from "../stage";
+import StageConfig, { TEXT_MARGIN } from "../stage/config";
 import { throttleRAF, deepClone, normalizeAngle, isFullScreen, getVideoElementControlPoints, getTableElementControlPoints } from "@/utils";
 import Command from "../command";
 import {
@@ -15,17 +15,17 @@ import {
     IPPTTextElement,
     IPPTVideoElement
 } from "@/types/element";
-import { ELEMENT_RESIZE, THEME_COLOR } from "../config/stage";
+import { ELEMENT_RESIZE, THEME_COLOR } from "@/config/stage";
 import { IElementOptions, IMouseClick, IRectParameter, IRects } from "@/types";
-import { LINE_TYPE } from "../config/shapes";
+import { LINE_TYPE } from "@/config/shapes";
 import Listener from "../listener";
-import { Text } from "./text";
-import { Cursor } from "./cursor";
-import { Textarea } from "./textarea";
+import Text from "./text";
+import Cursor from "./cursor";
+import Textarea from "./textarea";
 import { IFontData } from "@/types/font";
-import { Contextmenu } from "./contextmenu";
+import Contextmenu from "./contextmenu";
 import emitter, { EmitterEvents } from "@/utils/emitter";
-import History from "../editor/history";
+import DB from "@/utils/db";
 
 export default class ControlStage extends Stage {
     private _command: Command;
@@ -54,13 +54,13 @@ export default class ControlStage extends Stage {
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
-        history: History,
+        db: DB,
         command: Command,
         cursor: Cursor,
         textarea: Textarea,
         listener: Listener
     ) {
-        super(container, stageConfig, history);
+        super(container, stageConfig, db);
 
         this._canMoveCanvas = false;
         this._canCreate = false;
@@ -172,7 +172,7 @@ export default class ControlStage extends Stage {
                     const { row, col } = this.stageConfig.getMouseTableCell(operateElement, left, top);
                     this.stageConfig.tableSelectCells = [[row, col], [row, col]];
                     const tableCell = operateElement.data[row][col];
-                    this._listener.onTableCellEditChange && this._listener.onTableCellEditChange(true, tableCell.colspan === 1 && tableCell.rowspan === 1);
+                    this._listener.onTableCellEditChange(true, tableCell.colspan === 1 && tableCell.rowspan === 1);
                     const { tableCellLeft, tableCellTop, tableCellHeight } = this.stageConfig.getTableCellData(operateElement, row, col);
                     x = x - tableCellLeft;
                     y = y - tableCellTop;
@@ -296,7 +296,7 @@ export default class ControlStage extends Stage {
                 const { row, col } = this.stageConfig.getMouseTableCell(hoverElement, left, top);
                 this.stageConfig.tableSelectCells = [[row, col], [row, col]];
                 const tableCell = hoverElement.data[row][col];
-                this._listener.onTableCellEditChange && this._listener.onTableCellEditChange(true, tableCell.colspan === 1 && tableCell.rowspan === 1);
+                this._listener.onTableCellEditChange(true, tableCell.colspan === 1 && tableCell.rowspan === 1);
                 this._command.executeRender();
                 this._operateTableCell = true;
             }
@@ -987,7 +987,7 @@ export default class ControlStage extends Stage {
                     mergeDisabled = false;
                     splitDisabled = true;
                 }
-                this._listener.onTableCellEditChange && this._listener.onTableCellEditChange(mergeDisabled, splitDisabled);
+                this._listener.onTableCellEditChange(mergeDisabled, splitDisabled);
                 this._command.executeRender();
             }
 
@@ -1059,12 +1059,12 @@ export default class ControlStage extends Stage {
                     }
                 }
             });
-            this._listener.onFontSizeChange && this._listener.onFontSizeChange(fontSize);
-            this._listener.onFontWeightChange && this._listener.onFontWeightChange(isBold);
-            this._listener.onFontStyleChange && this._listener.onFontStyleChange(isItalic);
-            this._listener.onFontUnderLineChange && this._listener.onFontUnderLineChange(underline);
-            this._listener.onFontStrikoutChange && this._listener.onFontStrikoutChange(strikout);
-            this._listener.onFontFamilyChange && this._listener.onFontFamilyChange(fontFamily);
+            this._listener.onFontSizeChange(fontSize);
+            this._listener.onFontWeightChange(isBold);
+            this._listener.onFontStyleChange(isItalic);
+            this._listener.onFontUnderLineChange(underline);
+            this._listener.onFontStrikoutChange(strikout);
+            this._listener.onFontFamilyChange(fontFamily);
         } else {
             // 更新文本框光标位置
             const { left, top } = this.stageConfig.getMousePosition(evt);

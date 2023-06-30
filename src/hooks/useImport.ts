@@ -1,4 +1,4 @@
-import { OPTION_TYPE } from "@/plugins/config/options";
+import { OPTION_TYPE } from "@/config/options";
 import Editor from "@/plugins/editor";
 import { decrypt } from "@/utils/crypto";
 import emitter, { EmitterEvents } from "@/utils/emitter";

@@ -11,7 +11,7 @@ console.log(
 console.log(`%c ${window.__APP_MPPTX__ ? window.__APP_MPPTX__.name : "mpptx在线文档"}`, "color: blue;font-size: 30px;font-weight: bold;");
 const content = `
 版 本 号：${window.__APP_MPPTX__ ? window.__APP_MPPTX__.version : "1.0.0"}
-更新日期：2023-05-30
+更新日期：2023-06-05
 
 Github:  https://github.com/moneyinto/canvas-ppt
 `;

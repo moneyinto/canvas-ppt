@@ -7,7 +7,7 @@
                 @mouseleave="hoverAlign = false"
             >
                 <div class="ppt-tool-block" @click="setAlignType(alignType)">
-                    <PPTIcon :icon="alignIcon" :size="26" />
+                    <SvgIcon :name="alignIcon" :size="26" />
                 </div>
 
                 <a-popover trigger="click" v-model:visible="showAlign">
@@ -15,7 +15,7 @@
                         class="ppt-tool-dropdown"
                         @click="showAlign = !showAlign"
                     >
-                        <PPTIcon icon="down" :size="6" />
+                        <SvgIcon name="down" :size="6" />
                     </div>
 
                     <template #content>
@@ -28,21 +28,21 @@
                                 class="ppt-align-item"
                                 @click="setAlignType('alignLeft')"
                             >
-                                <PPTIcon icon="canvasAlignLeft" :size="28" />
+                                <SvgIcon name="canvasAlignLeft" :size="28" />
                                 <div class="ppt-align-text">水平居左</div>
                             </div>
                             <div
                                 class="ppt-align-item"
                                 @click="setAlignType('alignCenter')"
                             >
-                                <PPTIcon icon="canvasAlignCenter" :size="28" />
+                                <SvgIcon name="canvasAlignCenter" :size="28" />
                                 <div class="ppt-align-text">水平居中</div>
                             </div>
                             <div
                                 class="ppt-align-item"
                                 @click="setAlignType('alignRight')"
                             >
-                                <PPTIcon icon="canvasAlignRight" :size="28" />
+                                <SvgIcon name="canvasAlignRight" :size="28" />
                                 <div class="ppt-align-text">水平居右</div>
                             </div>
 
@@ -51,15 +51,15 @@
                                 class="ppt-align-item"
                                 @click="setAlignType('verticalTop')"
                             >
-                                <PPTIcon icon="canvasVerticalTop" :size="28" />
+                                <SvgIcon name="canvasVerticalTop" :size="28" />
                                 <div class="ppt-align-text">垂直居上</div>
                             </div>
                             <div
                                 class="ppt-align-item"
                                 @click="setAlignType('verticalCenter')"
                             >
-                                <PPTIcon
-                                    icon="canvasVerticalCenter"
+                                <SvgIcon
+                                    name="canvasVerticalCenter"
                                     :size="28"
                                 />
                                 <div class="ppt-align-text">水平居中</div>
@@ -68,8 +68,8 @@
                                 class="ppt-align-item"
                                 @click="setAlignType('verticalBottom')"
                             >
-                                <PPTIcon
-                                    icon="canvasVerticalBottom"
+                                <SvgIcon
+                                    name="canvasVerticalBottom"
                                     :size="28"
                                 />
                                 <div class="ppt-align-text">垂直居下</div>
@@ -81,8 +81,8 @@
                                 :class="elements.length > 1 && 'disabled'"
                                 @click="setAlignType('oneAlignCenter', elements.length > 1)"
                             >
-                                <PPTIcon
-                                    icon="canvasOneAlignCenter"
+                                <SvgIcon
+                                    name="canvasOneAlignCenter"
                                     :size="28"
                                 />
                                 <div class="ppt-align-text">水平分布</div>
@@ -92,8 +92,8 @@
                                 :class="elements.length > 1 && 'disabled'"
                                 @click="setAlignType('oneVerticalCenter', elements.length > 1)"
                             >
-                                <PPTIcon
-                                    icon="canvasOneVerticalCenter"
+                                <SvgIcon
+                                    name="canvasOneVerticalCenter"
                                     :size="28"
                                 />
                                 <div class="ppt-align-text">垂直分布</div>
@@ -105,7 +105,7 @@
                                 :class="elements.length > 1 && 'disabled'"
                                 @click="setAlignType('center', elements.length > 1)"
                             >
-                                <PPTIcon icon="canvasCenter" :size="28" />
+                                <SvgIcon name="canvasCenter" :size="28" />
                                 <div class="ppt-align-text">中央对齐</div>
                             </div>
                         </div>
@@ -121,7 +121,7 @@ import { computed, inject, PropType, ref, Ref } from "vue";
 import Editor from "@/plugins/editor";
 import { IElementAlignType } from "@/types";
 import { IPPTElement } from "@/types/element";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 
 defineProps({
     elements: {

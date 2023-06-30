@@ -17,13 +17,13 @@
                     </template>
                     <a-menu-item>
                         <div class="ppt-menu-option" @click="setFontWeight()">
-                            <PPTIcon icon="boldFont" :size="28" />
+                            <SvgIcon name="boldFont" :size="28" />
                             &nbsp;&nbsp;加粗
                         </div>
                     </a-menu-item>
                     <a-menu-item>
                         <div class="ppt-menu-option" @click="setFontStyle()">
-                            <PPTIcon icon="italicFont" :size="28" />
+                            <SvgIcon name="italicFont" :size="28" />
                             &nbsp;&nbsp;斜体
                         </div>
                     </a-menu-item>
@@ -32,13 +32,13 @@
                             class="ppt-menu-option"
                             @click="setFontUnderLine()"
                         >
-                            <PPTIcon icon="underline" :size="28" />
+                            <SvgIcon name="underline" :size="28" />
                             &nbsp;&nbsp;下划线
                         </div>
                     </a-menu-item>
                     <a-menu-item>
                         <div class="ppt-menu-option" @click="setFontStrikout()">
-                            <PPTIcon icon="strikout" :size="28" />
+                            <SvgIcon name="strikout" :size="28" />
                             &nbsp;&nbsp;中划线
                         </div>
                     </a-menu-item>
@@ -60,12 +60,12 @@
                             >
                                 {{ font.label }}
 
-                                <PPTIcon
+                                <SvgIcon
                                     class="font-checked"
                                     :class="
                                         fontFamily == font.value && 'active'
                                     "
-                                    icon="checked"
+                                    name="checked"
                                     :size="28"
                                 />
                             </div>
@@ -85,10 +85,10 @@
                             >
                                 {{ size }}
 
-                                <PPTIcon
+                                <SvgIcon
                                     class="font-checked"
                                     :class="fontSize == size && 'active'"
-                                    icon="checked"
+                                    name="checked"
                                     :size="28"
                                 />
                             </div>
@@ -127,16 +127,16 @@
                             class="ppt-menu-option"
                             @click="setTextAlign('left')"
                         >
-                            <PPTIcon
+                            <SvgIcon
                                 class="font-alignment"
-                                icon="alignLeft"
+                                name="alignLeft"
                                 :size="28"
                             />
                             左对齐
-                            <PPTIcon
+                            <SvgIcon
                                 class="font-align-checked"
                                 :class="alignment === 'left' && 'active'"
-                                icon="checked"
+                                name="checked"
                                 :size="28"
                             />
                         </div>
@@ -146,16 +146,16 @@
                             class="ppt-menu-option"
                             @click="setTextAlign('center')"
                         >
-                            <PPTIcon
+                            <SvgIcon
                                 class="font-alignment"
-                                icon="alignCenter"
+                                name="alignCenter"
                                 :size="28"
                             />
                             居中对齐
-                            <PPTIcon
+                            <SvgIcon
                                 class="font-align-checked"
                                 :class="alignment === 'center' && 'active'"
-                                icon="checked"
+                                name="checked"
                                 :size="28"
                             />
                         </div>
@@ -165,16 +165,16 @@
                             class="ppt-menu-option"
                             @click="setTextAlign('right')"
                         >
-                            <PPTIcon
+                            <SvgIcon
                                 class="font-alignment"
-                                icon="alignRight"
+                                name="alignRight"
                                 :size="28"
                             />
                             右对齐
-                            <PPTIcon
+                            <SvgIcon
                                 class="font-align-checked"
                                 :class="alignment === 'right' && 'active'"
-                                icon="checked"
+                                name="checked"
                                 :size="28"
                             />
                         </div>
@@ -194,10 +194,10 @@
                         >
                             {{ height }}
 
-                            <PPTIcon
+                            <SvgIcon
                                 class="font-checked"
                                 :class="lineHeight == height && 'active'"
-                                icon="checked"
+                                name="checked"
                                 :size="28"
                             />
                         </div>
@@ -260,8 +260,8 @@
                 >
                     <template #title>
                         <div class="ppt-menu-option">
-                            <PPTIcon
-                                icon="opacity"
+                            <SvgIcon
+                                name="opacity"
                                 :size="28"
                             />
                             &nbsp;&nbsp;透明度
@@ -304,13 +304,13 @@ import {
     watch
 } from "vue";
 import Editor from "@/plugins/editor";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import { IPPTElement } from "@/types/element";
-import { SYS_FONTS } from "@/plugins/config/font";
+import { SYS_FONTS } from "@/config/font";
 import { isSupportFont } from "@/utils";
 import emitter, { EmitterEvents } from "@/utils/emitter";
 import ColorBoard from "@/components/ColorBoard.vue";
-import { THEME_COLOR } from "@/plugins/config/stage";
+import { THEME_COLOR } from "@/config/stage";
 import { STORAGE_FONT_COLOR } from "@/utils/storage";
 import BorderPool from "@/components/BorderPool.vue";
 import FillPool from "@/components/FillPool.vue";

@@ -118,5 +118,24 @@ export const ShortcutKeys: IRegisterShortcut[] = [
             emitter.emit(EmitterEvents.COPY_SLIDE);
             emitter.emit(EmitterEvents.PASTE_SLIDE);
         }
+    },
+
+    // 撤销
+    {
+        key: KeyMap.Z,
+        ctrl: true,
+        callback: (command: Command) => {
+            command.executeUndo();
+        }
+    },
+
+    // 恢复
+    {
+        key: KeyMap.Z,
+        ctrl: true,
+        shift: true,
+        callback: (command: Command) => {
+            command.executeRedo();
+        }
     }
 ];

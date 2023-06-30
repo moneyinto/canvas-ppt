@@ -1,6 +1,6 @@
 import { IPPTElementOutline } from "@/types/element";
 
-export class OutLine {
+export default class OutLine {
     private _ctx: CanvasRenderingContext2D;
     constructor(ctx: CanvasRenderingContext2D) {
         this._ctx = ctx;

@@ -11,7 +11,7 @@
                         @click="save()"
                     >
                         &nbsp;
-                        <PPTIcon icon="save" :size="16" />
+                        <SvgIcon name="save" :size="16" />
                         &nbsp;
                     </div>
                 </a-tooltip>
@@ -28,6 +28,10 @@
         <Align v-if="showAlign" :elements="elements" />
         <Evert v-if="showEvert || showImageEdit" />
 
+        <a-divider class="ppt-tool-divider" type="vertical" />
+        <Background />
+        <Animation />
+
         <a-divider class="ppt-tool-divider" v-if="showTextEidt" type="vertical" />
         <TextEdit v-if="showTextEidt || showTableCellEdit" :elements="elements" />
 
@@ -40,9 +44,6 @@
 
         <a-divider class="ppt-tool-divider" v-if="showTableCellEdit" type="vertical" />
         <TableCellEdit v-if="showTableCellEdit" />
-
-        <a-divider class="ppt-tool-divider" type="vertical" />
-        <Background />
 
         <div class="loading-fullscreen" v-if="loading">
             <div class="loading-box">
@@ -72,8 +73,9 @@ import TextEdit from "./TextEdit/index.vue";
 import Align from "./Align.vue";
 import ImageEdit from "./ImageEdit.vue";
 import Background from "./Background.vue";
+import Animation from "./Animation.vue";
 import TableCellEdit from "./TableCellEdit.vue";
-import PPTIcon from "@/components/Icon.vue";
+import SvgIcon from "@/components/SvgIcon.vue";
 import Editor from "@/plugins/editor";
 import { message } from "ant-design-vue";
 import useExport from "@/hooks/useExport";

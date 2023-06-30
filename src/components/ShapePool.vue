@@ -51,7 +51,7 @@
 </template>
 
 <script lang="ts" setup>
-import { SHAPE_LIST } from "@/plugins/config/shapes";
+import { SHAPE_LIST } from "@/config/shapes";
 import SvgWrapper from "./SvgWrapper.vue";
 import { ICreatingType } from "@/types/element";
 import { ILineItem, IShapeItem } from "@/types/shape";
