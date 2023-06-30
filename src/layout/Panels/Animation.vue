@@ -28,7 +28,7 @@
                     </a-tooltip>
                     <a-divider class="ppt-tool-divider" type="vertical" />
                     <a-tooltip placement="topRight" title="删除全部">
-                        <div class="ppt-animation-btn">
+                        <div class="ppt-animation-btn" @click="deleteAnimation()">
                             <SvgIcon name="delete" :size="14" />
                         </div>
                     </a-tooltip>
@@ -261,6 +261,7 @@ const preview = (ani?: IPPTAnimation) => {
 };
 
 const deleteAnimation = (ani?: IPPTAnimation) => {
+    console.log(ani);
     instance?.value?.command.executeDeleteAnimation(ani);
 };
 
@@ -406,6 +407,8 @@ const onDragEnd = () => {
             display: flex;
             align-items: center;
             justify-content: center;
+            height: 16px;
+            width: 16px;
         }
     }
 
