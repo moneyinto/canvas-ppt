@@ -1,5 +1,5 @@
-import Command from "../command";
-import Listener from "../listener";
+import Command from "./command";
+import Listener from "./listener";
 import Shortcut from "../shortCut";
 import StageConfig from "../stage/config";
 import ControlStage from "./control";

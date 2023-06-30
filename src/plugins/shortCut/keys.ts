@@ -1,5 +1,5 @@
 import emitter, { EmitterEvents } from "@/utils/emitter";
-import Command from "../command";
+import Command from "../editor/command";
 import { IRegisterShortcut } from "@/types/shortcut";
 import { KeyMap } from "./keyMap";
 

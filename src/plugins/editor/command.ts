@@ -13,7 +13,7 @@ import {
 import { encrypt } from "@/utils/crypto";
 import { baseFontConfig } from "@/config/font";
 import History from "../editor/history";
-import Listener from "../listener";
+import Listener from "./listener";
 import { KeyMap } from "../shortCut/keyMap";
 import StageConfig, { TEXT_MARGIN } from "../stage/config";
 import Cursor from "../editor/cursor";
@@ -36,12 +36,14 @@ import { VIEWPORT_SIZE, VIEWRATIO } from "@/config/stage";
 import { IElementAlignType } from "@/types";
 import { IPPTAnimation, ISlideBackground } from "@/types/slide";
 import { OPTION_TYPE } from "@/config/options";
+import Animation from "./animation";
 
 export default class Command {
     private _stageConfig: StageConfig;
     private _listener: Listener;
     private _history: History;
     private _cursor: Cursor;
+    private _animation: Animation;
 
     private _updateDebounce: null | number | NodeJS.Timeout;
     private _addTextRenderThrottle: null | Date;
@@ -55,6 +57,7 @@ export default class Command {
         this._listener = listener;
         this._history = history;
         this._cursor = cursor;
+        this._animation = new Animation(stageConfig, listener);
 
         this._updateDebounce = null;
         this._addTextRenderThrottle = null;
@@ -2073,14 +2076,43 @@ export default class Command {
     }
 
     /**
+     * 停止动画
+     */
+    public executeStopAnimation() {
+        this._animation.stop();
+    }
+
+    /**
      * 预览动画
      * @param ani
      */
     public executePreviewAnimation(ani?: IPPTAnimation) {
+        this._animation.stop();
+        // 清空元素选中状态
+        this._stageConfig.updateOperateElements([]);
         if (ani) {
             // 预览某个元素动画
+            this._stageConfig.actionAnimations = [[ani]];
+            this._animation.start();
         } else {
             // 预览所有动画
+            const currentSlide = this._stageConfig.getCurrentSlide();
+            if (currentSlide) {
+                this._stageConfig.initSlideAnimation(currentSlide);
+                const animations = this._stageConfig.getAnimations();
+                const actionAnimations: IPPTAnimation[][] = [];
+                for (const [index, ani] of animations.entries()) {
+                    if (index === 0) {
+                        actionAnimations.push([ani]);
+                    } else if (ani.trigger === "meantime") {
+                        actionAnimations[actionAnimations.length - 1].push(ani);
+                    } else {
+                        actionAnimations.push([ani]);
+                    }
+                }
+                this._stageConfig.actionAnimations = actionAnimations;
+                this._animation.start();
+            }
         }
     }
 

@@ -1,7 +1,7 @@
 import Stage from "../stage";
 import StageConfig, { TEXT_MARGIN } from "../stage/config";
 import { throttleRAF, deepClone, normalizeAngle, isFullScreen, getVideoElementControlPoints, getTableElementControlPoints } from "@/utils";
-import Command from "../command";
+import Command from "./command";
 import {
     createLineElement,
     createShapeElement,
@@ -18,7 +18,7 @@ import {
 import { ELEMENT_RESIZE, THEME_COLOR } from "@/config/stage";
 import { IElementOptions, IMouseClick, IRectParameter, IRects } from "@/types";
 import { LINE_TYPE } from "@/config/shapes";
-import Listener from "../listener";
+import Listener from "./listener";
 import Text from "./text";
 import Cursor from "./cursor";
 import Textarea from "./textarea";

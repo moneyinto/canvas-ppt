@@ -100,7 +100,7 @@ export default class View {
     private async _drawPage() {
         this._stage.clear();
         await this._background.draw(this.slide.background);
-        await this._stage.drawElements(this.slide.elements, this._isThumbnail, this._isScreen);
+        await this._stage.drawElements(this.slide.elements, this._isThumbnail);
     }
 
     public updateSlide(slide: ISlide) {

@@ -1,4 +1,4 @@
-import Listener from "../listener";
+import Listener from "./listener";
 import StageConfig from "../stage/config";
 import DB from "@/utils/db";
 import { ISlide } from "@/types/slide";

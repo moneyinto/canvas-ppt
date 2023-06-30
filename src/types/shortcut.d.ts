@@ -1,5 +1,5 @@
-import Command from "../command";
-import { KeyMap } from "../shortCut/keyMap";
+import Command from "@/plugins/editor/command";
+import { KeyMap } from "@/plugins/shortCut/keyMap";
 
 export interface IRegisterShortcut {
     key: KeyMap;
