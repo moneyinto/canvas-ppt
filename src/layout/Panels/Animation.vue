@@ -21,9 +21,9 @@
                 </div>
 
                 <div class="ppt-animation-btns">
-                    <a-tooltip title="预览全部">
-                        <div class="ppt-animation-btn">
-                            <SvgIcon name="play" :size="8" />
+                    <a-tooltip :title="actionAni === 'all' ? '停止全部' : '预览全部'">
+                        <div class="ppt-animation-btn" @click="preview()">
+                            <SvgIcon :name="actionAni === 'all' ? 'pause' : 'play'" :size="8" />
                         </div>
                     </a-tooltip>
                     <a-divider class="ppt-tool-divider" type="vertical" />
@@ -63,7 +63,7 @@
                             class="ppt-animation-btn"
                             @click.stop="preview(ani)"
                         >
-                            <SvgIcon name="play" :size="8" />
+                            <SvgIcon :name="actionAni === ani.id ? 'pause' : 'play'" :size="8" />
                         </div>
                         <a-divider class="ppt-tool-divider" type="vertical" />
                         <div
@@ -210,6 +210,8 @@ const animations = ref<IPPTAnimation[]>([]);
 const addBtnDisabled = ref(true);
 const selectedAnimation = ref<IPPTAnimation | null>(null);
 
+const actionAni = ref("");
+
 const init = async () => {
     if (instance?.value) {
         animations.value = instance.value.stageConfig.getAnimations();
@@ -223,11 +225,12 @@ const init = async () => {
                 animations.value = newAnimations;
             }
             if (selectedAnimation.value) {
-                selectedAnimation.value =
-                    animations.value.find(
-                        (ani) => ani.id === selectedAnimation.value?.id
-                    ) || null;
+                selectedAnimation.value = animations.value.find((ani) => ani.id === selectedAnimation.value?.id) || null;
             }
+        };
+
+        instance.value.listener.onAnimationsEnd = () => {
+            actionAni.value = "";
         };
 
         addBtnDisabled.value = props.elements.length === 0;
@@ -257,11 +260,26 @@ const getElement = (id: string) => {
 };
 
 const preview = (ani?: IPPTAnimation) => {
-    instance?.value?.command.executePreviewAnimation(ani);
+    if (ani) {
+        if (actionAni.value === ani.id) {
+            actionAni.value = "";
+            instance?.value?.command.executeStopAnimation();
+        } else {
+            actionAni.value = ani.id;
+            instance?.value?.command.executePreviewAnimation(ani);
+        }
+    } else {
+        if (actionAni.value === "all") {
+            actionAni.value = "";
+            instance?.value?.command.executeStopAnimation();
+        } else {
+            actionAni.value = "all";
+            instance?.value?.command.executePreviewAnimation();
+        }
+    }
 };
 
 const deleteAnimation = (ani?: IPPTAnimation) => {
-    console.log(ani);
     instance?.value?.command.executeDeleteAnimation(ani);
 };
 

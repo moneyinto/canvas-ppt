@@ -1,7 +1,15 @@
 import ScreenAnimation from "../screen/animation";
+import StageConfig from "../stage/config";
+import Listener from "./listener";
 
 export default class Animation extends ScreenAnimation {
-    public _render() {
+    private _listener: Listener;
+    constructor(stageConfig: StageConfig, listener: Listener) {
+        super(stageConfig);
+        this._listener = listener;
+    }
+
+    public render() {
         this.stageConfig.resetCheckDrawOprate();
         this.stageConfig.resetCheckDrawView();
     }
@@ -20,6 +28,10 @@ export default class Animation extends ScreenAnimation {
         this.stageConfig.animationCountTime = 0;
 
         // 等待一帧后执行渲染
-        window.requestAnimationFrame(() => this._render());
+        window.requestAnimationFrame(() => this.render());
+    }
+
+    public emitStop() {
+        this._listener.onAnimationsEnd();
     }
 }

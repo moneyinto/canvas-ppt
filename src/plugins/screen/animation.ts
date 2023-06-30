@@ -18,7 +18,7 @@ export default class Animation {
         this.action();
     }
 
-    public _render() {
+    public render() {
         this.stageConfig.resetCheckDrawView();
     }
 
@@ -34,7 +34,7 @@ export default class Animation {
             this.stageConfig.animationCountTime = new Date().getTime() - this.stageConfig.animationTime;
 
             // 触发渲染函数方法
-            this._render();
+            this.render();
 
             // 根据动画执行的时长来判断当前执行动画存储集合的第一个是否有动画执行完成（动画的时间小于等于动画执行时长）
             // 如果动画为退出动画，这里需要将元素ID加入到需要隐藏元素ID集合
@@ -53,11 +53,14 @@ export default class Animation {
             // 判断整个当前执行动画存储集合是否执行完成（即长度为0），结束动画执行（触发动画终止函数），否则继续触发动画执行函数，采用window.requestAnimationFrame
             if (this.stageConfig.actionAnimations.length === 0) {
                 this.stop();
+                this.emitStop();
             } else {
                 window.requestAnimationFrame(() => this.action());
             }
         }
     }
+
+    public emitStop() {}
 
     public stop() {
         // 设置动画是否正在执行的参数为 false
@@ -109,6 +112,6 @@ export default class Animation {
         this.stageConfig.animationCountTime = 0;
 
         // 等待一帧后执行渲染
-        window.requestAnimationFrame(() => this._render());
+        window.requestAnimationFrame(() => this.render());
     }
 }

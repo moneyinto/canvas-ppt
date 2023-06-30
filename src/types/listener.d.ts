@@ -26,3 +26,5 @@ export type IOnFontFamilyChange = (fontFamily: string) => void;
 export type IOnTableCellEditChange = (mergeDisabled: boolean, splitDisabled: boolean) => void;
 
 export type IOnAnimationsChange = () => void;
+
+export type IOnAnimationsEnd = () => void;

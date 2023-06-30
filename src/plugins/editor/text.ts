@@ -1,4 +1,4 @@
-import Command from "../command";
+import Command from "./command";
 import { IFontData } from "@/types/font";
 import StageConfig from "../stage/config";
 import Cursor from "./cursor";
