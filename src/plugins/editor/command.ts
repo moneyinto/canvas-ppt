@@ -2088,6 +2088,8 @@ export default class Command {
      */
     public executePreviewAnimation(ani?: IPPTAnimation) {
         this._animation.stop();
+        // 清空元素选中状态
+        this._stageConfig.updateOperateElements([]);
         if (ani) {
             // 预览某个元素动画
             this._stageConfig.actionAnimations = [[ani]];
