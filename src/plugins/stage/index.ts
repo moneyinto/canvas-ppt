@@ -83,7 +83,7 @@ export default class Stage {
         this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     }
 
-    public async drawElement(element: IPPTElement, isThumbnail?: boolean) {
+    public drawElement(element: IPPTElement, isThumbnail?: boolean) {
         switch (element.type) {
             case "shape": {
                 if (!this._shape) this._shape = new Shape(this.stageConfig, this.ctx);
@@ -97,7 +97,7 @@ export default class Stage {
             }
             case "image": {
                 if (!this._picture) this._picture = new Picture(this.stageConfig, this.ctx, this._db);
-                await this._picture?.draw(element);
+                this._picture?.draw(element);
                 break;
             }
             case "text": {
@@ -107,39 +107,39 @@ export default class Stage {
             }
             case "video": {
                 if (!this._video) this._video = new Video(this.stageConfig, this.ctx, this._db);
-                await this._video?.draw(element, !!isThumbnail);
+                this._video?.draw(element, !!isThumbnail);
                 break;
             }
             case "latex": {
                 if (!this._picture) this._picture = new Picture(this.stageConfig, this.ctx, this._db);
-                await this._picture?.draw(element);
+                this._picture?.draw(element);
                 break;
             }
             case "audio": {
                 if (!this._music) this._music = new Music(this.stageConfig, this.ctx, this._db);
-                await this._music?.draw(element);
+                this._music?.draw(element);
                 break;
             }
             case "chart": {
                 if (!this._picture) this._picture = new Picture(this.stageConfig, this.ctx, this._db);
-                await this._picture?.draw(element);
+                this._picture?.draw(element);
                 break;
             }
             case "table": {
                 if (!this._table) this._table = new Table(this.stageConfig, this.ctx);
-                await this._table?.draw(element);
+                this._table?.draw(element);
                 break;
             }
         }
     }
 
-    public async drawElements(elements: IPPTElement[], isThumbnail?: boolean) {
+    public drawElements(elements: IPPTElement[], isThumbnail?: boolean) {
         for (const element of elements) {
             // if (!this.stageConfig.operateElement || this.stageConfig.operateElement.id !== element.id) {
             //     this.drawElement(element);
             // }
             if (this.stageConfig.animationHideElements.indexOf(element.id) !== -1) continue;
-            await this.drawElement(element, isThumbnail);
+            this.drawElement(element, isThumbnail);
         }
     }
 }

@@ -31,34 +31,29 @@ export default class Picture {
         this._actionAnimation = new ActionAnimation(stageConfig, ctx);
     }
 
-    private async _getCacheImage(element: IPPTImageElement | IPPTLatexElement | IPPTChartElement): Promise<HTMLImageElement> {
-        return new Promise(resolve => {
-            const cacheImage = this._stageConfig.cacheImages.find(image => image.id === element.src);
-            if (cacheImage) {
-                resolve(cacheImage.image);
-            } else {
-                const image = new Image();
-                image.onload = () => {
-                    const cacheImage = {
-                        id: element.src,
-                        image
-                    };
-                    this._stageConfig.addCacheImage(cacheImage);
-                    resolve(cacheImage.image);
-                };
-                try {
-                    this._db.getFile(element.src).then(file => {
-                        image.src = file || defaultImageSrc;
-                    });
-                } catch {
-                    image.src = defaultImageSrc;
-                }
+    private _getCacheImage(element: IPPTImageElement | IPPTLatexElement | IPPTChartElement): HTMLImageElement | undefined {
+        const cacheImage = window.cacheDomMap.get(element.src);
+        if (cacheImage) {
+            return cacheImage as HTMLImageElement;
+        } else {
+            const image = new Image();
+            image.onload = () => {
+                window.cacheDomMap.set(element.src, image);
+                this._stageConfig.waitDrawView();
+            };
+            try {
+                this._db.getFile(element.src).then(file => {
+                    image.src = file || defaultImageSrc;
+                });
+            } catch {
+                image.src = defaultImageSrc;
             }
-        });
+        }
+        return undefined;
     }
 
-    public async draw(element: IPPTImageElement | IPPTLatexElement | IPPTChartElement) {
-        const cacheImage = await this._getCacheImage(element);
+    public draw(element: IPPTImageElement | IPPTLatexElement | IPPTChartElement) {
+        const cacheImage = this._getCacheImage(element);
         if (cacheImage) {
             const image = cacheImage;
             const zoom = this._stageConfig.zoom;

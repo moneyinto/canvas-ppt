@@ -21,7 +21,7 @@ export class ActionAnimation {
             const actionAnimation = this._stageConfig.actionAnimations[0].find((item) => item.elId === element.id);
             if (actionAnimation) {
                 // 存在则执行动画绘制
-                const process = this._stageConfig.animationCountTime / actionAnimation.duration * 100;
+                const process = Math.min(this._stageConfig.animationCountTime / actionAnimation.duration * 100, 100);
                 const width = element.type === "line" ? Math.abs(element.end[0] - element.start[0]) : element.width;
                 const height = element.type === "line" ? Math.abs(element.end[1] - element.start[1]) : element.height;
                 const { translate, scale, opacity, rotate, skew } = getAnimationStatus(actionAnimation.ani, process, width, height);
@@ -198,15 +198,15 @@ export class PageAnimation {
         }
     }
 
-    public async render(slide: ISlide) {
+    public render(slide: ISlide) {
         this._animationStage.clear();
 
         this._animationStage.ctx.save();
 
         this._actionAnimation.setSlideStatus(slide.turningAni);
 
-        await this._animationBackground.draw(slide.background);
-        await this._animationStage.drawElements(slide.elements);
+        this._animationBackground.draw(slide.background);
+        this._animationStage.drawElements(slide.elements);
 
         this._animationStage.ctx.restore();
     }
@@ -222,7 +222,7 @@ export class PageAnimation {
                 endCallback();
             } else {
                 // 触发渲染函数方法
-                await this.render(slide);
+                this.render(slide);
                 window.requestAnimationFrame(() => this.action(slide, endCallback));
             }
         } else {

@@ -1,13 +1,12 @@
 import { IPPTAudioElement } from "@/types/element";
 import StageConfig from "./config";
 import DB from "@/utils/db";
-import { defaultAudioSrc, defaultImageSrc } from "@/config";
+import { defaultAudioSrc } from "@/config";
 import { ActionAnimation } from "./animation";
 
 export default class Music {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
-    private _image: HTMLImageElement | undefined;
     private _db: DB;
     private _actionAnimation: ActionAnimation;
     constructor(
@@ -21,47 +20,33 @@ export default class Music {
         this._actionAnimation = new ActionAnimation(stageConfig, ctx);
     }
 
-    private async _getCacheImage(element: IPPTAudioElement): Promise<HTMLImageElement> {
-        return new Promise(resolve => {
-            if (element.cover) {
-                const cacheImage = this._stageConfig.cacheImages.find(image => image.id === element.src);
-                if (cacheImage) {
-                    resolve(cacheImage.image);
+    private _getCacheImage(element: IPPTAudioElement): HTMLImageElement | undefined {
+        const cacheImage = window.cacheDomMap.get(element.cover || "defaultAudioImage");
+        if (cacheImage) {
+            return cacheImage as HTMLImageElement;
+        } else {
+            const image = new Image();
+            image.onload = () => {
+                window.cacheDomMap.set(element.cover || "defaultAudioImage", image);
+                this._stageConfig.waitDrawView();
+            };
+            try {
+                if (element.cover) {
+                    this._db.getFile(element.cover).then(file => {
+                        image.src = file || defaultAudioSrc;
+                    });
                 } else {
-                    const image = new Image();
-                    image.onload = () => {
-                        const cacheImage = {
-                            id: element.src,
-                            image
-                        };
-                        this._stageConfig.addCacheImage(cacheImage);
-                        resolve(cacheImage.image);
-                    };
-                    try {
-                        this._db.getFile(element.src).then(file => {
-                            image.src = file || defaultImageSrc;
-                        });
-                    } catch {
-                        image.src = defaultImageSrc;
-                    }
-                }
-            } else {
-                if (this._image) {
-                    resolve(this._image);
-                } else {
-                    const image = new Image();
-                    image.onload = () => {
-                        this._image = image;
-                        resolve(image);
-                    };
                     image.src = defaultAudioSrc;
                 }
+            } catch {
+                image.src = defaultAudioSrc;
             }
-        });
+        }
+        return undefined;
     }
 
-    public async draw(element: IPPTAudioElement) {
-        const image = await this._getCacheImage(element);
+    public draw(element: IPPTAudioElement) {
+        const image = this._getCacheImage(element);
         if (image) {
             const zoom = this._stageConfig.zoom;
             const { x, y } = this._stageConfig.getStageOrigin();

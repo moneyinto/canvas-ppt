@@ -17,33 +17,28 @@ export default class Background {
         this._gradient = new Gradient(this._ctx);
     }
 
-    private _getCacheImage(id: string): Promise<HTMLImageElement> {
-        return new Promise(resolve => {
-            const cacheImage = this._stageConfig.cacheImages.find(image => image.id === id);
-            if (cacheImage) {
-                resolve(cacheImage.image);
-            } else {
-                const image = new Image();
-                image.onload = () => {
-                    const cacheImage = {
-                        id,
-                        image
-                    };
-                    this._stageConfig.addCacheImage(cacheImage);
-                    resolve(cacheImage.image);
-                };
-                try {
-                    this._db.getFile(id).then(file => {
-                        image.src = file || defaultImageSrc;
-                    });
-                } catch {
-                    image.src = defaultImageSrc;
-                }
+    private _getCacheImage(id: string): HTMLImageElement | undefined {
+        const cacheImage = window.cacheDomMap.get(id);
+        if (cacheImage) {
+            return cacheImage as HTMLImageElement;
+        } else {
+            const image = new Image();
+            image.onload = () => {
+                window.cacheDomMap.set(id, image);
+                this._stageConfig.waitDrawView();
+            };
+            try {
+                this._db.getFile(id).then(file => {
+                    image.src = file || defaultImageSrc;
+                });
+            } catch {
+                image.src = defaultImageSrc;
             }
-        });
+        }
+        return undefined;
     }
 
-    public async draw(background: ISlideBackground | undefined) {
+    public draw(background: ISlideBackground | undefined) {
         const { x, y, stageWidth, stageHeight } = this._stageConfig.getStageArea();
 
         this._ctx.save();
@@ -62,19 +57,20 @@ export default class Background {
                     const image = background.image;
 
                     if (image) {
-                        const imageElement = await this._getCacheImage(image);
-
-                        if (imageSize === "cover") {
-                            this._ctx.drawImage(imageElement, x, y, stageWidth, stageHeight);
-                        } else {
-                            const zoom = stageWidth / VIEWPORT_SIZE;
-                            this._ctx.translate(x, y);
-                            this._ctx.scale(zoom, zoom);
-                            const pattern = this._ctx.createPattern(imageElement, "repeat");
-                            if (pattern) {
-                                this._ctx.rect(0, 0, VIEWPORT_SIZE, VIEWPORT_SIZE * VIEWRATIO);
-                                this._ctx.fillStyle = pattern;
-                                this._ctx.fill();
+                        const imageElement = this._getCacheImage(image);
+                        if (imageElement) {
+                            if (imageSize === "cover") {
+                                this._ctx.drawImage(imageElement, x, y, stageWidth, stageHeight);
+                            } else {
+                                const zoom = stageWidth / VIEWPORT_SIZE;
+                                this._ctx.translate(x, y);
+                                this._ctx.scale(zoom, zoom);
+                                const pattern = this._ctx.createPattern(imageElement, "repeat");
+                                if (pattern) {
+                                    this._ctx.rect(0, 0, VIEWPORT_SIZE, VIEWPORT_SIZE * VIEWRATIO);
+                                    this._ctx.fillStyle = pattern;
+                                    this._ctx.fill();
+                                }
                             }
                         }
                     }

@@ -297,10 +297,10 @@ export default class Screen {
         this.stageConfig.resetBaseZoom();
     }
 
-    private async _drawPage() {
+    private _drawPage() {
         this._stage.clear();
-        await this._background.draw(this.slide.background);
-        await this._stage.drawElements(this.slide.elements);
+        this._background.draw(this.slide.background);
+        this._stage.drawElements(this.slide.elements);
     }
 
     private async _awaitPageAnimation(slide: ISlide) {
@@ -333,7 +333,7 @@ export default class Screen {
         // 切换页之后，更新暂存的slide，为了进行slide的比对，防止动作过快，导致错误动画，比如点击下一页，但是动画还没执行完，快速点击上一页
         this._storeSlide = slide;
 
-        await this._drawPage();
+        this._drawPage();
         if (type === "next") this._initAnimations();
     }
 

@@ -16,7 +16,7 @@ export default class ViewStage extends Stage {
         this._drawPage();
     }
 
-    private async _drawPage() {
+    private _drawPage() {
         const { x, y, stageWidth, stageHeight } = this.stageConfig.getStageArea();
         const currentSlide = this.stageConfig.getCurrentSlide();
 
@@ -28,14 +28,14 @@ export default class ViewStage extends Stage {
         this.ctx.fillRect(x, y, stageWidth, stageHeight);
 
         // 绘制背景
-        await this._background.draw(currentSlide?.background);
+       this._background.draw(currentSlide?.background);
 
         // 移除阴影设置
         this.ctx.shadowColor = "";
         this.ctx.shadowBlur = 0;
 
         const elements = currentSlide?.elements || [];
-        await this.drawElements(elements);
+        this.drawElements(elements);
     }
 
     public async resetDrawPage() {
@@ -43,6 +43,6 @@ export default class ViewStage extends Stage {
         const height = this.stageConfig.getHeight();
         this.ctx.clearRect(0, 0, width, height);
 
-        await this._drawPage();
+        this._drawPage();
     }
 }

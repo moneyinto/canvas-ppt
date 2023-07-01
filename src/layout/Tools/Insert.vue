@@ -302,11 +302,11 @@ const insertOrUpdateLatex = async ({
                     latexElement.value!.text = latex;
                     latexElement.value!.width = image.width;
                     latexElement.value!.height = image.height;
+                    window.cacheDomMap.set(md5, image);
                     instance?.value.command.executeUpdateRender(
                         [JSON.parse(JSON.stringify(latexElement.value))],
                         true
                     );
-
                     latexElement.value = undefined;
                 };
                 image.src = src;
@@ -320,6 +320,7 @@ const insertOrUpdateLatex = async ({
                     md5,
                     latex
                 );
+                window.cacheDomMap.set(md5, image);
                 instance?.value.command.executeAddRender([element]);
             };
             image.src = src;
@@ -379,6 +380,7 @@ const insertOrUpdateChart = async ({
                 chartElement.value!.height = image.height / 3;
                 chartElement.value!.title = title;
                 chartElement.value!.stack = stack;
+                window.cacheDomMap.set(md5, image);
                 instance?.value.command.executeUpdateRender(
                     [JSON.parse(JSON.stringify(chartElement.value))],
                     true
@@ -400,6 +402,7 @@ const insertOrUpdateChart = async ({
                     title,
                     stack
                 );
+                window.cacheDomMap.set(md5, image);
                 instance?.value.command.executeAddRender([element]);
             };
             image.src = src;

@@ -18,8 +18,6 @@ export default class StageConfig {
     public insertElement: ICreatingElement | null; // 需要绘制插入的元素
     public operateElements: IPPTElement[]; // 选中操作元素
     public opreateType: string; // 元素操作形式 拉伸方向 旋转
-    public cacheImages: ICacheImage[];
-    public cacheVideo: Map<string, HTMLVideoElement>;
 
     public isFullScreen = false;
     public autoVideoRender = false;
@@ -64,6 +62,8 @@ export default class StageConfig {
 
     // 边距
     private _margin = 0;
+
+    private _renderWaitTimer: number | NodeJS.Timeout = 0;
     constructor(container: HTMLDivElement, listener?: Listener, margin?: number) {
         this._container = container;
         this._listener = listener;
@@ -75,8 +75,6 @@ export default class StageConfig {
         this.insertElement = null;
         this.operateElements = [];
         this.opreateType = "";
-        this.cacheImages = [];
-        this.cacheVideo = new Map();
 
         this.resetDrawView = null;
         this.resetDrawOprate = null;
@@ -88,8 +86,8 @@ export default class StageConfig {
         this.fontConfig = fontConfig;
     }
 
-    public async resetCheckDrawView() {
-        this.resetDrawView && await this.resetDrawView();
+    public resetCheckDrawView() {
+        this.resetDrawView && this.resetDrawView();
     }
 
     public resetCheckDrawOprate() {
@@ -339,11 +337,48 @@ export default class StageConfig {
     }
 
     public addCacheImage(cacheImage: ICacheImage) {
-        this.cacheImages.push(cacheImage);
+        window.cacheDomMap.set(cacheImage.id, cacheImage.image);
     }
 
     public clearCacheImages() {
-        this.cacheImages = [];
+        window.cacheDomMap.clear();
+    }
+
+    public waitDrawView() {
+        clearTimeout(this._renderWaitTimer);
+        const currentSlide = this.getCurrentSlide();
+        let needDraw = true;
+
+        // 先校验背景图片
+        if (currentSlide?.background && currentSlide.background.type === "image" && currentSlide.background.image) {
+            needDraw = !!window.cacheDomMap.get(currentSlide.background.image);
+        }
+
+        // 再校验资源图片
+        if (needDraw) {
+            for (const element of currentSlide?.elements || []) {
+                if ((element.type === "image" || element.type === "latex" || element.type === "chart") && element.src) {
+                    needDraw = !!window.cacheDomMap.get(element.src);
+                    if (!needDraw) break;
+                }
+
+                if (element.type === "audio") {
+                    needDraw = !!window.cacheDomMap.get(element.cover || "defaultAudioImage");
+                    if (!needDraw) break;
+                }
+
+                if (element.type === "video") {
+                    needDraw = !!window.cacheDomMap.get(element.src);
+                    if (!needDraw) break;
+                }
+            }
+        }
+
+        this._renderWaitTimer = setTimeout(() => {
+            if (needDraw) {
+                this.resetCheckDrawView();
+            }
+        }, 100);
     }
 
     public setSelectArea(selectArea: [number, number, number, number] | null) {

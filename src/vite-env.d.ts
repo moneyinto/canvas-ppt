@@ -9,6 +9,7 @@ declare module "*.vue" {
 
 declare interface Window {
     MathJax: any;
+    cacheDomMap: Map<string, HTMLImageElement | HTMLVideoElement>;
     __APP_MPPTX__: {
         name: string;
         version: string;

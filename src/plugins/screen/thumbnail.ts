@@ -20,17 +20,22 @@ export default class Thumbnail {
         // 画板配置
         this.stageConfig = new StageConfig(container);
 
+        this.stageConfig.setSlides([slide]);
+        this.stageConfig.setSlideId(slide.id);
+
         // 创建展示画板
         this._stage = new Stage(container, this.stageConfig, this.db);
         this._background = new Background(this.stageConfig, this._stage.ctx, this.db);
 
+        this.stageConfig.resetDrawView = () => this._drawPage();
+
         this._drawPage();
     }
 
-    private async _drawPage() {
+    private _drawPage() {
         this._stage.clear();
-        await this._background.draw(this.slide.background);
-        await this._stage.drawElements(this.slide.elements, true);
+        this._background.draw(this.slide.background);
+        this._stage.drawElements(this.slide.elements, true);
     }
 
     public updateSlide(slide: ISlide) {

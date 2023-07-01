@@ -128,14 +128,13 @@ const renderWhiteboardElements = () => {
 const prev = async () => {
     const animations = previewSlide.value.animations || [];
     const firstClickIndex = animations.findIndex(item => item.trigger === "click");
-    if (screen && screen.stageConfig.animationIndex >= firstClickIndex) {
+    if (screen && screen.stageConfig.animationIndex >= firstClickIndex && screen?.stageConfig.animationIndex !== -1) {
         screen.prevStep();
     } else if (previewSlideIndex.value > 0) {
         saveWhiteboardElements();
         previewSlideIndex.value--;
         await updateSlide("prev");
         renderWhiteboardElements();
-        // screen && screen.resetLastAnimationIndex();
     } else {
         message.warning("已经是第一页了");
     }

@@ -117,7 +117,7 @@ export default (
             importing.value = true;
             importPercent.value = 10;
             const analyzePPTX = new AnalyzePPTX();
-            const slides = await analyzePPTX.read(file);
+            const slides = await analyzePPTX.read(file) as ISlide[];
             await instance?.value.history.clear();
             importPercent.value = 50;
             for (const slide of slides) {

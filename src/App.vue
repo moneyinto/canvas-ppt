@@ -79,6 +79,9 @@ const instance = ref<Editor>();
 const viewSlides = ref<ISlide[]>([]);
 const total = computed(() => viewSlides.value.length);
 
+// 缓存图片资源，为了提升速率
+window.cacheDomMap = new Map<string, HTMLImageElement | HTMLVideoElement>();
+
 const historyCursor = ref(0);
 const historyLength = ref(0);
 

@@ -10,13 +10,11 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, nextTick, onUnmounted, PropType, Ref, ref } from "vue";
+import { computed, nextTick, onUnmounted, PropType, ref } from "vue";
 import { VIEWRATIO } from "@/config/stage";
 import { ISlide } from "@/types/slide";
 import Thumbnail from "@/plugins/screen/thumbnail";
 import emitter, { EmitterEvents } from "@/utils/emitter";
-import { sleep } from "@/utils";
-import Editor from "@/plugins/editor";
 
 const props = defineProps({
     size: {
@@ -33,8 +31,6 @@ const props = defineProps({
     }
 });
 
-const instance = inject<Ref<Editor>>("instance");
-
 const thumbnail = ref();
 const thumbnailWidth = computed(() => props.size);
 
@@ -47,14 +43,9 @@ const updateSlide = (updateSlide: ISlide) => {
     }
 };
 
-nextTick(async () => {
-    if (thumbnail.value && instance?.value) {
-        // 缩略图存在第一位置，且有视频，初始化存在问题！！
-        // 索引值如果为0，且存在视频元素，这里缩略进行延缓加载处理
-        if (props.index === 0 && props.slide.elements.filter(element => element.type === "video").length > 0) {
-            await sleep(500);
-        }
-        thumbnailInstance = new Thumbnail(thumbnail.value, props.slide, instance.value.history);
+nextTick(() => {
+    if (thumbnail.value) {
+        thumbnailInstance = new Thumbnail(thumbnail.value, props.slide);
 
         emitter.on(EmitterEvents.UPDATE_THUMBNAIL, updateSlide);
     }

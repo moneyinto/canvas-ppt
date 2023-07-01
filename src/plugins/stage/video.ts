@@ -31,24 +31,22 @@ export default class Video {
         return video;
     }
 
-    public getVideo(id: string, src: string): Promise<HTMLVideoElement> {
-        return new Promise(resolve => {
-            let video = document.getElementById(id);
-            if (video) return resolve(video as HTMLVideoElement);
-            this._db.getFile(src).then((file: string) => {
-                video = this.createVideo(id, file);
-                video.oncanplay = async () => {
-                    // 延缓处理主图视频无法初始化问题
-                    await sleep(200);
-                    resolve(video as HTMLVideoElement);
-                };
-            });
+    public getVideo(id: string, src: string): HTMLVideoElement | undefined {
+        let video = document.getElementById(id);
+        if (video) return video as HTMLVideoElement;
+        this._db.getFile(src).then((file: string) => {
+            video = this.createVideo(id, file);
+            video.oncanplay = async () => {
+                window.cacheDomMap.set(src, video as HTMLVideoElement);
+                this._stageConfig.waitDrawView();
+            };
         });
+        return undefined;
     }
 
-    private getVideoArea(video: HTMLVideoElement, width: number, height: number) {
-        const videoWidth = video.clientWidth;
-        const videoHeight = video.clientHeight;
+    private getVideoArea(width: number, height: number, video?: HTMLVideoElement) {
+        const videoWidth = video?.clientWidth || width;
+        const videoHeight = video?.clientHeight || height;
         const cavnasWidth = width;
         const canvasHeight = height;
 
@@ -78,34 +76,36 @@ export default class Video {
         const video = await this.getVideo(element.id, element.src);
         this._ctx.save();
 
-        const { _x, _y, _width, _height } = this.getVideoArea(video, width, height);
+        const { _x, _y, _width, _height } = this.getVideoArea(width, height, video);
 
         this._ctx.fillStyle = "#000000";
         this._ctx.fillRect(0, 0, width, height);
 
-        this._ctx.drawImage(
-            video,
-            _x,
-            _y,
-            _width,
-            _height
-        );
+        if (video) {
+            this._ctx.drawImage(
+                video,
+                _x,
+                _y,
+                _width,
+                _height
+            );
+        }
 
         this._renderControlBg(width, height);
-        this._renderPlayBtn(video, height);
-        this._renderPauseBtn(video, height);
-        this._renderProgress(video, width, height);
-        this._renderTime(video, height);
+        this._renderPlayBtn(height, video);
+        this._renderPauseBtn(height, video);
+        this._renderProgress(width, height, video);
+        this._renderTime(height, video);
         // this._renderFullScreen(width, height);
 
         this._ctx.restore();
     }
 
-    public async draw(element: IPPTVideoElement, isThumbnail?: boolean) {
+    public draw(element: IPPTVideoElement, isThumbnail?: boolean) {
         const zoom = this._stageConfig.zoom;
         const { x, y } = this._stageConfig.getStageOrigin();
 
-        const video = await this.getVideo(element.id, element.src);
+        const video = this.getVideo(element.id, element.src);
 
         this._ctx.save();
 
@@ -124,25 +124,27 @@ export default class Video {
         // 平移坐标原点
         this._ctx.translate(-element.width / 2, -element.height / 2);
 
-        const { _x, _y, _width, _height } = this.getVideoArea(video, element.width, element.height);
+        const { _x, _y, _width, _height } = this.getVideoArea(element.width, element.height, video);
 
         this._ctx.fillStyle = "#000000";
         this._ctx.fillRect(0, 0, element.width, element.height);
 
-        this._ctx.drawImage(
-            video,
-            _x,
-            _y,
-            _width,
-            _height
-        );
+        if (video) {
+            this._ctx.drawImage(
+                video,
+                _x,
+                _y,
+                _width,
+                _height
+            );
+        }
 
         if (!isThumbnail) {
             this._renderControlBg(element.width, element.height);
-            this._renderPlayBtn(video, element.height);
-            this._renderPauseBtn(video, element.height);
-            this._renderProgress(video, element.width, element.height);
-            this._renderTime(video, element.height);
+            this._renderPlayBtn(element.height, video);
+            this._renderPauseBtn(element.height, video);
+            this._renderProgress(element.width, element.height, video);
+            this._renderTime(element.height, video);
             this._renderFullScreen(element.width, element.height);
         }
 
@@ -170,8 +172,8 @@ export default class Video {
         this._ctx.restore();
     }
 
-    private _renderPlayBtn(video: HTMLVideoElement, height: number) {
-        if (!video.paused) return;
+    private _renderPlayBtn(height: number, video?: HTMLVideoElement) {
+        if (video && !video.paused) return;
         this._ctx.save();
         const controlY = height - 80;
         const controlX = 20;
@@ -188,8 +190,8 @@ export default class Video {
         this._ctx.restore();
     }
 
-    private _renderPauseBtn(video: HTMLVideoElement, height: number) {
-        if (video.paused) return;
+    private _renderPauseBtn(height: number, video?: HTMLVideoElement) {
+        if (video?.paused) return;
         this._ctx.save();
         const controlY = height - 80;
         const controlX = 20;
@@ -206,12 +208,12 @@ export default class Video {
         this._ctx.restore();
     }
 
-    private _renderProgress(video: HTMLVideoElement, width: number, height: number) {
+    private _renderProgress(width: number, height: number, video?: HTMLVideoElement) {
         this._ctx.save();
         const controlY = height - 80;
         const controlX = 15;
         const progressWidth = width - 30;
-        const progress = video.currentTime / video.duration;
+        const progress = video ? (video.currentTime / video.duration) : 0;
         this._ctx.translate(controlX, controlY + 35);
         this._ctx.globalAlpha = 0.3;
         this._ctx.lineCap = "round";
@@ -238,7 +240,7 @@ export default class Video {
         this._ctx.restore();
     }
 
-    private _renderTime(video: HTMLVideoElement, height: number) {
+    private _renderTime(height: number, video?: HTMLVideoElement) {
         this._ctx.save();
         const controlY = height - 80;
         const controlX = 30;
@@ -246,8 +248,8 @@ export default class Video {
 
         this._ctx.fillStyle = "#ffffff";
         this._ctx.font = "12px sans-serif";
-        const currentTime = fomatTime(video.currentTime);
-        const duration = fomatTime(video.duration);
+        const currentTime = fomatTime(video?.currentTime || 0);
+        const duration = fomatTime(video?.duration || 0);
         this._ctx.fillText(`${currentTime} / ${duration}`, 30, 10);
 
         this._ctx.restore();

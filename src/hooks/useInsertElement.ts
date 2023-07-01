@@ -54,6 +54,7 @@ export default (
                             image.height,
                             md5
                         );
+                        window.cacheDomMap.set(md5, image);
                         instance?.value.command.executeAddRender([element]);
                     };
                     image.src = reader.result as string;

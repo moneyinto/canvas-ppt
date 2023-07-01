@@ -66,7 +66,7 @@ export default class History {
         this.cursor = -1;
 
         // 清空图片暂存
-        this._stageConfig.clearCacheImages();
+        // this._stageConfig.clearCacheImages();
     }
 
     public async updateThumbnailSlide(cursor: number) {
@@ -116,7 +116,7 @@ export default class History {
         const isSlidesChange = this._stageConfig.slides.length !== slides.length;
         this._stageConfig.setSlides(slides);
         // 当页出现增减变化 不执行该方法 处理页面渲染重叠现象
-        if (!isSlidesChange) await this._stageConfig.resetCheckDrawView();
+        if (!isSlidesChange) this._stageConfig.resetCheckDrawView();
         // oprateElements存在时，这里需要验证一下oprateElements是否还在slides中
         const operateElements = this._stageConfig.operateElements;
         if (operateElements.length > 0) {
