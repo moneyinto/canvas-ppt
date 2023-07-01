@@ -64,11 +64,14 @@ import SlideAnimationPool from "@/components/SlideAnimationPool.vue";
 const instance = inject<Ref<Editor>>("instance");
 
 const showAnimationPanel = ref(false);
-const turningAni = ref<IPPTTurningAnimation>({
+const noTurningAni = {
     name: "无",
     ani: "",
     duration: 0
-});
+};
+
+const currentSlide = instance?.value?.stageConfig.getCurrentSlide();
+const turningAni = ref<IPPTTurningAnimation>(currentSlide?.turningAni || noTurningAni);
 
 const animationChange = () => {
     instance?.value?.command.executeEditPageAnimation(turningAni.value.ani ? turningAni.value : undefined);
@@ -84,11 +87,7 @@ const editAnimation = (
             duration: animation.duration
         };
     } else {
-        turningAni.value = {
-            name: "无",
-            ani: "",
-            duration: 0
-        };
+        turningAni.value = noTurningAni;
     }
     showAnimationPanel.value = false;
     animationChange();
