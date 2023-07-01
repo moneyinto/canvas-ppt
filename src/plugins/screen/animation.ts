@@ -1,11 +1,6 @@
-import StageConfig from "../stage/config";
+import { ElementAnimation } from "../stage/animation";
 
-export default class Animation {
-    public stageConfig: StageConfig;
-    constructor(stageConfig: StageConfig) {
-        this.stageConfig = stageConfig;
-    }
-
+export default class ScreenElementAnimation extends ElementAnimation {
     public start() {
         // 设置动画是否正在执行的参数为 true
         this.stageConfig.isAnimation = true;
@@ -21,46 +16,6 @@ export default class Animation {
     public render() {
         this.stageConfig.resetCheckDrawView();
     }
-
-    public action() {
-        // 判断动画是执行中的，执行中则进行一下步骤，否则跳过不做处理
-        if (this.stageConfig.isAnimation && this.stageConfig.actionAnimations.length > 0) {
-            // 取当前执行动画存储集合的第一个，进行判断修改需要隐藏元素ID集合
-            const animations = this.stageConfig.actionAnimations[0];
-            const inElIds = animations.filter((animation) => animation.type === "in").map((animation) => animation.elId);
-            this.stageConfig.animationHideElements = this.stageConfig.animationHideElements.filter((elId) => inElIds.indexOf(elId) === -1);
-
-            // 根据动画执行时间，算出动画执行的时长
-            this.stageConfig.animationCountTime = new Date().getTime() - this.stageConfig.animationTime;
-
-            // 触发渲染函数方法
-            this.render();
-
-            // 根据动画执行的时长来判断当前执行动画存储集合的第一个是否有动画执行完成（动画的时间小于等于动画执行时长）
-            // 如果动画为退出动画，这里需要将元素ID加入到需要隐藏元素ID集合
-            // 进行完成动画的删除
-            const outElIds = animations.filter(animation => animation.duration <= this.stageConfig.animationCountTime && animation.type === "out").map(animation => animation.elId);
-            this.stageConfig.animationHideElements = this.stageConfig.animationHideElements.concat(outElIds);
-            this.stageConfig.actionAnimations[0] = animations.filter(animation => animation.duration > this.stageConfig.animationCountTime);
-
-            // 判断当前执行动画存储集合的第一个是否全部执行完成（即长度为 0），如果全部执行完，清除当前执行动画存储集合的第一个的删除，重置动画执行时间和动画执行时长
-            if (this.stageConfig.actionAnimations[0].length === 0) {
-                this.stageConfig.actionAnimations.shift();
-                this.stageConfig.animationTime = new Date().getTime();
-                this.stageConfig.animationCountTime = 0;
-            }
-
-            // 判断整个当前执行动画存储集合是否执行完成（即长度为0），结束动画执行（触发动画终止函数），否则继续触发动画执行函数，采用window.requestAnimationFrame
-            if (this.stageConfig.actionAnimations.length === 0) {
-                this.stop();
-                this.emitStop();
-            } else {
-                window.requestAnimationFrame(() => this.action());
-            }
-        }
-    }
-
-    public emitStop() {}
 
     public stop() {
         // 设置动画是否正在执行的参数为 false

@@ -6,7 +6,7 @@ import Shadow from "./shadow";
 import Fill from "./fill";
 import Gradient from "./gradient";
 import RichText from "./richText";
-import Animation from "./animation";
+import { ActionAnimation } from "./animation";
 
 export default class Shape {
     private _stageConfig: StageConfig;
@@ -16,7 +16,7 @@ export default class Shape {
     private _fill: Fill;
     private _gradient: Gradient;
     private _richText: RichText;
-    private _animation: Animation;
+    private _actionAnimation: ActionAnimation;
     constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
@@ -25,7 +25,7 @@ export default class Shape {
         this._fill = new Fill(this._ctx);
         this._gradient = new Gradient(this._ctx);
         this._richText = new RichText(stageConfig, ctx);
-        this._animation = new Animation(stageConfig, ctx);
+        this._actionAnimation = new ActionAnimation(stageConfig, ctx);
     }
 
     public draw(element: IPPTShapeElement) {
@@ -48,7 +48,7 @@ export default class Shape {
         this._ctx.scale(element.flipH || 1, element.flipV || 1);
 
         // 动画
-        this._animation.setElementStatus(element);
+        this._actionAnimation.setElementStatus(element);
 
         const path = getShapePath(element.shape, element.width, element.height) as Path2D;
 

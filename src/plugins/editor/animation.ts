@@ -1,8 +1,8 @@
-import ScreenAnimation from "../screen/animation";
+import { ElementAnimation } from "../stage/animation";
 import StageConfig from "../stage/config";
 import Listener from "./listener";
 
-export default class Animation extends ScreenAnimation {
+export default class Animation extends ElementAnimation {
     private _listener: Listener;
     constructor(stageConfig: StageConfig, listener: Listener) {
         super(stageConfig);
