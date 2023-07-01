@@ -1,9 +1,9 @@
 import { ElementAnimation } from "../stage/animation";
 
-export default class ScreenElementAnimation extends ElementAnimation {
+export class ScreenElementAnimation extends ElementAnimation {
     public start() {
         // 设置动画是否正在执行的参数为 true
-        this.stageConfig.isAnimation = true;
+        this.stageConfig.isElementAnimation = true;
 
         // 重置动画执行时间 和 动画执行时长
         this.stageConfig.animationTime = new Date().getTime();
@@ -19,7 +19,7 @@ export default class ScreenElementAnimation extends ElementAnimation {
 
     public stop() {
         // 设置动画是否正在执行的参数为 false
-        this.stageConfig.isAnimation = false;
+        this.stageConfig.isElementAnimation = false;
 
         // 根据动画执行的索引处理需要隐藏元素ID集合
         const animations = this.stageConfig.getAnimations();
@@ -66,7 +66,7 @@ export default class ScreenElementAnimation extends ElementAnimation {
         // 重置动画执行时长
         this.stageConfig.animationCountTime = 0;
 
-        // 等待一帧后执行渲染
-        window.requestAnimationFrame(() => this.render());
+        // 等待一帧后执行渲染 切换页会导致有问题 去除暂时不影响，后续待观察
+        // window.requestAnimationFrame(() => this.render());
     }
 }

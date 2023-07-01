@@ -110,8 +110,8 @@ nextTick(() => {
     }
 });
 
-const updateSlide = () => {
-    screen && screen.updateSlide(previewSlide.value);
+const updateSlide = async (type: "prev" | "next") => {
+    screen && await screen.updateSlide(previewSlide.value, type);
 };
 
 const saveWhiteboardElements = () => {
@@ -125,7 +125,7 @@ const renderWhiteboardElements = () => {
     whiteboard.value.render();
 };
 
-const prev = () => {
+const prev = async () => {
     const animations = previewSlide.value.animations || [];
     const firstClickIndex = animations.findIndex(item => item.trigger === "click");
     if (screen && screen.stageConfig.animationIndex >= firstClickIndex) {
@@ -133,15 +133,15 @@ const prev = () => {
     } else if (previewSlideIndex.value > 0) {
         saveWhiteboardElements();
         previewSlideIndex.value--;
-        updateSlide();
+        await updateSlide("prev");
         renderWhiteboardElements();
-        screen && screen.resetLastAnimationIndex();
+        // screen && screen.resetLastAnimationIndex();
     } else {
         message.warning("已经是第一页了");
     }
 };
 
-const next = () => {
+const next = async () => {
     const animations = previewSlide.value.animations;
     if (animations && animations.length > 0 && screen && screen.stageConfig.animationIndex < animations.length - 1) {
         screen.nextStep();
@@ -149,7 +149,7 @@ const next = () => {
         // 进行翻页后，重置动画索引到最后一步
         saveWhiteboardElements();
         previewSlideIndex.value++;
-        updateSlide();
+        await updateSlide("next");
         renderWhiteboardElements();
     } else {
         message.warning("已经是最后一页了");

@@ -16,7 +16,7 @@ export default class Animation extends ElementAnimation {
 
     public stop() {
         // 设置动画是否正在执行的参数为 false
-        this.stageConfig.isAnimation = false;
+        this.stageConfig.isElementAnimation = false;
 
         // 设置需要隐藏的元素ID集合取并集
         this.stageConfig.animationHideElements = [];
