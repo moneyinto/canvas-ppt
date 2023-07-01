@@ -64,6 +64,10 @@ export class ActionAnimation {
             // 存在则执行动画绘制
             const process = this._stageConfig.animationCountTime / turningAni.duration * 100;
             const { stageWidth: width, stageHeight: height } = this._stageConfig.getStageArea();
+
+            // 坐标原点平移到画布中心位置
+            this._ctx.translate(width / 2, height / 2);
+
             const { translate, scale, opacity, rotate, skew } = getAnimationStatus(turningAni.ani, process, width, height);
 
             if (
@@ -95,6 +99,9 @@ export class ActionAnimation {
                 0,
                 0
             );
+
+            // 坐标原点有中心位置平移回去
+            this._ctx.translate(-width / 2, -height / 2);
         }
     }
 }
