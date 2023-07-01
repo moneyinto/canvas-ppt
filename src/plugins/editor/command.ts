@@ -34,7 +34,7 @@ import {
 import { IFontData, ITextStyle } from "@/types/font";
 import { VIEWPORT_SIZE, VIEWRATIO } from "@/config/stage";
 import { IElementAlignType } from "@/types";
-import { IPPTAnimation, ISlideBackground } from "@/types/slide";
+import { IPPTAnimation, IPPTTurningAnimation, ISlideBackground } from "@/types/slide";
 import { OPTION_TYPE } from "@/config/options";
 import Animation from "./animation";
 
@@ -2072,6 +2072,20 @@ export default class Command {
                 row.splice(colIndex, 1);
             }
             this.executeUpdateRender([operateElement], true);
+        }
+    }
+
+    /**
+     * 切页动画编辑
+     */
+    public executeEditPageAnimation(turningAni?: IPPTTurningAnimation) {
+        const currentSlide = this._stageConfig.getCurrentSlide();
+        if (currentSlide) {
+            if (!turningAni) {
+                delete currentSlide.turningAni;
+            } else {
+                currentSlide.turningAni = turningAni;
+            }
         }
     }
 

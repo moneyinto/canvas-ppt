@@ -59,6 +59,7 @@ export interface IPPTAnimation {
 }
 
 export interface IPPTTurningAnimation {
+    name: string;
     ani: string;
     duration: number;
 }
