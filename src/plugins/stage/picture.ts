@@ -6,7 +6,7 @@ import OutLine from "./outline";
 import { getShapePath } from "@/utils/shape";
 import { SHAPE_TYPE } from "@/config/shapes";
 import { defaultImageSrc } from "@/config";
-import Animation from "./animation";
+import { ActionAnimation } from "./animation";
 import DB from "@/utils/db";
 
 export default class Picture {
@@ -16,7 +16,7 @@ export default class Picture {
     private _shadow: Shadow;
     private _fill: Fill;
     private _outline: OutLine;
-    private _animation: Animation;
+    private _actionAnimation: ActionAnimation;
     constructor(
         stageConfig: StageConfig,
         ctx: CanvasRenderingContext2D,
@@ -28,7 +28,7 @@ export default class Picture {
         this._shadow = new Shadow(this._ctx);
         this._fill = new Fill(this._ctx);
         this._outline = new OutLine(this._ctx);
-        this._animation = new Animation(stageConfig, ctx);
+        this._actionAnimation = new ActionAnimation(stageConfig, ctx);
     }
 
     private async _getCacheImage(element: IPPTImageElement | IPPTLatexElement | IPPTChartElement): Promise<HTMLImageElement> {
@@ -80,7 +80,7 @@ export default class Picture {
             this._ctx.scale(element.flipH || 1, element.flipV || 1);
 
             // 动画
-            this._animation.setElementStatus(element);
+            this._actionAnimation.setElementStatus(element);
 
             const path = getShapePath(SHAPE_TYPE.RECT, element.width, element.height) as Path2D;
             if (element.fill) {

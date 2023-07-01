@@ -1,15 +1,64 @@
 import { ISlide } from "@/types/slide";
-import View from "./view";
-import { getVideoElementControlPoints, sleep, throttleRAF } from "@/utils";
+import { debounce, getVideoElementControlPoints, sleep, throttleRAF } from "@/utils";
 import { IRects } from "@/types";
 import { IPPTVideoElement } from "@/types/element";
+import { PageAnimation } from "../stage/animation";
+import { ScreenElementAnimation } from "./animation";
+import Background from "../stage/background";
+import Stage from "../stage";
+import DB from "@/utils/db";
+import StageConfig from "../stage/config";
 
-export default class Screen extends View {
+export default class Screen {
+    public stageConfig: StageConfig;
+    public slide: ISlide;
+    private _storeSlide: ISlide;
+    public container: HTMLDivElement;
+    public db: DB;
+    private _stage: Stage;
+    private _animationStage: Stage;
+    private _background: Background;
+    private _animationBackground: Background;
+    private _resizeObserver: ResizeObserver | null;
+    private _elementAnimation: ScreenElementAnimation;
+    private _pageAnimation: PageAnimation;
+
     private _videoControlType = "";
     private _audioControlType = "";
     public mouseSingleClick: () => void = () => {};
     constructor(container: HTMLDivElement, slide: ISlide) {
-        super(container, slide, true, false, true);
+        this.slide = slide;
+        this._storeSlide = slide;
+
+        this.container = container;
+        this._resizeObserver = null;
+
+        this.db = new DB();
+
+        // 画板配置
+        this.stageConfig = new StageConfig(container);
+
+        // 初始化页面动画状态
+        this.stageConfig.initSlideAnimation(slide);
+
+        // 创建展示画板
+        this._stage = new Stage(container, this.stageConfig, this.db);
+        this._background = new Background(this.stageConfig, this._stage.ctx, this.db);
+
+        // 创建切页动画执行画板 ！！！考虑要不要将元素动画也放到动画执行画板上，降低渲染元素过多的压力
+        this._animationStage = new Stage(container, this.stageConfig, this.db);
+        this._animationBackground = new Background(this.stageConfig, this._animationStage.ctx, this.db);
+
+        this._elementAnimation = new ScreenElementAnimation(this.stageConfig);
+
+        this._pageAnimation = new PageAnimation(this.stageConfig, this._animationStage, this._animationBackground);
+
+        this._init();
+
+        this._resizeObserver = new ResizeObserver(debounce(this._reset.bind(this), 100));
+
+        this._resizeObserver.observe(container);
+
         this.container.addEventListener(
             "mousedown",
             this._mousedown.bind(this),
@@ -20,6 +69,26 @@ export default class Screen extends View {
             throttleRAF(this._mousemove.bind(this)),
             false
         );
+    }
+
+    private _init() {
+        if (this.slide.turningAni) {
+            this._pageAnimation.start(this.slide, async () => {
+                // 初始化完后再赋值
+                this.stageConfig.resetDrawView = async () => {
+                    await this._drawPage();
+                };
+                await this._drawPage();
+                this._initAnimations();
+            });
+        } else {
+            // 初始化完后再赋值
+            this.stageConfig.resetDrawView = async () => {
+                await this._drawPage();
+            };
+
+            this._initAnimations();
+        }
     }
 
     private _createAudio(id: string, file: string) {
@@ -182,5 +251,99 @@ export default class Screen extends View {
         } else {
             this.container.style.cursor = "default";
         }
+    }
+
+    // 重置元素动画到最后一个
+    public resetLastAnimationIndex(slide: ISlide) {
+        const animations = slide.animations || [];
+        this.stageConfig.animationIndex = animations.length - 1;
+    }
+
+    public nextStep() {
+        this._pageAnimation.stop();
+        this._elementAnimation.stop();
+        const animations = this.slide.animations || [];
+        if (this.stageConfig.animationIndex < animations.length - 1) {
+            const start = this.stageConfig.animationIndex + 1;
+            const nextClickIndex = animations.findIndex((item, index) => index > start && item.trigger === "click");
+            const end = nextClickIndex > -1 ? nextClickIndex : animations.length;
+            this.stageConfig.animationIndex = end - 1;
+            this.stageConfig.setActionAnimationsByIndex(start, end);
+        }
+        this._elementAnimation.start();
+    }
+
+    public prevStep() {
+        if (this.stageConfig.animationIndex > -1) {
+            const animations = this.slide.animations || [];
+            const start = this.stageConfig.animationIndex;
+            const prevClickIndex = animations.slice(0, start + 1).reverse().findIndex((item, index) => item.trigger === "click" && index > 0);
+            this.stageConfig.animationIndex = prevClickIndex > -1 ? start - prevClickIndex : -1;
+        }
+        this._elementAnimation.stop();
+        this._pageAnimation.stop();
+        this._drawPage();
+    }
+
+    get ctx() {
+        return this._stage.ctx;
+    }
+
+    private _reset() {
+        this._stage.resetStage();
+
+        this._animationStage.resetStage();
+
+        this.stageConfig.resetBaseZoom();
+    }
+
+    private async _drawPage() {
+        this._stage.clear();
+        await this._background.draw(this.slide.background);
+        await this._stage.drawElements(this.slide.elements);
+    }
+
+    private async _awaitPageAnimation(slide: ISlide) {
+        return new Promise((resolve) => {
+            this._pageAnimation.start(slide, () => {
+                resolve(true);
+            });
+        });
+    }
+
+    public async updateSlide(slide: ISlide, type: "prev" | "next") {
+        // 切换页之前，先停止所有动画
+        this._elementAnimation.stop();
+        this._pageAnimation.stop();
+        this.slide = slide;
+        if (this._storeSlide.id === slide.id) return;
+
+        this.stageConfig.initSlideAnimation(slide);
+        if (type === "prev") {
+            this.resetLastAnimationIndex(slide);
+            this._elementAnimation.stop();
+        }
+
+        // ！！！！！！上一页暂时不做动画
+        if (slide.turningAni && type === "next") {
+            // 存在切页动画，执行切页动画
+            await this._awaitPageAnimation(slide);
+        }
+
+        // 切换页之后，更新暂存的slide，为了进行slide的比对，防止动作过快，导致错误动画，比如点击下一页，但是动画还没执行完，快速点击上一页
+        this._storeSlide = slide;
+
+        await this._drawPage();
+        if (type === "next") this._initAnimations();
+    }
+
+    private _initAnimations() {
+        if (this.slide.animations && this.slide.animations.length > 0 && this.slide.animations[0].trigger !== "click") {
+            this._elementAnimation.start();
+        }
+    }
+
+    public destroy() {
+        this._resizeObserver?.unobserve(this.container);
     }
 }

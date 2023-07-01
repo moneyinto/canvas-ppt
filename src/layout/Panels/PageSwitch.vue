@@ -13,18 +13,85 @@
             />
         </div>
         <div class="ppt-panel-content">
-            xx
+            <div class="ppt-animation-set" @click.stop>
+                <div class="ppt-animation-set-title">动画设置</div>
+
+                <div class="ppt-animation-set-line">
+                    <div class="ppt-animation-set-label">动画</div>
+                    <div class="ppt-animation-set-value">
+                        <a-popover
+                            v-model:visible="showAnimationPanel"
+                            trigger="click"
+                            placement="topRight"
+                            arrow-point-at-center
+                        >
+                            <template #content>
+                                <SlideAnimationPool @change="editAnimation" />
+                            </template>
+                            <a-input
+                                readonly="readonly"
+                                v-model:value="turningAni.name"
+                            />
+                        </a-popover>
+                    </div>
+                </div>
+
+                <div class="ppt-animation-set-line">
+                    <div class="ppt-animation-set-label">速度</div>
+                    <div class="ppt-animation-set-value">
+                        <a-input-number
+                            v-model:value="turningAni.duration"
+                            min="0"
+                            @input="animationChange()"
+                            @change="animationChange()"
+                            :disabled="!turningAni.ani"
+                        />
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { inject, Ref } from "vue";
+import { inject, ref, Ref } from "vue";
 import SvgIcon from "@/components/SvgIcon.vue";
 import Editor from "@/plugins/editor";
 import emitter, { EmitterEvents } from "@/utils/emitter";
+import { IPPTTurningAnimation } from "@/types/slide";
+import SlideAnimationPool from "@/components/SlideAnimationPool.vue";
 
 const instance = inject<Ref<Editor>>("instance");
+
+const showAnimationPanel = ref(false);
+const noTurningAni = {
+    name: "无",
+    ani: "",
+    duration: 0
+};
+
+const currentSlide = instance?.value?.stageConfig.getCurrentSlide();
+const turningAni = ref<IPPTTurningAnimation>(currentSlide?.turningAni || noTurningAni);
+
+const animationChange = () => {
+    instance?.value?.command.executeEditPageAnimation(turningAni.value.ani ? turningAni.value : undefined);
+};
+
+const editAnimation = (
+    animation?: { name: string; value: string; duration: number }
+) => {
+    if (animation) {
+        turningAni.value = {
+            name: animation.name,
+            ani: animation.value,
+            duration: animation.duration
+        };
+    } else {
+        turningAni.value = noTurningAni;
+    }
+    showAnimationPanel.value = false;
+    animationChange();
+};
 
 const closePanel = () => {
     emitter.emit(EmitterEvents.SHOW_PANELS, false);
@@ -63,136 +130,6 @@ const closePanel = () => {
         display: flex;
         flex-direction: column;
         min-height: 0;
-    }
-
-    .ppt-animation-title {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        height: 20px;
-        font-size: 12px;
-        margin-bottom: 15px;
-        span {
-            margin: 0 3px;
-        }
-    }
-
-    .ppt-animation-btns {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        .ppt-tool-divider {
-            top: 0;
-            margin: 0 15px;
-            border-left: 1px solid rgba(0, 0, 0, 0.2);
-        }
-        .ppt-animation-btn {
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-    }
-
-    .ppt-animation-list {
-        position: relative;
-        padding-top: 10px;
-        flex: 1;
-        overflow-y: auto;
-        min-height: 0;
-
-        .ppt-animation-item {
-            cursor: grab;
-            user-select: none;
-            background: rgb(255, 255, 255);
-            border: 1px solid rgb(236, 237, 237);
-            border-radius: 4px;
-            height: 40px;
-            padding: 10px 12px 10px 8px;
-            margin-bottom: 8px 0;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-            position: relative;
-            .ppt-animation-btns {
-                display: none;
-            }
-
-            &.active {
-                background-color: rgb(231, 243, 253);
-            }
-
-            &.selected {
-                border: 1px solid rgb(91, 157, 244);
-            }
-
-            &:hover {
-                .ppt-animation-btns {
-                    display: flex;
-                    margin-left: 20px;
-                }
-
-                .ppt-animation-name {
-                    display: none;
-                }
-            }
-        }
-
-        .drag-line {
-            position: absolute;
-            left: 0;
-            right: 0;
-            border-top: 2px solid #1890ff;
-        }
-
-        .ppt-animation-item-footer {
-            position: relative;
-            height: 20px;
-        }
-
-        .ppt-animation-index {
-            margin-right: 10px;
-        }
-
-        .ppt-element-type {
-            flex: 1;
-            min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .ppt-animation-name {
-            color: rgba(65, 70, 75, 0.6);
-            margin-left: 20px;
-        }
-
-        .ppt-add-animation {
-            display: flex;
-            justify-content: center;
-            padding: 20px 0;
-            position: sticky;
-            bottom: 0;
-            background-color: rgb(250, 250, 250);
-            .ppt-add-button {
-                display: flex;
-                align-items: center;
-                font-size: 12px;
-                color: rgba(65, 70, 75, 0.6);
-                &.active {
-                    color: #1890ff;
-                }
-            }
-        }
-    }
-
-    .ppt-animation-tip {
-        text-align: center;
-        margin: 10px 0px 26px;
-        color: rgba(65, 70, 75, 0.9);
-        opacity: 0.5;
-        font-size: 12px;
     }
 }
 

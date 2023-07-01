@@ -58,6 +58,12 @@ export interface IPPTAnimation {
     trigger: "click" | "meantime" | "after";
 }
 
+export interface IPPTTurningAnimation {
+    name: string;
+    ani: string;
+    duration: number;
+}
+
 
 /**
  * 幻灯片页面
@@ -71,11 +77,14 @@ export interface IPPTAnimation {
  * remark?: 备注
  *
  * background?: 页面背景
+ *
+ * turningAni?: 翻页动画 采用元素动画的入场动画
  */
 export interface ISlide {
     id: string;
     viewportRatio?: number;
     elements: IPPTElement[];
     background?: ISlideBackground;
-    animations?: IPPTAnimation[]
+    animations?: IPPTAnimation[];
+    turningAni?: IPPTTurningAnimation;
 }

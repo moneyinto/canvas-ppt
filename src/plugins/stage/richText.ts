@@ -6,22 +6,21 @@ import StageConfig, { TEXT_MARGIN } from "./config";
 import OutLine from "./outline";
 import Shadow from "./shadow";
 import Fill from "./fill";
-import Animation from "./animation";
-
+import { ActionAnimation } from "./animation";
 export default class RichText {
     private _stageConfig: StageConfig;
     private _ctx: CanvasRenderingContext2D;
     private _outline: OutLine;
     private _shadow: Shadow;
     private _fill: Fill;
-    private _animation: Animation;
+    private _actionAnimation: ActionAnimation;
     constructor(stageConfig: StageConfig, ctx: CanvasRenderingContext2D) {
         this._stageConfig = stageConfig;
         this._ctx = ctx;
         this._outline = new OutLine(this._ctx);
         this._shadow = new Shadow(this._ctx);
         this._fill = new Fill(this._ctx);
-        this._animation = new Animation(stageConfig, ctx);
+        this._actionAnimation = new ActionAnimation(stageConfig, ctx);
     }
 
     private _drawStrikout(text: IFontData, x: number, y: number, fontHeight: number, lineHeight: number, wordSpace: number) {
@@ -125,7 +124,7 @@ export default class RichText {
         this._ctx.rotate((element.rotate / 180) * Math.PI);
 
         // 动画
-        this._animation.setElementStatus(element);
+        this._actionAnimation.setElementStatus(element);
 
         const path = getShapePath(SHAPE_TYPE.RECT, element.width, element.height) as Path2D;
         if (element.fill) {

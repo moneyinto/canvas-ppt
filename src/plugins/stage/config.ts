@@ -6,7 +6,7 @@ import Listener from "../editor/listener";
 import { ICacheImage, IRectParameter } from "@/types";
 import { ICreatingElement, IPPTElement, IPPTShapeElement, IPPTTableCell, IPPTTableElement, IPPTTextElement } from "@/types/element";
 import { IFontConfig, IFontData, ILineData } from "@/types/font";
-import { IPPTAnimation, ISlide, ISlideBackground } from "@/types/slide";
+import { IPPTAnimation, IPPTTurningAnimation, ISlide, ISlideBackground } from "@/types/slide";
 
 export const TEXT_MARGIN = 5;
 
@@ -48,12 +48,16 @@ export default class StageConfig {
     public animationHideElements: string[] = [];
     // 当前执行的动画集合
     public actionAnimations: IPPTAnimation[][] = [];
-    // 判断动画是否正在执行
-    public isAnimation = false;
+    // 判断元素动画是否正在执行
+    public isElementAnimation = false;
+    // 判断切页动画是否正在执行
+    public isTurningAnimation = false;
     // 动画执行时间
     public animationTime = 0;
     // 动画执行累计时间
     public animationCountTime = 0;
+    // 切页动画
+    public turningAni: IPPTTurningAnimation | null = null;
 
     private _container: HTMLDivElement;
     private _listener: Listener | undefined;

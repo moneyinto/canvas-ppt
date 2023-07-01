@@ -1,8 +1,8 @@
-import ScreenAnimation from "../screen/animation";
+import { ElementAnimation } from "../stage/animation";
 import StageConfig from "../stage/config";
 import Listener from "./listener";
 
-export default class Animation extends ScreenAnimation {
+export default class Animation extends ElementAnimation {
     private _listener: Listener;
     constructor(stageConfig: StageConfig, listener: Listener) {
         super(stageConfig);
@@ -16,7 +16,7 @@ export default class Animation extends ScreenAnimation {
 
     public stop() {
         // 设置动画是否正在执行的参数为 false
-        this.stageConfig.isAnimation = false;
+        this.stageConfig.isElementAnimation = false;
 
         // 设置需要隐藏的元素ID集合取并集
         this.stageConfig.animationHideElements = [];
