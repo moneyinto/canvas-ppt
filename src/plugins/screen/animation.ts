@@ -1,18 +1,6 @@
 import { ElementAnimation } from "../stage/animation";
 
 export class ScreenElementAnimation extends ElementAnimation {
-    public start() {
-        // 设置动画是否正在执行的参数为 true
-        this.stageConfig.isElementAnimation = true;
-
-        // 重置动画执行时间 和 动画执行时长
-        this.stageConfig.animationTime = new Date().getTime();
-        this.stageConfig.animationCountTime = 0;
-
-        // 触发动画执行函数
-        this.action();
-    }
-
     public render() {
         this.stageConfig.resetCheckDrawView();
     }
