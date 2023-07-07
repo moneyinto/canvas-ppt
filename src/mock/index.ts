@@ -260,17 +260,7 @@ export const slides: ISlide[] = [
                 ]
             }
         ],
-        animations: [
-            {
-                id: "4bdkme",
-                elId: "4bdkmJ",
-                ani: "",
-                name: "飞入",
-                type: "in",
-                duration: 1,
-                trigger: "click"
-            }
-        ],
+        animations: [],
         background: { type: "solid", color: "#ffffff" }
     },
     {

@@ -8,6 +8,7 @@ import Background from "../stage/background";
 import Stage from "../stage";
 import DB from "@/utils/db";
 import StageConfig from "../stage/config";
+import { VIEWPORT_SIZE, VIEWRATIO } from "@/config/stage";
 
 export default class Screen {
     public stageConfig: StageConfig;
@@ -25,6 +26,7 @@ export default class Screen {
 
     private _videoControlType = "";
     private _audioControlType = "";
+    private _countCtx: CanvasRenderingContext2D;
     public mouseSingleClick: () => void = () => {};
     constructor(container: HTMLDivElement, slide: ISlide) {
         this.slide = slide;
@@ -69,6 +71,15 @@ export default class Screen {
             throttleRAF(this._mousemove.bind(this)),
             false
         );
+
+        // 用于计算不规则形状的canvas
+        const canvas = document.createElement("canvas");
+        const VIEW_HEIGHT = VIEWPORT_SIZE * VIEWRATIO;
+        canvas.style.width = `${VIEWPORT_SIZE}px`;
+        canvas.style.height = `${VIEW_HEIGHT}px`;
+
+        // 调整分辨率
+        this._countCtx = canvas.getContext("2d", { willReadFrequently: true })!;
     }
 
     private _init() {
@@ -122,7 +133,7 @@ export default class Screen {
             const hoverElement = this.stageConfig.getMouseInElement(
                 left,
                 top,
-                this.ctx,
+                this._countCtx,
                 this.slide.elements
             ) as IPPTVideoElement;
             if (hoverElement) {
@@ -209,7 +220,7 @@ export default class Screen {
         const hoverElement = this.stageConfig.getMouseInElement(
             left,
             top,
-            this.ctx,
+            this._countCtx,
             this.slide.elements
         );
 

@@ -539,9 +539,9 @@ export default class StageConfig {
 
                     // 平移坐标原点
                     ctx.translate(ox, oy);
-                    // // 旋转画布
+                    // 旋转画布
                     ctx.rotate((element.rotate / 180) * Math.PI);
-                    // // 水平垂直翻转
+                    // 水平垂直翻转
                     ctx.scale(element.flipH || 1, element.flipV || 1);
                     const isPointInPath = ctx.isPointInPath(path, left + x, top + y);
                     ctx.restore();

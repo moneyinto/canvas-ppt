@@ -15,7 +15,7 @@ import {
     IPPTTextElement,
     IPPTVideoElement
 } from "@/types/element";
-import { ELEMENT_RESIZE, THEME_COLOR } from "@/config/stage";
+import { ELEMENT_RESIZE, THEME_COLOR, VIEWPORT_SIZE, VIEWRATIO } from "@/config/stage";
 import { IElementOptions, IMouseClick, IRectParameter, IRects } from "@/types";
 import { LINE_TYPE } from "@/config/shapes";
 import Listener from "./listener";
@@ -51,6 +51,7 @@ export default class ControlStage extends Stage {
     private _tableControlType: [string, "ROWS" | "COLS", number] | null = null;
     private _operateTableControlType: [string, "ROWS" | "COLS", number] | null = null;
     private _operateTableCell = false;
+    private _countCtx: CanvasRenderingContext2D;
     constructor(
         container: HTMLDivElement,
         stageConfig: StageConfig,
@@ -133,6 +134,15 @@ export default class ControlStage extends Stage {
                 this._exitFullScreen();
             }
         });
+
+        // 用于计算不规则形状的canvas
+        const canvas = document.createElement("canvas");
+        const VIEW_HEIGHT = VIEWPORT_SIZE * VIEWRATIO;
+        canvas.style.width = `${VIEWPORT_SIZE}px`;
+        canvas.style.height = `${VIEW_HEIGHT}px`;
+
+        // 调整分辨率
+        this._countCtx = canvas.getContext("2d", { willReadFrequently: true })!;
     }
 
     private _dblClick(evt: MouseEvent) {
@@ -141,7 +151,7 @@ export default class ControlStage extends Stage {
         const operateElement = this.stageConfig.getMouseInElement(
             left,
             top,
-            this.ctx,
+            this._countCtx,
             currentSlide?.elements || []
         );
         if (operateElement) {
@@ -246,7 +256,7 @@ export default class ControlStage extends Stage {
             const hoverElement = this.stageConfig.getMouseInElement(
                 left,
                 top,
-                this.ctx,
+                this._countCtx,
                 currentSlide?.elements || []
             ) as IPPTVideoElement;
             if (hoverElement) {
@@ -288,7 +298,7 @@ export default class ControlStage extends Stage {
             const hoverElement = this.stageConfig.getMouseInElement(
                 left,
                 top,
-                this.ctx,
+                this._countCtx,
                 currentSlide?.elements || []
             ) as IPPTTableElement;
             if (hoverElement && hoverElement.id === this.stageConfig.tableEditElementID) {
@@ -332,7 +342,7 @@ export default class ControlStage extends Stage {
                 const operateElement = this.stageConfig.getMouseInElement(
                     left,
                     top,
-                    this.ctx,
+                    this._countCtx,
                     currentSlide?.elements || []
                 );
 
@@ -613,7 +623,6 @@ export default class ControlStage extends Stage {
         const { left, top } = this.stageConfig.getMousePosition(evt);
         this.stageConfig.setOperateType("");
         this._videoControlType = "";
-
         for (const operateElement of operateElements) {
             const zoom = this.stageConfig.zoom;
             if (operateElement.type === "line") {
@@ -772,7 +781,7 @@ export default class ControlStage extends Stage {
             const hoverElement = this.stageConfig.getMouseInElement(
                 left,
                 top,
-                this.ctx,
+                this._countCtx,
                 currentSlide?.elements || []
             );
 

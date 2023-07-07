@@ -259,6 +259,5 @@ export const getShapePath = (type: SHAPE_TYPE, width: number, height: number, ne
             break;
         }
     }
-
     return needPathString ? path : new Path2D(path);
 };
