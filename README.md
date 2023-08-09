@@ -169,7 +169,7 @@ npm run dev
 - [x] 预览放映
 - [x] 预览元素动画
 - [x] 画笔功能
-- [ ] 页面切换动画
+- [x] 页面切换动画
 
 ### [electron版本](https://github.com/moneyinto/canvas-ppt/tree/electron)
 - [x] 网页唤醒或下载客户端
