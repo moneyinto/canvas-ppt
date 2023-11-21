@@ -682,6 +682,11 @@ export default class StageConfig {
                 countWidth = text.width + textElement!.wordSpace;
             }
         });
+
+        if (lineData.texts.length > 0) {
+            renderContent.push(lineData);
+        }
+
         return renderContent;
     }
 
