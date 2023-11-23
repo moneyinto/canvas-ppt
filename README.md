@@ -177,6 +177,8 @@ npm run dev
 - [x] 编辑保存
 - [x] 另存为
 
+### react-native版本(开发中)
+
 - #### 运行
 ```
 npm install
