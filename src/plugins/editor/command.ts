@@ -2175,6 +2175,27 @@ export default class Command {
         this._debounceLog();
     }
 
+    /**
+     * 锁定元素
+     */
+    public executeLockElements() {
+        const operateElements = this._stageConfig.operateElements;
+        const newElements: IPPTElement[] = [];
+        for (const operateElement of operateElements) {
+            if (operateElement) {
+                const newElement = {
+                    ...operateElement,
+                    lock: true
+                };
+                newElements.push(newElement);
+            }
+        }
+
+        this._stageConfig.setOperateElement(null, false);
+        this._stageConfig.updateElements(newElements);
+        this.executeLogRender();
+    }
+
     private _updateCursor(position: number) {
         this._cursor.showCursor();
         this._cursor.setDataPosition(position);

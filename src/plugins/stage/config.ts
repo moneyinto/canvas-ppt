@@ -496,7 +496,8 @@ export default class StageConfig {
         //     }
         // }
 
-        const elements: IPPTElement[] = deepClone(checkElements);
+        // 过滤锁定元素
+        const elements = (deepClone(checkElements) as IPPTElement[]).filter(element => !element.lock);
         return elements.reverse().find((element) => {
             if (element.type === "line") {
                 return this.checkPointNearLine(

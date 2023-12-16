@@ -385,6 +385,15 @@ export default class Contextmenu {
             },
             { divider: true },
             {
+                text: "锁定",
+                icon: "lock",
+                size: 18,
+                handler: () => {
+                    this._command.executeLockElements();
+                }
+            },
+            { divider: true },
+            {
                 text: "背景设置",
                 hide: selectedElement,
                 icon: "background",

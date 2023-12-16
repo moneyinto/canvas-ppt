@@ -16,7 +16,7 @@
                     v-if="!menu.divider"
                 >
                     <div class="menu-icon-box">
-                        <SvgIcon v-if="menu.icon" :name="menu.icon" :size="28" />
+                        <SvgIcon v-if="menu.icon" :name="menu.icon" :size="menu.size || 28" />
                     </div>
                     <span class="menu-text">{{ menu.text }}</span>
                     <span
@@ -86,6 +86,7 @@ $menuHeight: 32px;
         width: 28px;
         display: flex;
         align-items: center;
+        justify-content: center;
         margin-right: 4px;
     }
 

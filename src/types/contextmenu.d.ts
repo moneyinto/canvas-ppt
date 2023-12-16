@@ -5,6 +5,7 @@ export interface IContextmenuItem {
     disable?: boolean;
     hide?: boolean;
     icon?: string;
+    size?: number;
     children?: IContextmenuItem[];
     handler?: () => void;
 }

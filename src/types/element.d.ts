@@ -25,6 +25,8 @@ export interface IElementPosition {
  * width: 元素宽度
  *
  * height: 元素高度
+ *
+ * lock?: 元素锁定
  */
 interface IPPTBaseElement {
     id: string;
@@ -34,6 +36,7 @@ interface IPPTBaseElement {
     groupId?: string;
     width: number;
     height: number;
+    lock?: boolean;
 }
 
 /**
