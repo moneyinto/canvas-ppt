@@ -22,6 +22,8 @@
 
 ##### 在线体验地址：[https://demo.money-into.com/canvas-ppt](https://demo.money-into.com/canvas-ppt)
 
+##### 在线体验地址二：[http://ppt.money-into.com](http://ppt.money-into.com)
+
 # 项目展示
 ![](./public/demo.png)
 
