@@ -196,6 +196,8 @@ npm run electron:build
 
 ### [功能实现规划](./doc/FUNCTION_REALIZATION/MAIN.md)
 
+### [APP版本](https://github.com/moneyinto/canvas_ppt_rn)
+
 <br />
 
 ### 注意
