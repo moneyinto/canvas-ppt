@@ -59,7 +59,8 @@ import Screen from "@/plugins/screen";
 import { KeyMap } from "@/plugins/shortCut/keyMap";
 import { message } from "ant-design-vue";
 import SvgIcon from "@/components/SvgIcon.vue";
-import { OPTION_TYPE, IElement } from "mwhiteboard";
+import { OPTION_TYPE, IElement } from "@/components/whiteboard";
+import MWhiteboard from "@/components/whiteboard/index.vue";
 
 const emit = defineEmits(["endPreview"]);
 
@@ -100,7 +101,11 @@ nextTick(() => {
             previewSlide.value
         );
 
-        screen.mouseSingleClick = next;
+        screen.mouseSingleClick = () => {
+            if (!whiteboardVisible.value) {
+                next();
+            }
+        };
 
         screenRef.value.focus();
     }
