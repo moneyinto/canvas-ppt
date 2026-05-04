@@ -36,6 +36,18 @@ export default defineConfig(({ mode }) => {
                 "@": path.resolve(__dirname, "./src")
             }
         },
+        css: {
+            preprocessorOptions: {
+                scss: {
+                    // Vite 3 仍通过 Sass legacy JS API 编译样式，这里先静默对应弃用警告。
+                    silenceDeprecations: ["legacy-js-api"]
+                },
+                sass: {
+                    // 兼容缩进语法文件的同类配置。
+                    silenceDeprecations: ["legacy-js-api"]
+                }
+            }
+        },
         server: {
             host: true,
             port

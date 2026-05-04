@@ -444,8 +444,13 @@ export default class ControlStage extends Stage {
             elements.push(newElement);
         }
 
-        this._command.executeUpdateRender(elements);
-        this._startPoint = [evt.pageX, evt.pageY];
+        // 先按鼠标位移更新元素，再统一做一次辅助线吸附修正。
+        const { elements: snapElements, offsetX, offsetY } = this.stageConfig.getMoveReferenceSnap(elements);
+        this._command.executeUpdateRender(snapElements);
+        this._startPoint = [
+            this._startPoint[0] + (moveX + offsetX) * zoom,
+            this._startPoint[1] + (moveY + offsetY) * zoom
+        ];
     }
 
     private _resizeElements(evt: MouseEvent, opreateElements: IPPTElement[]) {
@@ -1134,6 +1139,8 @@ export default class ControlStage extends Stage {
         this._tableControlType = null;
         this._operateTableControlType = null;
         this._operateTableCell = false;
+        this.stageConfig.clearReferenceLines();
+        this.stageConfig.resetCheckDrawOprate();
     }
 
     private _mouseLeave(evt: MouseEvent) {
@@ -1543,10 +1550,40 @@ export default class ControlStage extends Stage {
 
     public resetDrawOprate() {
         this.clear();
+        // 辅助线和选中框都绘制在操作层，避免影响底层真实元素渲染。
+        this._drawReferenceLines();
         const elements = this.stageConfig.operateElements;
         if (elements.length === 0) return;
         // this.drawElement(element);
         this._drawOprate(elements);
+    }
+
+    private _drawReferenceLines() {
+        const lines = this.stageConfig.referenceLines;
+        if (lines.length === 0) return;
+
+        const zoom = this.stageConfig.zoom;
+        const { x, y } = this.stageConfig.getStageOrigin();
+
+        this.ctx.save();
+        this.ctx.scale(zoom, zoom);
+        this.ctx.translate(x, y);
+        this.ctx.strokeStyle = THEME_COLOR;
+        this.ctx.lineWidth = 1 / zoom;
+
+        for (const line of lines) {
+            this.ctx.beginPath();
+            if (line.type === "vertical") {
+                this.ctx.moveTo(line.value, line.range[0]);
+                this.ctx.lineTo(line.value, line.range[1]);
+            } else {
+                this.ctx.moveTo(line.range[0], line.value);
+                this.ctx.lineTo(line.range[1], line.value);
+            }
+            this.ctx.stroke();
+        }
+
+        this.ctx.restore();
     }
 
     private _renderRange({ x, y, width, height }: any) {

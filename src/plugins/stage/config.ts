@@ -9,6 +9,21 @@ import { IFontConfig, IFontData, ILineData } from "@/types/font";
 import { IPPTAnimation, IPPTTurningAnimation, ISlide, ISlideBackground } from "@/types/slide";
 
 export const TEXT_MARGIN = 5;
+// 吸附的距离值，同时也是拖拽吸附的灵敏度值，这个值越大，越容易被“吸住”，慢慢拖时就越容易感觉元素不跟手；值越小，越容易脱离吸附
+const REFERENCE_LINE_SNAP_OFFSET = 5;
+
+interface IReferenceLine {
+    type: "horizontal" | "vertical";
+    value: number;
+    range: [number, number];
+}
+
+interface IReferenceSnapResult {
+    elements: IPPTElement[];
+    offsetX: number;
+    offsetY: number;
+    lines: IReferenceLine[];
+}
 
 export default class StageConfig {
     public scrollX: number;
@@ -30,6 +45,7 @@ export default class StageConfig {
     public textFocusElementId = ""; // 聚焦富文本框元素id
     // [开始字坐标，开始行坐标，结束字坐标，结束行坐标]
     public selectArea: [number, number, number, number] | null = null;
+    public referenceLines: IReferenceLine[] = [];
     // 表格编辑状态
     public tableEditElementID = "";
     // 表格选中单元格 [[开始行，开始列], [结束行，结束列]
@@ -225,12 +241,14 @@ export default class StageConfig {
             boundary[2] = element.left + element.width;
             boundary[3] = element.top + element.height;
         } else {
+            // 旋转元素的吸附要基于旋转后的外接包围盒，否则辅助线会出现视觉偏差。
             const cx = element.left + element.width / 2;
             const cy = element.top + element.height / 2;
-            const rect1 = this.rotate(element.left, element.top, cx, cy, element.rotate);
-            const rect2 = this.rotate(element.left + element.width, element.top, cx, cy, element.rotate);
-            const rect3 = this.rotate(element.left, element.top + element.height, cx, cy, element.rotate);
-            const rect4 = this.rotate(element.left + element.width, element.top + element.height, cx, cy, element.rotate);
+            const angle = (element.rotate / 180) * Math.PI;
+            const rect1 = this.rotate(element.left, element.top, cx, cy, angle);
+            const rect2 = this.rotate(element.left + element.width, element.top, cx, cy, angle);
+            const rect3 = this.rotate(element.left, element.top + element.height, cx, cy, angle);
+            const rect4 = this.rotate(element.left + element.width, element.top + element.height, cx, cy, angle);
             boundary[0] = Math.min(rect1[0], rect2[0], rect3[0], rect4[0]);
             boundary[1] = Math.min(rect1[1], rect2[1], rect3[1], rect4[1]);
             boundary[2] = Math.max(rect1[0], rect2[0], rect3[0], rect4[0]);
@@ -383,6 +401,101 @@ export default class StageConfig {
 
     public setSelectArea(selectArea: [number, number, number, number] | null) {
         this.selectArea = selectArea;
+    }
+
+    public clearReferenceLines() {
+        this.referenceLines = [];
+    }
+
+    public getMoveReferenceSnap(elements: IPPTElement[]) {
+        if (elements.length === 0) {
+            return {
+                elements,
+                offsetX: 0,
+                offsetY: 0,
+                lines: []
+            } as IReferenceSnapResult;
+        }
+
+        const currentSlide = this.getCurrentSlide();
+        const moveBoundary = this.getOperateElementsBoundary(elements);
+        const selectedIds = elements.map(element => element.id);
+        const otherElements = (currentSlide?.elements || []).filter(element => selectedIds.indexOf(element.id) === -1);
+
+        let horizontalSnap: null | { offset: number; line: IReferenceLine; } = null;
+        let verticalSnap: null | { offset: number; line: IReferenceLine; } = null;
+
+        const moveVerticalLines = this._getBoundaryLineValues(moveBoundary, "vertical");
+        const moveHorizontalLines = this._getBoundaryLineValues(moveBoundary, "horizontal");
+
+        for (const element of otherElements) {
+            const boundary = this.getElementBoundary(element);
+            const targetVerticalLines = this._getBoundaryLineValues(boundary, "vertical");
+            const targetHorizontalLines = this._getBoundaryLineValues(boundary, "horizontal");
+
+            horizontalSnap = this._getBetterReferenceSnap(
+                horizontalSnap,
+                this._matchReferenceLine(moveVerticalLines, targetVerticalLines, moveBoundary, boundary, "vertical")
+            );
+            verticalSnap = this._getBetterReferenceSnap(
+                verticalSnap,
+                this._matchReferenceLine(moveHorizontalLines, targetHorizontalLines, moveBoundary, boundary, "horizontal")
+            );
+        }
+
+        // 画布边缘和中心线也参与吸附，和元素辅助线统一走同一套匹配逻辑。
+        const stageWidth = VIEWPORT_SIZE;
+        const stageHeight = VIEWPORT_SIZE * VIEWRATIO;
+        const stageVerticalLines = [
+            { key: "STAGE_L", value: 0 },
+            { key: "STAGE_CX", value: stageWidth / 2 },
+            { key: "STAGE_R", value: stageWidth }
+        ];
+        const stageHorizontalLines = [
+            { key: "STAGE_T", value: 0 },
+            { key: "STAGE_CY", value: stageHeight / 2 },
+            { key: "STAGE_B", value: stageHeight }
+        ];
+
+        horizontalSnap = this._getBetterReferenceSnap(
+            horizontalSnap,
+            this._matchReferenceLine(
+                moveVerticalLines,
+                stageVerticalLines,
+                moveBoundary,
+                [0, 0, stageWidth, stageHeight],
+                "vertical",
+                true
+            )
+        );
+        verticalSnap = this._getBetterReferenceSnap(
+            verticalSnap,
+            this._matchReferenceLine(
+                moveHorizontalLines,
+                stageHorizontalLines,
+                moveBoundary,
+                [0, 0, stageWidth, stageHeight],
+                "horizontal",
+                true
+            )
+        );
+
+        const offsetX = horizontalSnap?.offset || 0;
+        const offsetY = verticalSnap?.offset || 0;
+        const snapElements = elements.map(element => ({
+            ...element,
+            left: element.left + offsetX,
+            top: element.top + offsetY
+        }));
+        const lines = [horizontalSnap?.line, verticalSnap?.line].filter(Boolean) as IReferenceLine[];
+        this.referenceLines = lines;
+
+        return {
+            elements: snapElements,
+            offsetX,
+            offsetY,
+            lines
+        } as IReferenceSnapResult;
     }
 
     /**
@@ -592,6 +705,78 @@ export default class StageConfig {
             translatePoint[1] > minY &&
             translatePoint[1] < maxY
         );
+    }
+
+    private _getBoundaryLineValues(boundary: number[], type: "horizontal" | "vertical") {
+        if (type === "vertical") {
+            // 吸附比较的是边界盒的左/中/右三条线；横向则比较上/中/下三条线。
+            return [
+                { key: "L", value: boundary[0] },
+                { key: "CX", value: (boundary[0] + boundary[2]) / 2 },
+                { key: "R", value: boundary[2] }
+            ];
+        }
+
+        return [
+            { key: "T", value: boundary[1] },
+            { key: "CY", value: (boundary[1] + boundary[3]) / 2 },
+            { key: "B", value: boundary[3] }
+        ];
+    }
+
+    private _getBetterReferenceSnap(
+        currentSnap: null | { offset: number; line: IReferenceLine; },
+        nextSnap: null | { offset: number; line: IReferenceLine; }
+    ) {
+        if (!nextSnap) return currentSnap;
+        if (!currentSnap) return nextSnap;
+        if (Math.abs(nextSnap.offset) < Math.abs(currentSnap.offset)) return nextSnap;
+        return currentSnap;
+    }
+
+    private _matchReferenceLine(
+        moveLines: { key: string; value: number; }[],
+        targetLines: { key: string; value: number; }[],
+        moveBoundary: number[],
+        targetBoundary: number[],
+        type: "horizontal" | "vertical",
+        isStageLine = false
+    ) {
+        let snap: null | { offset: number; line: IReferenceLine; } = null;
+
+        for (const moveLine of moveLines) {
+            for (const targetLine of targetLines) {
+                // offset 是当前拖拽结果距离目标参考线还差的位移量。
+                const offset = targetLine.value - moveLine.value;
+                if (Math.abs(offset) > REFERENCE_LINE_SNAP_OFFSET) continue;
+
+                const line = type === "vertical"
+                    ? {
+                        type,
+                        value: targetLine.value,
+                        range: isStageLine
+                            ? [0, VIEWPORT_SIZE * VIEWRATIO]
+                            : [
+                                Math.min(moveBoundary[1], targetBoundary[1]),
+                                Math.max(moveBoundary[3], targetBoundary[3])
+                            ]
+                    } as IReferenceLine
+                    : {
+                        type,
+                        value: targetLine.value,
+                        range: isStageLine
+                            ? [0, VIEWPORT_SIZE]
+                            : [
+                                Math.min(moveBoundary[0], targetBoundary[0]),
+                                Math.max(moveBoundary[2], targetBoundary[2])
+                            ]
+                    } as IReferenceLine;
+
+                snap = this._getBetterReferenceSnap(snap, { offset, line });
+            }
+        }
+
+        return snap;
     }
 
     // 获取表格对应单元格数据

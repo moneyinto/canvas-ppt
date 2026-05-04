@@ -1,5 +1,5 @@
 import { IPPTVideoElement } from "@/types/element";
-import { sleep, fomatTime } from "@/utils";
+import { fomatTime } from "@/utils";
 import StageConfig from "./config";
 import { ActionAnimation } from "./animation";
 import DB from "@/utils/db";
