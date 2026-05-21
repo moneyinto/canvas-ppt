@@ -25,7 +25,7 @@
 
 ##### 在线体验地址二：[http://ppt.money-into.com](http://ppt.money-into.com)
 
-##### AskAI文档：[https://zread.ai/moneyinto/canvas-ppt]
+##### AskAI文档：[https://zread.ai/moneyinto/canvas-ppt](https://zread.ai/moneyinto/canvas-ppt)
 
 # 项目展示
 ![](./public/demo.png)
